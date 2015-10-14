@@ -1,0 +1,46 @@
+---
+
+- name: install galera packages
+  apt: name={{ item }} state=latest
+  with_items:
+    - percona-xtrabackup
+    - percona-xtradb-cluster-server-5.5
+    - percona-xtradb-cluster-galera-2.x
+    - socat
+
+- name: ensure mysql is running
+  service: name=mysql state=started
+
+- name: create wsrep user
+  mysql_user: name=wsrep password={{ galera_wsrep_password }} priv=*.*:ALL state=present
+
+- name: determine if the replication is already running
+  shell: echo "show variables like 'wsrep_on'" | mysql -u root -s
+  changed_when: False
+  register: mysql_result
+
+- name: stop mysql if the replication is not running
+  service: name=mysql state=stopped
+  when: "'OFF' in mysql_result.stdout"
+
+- name: set bind-address in my.cnf
+  lineinfile: dest=/etc/mysql/my.cnf
+    regexp='^bind-address'
+    line='bind-address = {{ ip.mgmt }}'
+
+- name: install galera.cnf
+  template: src=galera.cnf.j2 dest=/etc/mysql/conf.d/galera.cnf owner=mysql group=root mode=0460
+
+- name: start the first mysql if the replication is not running
+  command: /etc/init.d/mysql bootstrap-pxc
+  when: "'OFF' in mysql_result.stdout and inventory_hostname == groups['galera'][0]"
+
+- name: wait for the first mysql to start
+  wait_for: host={{ ip.mgmt }} port=3306
+  when: inventory_hostname == groups['galera'][0]
+
+- name: ensure all mysql servers are running
+  service: name=mysql state=started
+
+- name: wait for the mysql servers to start
+  wait_for: host={{ ip.mgmt }} port=3306

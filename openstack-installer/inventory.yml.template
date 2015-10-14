@@ -1,0 +1,27 @@
+controller:
+  jsm-devops-gyurcostorage-test-0:
+    ip:
+      mgmt: 10.97.36.129
+  jsm-devops-gyurcostorage-test-1:
+    ip:
+      mgmt: 10.97.36.130
+  jsm-devops-gyurcostorage-test-2:
+    ip:
+      mgmt: 10.97.36.131
+
+memcached:
+  inherit: controller
+
+rabbitmq:
+  inherit: controller
+
+galera:
+  inherit: controller
+
+mongodb:
+  inherit: controller
+
+compute:
+  jsm-devops-swify-test-1:
+    ip:
+      mgmt: 10.97.36.3

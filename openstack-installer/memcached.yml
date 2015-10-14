@@ -1,0 +1,8 @@
+---
+
+- hosts: memcached
+  user: ansible
+  sudo: True
+  roles:
+    - common
+    - memcached

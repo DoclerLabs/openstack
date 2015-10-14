@@ -1,0 +1,8 @@
+---
+
+- hosts: galera
+  user: ansible
+  sudo: True
+  roles:
+    - common
+    - galera

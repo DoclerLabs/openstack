@@ -1,0 +1,6 @@
+---
+
+- include: memcached.yml
+- include: rabbitmq.yml
+- include: galera.yml
+- include: mongodb.yml

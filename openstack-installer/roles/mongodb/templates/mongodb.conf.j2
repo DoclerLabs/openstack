@@ -1,0 +1,9 @@
+dbpath = /var/lib/mongodb
+logpath = /var/log/mongodb/mongodb.log
+bind_ip = 127.0.0.1,{{ ip.mgmt }}
+port = 27017
+fork = false
+replSet = ceilometer
+keyFile = /etc/mongodb.key
+pidfilepath =
+smallfiles = true

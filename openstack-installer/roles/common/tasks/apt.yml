@@ -1,0 +1,13 @@
+- name: setup apt cloud archive repo
+  template: src={{ item }}.j2 dest=/etc/apt/sources.list.d/{{ item }} mode=0644 owner=root group=root
+  with_items:
+    - cloudarchive-liberty.list
+
+- name: add cloud archive apt key
+  apt_key: keyserver=keyserver.ubuntu.com id='EC4926EA'
+
+- name: update apt cache
+  apt: update_cache=yes
+
+- name: upgrade host packages
+  apt: upgrade=dist

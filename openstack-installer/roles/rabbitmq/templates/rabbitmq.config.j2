@@ -1,0 +1,9 @@
+[
+  {rabbit, [
+    {loopback_users, []},
+    {tcp_listeners, [{"127.0.0.1", 5672}, { "{{ ip.mgmt }}", 5672} ]},
+    {cluster_nodes, {
+      [ {% for host in groups['rabbitmq'] %}'rabbit@{{ host }}'{% if not loop.last %}, {% endif %}{% endfor %}], disc}
+    }
+  ]}
+].

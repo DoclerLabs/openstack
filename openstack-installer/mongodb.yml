@@ -1,0 +1,8 @@
+---
+
+- hosts: mongodb
+  user: ansible
+  sudo: True
+  roles:
+    - common
+    - mongodb

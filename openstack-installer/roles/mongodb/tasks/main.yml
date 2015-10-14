@@ -1,0 +1,59 @@
+---
+
+- name: Install mongodb packages
+  apt: name=mongodb state=latest
+  notify: restart mongodb
+
+- name: deploy mongodb configuration
+  template: src=mongodb.conf.j2 dest=/etc/mongodb.conf owner=mongodb group=root mode=0460
+  notify: restart mongodb
+
+- name: deploy mongodb keyfile
+  copy: content='{{ mongodb_key }}' dest=/etc/mongodb.key owner=mongodb group=root mode=0400
+  notify: restart mongodb
+
+- meta: flush_handlers
+
+- name: ensure mongodb is started
+  service: name=mongodb state=started enabled=yes
+
+- name: wait for mongodb up
+  wait_for: port=27017
+
+- name: query the replica set status
+  shell: echo "rs.status().myState; " | mongo --quiet
+  changed_when: False
+  register: mongo_status
+
+- set_fact: mongo_initialized=False
+
+- name: determine if the replica set is already initialized
+  set_fact: mongo_initialized=True
+  when: hostvars[item].mongo_status.stdout != ''
+  with_items: groups['mongodb']
+
+- name: initialize replica set
+  shell: echo "rs.initiate().ok;" | mongo --quiet
+  register: mongo_ok
+  failed_when: mongo_ok.stdout != '1'
+  when: inventory_hostname==groups['mongodb'][0] and mongo_initialized == False
+
+- name: wait until the replica set is initialized
+  shell: echo "rs.status().myState; " | mongo --quiet
+  register: mongo_status
+  until: mongo_status.stdout == '1'
+  retries: 10
+  delay: 5
+  when: inventory_hostname==groups['mongodb'][0] and mongo_initialized == False
+
+- name: query the replica set status
+  shell: echo "rs.status().myState; " | mongo --quiet
+  changed_when: False
+  register: mongo_status
+
+- name: add other members to the replica set
+  shell: echo 'rs.add("{{ item }}").ok;' | mongo --quiet
+  register: mongo_ok
+  failed_when: mongo_ok.stdout != '1'
+  when: mongo_status.stdout == '1' and item != inventory_hostname and hostvars[item].mongo_status.stdout != '2'
+  with_items: groups['mongodb']

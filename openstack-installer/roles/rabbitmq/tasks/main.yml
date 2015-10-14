@@ -1,0 +1,40 @@
+---
+
+# Don't use latest, rabbitmq upgrade should be manual
+- name: install RabbitMQ packages
+  apt: name=rabbitmq-server state=present
+
+- name: determine the erlang cookie
+  command: cat /var/lib/rabbitmq/.erlang.cookie
+  changed_when: False
+  register: old_erlang_cookie
+
+- name: stop rabbitmq if the erlang cookie is not up to date
+  service: name=rabbitmq-server state=stopped
+  when: old_erlang_cookie.stdout != rabbitmq_erlang_cookie
+
+- name: clear the mnesia database if the cookie is not up to date
+  file: path=/var/lib/rabbitmq/mnesia state=absent
+  when: old_erlang_cookie.stdout != rabbitmq_erlang_cookie
+
+- name: install erlang cookie
+  copy: content='{{ rabbitmq_erlang_cookie }}' dest=/var/lib/rabbitmq/.erlang.cookie owner=rabbitmq group=rabbitmq mode=0400
+
+- name: install rabbitmq.config
+  template: src=rabbitmq.config.j2 dest=/etc/rabbitmq/rabbitmq.config owner=rabbitmq group=rabbitmq mode=0400
+
+- name: ensure the first rabbitmq server is started
+  service: name=rabbitmq-server state=started
+  when: inventory_hostname == groups['rabbitmq'][0]
+
+- name: wait for the first rabbitmq server
+  wait_for: port=5672
+  when: inventory_hostname == groups['rabbitmq'][0]
+
+- name: ensure all rabbitmq servers are started
+  service: name=rabbitmq-server state=started
+  when: inventory_hostname != groups['rabbitmq'][0]
+
+- name: wait for the rabbitmq servers
+  wait_for: port=5672
+  when: inventory_hostname != groups['rabbitmq'][0]
