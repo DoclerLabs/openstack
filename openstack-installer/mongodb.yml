@@ -3,6 +3,7 @@
 - hosts: mongodb
   user: ansible
   sudo: True
+  max_fail_percentage: 0
   roles:
     - common
     - mongodb
