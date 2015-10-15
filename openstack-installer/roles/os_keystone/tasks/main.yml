@@ -1,0 +1,59 @@
+---
+
+- name: disable autostarting of keystone
+  copy: content='manual' dest=/etc/init/keystone.override owner=root group=root mode=0644
+
+- name: install keystone
+  apt: name={{ item }}
+  with_items:
+    - keystone
+    - python-openstackclient
+    - apache2
+    - libapache2-mod-wsgi
+    - python-memcache
+
+- name: create keystone database
+  mysql_db: name={{ keystone_db }}
+    login_host={{ keystone_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create keystone database user
+  mysql_user: name={{ keystone_db_user }} password={{ keystone_db_password }} host={{ item }} priv={{ keystone_db }}.*:ALL
+    login_host={{ keystone_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - '%'
+
+- name: install keystone.conf
+  template: src=keystone.conf.j2 dest=/etc/keystone/keystone.conf owner=keystone group=root mode=0460
+  notify: restart apache
+
+- name: sync keystone db
+  command: su keystone -s /bin/sh -c "/usr/bin/keystone-manage db_sync"
+  register: db_sync
+  changed_when: '"migrate.versioning.api" in db_sync.stderr'
+  run_once: True
+
+- name: install wsgi-keystone.conf
+  template: src=wsgi-keystone.conf.j2 dest=/etc/apache2/sites-available/wsgi-keystone.conf owner=root group=root mode=0644
+  notify: restart apache
+
+- name: enable wsgi-keystone
+  file: src=../sites-available/wsgi-keystone.conf dest=/etc/apache2/sites-enabled/wsgi-keystone.conf state=link
+  notify: restart apache
+
+- name: create /var/www/cgi-bin/keystone
+  file: path=/var/www/cgi-bin/keystone state=directory owner=root group=root mode=0644
+  notify: restart apache
+
+- name: install keystone-wsgi server
+  copy: src=keystone-wsgi dest=/var/www/cgi-bin/keystone/keystone-wsgi owner=root group=root mode=0644
+  notify: restart apache
+
+- meta: flush_handlers
+
+- name: ensure apache is started
+  service: name=apache2 state=started enabled=yes

@@ -9,6 +9,7 @@ controller:
     ip:
       mgmt: 10.97.36.131
 
+# -------- infrastructure --------
 memcached:
   inherit: controller
 
@@ -21,6 +22,11 @@ galera:
 mongodb:
   inherit: controller
 
+# -------- OpenStack ---------
+keystone:
+  inherit: controller
+
+# -------- Compute --------
 compute:
   jsm-devops-swify-test-1:
     ip:

@@ -1,6 +1,10 @@
 ---
 
+- include: pacemaker.yml
+- include: haproxy.yml
 - include: memcached.yml
 - include: rabbitmq.yml
 - include: galera.yml
 - include: mongodb.yml
+
+- include: os_keystone.yml
