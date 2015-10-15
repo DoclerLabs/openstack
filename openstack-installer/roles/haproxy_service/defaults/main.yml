@@ -1,0 +1,5 @@
+---
+
+haproxy_rise: 3
+haproxy_fall: 3
+haproxy_interval: 12000

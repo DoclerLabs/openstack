@@ -1,0 +1,7 @@
+---
+
+- name: reload sysctl
+  service: name=procps state=started
+
+- name: restart haproxy
+  service: name=haproxy state=restarted

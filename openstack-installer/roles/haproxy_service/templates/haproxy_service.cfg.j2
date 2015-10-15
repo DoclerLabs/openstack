@@ -1,0 +1,63 @@
+
+frontend {{ item.service.haproxy_service_name }}-front
+{% for bind_host in item.service.haproxy_bind_hosts %}
+bind {{ bind_host }}:{{ item.service.haproxy_port }} {% if item.service.haproxy_ssl is defined and item.service.haproxy_ssl | bool %}ssl crt {{ haproxy_ssl_pem }} ciphers {{ haproxy_ssl_cipher_suite }}{% endif %}
+{% endfor %}
+
+{% if item.service.haproxy_balance_type == "http" %}
+    option httplog
+    option forwardfor except 127.0.0.0/8
+    option http-server-close
+
+    {%- set request_option = "http" %}
+{% else %}
+    option  tcplog
+    {%- set request_option = "tcp" %}
+{% endif %}
+
+{% if item.service.haproxy_ssl is defined and item.service.haproxy_ssl | bool %}
+    reqadd X-Forwarded-Proto:\ https
+{% endif %}
+
+{% if item.service.haproxy_timeout_client is defined %}
+    timeout client {{ item.service.haproxy_timeout_client }}
+{% endif %}
+
+{% if item.service.haproxy_whitelist_hosts is defined and item.service.haproxy_whitelist_hosts == true %}
+    acl white_list src 127.0.0.1/8 10.0.3.0/24 {{ container_cidr }}
+
+    {{ request_option }}-request content accept if white_list
+    {{ request_option }}-request content reject
+{% endif %}
+
+    mode {{ item.service.haproxy_balance_type }}
+    default_backend {{ item.service.haproxy_service_name }}-back
+
+
+{% if item.service.haproxy_backend_port is not defined %}
+  {% set haproxy_backend_port = item.service.haproxy_port %}
+{% else %}
+  {% set haproxy_backend_port = item.service.haproxy_backend_port %}
+{% endif %}
+
+{% if item.service.haproxy_check_port is not defined %}
+  {% set haproxy_check_port = haproxy_backend_port %}
+{% else %}
+  {% set haproxy_check_port = item.service.haproxy_check_port %}
+{% endif %}
+
+backend {{ item.service.haproxy_service_name }}-back
+    mode {{ item.service.haproxy_balance_type }}
+    balance {{ item.service.haproxy_balance_alg|default("leastconn") }}
+{% for option in item.service.haproxy_backend_options|default([]) %}
+    option {{ option }}
+{% endfor %}
+{% if item.service.haproxy_timeout_server is defined %}
+    timeout server {{ item.service.haproxy_timeout_server }}
+{% endif %}
+{% for host_name in item.service.haproxy_backend_nodes %}
+    server {{ host_name }} {{ hostvars[host_name]['ip']['mgmt'] }}:{{ haproxy_backend_port }} check port {{ haproxy_check_port }} inter {{ haproxy_interval }} rise {{ item.service.haproxy_backend_nodes|count }} fall {{ item.service.haproxy_backend_nodes|count }}
+{% endfor %}
+{% for host_name in item.service.haproxy_backup_nodes|default([]) %}
+    server {{ host_name }} {{ hostvars[host_name]['ip']['mgmt'] }}:{{ haproxy_backend_port }} check port {{ haproxy_check_port }} inter {{ haproxy_interval }} rise {{ item.service.haproxy_backend_nodes|count }} fall {{ item.service.haproxy_backend_nodes|count }} backup
+{% endfor %}

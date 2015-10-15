@@ -1,0 +1,9 @@
+---
+
+- hosts: controller
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - common
+    - haproxy
