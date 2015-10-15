@@ -1,21 +1,29 @@
 ---
 
 - name: install galera packages
-  apt: name={{ item }} state=latest
+  apt: name={{ item }}
   with_items:
     - percona-xtrabackup
     - percona-xtradb-cluster-server-5.5
     - percona-xtradb-cluster-galera-2.x
     - socat
+    - xinetd
+    - python-mysqldb
 
 - name: ensure mysql is running
   service: name=mysql state=started
 
+- name: set up mysql root password
+  mysql_user: name=root host='%' password="{{ mysql_root_password }}" priv=*.*:ALL,GRANT
+    login_user=root login_password="{{ mysql_root_password }}" check_implicit_admin=yes
+
 - name: create wsrep user
-  mysql_user: name=wsrep password={{ galera_wsrep_password }} priv=*.*:ALL state=present
+  mysql_user: name=wsrep password={{ galera_wsrep_password }} priv=*.*:ALL
+    login_user=root login_password={{ mysql_root_password }}
+    state=present
 
 - name: determine if the replication is already running
-  shell: echo "show variables like 'wsrep_on'" | mysql -u root -s
+  shell: echo "show variables like 'wsrep_on'" | mysql -u root -p{{ mysql_root_password }} -s
   changed_when: False
   register: mysql_result
 
@@ -40,7 +48,30 @@
   when: inventory_hostname == groups['galera'][0]
 
 - name: ensure all mysql servers are running
-  service: name=mysql state=started
+  service: name=mysql state=started enabled=yes
 
 - name: wait for the mysql servers to start
   wait_for: host={{ ip.mgmt }} port=3306
+
+- name: create clustecheck user
+  mysql_user: name=clustercheck password={{ galera_clustercheck_password }} priv=*.*:USAGE
+    login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: install the clustercheck script
+  template: src=clustercheck.j2 dest=/usr/local/bin/clustercheck owner=nobody group=root mode=570
+  notify: restart xinetd
+
+- name: add mysqlchk to /etc/services
+  lineinfile: dest=/etc/services 
+    regexp='^mysqlchk'
+    line='mysqlchk 9200/tcp'
+  notify: restart xinetd
+
+- name: configure xinetd to serve clustercheck
+  template: src=mysqlchk.j2 dest=/etc/xinetd.d/mysqlchk owner=root group=root mode=644
+  notify: restart xinetd
+
+- name: ensure xinetd is running
+  service: name=xinetd state=started enabled=yes

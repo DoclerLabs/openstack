@@ -3,6 +3,29 @@
 - hosts: galera
   user: ansible
   sudo: True
+  max_fail_percentage: 0
   roles:
     - common
     - galera
+
+- hosts: controller
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - haproxy_service
+  vars:
+    haproxy_service_configs:
+    - service:
+        haproxy_service_name: galera
+        haproxy_bind_hosts:
+          - "{{ vip_mgmt }}"
+        haproxy_backend_nodes: "{{ [groups['galera'][0]] }}"  # list expected
+        haproxy_backup_nodes: "{{ groups['galera'][1:] }}"
+        haproxy_port: 3306
+        haproxy_check_port: 9200
+        haproxy_balance_type: tcp
+        haproxy_timeout_client: 5000s
+        haproxy_timeout_server: 5000s
+        haproxy_backend_options:
+          - httpchk
