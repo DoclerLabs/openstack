@@ -1,0 +1,63 @@
+---
+
+- name: install pacemaker
+  apt: name={{ item }}
+  with_items:
+    - pacemaker
+    - corosync
+
+- name: install corosync.conf
+  template: src=corosync.conf.j2 dest=/etc/corosync/corosync.conf owner=root group=root mode=0644
+  notify: restart pacemaker
+
+- name: enable corosync
+  copy: content='START=yes' dest=/etc/default/corosync owner=root group=root mode=0644
+  notify: restart pacemaker
+
+- name: check if there's an existing authkey
+  local_action: stat path=workdir/authkey
+  register: authkey_result
+
+- name: distribute corosync authkey
+  copy: src=workdir/authkey dest=/etc/corosync/authkey owner=root group=root mode=0400
+  when: authkey_result.stat.exists
+  notify: restart pacemaker
+
+- name: create corosync authkey if it doesn't exist
+  command: corosync-keygen creates=/etc/corosync/authkey
+  notify: restart pacemaker
+  when: inventory_hostname == play_hosts[0]
+
+- name: fetch the new corosync authkey
+  fetch: src=/etc/corosync/authkey dest=workdir/authkey flat=True
+  when: inventory_hostname == play_hosts[0]
+
+- name: distribute the new corosync authkey
+  copy: src=workdir/authkey dest=/etc/corosync/authkey owner=root group=root mode=0400
+  notify: restart pacemaker
+  when: inventory_hostname != play_hosts[0]
+
+- meta: flush_handlers
+
+- name: ensure pacemaker is running
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - corosync
+    - pacemaker
+
+- name: disable STONITH
+  pacemaker: property no-quorum-policy="ignore" stonith-enabled="false"
+  run_once: True
+
+- name: create mgmt VIP address
+  pacemaker: primitive mgmt_vip ocf:heartbeat:IPaddr2
+         params ip="{{ vip_mgmt }}" cidr_netmask="{{ vip_mgmt_cidr }}" nic="{{ vip_mgmt_nic }}"
+         state=present
+  run_once: True
+
+- name: create public VIP address
+  pacemaker: primitive mgmt_vip ocf:heartbeat:IPaddr2
+         params ip="{{ vip_mgmt }}" cidr_netmask="{{ vip_mgmt_cidr }}" nic="{{ vip_mgmt_nic }}"
+         state=present
+  run_once: True
+  when: vip_mgmt_cidr != vip_public_cidr

@@ -1,0 +1,7 @@
+---
+
+- name: restart pacemaker
+  service: name={{ item }} state=restarted
+  with_items:
+    - corosync
+    - pacemaker
