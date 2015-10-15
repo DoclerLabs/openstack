@@ -8,6 +8,3 @@
 
 - name: update apt cache
   apt: update_cache=yes
-
-- name: upgrade host packages
-  apt: upgrade=dist
