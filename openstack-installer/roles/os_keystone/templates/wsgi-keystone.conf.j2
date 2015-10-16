@@ -1,7 +1,7 @@
-Listen 5000
-Listen 35357
+Listen {{ ip.mgmt }}:5000
+Listen {{ ip.mgmt }}:35357
 
-<VirtualHost {{ vip_mgmt }}:5000>
+<VirtualHost *:5000>
     WSGIDaemonProcess keystone-public processes=5 threads=1 user=keystone display-name=%{GROUP}
     WSGIProcessGroup keystone-public
     WSGIScriptAlias / /var/www/cgi-bin/keystone/main
@@ -15,7 +15,7 @@ Listen 35357
     CustomLog /var/log/apache2/keystone-access.log combined
 </VirtualHost>
 
-<VirtualHost {{ vip_mgmt }}:35357>
+<VirtualHost *:35357>
     WSGIDaemonProcess keystone-admin processes=5 threads=1 user=keystone display-name=%{GROUP}
     WSGIProcessGroup keystone-admin
     WSGIScriptAlias / /var/www/cgi-bin/keystone/admin

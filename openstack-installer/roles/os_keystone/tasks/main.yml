@@ -46,11 +46,14 @@
   notify: restart apache
 
 - name: create /var/www/cgi-bin/keystone
-  file: path=/var/www/cgi-bin/keystone state=directory owner=root group=root mode=0644
+  file: path=/var/www/cgi-bin/keystone state=directory owner=root group=root mode=0755
   notify: restart apache
 
 - name: install keystone-wsgi server
-  copy: src=keystone-wsgi dest=/var/www/cgi-bin/keystone/keystone-wsgi owner=root group=root mode=0644
+  copy: src=keystone-wsgi dest=/var/www/cgi-bin/keystone/{{ item }} owner=root group=root mode=0644
+  with_items:
+    - main
+    - admin
   notify: restart apache
 
 - meta: flush_handlers

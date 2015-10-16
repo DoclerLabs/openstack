@@ -1,0 +1,42 @@
+---
+
+- name: create the service in keystone
+  keystone_service: >
+    token="{{ keystone_admin_token }}"
+    auth_url="http://{{ keystone_admin_ip }}:35357/v2.0"
+    name="{{ keystone_service_name }}"
+    type="{{ keystone_service_type }}"
+    description="{{ keystone_service_description }}"
+    publicurl="{{ keystone_public_url }}"
+    internalurl="{{ keystone_internal_url }}"
+    adminurl="{{ keystone_admin_url }}"
+    region="{{ keystone_region }}"
+  when: keystone_service_name is defined
+
+- name: create the tenant in keystone
+  keystone_user: >
+    token="{{ keystone_admin_token }}"
+    endpoint="http://{{ keystone_admin_ip }}:35357/v2.0"
+    tenant="{{ item.keystone_project_name }}"
+    tenant_description="{{ item.keystone_project_description }}"
+  with_items: keystone_projects
+
+- name: create the user in keystone
+  keystone_user: >
+    token="{{ keystone_admin_token }}"
+    endpoint="http://{{ keystone_admin_ip }}:35357/v2.0"
+    tenant="{{ item.keystone_project_name }}"
+    user="{{ item.keystone_user }}"
+    password="{{ item.keystone_password }}"
+  with_items: keystone_projects
+  when: item.keystone_user is defined
+
+- name: assign role to the user in keystone
+  keystone_user: >
+    token="{{ keystone_admin_token }}"
+    endpoint="http://{{ keystone_admin_ip }}:35357/v2.0"
+    tenant="{{ item.keystone_project_name }}"
+    user="{{ item.keystone_user }}"
+    role="{{ item.keystone_role }}"
+  with_items: keystone_projects
+  when: item.keystone_role is defined

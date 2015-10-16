@@ -1,0 +1,4 @@
+---
+
+keystone_admin_ip: "{{ vip_mgmt }}"
+keystone_public_ip: "{{ vip_public }}"
