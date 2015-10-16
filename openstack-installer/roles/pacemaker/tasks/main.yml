@@ -46,7 +46,7 @@
     - pacemaker
 
 - name: disable STONITH
-  pacemaker: property no-quorum-policy="ignore" stonith-enabled="false"
+  pacemaker: property stonith-enabled="false"
   run_once: True
 
 - name: create mgmt VIP address
@@ -60,4 +60,4 @@
          params ip="{{ vip_mgmt }}" cidr_netmask="{{ vip_mgmt_cidr }}" nic="{{ vip_mgmt_nic }}"
          state=present
   run_once: True
-  when: vip_mgmt_cidr != vip_public_cidr
+  when: vip_mgmt != vip_public
