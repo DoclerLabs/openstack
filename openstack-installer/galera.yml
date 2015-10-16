@@ -15,9 +15,8 @@
   roles:
     - haproxy_service
   vars:
-    haproxy_service_configs:
-    - service:
-        haproxy_service_name: galera
+    haproxy_services:
+      - haproxy_service_name: galera
         haproxy_bind_hosts:
           - "{{ vip_mgmt }}"
         haproxy_backend_nodes: "{{ [groups['galera'][0]] }}"  # list expected

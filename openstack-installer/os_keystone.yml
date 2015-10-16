@@ -15,32 +15,30 @@
   roles:
     - haproxy_service
   vars:
-    haproxy_service_configs:
-      - service:
-          haproxy_service_name: keystone_admin
-          haproxy_backend_nodes: "{{ groups['keystone'] }}"
-          haproxy_bind_hosts:
-            - "{{ vip_mgmt }}"
-            - "{{ vip_public }}"
-          haproxy_port: 35357
-          haproxy_balance_type: http
-          haproxy_balance_alg: leastconn
-          haproxy_backend_options:
-            - forwardfor
-            - httpchk
-            - httplog
-      - service:
-          haproxy_service_name: keystone_service
-          haproxy_backend_nodes: "{{ groups['keystone'] }}"
-          haproxy_bind_hosts:
-            - "{{ vip_public }}"
-          haproxy_port: 5000
-          haproxy_balance_type: http
-          haproxy_balance_alg: leastconn
-          haproxy_backend_options:
-            - forwardfor
-            - httpchk
-            - httplog
+    haproxy_services:
+      - haproxy_service_name: keystone_admin
+        haproxy_backend_nodes: "{{ groups['keystone'] }}"
+        haproxy_bind_hosts:
+          - "{{ vip_mgmt }}"
+          - "{{ vip_public }}"
+        haproxy_port: 35357
+        haproxy_balance_type: http
+        haproxy_balance_alg: leastconn
+        haproxy_backend_options:
+          - forwardfor
+          - httpchk
+          - httplog
+      - haproxy_service_name: keystone_service
+        haproxy_backend_nodes: "{{ groups['keystone'] }}"
+        haproxy_bind_hosts:
+          - "{{ vip_public }}"
+        haproxy_port: 5000
+        haproxy_balance_type: http
+        haproxy_balance_alg: leastconn
+        haproxy_backend_options:
+          - forwardfor
+          - httpchk
+          - httplog
 
 - hosts: keystone[0]
   user: ansible
