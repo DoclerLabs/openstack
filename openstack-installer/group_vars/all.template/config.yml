@@ -1,0 +1,12 @@
+vip_mgmt: 10.97.36.127
+vip_mgmt_cidr: 24
+vip_mgmt_nic: br-vlan
+
+vip_public: 10.97.36.127
+vip_public_cidr: 24
+vip_public_nic: br-vlan
+
+keystone_internal_ip: "{{ vip_mgmt }}"
+keystone_admin_ip: "{{ vip_public }}"
+
+keystone_region_name: RegionONE

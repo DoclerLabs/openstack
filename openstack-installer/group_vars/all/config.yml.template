@@ -1,7 +1,0 @@
-vip_mgmt: 10.97.36.127
-vip_mgmt_cidr: 24
-vip_mgmt_nic: br-vlan
-
-vip_public: 10.97.36.127
-vip_public_cidr: 24
-vip_public_nic: br-vlan
