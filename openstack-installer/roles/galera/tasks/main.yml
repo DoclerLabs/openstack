@@ -14,13 +14,17 @@
   service: name=mysql state=started
 
 - name: set up mysql root password
-  mysql_user: name=root host='%' password="{{ mysql_root_password }}" priv=*.*:ALL,GRANT
+  mysql_user: name=root host="{{ item }}" password="{{ mysql_root_password }}" priv=*.*:ALL,GRANT
     login_user=root login_password="{{ mysql_root_password }}" check_implicit_admin=yes
+  with_items:
+    - localhost
+    - 127.0.0.1
+    - '%'
+    - "{{ groups['galera'] }}"
 
 - name: create wsrep user
   mysql_user: name=wsrep password={{ galera_wsrep_password }} priv=*.*:ALL
     login_user=root login_password={{ mysql_root_password }}
-    state=present
 
 - name: determine if the replication is already running
   shell: echo "show variables like 'wsrep_on'" | mysql -u root -p{{ mysql_root_password }} -s
@@ -56,7 +60,6 @@
 - name: create clustecheck user
   mysql_user: name=clustercheck password={{ galera_clustercheck_password }} priv=*.*:USAGE
     login_user=root login_password={{ mysql_root_password }}
-    state=present
   run_once: True
 
 - name: install the clustercheck script
