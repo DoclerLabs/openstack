@@ -1,7 +1,6 @@
-
 frontend {{ item.service.haproxy_service_name }}-front
-{% for bind_host in item.service.haproxy_bind_hosts %}
-bind {{ bind_host }}:{{ item.service.haproxy_port }} {% if item.service.haproxy_ssl is defined and item.service.haproxy_ssl | bool %}ssl crt {{ haproxy_ssl_pem }} ciphers {{ haproxy_ssl_cipher_suite }}{% endif %}
+{% for bind_host in item.service.haproxy_bind_hosts | unique %}
+    bind {{ bind_host }}:{{ item.service.haproxy_port }}
 {% endfor %}
 
 {% if item.service.haproxy_balance_type == "http" %}
@@ -13,10 +12,6 @@ bind {{ bind_host }}:{{ item.service.haproxy_port }} {% if item.service.haproxy_
 {% else %}
     option  tcplog
     {%- set request_option = "tcp" %}
-{% endif %}
-
-{% if item.service.haproxy_ssl is defined and item.service.haproxy_ssl | bool %}
-    reqadd X-Forwarded-Proto:\ https
 {% endif %}
 
 {% if item.service.haproxy_timeout_client is defined %}
