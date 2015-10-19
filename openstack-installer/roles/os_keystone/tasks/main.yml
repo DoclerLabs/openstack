@@ -1,5 +1,10 @@
 ---
 
+- name: create keystone user in rabbitmq
+  rabbitmq_user: user="{{ keystone_rabbit_user }}" password="{{ keystone_rabbit_password }}" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
 - name: disable autostarting of keystone
   copy: content='manual' dest=/etc/init/keystone.override owner=root group=root mode=0644
 
