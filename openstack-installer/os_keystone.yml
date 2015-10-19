@@ -8,7 +8,7 @@
     - common
     - os_keystone
 
-- hosts: controller
+- hosts: haproxy
   user: ansible
   sudo: True
   max_fail_percentage: 0

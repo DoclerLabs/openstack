@@ -1,6 +1,6 @@
 ---
 
-- hosts: controller
+- hosts: pacemaker
   user: ansible
   sudo: True
   serial: 1
@@ -9,7 +9,7 @@
     - name: fetch corosync authkey
       fetch: src=/etc/corosync/authkey dest=workdir/authkey fail_on_missing=False flat=True
 
-- hosts: controller
+- hosts: pacemaker
   user: ansible
   sudo: True
   max_fail_percentage: 0

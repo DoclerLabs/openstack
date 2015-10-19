@@ -13,7 +13,7 @@
     apt_extra_keys:
       - { keyserver: "keys.gnupg.net", keyid: "1C4CBDCDCD2EFD2A" }
 
-- hosts: controller
+- hosts: haproxy
   user: ansible
   sudo: True
   max_fail_percentage: 0
@@ -24,7 +24,7 @@
       - haproxy_service_name: galera
         haproxy_bind_hosts:
           - "{{ vip_mgmt }}"
-        haproxy_backend_nodes: "{{ [groups['galera'][0]] }}"  # list expected
+        haproxy_backend_nodes: "{{ [groups['galera'][0]] }}"
         haproxy_backup_nodes: "{{ groups['galera'][1:] }}"
         haproxy_port: 3306
         haproxy_check_port: 9200
