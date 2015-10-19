@@ -1,0 +1,11 @@
+---
+
+apt_repos:
+  - { name: "cloudarchive-liberty", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu trusty-updates/liberty main" }
+
+apt_extra_repos: []
+
+apt_keys:
+  - { keyserver: "keyserver.ubuntu.com", keyid: "EC4926EA" }
+
+apt_extra_keys: []

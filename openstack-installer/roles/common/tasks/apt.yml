@@ -1,10 +1,14 @@
-- name: setup apt cloud archive repo
-  template: src={{ item }}.j2 dest=/etc/apt/sources.list.d/{{ item }} mode=0644 owner=root group=root
+- name: setup apt repo(s)
+  copy: content='deb {{ item.repo }}\n' dest=/etc/apt/sources.list.d/{{ item.name }}.list
   with_items:
-    - cloudarchive-liberty.list
+    - "{{ apt_repos }}"
+    - "{{ apt_extra_repos }}"
 
-- name: add cloud archive apt key
-  apt_key: keyserver=keyserver.ubuntu.com id='EC4926EA'
+- name: add apt key(s)
+  apt_key: keyserver='{{ item.keyserver }}' id='{{ item.keyid }}'
+  with_items:
+    - "{{ apt_keys }}"
+    - "{{ apt_extra_keys }}"
 
 - name: update apt cache
   apt: update_cache=yes
