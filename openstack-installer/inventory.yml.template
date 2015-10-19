@@ -10,6 +10,12 @@ controller:
       mgmt: 10.97.36.131
 
 # -------- infrastructure --------
+pacemaker:
+  inherit: controller
+
+haproxy:
+  inherit: pacemaker
+
 memcached:
   inherit: controller
 
