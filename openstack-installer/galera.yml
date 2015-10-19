@@ -7,6 +7,11 @@
   roles:
     - common
     - galera
+  vars:
+    apt_extra_repos:
+      - { name: "percona", repo: "http://repo.percona.com/apt trusty main" }
+    apt_extra_keys:
+      - { keyserver: "keys.gnupg.net", keyid: "1C4CBDCDCD2EFD2A" }
 
 - hosts: controller
   user: ansible
