@@ -1,0 +1,56 @@
+---
+
+- name: create glance user in rabbitmq
+  rabbitmq_user: user="{{ glance_rabbit_user }}" password="{{ glance_rabbit_password }}" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: disable autostarting of glance
+  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+  with_items:
+    - glance-api
+    - glance-registry
+
+- name: install glance
+  apt: name={{ item }}
+  with_items:
+    - glance
+    - python-glanceclient
+    - python-swiftclient
+
+- name: create glance database
+  mysql_db: name={{ glance_db }}
+    login_host={{ glance_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create glance database user
+  mysql_user: name={{ glance_db_user }} password={{ glance_db_password }} host={{ item }} priv={{ glance_db }}.*:ALL
+    login_host={{ glance_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - "{{ groups['glance'] }}"
+    - '%'
+
+- name: install glance configs
+  template: src={{ item }}.conf.j2 dest=/etc/glance/{{ item }}.conf owner=glance group=root mode=0460
+  with_items:
+    - glance-api
+    - glance-registry
+  notify: restart glance
+
+- name: sync glance db
+  command: su glance -s /bin/sh -c "/usr/bin/glance-manage db_sync"
+  register: db_sync
+  changed_when: '"migrate.versioning.api" in db_sync.stderr'
+  run_once: True
+
+- meta: flush_handlers
+
+- name: ensure glance is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - glance-api
+    - glance-registry

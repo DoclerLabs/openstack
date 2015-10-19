@@ -8,3 +8,4 @@
 - include: mongodb.yml
 
 - include: os_keystone.yml
+- include: os_glance.yml
