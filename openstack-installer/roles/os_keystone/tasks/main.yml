@@ -25,6 +25,7 @@
   run_once: True
   with_items:
     - localhost
+    - "{{ groups['keystone'] }}"
     - '%'
 
 - name: install keystone.conf

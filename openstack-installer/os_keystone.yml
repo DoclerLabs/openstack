@@ -49,9 +49,9 @@
     keystone_service_name: keystone
     keystone_service_type: identity
     keystone_service_description: "OpenStack Identity"
-    keystone_public_url: "http://{{ keystone_internal_ip }}:5000/v2.0"
-    keystone_internal_url: "http://{{ keystone_internal_ip }}:5000/v2.0"
-    keystone_admin_url: "http://{{ keystone_public_ip }}:35357/v2.0"
+    keystone_public_url: "http://{{ keystone_internal_ip }}:5000/v3"
+    keystone_internal_url: "http://{{ keystone_internal_ip }}:5000/v3"
+    keystone_admin_url: "http://{{ keystone_public_ip }}:35357/v3"
     keystone_region: "{{ keystone_region_name }}"
     keystone_projects:
       - keystone_project_name: admin
