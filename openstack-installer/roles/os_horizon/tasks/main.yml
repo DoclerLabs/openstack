@@ -1,0 +1,19 @@
+---
+
+- name: install horizon
+  apt: name={{ item }}
+  with_items:
+    - openstack-dashboard
+
+- name: install ports.conf
+  template: src=ports.conf.j2 dest=/etc/apache2/ports.conf owner=root group=root mode=0644
+  notify: restart apache
+
+- name: install local_settings.py
+  template: src=local_settings.py.j2 dest=/etc/openstack-dashboard/local_settings.py owner=root group=root mode=0644
+  notify: restart apache
+
+- meta: flush_handlers
+
+- name: ensure apache is started
+  service: name=apache2 state=started enabled=yes

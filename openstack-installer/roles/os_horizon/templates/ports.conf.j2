@@ -1,0 +1,12 @@
+Listen 127.0.0.1:80
+Listen {{ ip.mgmt }}:80
+
+<IfModule ssl_module>
+        Listen 127.0.0.1:443
+        Listen {{ ip.mgmt }}:443
+</IfModule>
+
+<IfModule mod_gnutls.c>
+        Listen 127.0.0.1:443
+        Listen {{ ip.mgmt }}:443
+</IfModule>
