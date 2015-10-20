@@ -1156,8 +1156,8 @@ identity_uri = http://{{ keystone_admin_ip }}:35357/
 
 username = glance
 password = {{ glance_admin_password }}
-project_domain_id = default
-user_domain_id = default
+project_domain_id = {{ glance_domain_id }}
+user_domain_id = {{ glance_domain_id }}
 project_name = service
 auth_plugin = password
 

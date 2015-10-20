@@ -27,6 +27,7 @@
     endpoint="http://{{ keystone_admin_ip }}:35357/v3"
     project="{{ item.keystone_project_name }}"
     user="{{ item.keystone_user }}"
+    domain="{{ item.keystone_domain_id | default('default') }}"
     password="{{ item.keystone_password }}"
   with_items: keystone_projects
   when: item.keystone_user is defined
@@ -37,6 +38,7 @@
     endpoint="http://{{ keystone_admin_ip }}:35357/v3"
     project="{{ item.keystone_project_name }}"
     user="{{ item.keystone_user }}"
+    domain="{{ item.keystone_domain_id | default('default') }}"
     role="{{ item.keystone_role }}"
   with_items: keystone_projects
   when: item.keystone_role is defined

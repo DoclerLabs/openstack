@@ -53,5 +53,6 @@
       - keystone_project_name: service
         keystone_project_description: "Service Project"
         keystone_user: glance
+        keystone_domain: "{{ keystone_domain_id }}"
         keystone_password: "{{ glance_admin_password }}"
         keystone_role: admin

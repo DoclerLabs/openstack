@@ -131,14 +131,14 @@ def get_project(keystone, name):
         return projects[0]
 
 
-def get_user(keystone, name):
+def get_user(keystone, domain, name):
     """ Retrieve a user by name"""
-    users = [x for x in keystone.users.list() if x.name == name]
+    users = [x for x in keystone.users.list(domain=domain) if x.name == name]
     count = len(users)
     if count == 0:
         raise KeyError("No keystone users with name %s" % name)
     elif count > 1:
-        raise ValueError("%d users with name %s" % (count, name))
+        raise ValueError("%d users with domain %s and name %s" % (count, domain, name))
     else:
         return users[0]
 
@@ -159,8 +159,8 @@ def get_project_id(keystone, name):
     return get_project(keystone, name).id
 
 
-def get_user_id(keystone, name):
-    return get_user(keystone, name).id
+def get_user_id(keystone, domain, name):
+    return get_user(keystone, domain, name).id
 
 
 def ensure_project_exists(keystone, project_name, project_description, project_domain,
@@ -223,7 +223,7 @@ def ensure_user_exists(keystone, user_name, password, email, domain, project_nam
 
     # Check if project already exists
     try:
-        user = get_user(keystone, user_name)
+        user = get_user(keystone, domain, user_name)
     except KeyError:
         # project doesn't exist yet
         pass
@@ -242,7 +242,7 @@ def ensure_user_exists(keystone, user_name, password, email, domain, project_nam
     return (True, user.id)
 
 
-def ensure_role_exists(keystone, user_name, project_name, role_name,
+def ensure_role_exists(keystone, domain, user_name, project_name, role_name,
                        check_mode):
     """ Check if role exists
 
@@ -252,7 +252,7 @@ def ensure_role_exists(keystone, user_name, project_name, role_name,
 
     """
     # Check if the user has the role in the project
-    user = get_user(keystone, user_name)
+    user = get_user(keystone, domain, user_name)
     project = get_project(keystone, project_name)
     roles = [x for x in keystone.roles.list(user=user, project=project)
                      if x.name == role_name]
@@ -282,11 +282,11 @@ def ensure_role_exists(keystone, user_name, project_name, role_name,
     return (True, role.id)
 
 
-def ensure_user_absent(keystone, user, check_mode):
+def ensure_user_absent(keystone, domain, user, check_mode):
     raise NotImplementedError("Not yet implemented")
 
 
-def ensure_role_absent(keystone, uesr, project, role, check_mode):
+def ensure_role_absent(keystone, domain, user, project, role, check_mode):
     raise NotImplementedError("Not yet implemented")
 
 
@@ -385,12 +385,12 @@ def dispatch(keystone, user=None, password=None, project=None,
         changed, id = ensure_user_exists(keystone, user, password,
                                          email, domain, project, check_mode)
     elif project and user and not role and state == "absent":
-        changed = ensure_user_absent(keystone, user, check_mode)
+        changed = ensure_user_absent(keystone, domain, user, check_mode)
     elif project and user and role and state == "present":
-        changed, id = ensure_role_exists(keystone, user, project, role,
+        changed, id = ensure_role_exists(keystone, domain, user, project, role,
                                          check_mode)
     elif project and user and role and state == "absent":
-        changed = ensure_role_absent(keystone, user, project, role, check_mode)
+        changed = ensure_role_absent(keystone, domain, user, project, role, check_mode)
     else:
         # Should never reach here
         raise ValueError("Code should never reach here")
