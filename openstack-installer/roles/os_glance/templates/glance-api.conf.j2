@@ -357,7 +357,6 @@ registry_host = {{ vip_mgmt }}
 # Print debugging output (set logging level to DEBUG instead of
 # default INFO level). (boolean value)
 #debug = false
-debug = true
 
 # If set to false, will disable INFO logging level, making WARNING the
 # default. (boolean value)
@@ -541,7 +540,7 @@ backend = sqlalchemy
 # Deprecated group/name - [DATABASE]/sql_connection
 # Deprecated group/name - [sql]/connection
 #connection = <None>
-connection = mysql://{{ glance_db_user }}:{{ glance_db_password }}@{{ glance_mysql_server }}/{{ glance_db }}
+connection = mysql+pymysql://{{ glance_db_user }}:{{ glance_db_password }}@{{ glance_mysql_server }}/{{ glance_db }}?charset=utf8
 
 # The SQLAlchemy connection string to use to connect to the slave
 # database. (string value)
@@ -706,6 +705,7 @@ max_retries = -1
 # Directory to which the Filesystem backend store writes images.
 # (string value)
 #filesystem_store_datadir = <None>
+filesystem_store_datadir = /var/lib/glance/images
 
 # List of directories and its priorities to which the Filesystem
 # backend store writes images. (multi valued)
@@ -1417,7 +1417,7 @@ rabbit_userid = {{ glance_rabbit_user }}
 # The RabbitMQ password. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_password
 #rabbit_password = guest
-rabbit_password == {{ glance_rabbit_password }}
+rabbit_password = {{ glance_rabbit_password }}
 
 # The RabbitMQ login method. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_login_method

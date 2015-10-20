@@ -363,7 +363,7 @@ backend = sqlalchemy
 # Deprecated group/name - [DATABASE]/sql_connection
 # Deprecated group/name - [sql]/connection
 #connection = <None>
-connection = mysql://{{ glance_db_user }}:{{ glance_db_password }}@{{ glance_mysql_server }}/{{ glance_db }}
+connection = mysql+pymysql://{{ glance_db_user }}:{{ glance_db_password }}@{{ glance_mysql_server }}/{{ glance_db }}?charset=utf8
 
 # The SQLAlchemy connection string to use to connect to the slave
 # database. (string value)
