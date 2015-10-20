@@ -1,0 +1,20 @@
+---
+
+- name: restart nova controller services
+  service: name={{ item }} state=restarted
+  with_items:
+    - nova-api
+    - nova-scheduler
+    - nova-conductor
+    - nova-consoleauth
+    - nova-novncproxy
+    - nova-spiceproxy
+    - nova-cert
+  when: inventory_hostname in groups['nova_controller']
+
+- name: restart nova compute services
+  service: name={{ item }} state=restarted
+  with_items:
+    - nova-compute
+  when: inventory_hostname in groups['nova_compute']
+

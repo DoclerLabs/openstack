@@ -1,0 +1,92 @@
+---
+
+- name: create nova user in rabbitmq
+  rabbitmq_user: user="{{ nova_rabbit_user }}" password="{{ nova_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: disable autostarting of nova
+  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+  with_items:
+    - nova-api
+    - nova-scheduler
+    - nova-conductor
+    - nova-consoleauth
+    - nova-spiceproxy
+    - nova-novncproxy
+    - nova-cert
+  when: inventory_hostname in groups['nova_controller']
+
+- name: disable autostarting of nova
+  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+  with_items:
+    - nova-compute
+  when: inventory_hostname in groups['nova_compute']
+
+- name: install nova
+  apt: name={{ item }}
+  with_items:
+    - nova-api
+    - nova-cert
+    - nova-conductor
+    - nova-consoleauth
+    - nova-novncproxy
+    - nova-spiceproxy
+    - nova-scheduler
+    - python-novaclient
+  when: inventory_hostname in groups['nova_controller']
+
+- name: install nova
+  apt: name={{ item }}
+  with_items:
+    - nova-compute
+  when: inventory_hostname in groups['nova_compute']
+
+- name: create nova database
+  mysql_db: name={{ nova_db }}
+    login_host={{ nova_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create nova database user
+  mysql_user: name={{ nova_db_user }} password={{ nova_db_password }} host={{ item }} priv={{ nova_db }}.*:ALL
+    login_host={{ nova_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - "{{ groups['nova_controller'] }}"
+    - '%'
+
+- name: install nova configs
+  template: src=nova.conf.j2 dest=/etc/nova/nova.conf owner=nova group=root mode=0460
+  notify: 
+    - restart nova controller services
+    - restart nova compute services
+
+- name: sync nova db
+  command: su nova -s /bin/sh -c "/usr/bin/nova-manage db sync"
+  register: db_sync
+  changed_when: '"migrate.versioning.api" in db_sync.stderr'
+  run_once: True
+
+- meta: flush_handlers
+
+- name: ensure nova is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - nova-api
+    - nova-scheduler
+    - nova-conductor
+    - nova-consoleauth
+    - nova-novncproxy
+    - nova-spiceproxy
+    - nova-cert
+  when: inventory_hostname in groups['nova_controller']
+
+- name: ensure nova is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - nova-compute
+  when: inventory_hostname in groups['nova_compute']
+

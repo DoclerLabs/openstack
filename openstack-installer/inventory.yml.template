@@ -28,6 +28,7 @@ galera:
 mongodb:
   inherit: controller
 
+
 # -------- OpenStack ---------
 keystone:
   inherit: controller
@@ -37,6 +38,12 @@ glance:
 
 horizon:
   inherit: controller
+
+nova_controller:
+  inherit: controller
+
+nova_compute:
+  inherit: compute
 
 # -------- Compute --------
 compute:

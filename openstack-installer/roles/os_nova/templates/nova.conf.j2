@@ -1,0 +1,138 @@
+[DEFAULT]
+# Logs / State
+debug = True
+verbose = True
+log_dir = /var/log/nova
+rootwrap_config = /etc/nova/rootwrap.conf
+service_down_time = 120
+
+# Compute
+compute_driver = {{ nova_compute_driver }}
+instances_path = /var/lib/nova/instances
+instance_name_template = instance-%08x
+api_paste_config = /etc/nova/api-paste.ini
+allow_resize_to_same_host = True
+osapi_compute_listen = {{ ip.mgmt }}
+enabled_apis = osapi_compute, metadata
+
+# Rpc all
+rpc_backend = rabbit
+
+# Metadata
+metadata_host = {{ vip_mgmt }}
+metadata_listen = {{ ip.mgmt }}
+
+# Network
+my_ip = {{ ip.mgmt }}
+network_api_class = nova.network.neutronv2.api.API
+security_group_api = neutron
+linuxnet_interface_driver = nova.network.linux_net.NeutronLinuxBridgeInterfaceDriver
+firewall_driver = nova.virt.firewall.NoopFirewallDriver
+
+# Authentication
+auth_strategy = keystone
+
+## Vif
+libvirt_vif_type = ethernet
+vif_plugging_timeout = 10
+vif_plugging_is_fatal = False
+
+# Hypervisor
+default_ephemeral_format = ext4
+
+# Common
+memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
+
+keys_path = /var/lib/nova/keys
+
+# Ceilometer notification configurations
+instance_usage_audit = True
+instance_usage_audit_period = hour
+notify_on_state_change = vm_and_task_state
+notification_driver = messagingv2
+
+#vnc
+novncproxy_host = {{ ip.mgmt }}
+[vnc]
+enabled = True
+keymap = {{ nova_console_keymap }}
+novncproxy_base_url = http://{{ vip_public }}:6080/vnc_auto.html
+vncserver_listen = {{ ip.mgmt }}
+vncserver_proxyclient_address = {{ ip.mgmt }}
+
+# Cinder
+[cinder]
+catalog_info = volumev2:cinderv2:internalURL
+
+[spice]
+agent_enabled = True
+enabled = True
+keymap = {{ nova_console_keymap }}
+# Console Url and binds
+html5proxy_base_url = http://{{ vip_public }}:6082/spice_auto.html
+html5proxy_host = {{ ip.mgmt }}
+server_listen = {{ ip.mgmt }}
+server_proxyclient_address = {{ ip.mgmt }}
+
+
+# Glance
+[glance]
+host = {{ vip_mgmt }}
+port = 9292
+
+# Neutron
+[neutron]
+
+[conductor]
+use_local = false
+topic = conductor
+manager = nova.conductor.manager.ConductorManager
+
+[keystone_authtoken]
+auth_plugin = password
+signing_dir = /var/lib/nova/cache/api
+auth_uri = http://{{ keystone_internal_ip }}:5000
+auth_url = http://{{ keystone_internal_ip }}:35357
+username = nova
+password = {{ nova_admin_password }}
+project_domain_id = {{ nova_domain_id }}
+user_domain_id = {{ nova_domain_id }}
+project_name = service
+auth_plugin = password
+
+
+memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
+
+token_cache_time = 300
+revocation_cache_time = 60
+
+# if your memcached server is shared, use these settings to avoid cache poisoning
+memcache_security_strategy = ENCRYPT
+memcache_secret_key = {{ memcache_secret_key }}
+
+# if your keystone deployment uses PKI, and you value security over performance:
+check_revocations_for_cached = False
+
+
+{% if inventory_hostname in groups['nova_controller'] %}
+[database]
+connection = mysql+pymysql://{{ nova_db_user }}:{{ nova_db_password }}@{{ nova_mysql_server }}/{{ nova_db }}?charset=utf8
+max_retries = -1
+{% endif %}
+
+
+[oslo_concurrency]
+lock_path = /var/lock/nova
+
+
+[oslo_messaging_rabbit]
+rabbit_port = 5672
+rabbit_userid = {{ nova_rabbit_user }}
+rabbit_password = {{ nova_rabbit_password }}
+rabbit_ha_queues = true
+rabbit_hosts = {% for host in groups['rabbitmq'] %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
+
+[libvirt]
+use_usb_tablet = False
+use_virtio_for_bridges = True
+virt_type = {{ nova_virt_type }}
