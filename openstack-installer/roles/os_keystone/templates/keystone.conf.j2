@@ -498,7 +498,7 @@ memcache_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgm
 # Deprecated group/name - [sql]/connection
 #connection = <None>
 #connection = sqlite:////var/lib/keystone/keystone.db
-connection = mysql://{{ keystone_db_user }}:{{ keystone_db_password }}@{{ keystone_mysql_server }}/{{ keystone_db }}
+connection = mysql+pymysql://{{ keystone_db_user }}:{{ keystone_db_password }}@{{ keystone_mysql_server }}/{{ keystone_db }}?charset=utf8
 
 # The SQLAlchemy connection string to use to connect to the slave database.
 # (string value)
