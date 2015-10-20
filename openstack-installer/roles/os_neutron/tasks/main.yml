@@ -1,0 +1,108 @@
+---
+
+- name: create neutron user in rabbitmq
+  rabbitmq_user: user="{{ neutron_rabbit_user }}" password="{{ neutron_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: disable autostarting of neutron
+  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+  with_items:
+    - neutron-server
+    - neutron-plugin-linuxbridge-agent
+    - neutron-l3-agent
+    - neutron-dhcp-agent
+    - neutron-metadata-agent
+  when: inventory_hostname in groups['neutron_controller']
+
+- name: disable autostarting of neutron
+  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+  with_items:
+    - neutron-plugin-linuxbridge-agent
+  when: inventory_hostname in groups['neutron_compute']
+
+- name: install neutron
+  apt: name={{ item }}
+  with_items:
+    - neutron-server
+    - neutron-plugin-ml2
+    - neutron-plugin-linuxbridge-agent
+    - neutron-l3-agent
+    - neutron-dhcp-agent
+    - neutron-metadata-agent
+    - python-neutronclient
+  when: inventory_hostname in groups['neutron_controller']
+
+- name: install neutron
+  apt: name={{ item }}
+  with_items:
+    - neutron-plugin-linuxbridge-agent
+  when: inventory_hostname in groups['neutron_compute']
+
+- name: create neutron database
+  mysql_db: name={{ neutron_db }}
+    login_host={{ neutron_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create neutron database user
+  mysql_user: name={{ neutron_db_user }} password={{ neutron_db_password }} host={{ item }} priv={{ neutron_db }}.*:ALL
+    login_host={{ neutron_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - "{{ groups['neutron_controller'] }}"
+    - '%'
+
+- name: install neutron configs on controllers
+  template: src={{ item }}.j2 dest=/etc/neutron/{{ item }} owner=neutron group=root mode=0460
+  with_items:
+    - neutron.conf
+    - l3_agent.ini
+    - dhcp_agent.ini
+    - metadata_agent.ini
+  notify:
+    - restart neutron controller services
+  when: inventory_hostname in groups['neutron_controller']
+
+- name: install neutron config on computes
+  template: src={{ item }}.j2 dest=/etc/neutron/{{ item }} owner=neutron group=root mode=0460
+  with_items:
+    - neutron.conf
+  notify:
+    - restart neutron compute services
+  when: inventory_hostname in groups['neutron_compute']
+
+- name: install neutron ml2 configs
+  template: src={{ item }}.ini.j2 dest=/etc/neutron/plugins/ml2/{{ item }}.ini owner=neutron group=root mode=0460
+  with_items:
+    - ml2_conf
+    - linuxbridge_agent
+  notify:
+    - restart neutron controller services
+    - restart neutron compute services
+
+- name: sync neutron db
+  command: su neutron -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head"
+  register: db_sync
+  changed_when: '"migrate.versioning.api" in db_sync.stderr'
+  run_once: True
+
+- meta: flush_handlers
+
+- name: ensure neutron is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - neutron-server
+    - neutron-plugin-linuxbridge-agent
+    - neutron-l3-agent
+    - neutron-dhcp-agent
+    - neutron-metadata-agent
+  when: inventory_hostname in groups['neutron_controller']
+
+- name: ensure neutron is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - neutron-plugin-linuxbridge-agent
+  when: inventory_hostname in groups['neutron_compute']

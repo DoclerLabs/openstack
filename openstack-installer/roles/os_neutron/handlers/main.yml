@@ -1,0 +1,17 @@
+---
+
+- name: restart neutron controller services
+  service: name={{ item }} state=restarted
+  with_items:
+    - neutron-server
+    - neutron-plugin-linuxbridge-agent
+    - neutron-l3-agent
+    - neutron-dhcp-agent
+    - neutron-metadata-agent
+  when: inventory_hostname in groups['neutron_controller']
+
+- name: restart neutron compute services
+  service: name={{ item }} state=restarted
+  with_items:
+    - neutron-plugin-linuxbridge-agent
+  when: inventory_hostname in groups['neutron_compute']

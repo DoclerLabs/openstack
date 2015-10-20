@@ -45,6 +45,12 @@ nova_controller:
 nova_compute:
   inherit: compute
 
+neutron_controller:
+  inherit: controller
+
+neutron_compute:
+  inherit: compute
+
 # -------- Compute --------
 compute:
   jsm-devops-swify-test-1:

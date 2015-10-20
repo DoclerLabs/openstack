@@ -82,18 +82,6 @@ port = 9292
 
 # Neutron
 [neutron]
-url = http://{{ vip_mgmt }}:9696
-auth_url = http://{{ vip_mgmt }}:35357
-auth_plugin = password
-project_domain_id = {{ nova_domain_id }}
-user_domain_id = {{ nova_domain_id }}
-region_name = {{ keystone_region_name }}
-project_name = service
-username = neutron
-password = {{ neutron_admin_password }}
-
-service_metadata_proxy = True
-metadata_proxy_shared_secret = {{ metadata_proxy_shared_secret }}
 
 [conductor]
 use_local = false
@@ -105,12 +93,12 @@ auth_plugin = password
 signing_dir = /var/lib/nova/cache/api
 auth_uri = http://{{ keystone_internal_ip }}:5000
 auth_url = http://{{ keystone_internal_ip }}:35357
-auth_region = {{ keystone_region_name }}
 username = nova
 password = {{ nova_admin_password }}
 project_domain_id = {{ nova_domain_id }}
 user_domain_id = {{ nova_domain_id }}
 project_name = service
+auth_plugin = password
 
 
 memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}

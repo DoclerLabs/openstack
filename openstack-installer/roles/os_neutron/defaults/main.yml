@@ -1,0 +1,7 @@
+---
+
+neutron_db_user: neutron
+neutron_mysql_server: "{{ vip_mgmt }}"
+neutron_db: neutron
+neutron_rabbit_user: neutron
+neutron_domain_id: "{{ keystone_domain_id }}"
