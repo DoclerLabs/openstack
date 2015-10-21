@@ -37,6 +37,8 @@ if [ ! -z "$CONFIG_DIR" ]; then
   done
 fi
 
+[ -d /run/haproxy ] || mkdir /run/haproxy && chown haproxy:haproxy /run/haproxy
+
 haproxy_start()
 {
         start-stop-daemon --start --pidfile "$PIDFILE" \
