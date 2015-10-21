@@ -1,7 +1,10 @@
 ---
 
 - name: Install mongodb packages
-  apt: name=mongodb state=latest
+  apt: name={{ item }} state=latest
+  with_items:
+    - mongodb
+    - python-pymongo
   notify: restart mongodb
 
 - name: deploy mongodb configuration
