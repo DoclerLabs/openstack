@@ -51,6 +51,12 @@ neutron_controller:
 neutron_compute:
   inherit: compute
 
+ceilometer_controller:
+  inherit: controller
+
+ceilometer_compute:
+  inherit: compute
+
 # -------- Compute --------
 compute:
   jsm-devops-swify-test-1:
