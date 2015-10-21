@@ -1,0 +1,4 @@
+---
+
+ceilometer_rabbit_user: ceilometer
+ceilometer_domain_id: "{{ keystone_domain_id }}"

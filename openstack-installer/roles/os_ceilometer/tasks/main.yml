@@ -1,0 +1,78 @@
+---
+
+- name: create ceilometer user in rabbitmq
+  rabbitmq_user: user="{{ ceilometer_rabbit_user }}" password="{{ ceilometer_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: disable autostarting of ceilometer
+  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+  with_items:
+    - ceilometer-api
+    - ceilometer-collector
+    - ceilometer-agent-central
+    - ceilometer-agent-notification
+    - aodh-api
+    - aodh-evaluator
+    - aodh-notifier
+    - aodh-listner
+  when: inventory_hostname in groups['ceilometer_controller']
+
+- name: disable autostarting of ceilometer
+  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+  with_items:
+    - ceilometer-agent-compute
+  when: inventory_hostname in groups['ceilometer_compute']
+
+- name: install ceilometer
+  apt: name={{ item }}
+  with_items:
+    - ceilometer-api
+    - ceilometer-collector
+    - ceilometer-agent-central
+    - ceilometer-agent-notification
+    - python-ceilometerclient
+    - aodh-api
+    - aodh-evaluator
+    - aodh-notifier
+    - aodh-listener
+  when: inventory_hostname in groups['ceilometer_controller']
+
+- name: install ceilometer
+  apt: name={{ item }}
+  with_items:
+    - ceilometer-agent-compute
+  when: inventory_hostname in groups['ceilometer_compute']
+
+- name: install ceilometer configs
+  template: src=ceilometer.conf.j2 dest=/etc/ceilometer/ceilometer.conf owner=ceilometer group=root mode=0460
+  notify: 
+    - restart ceilometer controller services
+    - restart ceilometer compute services
+
+- name: install aodh configs
+  template: src=aodh.conf.j2 dest=/etc/aodh/aodh.conf owner=aodh group=root mode=0460
+  notify: 
+    - restart aodh
+  when: inventory_hostname in groups['ceilometer_controller']
+
+- meta: flush_handlers
+
+- name: ensure ceilometer is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - ceilometer-api
+    - ceilometer-collector
+    - ceilometer-agent-central
+    - ceilometer-agent-notification
+    - aodh-api
+    - aodh-evaluator
+    - aodh-notifier
+    - aodh-listener
+  when: inventory_hostname in groups['ceilometer_controller']
+
+- name: ensure ceilometer is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - ceilometer-agent-compute
+  when: inventory_hostname in groups['ceilometer_compute']

@@ -1,0 +1,90 @@
+---
+
+- hosts: mongodb
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  tasks:
+    - name: determine the primary node
+      shell: echo 'rs.isMaster().ismaster'| mongo --quiet
+      register: mongo_master
+      changed_when: False
+
+    - name: create ceilometer mongo user
+      mongodb_user: database=ceilometer name=ceilometer password={{ ceilometer_db_password }}
+      when: mongo_master.stdout == 'true'
+
+- hosts:
+    - ceilometer_controller
+    - ceilometer_compute
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - common
+    - os_ceilometer
+
+- hosts: haproxy
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - haproxy_service
+  vars:
+    haproxy_services:
+      - haproxy_service_name: ceilometer_api
+        haproxy_backend_nodes: "{{ groups['ceilometer_controller'] }}"
+        haproxy_bind_hosts:
+          - "{{ vip_mgmt }}"
+          - "{{ vip_public }}"
+        haproxy_port: 8777
+        haproxy_balance_type: http
+      - haproxy_service_name: aodh_api
+        haproxy_backend_nodes: "{{ groups['ceilometer_controller'] }}"
+        haproxy_bind_hosts:
+          - "{{ vip_mgmt }}"
+          - "{{ vip_public }}"
+        haproxy_port: 8042
+        haproxy_balance_type: http
+
+- hosts: keystone[0]
+  user: ansible
+  max_fail_percentage: 0
+  roles:
+    - os_keystone_service
+  vars:
+    keystone_service_name: ceilometer
+    keystone_service_type: metering
+    keystone_service_description: "OpenStack Telemetry Service"
+    keystone_public_url: "http://{{ keystone_internal_ip }}:8777"
+    keystone_internal_url: "http://{{ keystone_internal_ip }}:8777"
+    keystone_admin_url: "http://{{ keystone_public_ip }}:8777"
+    keystone_region: "{{ keystone_region_name }}"
+    keystone_projects:
+      - keystone_project_name: service
+        keystone_project_description: "Service Project"
+        keystone_user: ceilometer
+        keystone_domain: "{{ keystone_domain_id }}"
+        keystone_password: "{{ ceilometer_admin_password }}"
+        keystone_role: admin
+
+- hosts: keystone[0]
+  user: ansible
+  max_fail_percentage: 0
+  roles:
+    - os_keystone_service
+  vars:
+    keystone_service_name: aodh
+    keystone_service_type: alarming
+    keystone_service_description: "OpenStack Alarming Service"
+    keystone_public_url: "http://{{ keystone_internal_ip }}:8042"
+    keystone_internal_url: "http://{{ keystone_internal_ip }}:8042"
+    keystone_admin_url: "http://{{ keystone_public_ip }}:8042"
+    keystone_region: "{{ keystone_region_name }}"
+    keystone_projects:
+      - keystone_project_name: service
+        keystone_project_description: "Service Project"
+        keystone_user: aodh
+        keystone_domain: "{{ keystone_domain_id }}"
+        keystone_password: "{{ aodh_admin_password }}"
+        keystone_role: admin
