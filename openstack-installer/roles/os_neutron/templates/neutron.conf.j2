@@ -383,6 +383,7 @@ nova_url = http://{{ vip_mgmt }}:8774/v2
 
 # Name of nova region to use. Useful if keystone manages more than one region
 # nova_region_name =
+nova_region_name = {{ keystone_region_name }}
 
 # Username for connection to nova in admin context
 # nova_admin_username =
@@ -786,6 +787,7 @@ auth_plugin = password
 
 # Name of nova region to use. Useful if keystone manages more than one region.
 # region_name =
+region_name = {{ keystone_region_name }}
 
 # Timeout value for http requests
 # timeout =

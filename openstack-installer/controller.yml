@@ -10,3 +10,4 @@
 - include: os_keystone.yml
 - include: os_glance.yml
 - include: os_nova.yml
+- include: os_neutron.yml
