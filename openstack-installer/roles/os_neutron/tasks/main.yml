@@ -15,6 +15,29 @@
     - neutron-metadata-agent
   when: inventory_hostname in groups['neutron_controller']
 
+- name: turn off rp filtering
+  lineinfile: >
+    regexp='^{{ item.key }}'
+    line='{{ item.key }} = {{ item.value }}'
+    dest=/etc/sysctl.d/10-neutron.conf owner=root group=root mode=0644
+    create=yes
+  with_dict:
+    { 'net.ipv4.conf.all.rp_filter' : 0,
+      'net.ipv4.conf.default.rp_filter': 0
+    }
+  notify: reload sysctl
+
+- name: turn on ip forwarding
+  lineinfile: >
+    regexp='^{{ item.key }}'
+    line='{{ item.key }} = {{ item.value }}'
+    dest=/etc/sysctl.d/10-neutron.conf owner=root group=root mode=0644
+    create=yes
+  with_dict:
+    { 'net.ipv4.ip_forward' : 1 }
+  notify: reload sysctl
+  when: inventory_hostname in groups['neutron_controller']
+
 - name: disable autostarting of neutron
   copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
   with_items:
@@ -24,6 +47,7 @@
 - name: install neutron
   apt: name={{ item }}
   with_items:
+    - keepalived
     - neutron-server
     - neutron-plugin-ml2
     - neutron-plugin-linuxbridge-agent
@@ -62,6 +86,7 @@
     - l3_agent.ini
     - dhcp_agent.ini
     - metadata_agent.ini
+    - fwaas_driver.ini
   notify:
     - restart neutron controller services
   when: inventory_hostname in groups['neutron_controller']

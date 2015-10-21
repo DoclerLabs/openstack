@@ -135,6 +135,8 @@ service_plugins = router,firewall,metering
 # Attention: the following parameter MUST be set to False if Neutron is
 # being used in conjunction with nova security groups
 # allow_overlapping_ips = False
+allow_overlapping_ips = True
+
 # Ensure that configured gateway is on subnet. For IPv6, validate only if
 # gateway is not a link local address. Deprecated, to be removed during the
 # K release, at which point the check will be mandatory.
@@ -192,6 +194,7 @@ service_plugins = router,firewall,metering
 # agent until admin changes admin_state_up to True.
 # enable_new_agents = True
 # ===========  end of items for agent management extension =====
+
 
 # =========== items for agent scheduler extension =============
 # Driver to use for scheduling network to DHCP agent
@@ -256,6 +259,7 @@ dhcp_agents_per_network = {{ groups['neutron_controller'] | length }}
 # =========== items for l3 extension ==============
 # Enable high availability for virtual routers.
 # l3_ha = False
+l3_ha = True
 #
 # Maximum number of l3 agents which a HA router will be scheduled on. If it
 # is set to 0 the router will be scheduled on every agent.
@@ -277,10 +281,12 @@ dhcp_agents_per_network = {{ groups['neutron_controller'] | length }}
 # network which not the default one.
 # ha_network_type =
 # Example: ha_network_type = flat
+ha_network_type = {{ neutron_ha_network_type }}
 #
 # The physical network name with which the HA network can be created.
 # ha_network_physical_name =
 # Example: ha_network_physical_name = physnet1
+ha_network_physical_name = {{ neutron_ha_network_physical_name }}
 # =========== end of items for l3 extension =======
 
 # =========== items for metadata proxy configuration ==============
@@ -310,6 +316,7 @@ dhcp_agents_per_network = {{ groups['neutron_controller'] | length }}
 # plugins that do not support VLAN transparent networks.
 # vlan_transparent = False
 # ========== end of items for VLAN trunking networks ==========
+
 
 # =========== WSGI parameters related to the API server ==============
 # Number of separate API worker processes to spawn. If not specified or < 1,
@@ -360,6 +367,7 @@ dhcp_agents_per_network = {{ groups['neutron_controller'] | length }}
 # signed by a trusted CA
 # ssl_ca_file = /path/to/cafile
 # ======== end of WSGI parameters related to the API server ==========
+
 
 # ======== neutron nova interactions ==========
 # Send notification to nova when port status is active.

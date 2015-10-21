@@ -15,3 +15,6 @@
   with_items:
     - neutron-plugin-linuxbridge-agent
   when: inventory_hostname in groups['neutron_compute']
+
+- name: reload sysctl
+  service: name=procps state=started
