@@ -130,6 +130,16 @@ def get_project(keystone, name):
     else:
         return projects[0]
 
+def get_domain(keystone, domain):
+    """ Retrieve a domain by name"""
+    domains = [x for x in keystone.domains.list(name=domain)]
+    count = len(domains)
+    if count == 0:
+        raise KeyError("No keystone domain with name %s" % domain)
+    elif count > 1:
+        raise ValueError("%d domains with name %s" % (count, domain))
+    else:
+        return domains[0]
 
 def get_user(keystone, domain, name):
     """ Retrieve a user by name"""
@@ -221,11 +231,18 @@ def ensure_user_exists(keystone, user_name, password, email, domain, project_nam
         exists
     """
 
-    # Check if project already exists
+    # Check if domain already exists
     try:
-        user = get_user(keystone, domain, user_name)
+        domain_id = get_domain(keystone, domain)
     except KeyError:
-        # project doesn't exist yet
+        # domain doesn't exist yet
+        domain_id = keystone.domains.create(name=domain).id
+
+    # Check if user already exists
+    try:
+        user = get_user(keystone, domain_id, user_name)
+    except KeyError:
+        # user doesn't exist yet
         pass
     else:
         # User does exist, we're done
@@ -237,7 +254,7 @@ def ensure_user_exists(keystone, user_name, password, email, domain, project_nam
     project = get_project(keystone, project_name)
 
     user = keystone.users.create(name=user_name, password=password,
-                                 email=email, domain=domain, default_project=project.id)
+                                 email=email, domain=domain_id, default_project=project.id)
 
     return (True, user.id)
 
