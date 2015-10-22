@@ -80,7 +80,8 @@ core_plugin = ml2
 #
 # service_plugins =
 # Example: service_plugins = router,firewall,lbaas,vpnaas,metering,qos
-service_plugins = router,firewall,metering
+#service_plugins = router,firewall,neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2
+service_plugins = router,firewall,lbaas
 
 # Paste configuration file
 # api_paste_config = api-paste.ini
@@ -799,6 +800,11 @@ region_name = {{ keystone_region_name }}
 project_name = service
 username = nova
 password = {{ nova_admin_password }}
+
+[service_providers]
+
+service_provider=LOADBALANCER:Haproxy:neutron_lbaas.services.loadbalancer.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default
+#service_provider=LOADBALANCERV2:Haproxy:neutron_lbaas.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default
 
 {% endif %}
 

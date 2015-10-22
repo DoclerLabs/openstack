@@ -5,7 +5,7 @@
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 
-- name: disable autostarting of neutron
+- name: disable autostarting of neutron controller services
   copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
   with_items:
     - neutron-server
@@ -13,7 +13,14 @@
     - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
+    - neutron-lbaas-agent
   when: inventory_hostname in groups['neutron_controller']
+
+- name: disable autostarting of neutron agent on computes
+  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+  with_items:
+    - neutron-plugin-linuxbridge-agent
+  when: inventory_hostname in groups['neutron_compute']
 
 - name: turn off rp filtering
   lineinfile: >
@@ -38,12 +45,6 @@
   notify: reload sysctl
   when: inventory_hostname in groups['neutron_controller']
 
-- name: disable autostarting of neutron
-  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
-  with_items:
-    - neutron-plugin-linuxbridge-agent
-  when: inventory_hostname in groups['neutron_compute']
-
 - name: install neutron
   apt: name={{ item }}
   with_items:
@@ -54,6 +55,7 @@
     - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
+    - neutron-lbaas-agent
     - python-neutronclient
   when: inventory_hostname in groups['neutron_controller']
 
@@ -87,6 +89,7 @@
     - dhcp_agent.ini
     - metadata_agent.ini
     - fwaas_driver.ini
+    - lbaas_agent.ini
   notify:
     - restart neutron controller services
   when: inventory_hostname in groups['neutron_controller']
@@ -124,6 +127,7 @@
     - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
+    - neutron-lbaas-agent
   when: inventory_hostname in groups['neutron_controller']
 
 - name: ensure neutron is started

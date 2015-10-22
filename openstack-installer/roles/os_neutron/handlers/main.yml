@@ -8,6 +8,7 @@
     - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
+    - neutron-lbaas-agent
   when: inventory_hostname in groups['neutron_controller']
 
 - name: restart neutron compute services
