@@ -1,0 +1,68 @@
+---
+
+- name: create heat user in rabbitmq
+  rabbitmq_user: user="{{ heat_rabbit_user }}" password="{{ heat_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: disable autostarting of heat
+  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+  with_items:
+    - heat-api
+    - heat-api-cfn
+    - heat-engine
+
+- name: install heat
+  apt: name={{ item }}
+  with_items:
+    - heat-api
+    - heat-api-cfn
+    - heat-engine
+    - python-heatclient
+
+- name: create heat database
+  mysql_db: name={{ heat_db }}
+    login_host={{ heat_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create heat database user
+  mysql_user: name={{ heat_db_user }} password={{ heat_db_password }} host={{ item }} priv={{ heat_db }}.*:ALL
+    login_host={{ heat_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - "{{ groups['heat'] }}"
+    - '%'
+
+- name: create heat domain admin
+  keystone_user: >
+    token="{{ keystone_admin_token }}"
+    endpoint="http://{{ keystone_admin_ip }}:35357/v3"
+    project=service
+    domain="{{ heat_user_domain }}"
+    user="{{ heat_domain_admin }}"
+    password="{{ heat_domain_admin_password }}"
+  run_once: True
+
+- name: install heat configs
+  template: src={{ item }}.conf.j2 dest=/etc/heat/{{ item }}.conf owner=heat group=root mode=0460
+  with_items:
+    - heat
+  notify: restart heat
+
+- name: sync heat db
+  command: su heat -s /bin/sh -c "/usr/bin/heat-manage db_sync"
+  register: db_sync
+  changed_when: '"migrate.versioning.api" in db_sync.stderr'
+  run_once: True
+
+- meta: flush_handlers
+
+- name: ensure heat is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - heat-api
+    - heat-api-cfn
+    - heat-engine

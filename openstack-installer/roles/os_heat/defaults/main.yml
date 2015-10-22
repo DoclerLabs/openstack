@@ -1,0 +1,10 @@
+---
+
+heat_db_user: heat
+heat_mysql_server: "{{ vip_mgmt }}"
+heat_db: heat
+heat_rabbit_user: heat
+heat_domain_id: "{{ keystone_domain_id }}"
+
+heat_user_domain: heat_user_domain
+heat_domain_admin: heat_domain_admin

@@ -12,3 +12,4 @@
 - include: os_nova.yml
 - include: os_neutron.yml
 - include: os_ceilometer.yml
+- include: os_heat.yml

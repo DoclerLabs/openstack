@@ -1,0 +1,95 @@
+---
+
+- hosts: heat[0]
+  user: ansible
+  max_fail_percentage: 0
+  roles:
+    - os_keystone_service
+  vars:
+    keystone_service_name: heat
+    keystone_service_type: orchestration
+    keystone_service_description: "OpenStack Orchestration Service"
+    keystone_public_url: "http://{{ keystone_internal_ip }}:8004/v1/%(tenant_id)s"
+    keystone_internal_url: "http://{{ keystone_internal_ip }}:8004/v1/%(tenant_id)s"
+    keystone_admin_url: "http://{{ keystone_public_ip }}:8004/v1/%(tenant_id)s"
+    keystone_region: "{{ keystone_region_name }}"
+    keystone_projects:
+      - keystone_project_name: service
+        keystone_project_description: "Service Project"
+        keystone_user: heat
+        keystone_domain: "{{ keystone_domain_id }}"
+        keystone_password: "{{ heat_admin_password }}"
+        keystone_role: admin
+
+- hosts: heat[0]
+  user: ansible
+  max_fail_percentage: 0
+  roles:
+    - os_keystone_service
+  vars:
+    keystone_service_name: heat-cfn
+    keystone_service_type: cloudformation
+    keystone_service_description: "OpenStack Orchestration Service"
+    keystone_public_url: "http://{{ keystone_internal_ip }}:8000/v1"
+    keystone_internal_url: "http://{{ keystone_internal_ip }}:8000/v1"
+    keystone_admin_url: "http://{{ keystone_public_ip }}:8000/v1"
+    keystone_region: "{{ keystone_region_name }}"
+    keystone_projects:
+      - keystone_project_name: service
+        keystone_project_description: "Service Project"
+        keystone_user: heat
+        keystone_domain: "{{ keystone_domain_id }}"
+        keystone_password: "{{ heat_admin_password }}"
+        keystone_role: admin
+
+- hosts: heat
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - common
+    - os_heat
+
+- hosts: haproxy
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - haproxy_service
+  vars:
+    haproxy_services:
+      - haproxy_service_name: heat_api
+        haproxy_backend_nodes: "{{ groups['heat'] }}"
+        haproxy_bind_hosts:
+          - "{{ vip_mgmt }}"
+          - "{{ vip_public }}"
+        haproxy_port: 8004
+        haproxy_balance_type: http
+        haproxy_backend_options:
+          - forwardfor
+          - httpchk
+          - httplog
+
+      - haproxy_service_name: heat_api_cfn
+        haproxy_backend_nodes: "{{ groups['heat'] }}"
+        haproxy_bind_hosts:
+          - "{{ vip_mgmt }}"
+          - "{{ vip_public }}"
+        haproxy_port: 8000
+        haproxy_balance_type: http
+        haproxy_backend_options:
+          - forwardfor
+          - httpchk
+          - httplog
+
+      - haproxy_service_name: heat_api_cloudwarch
+        haproxy_backend_nodes: "{{ groups['heat'] }}"
+        haproxy_bind_hosts:
+          - "{{ vip_mgmt }}"
+          - "{{ vip_public }}"
+        haproxy_port: 8003
+        haproxy_balance_type: http
+        haproxy_backend_options:
+          - forwardfor
+          - httpchk
+          - httplog
