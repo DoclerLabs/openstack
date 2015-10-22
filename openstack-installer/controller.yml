@@ -9,6 +9,7 @@
 
 - include: os_keystone.yml
 - include: os_glance.yml
+- include: os_horizon.yml
 - include: os_nova.yml
 - include: os_neutron.yml
 - include: os_ceilometer.yml
