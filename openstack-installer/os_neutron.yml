@@ -1,5 +1,26 @@
 ---
 
+- hosts: neutron_controller[0]
+  user: ansible
+  max_fail_percentage: 0
+  roles:
+    - os_keystone_service
+  vars:
+    keystone_service_name: neutron
+    keystone_service_type: network
+    keystone_service_description: "OpenStack Networking Service"
+    keystone_public_url: "http://{{ keystone_internal_ip }}:9696"
+    keystone_internal_url: "http://{{ keystone_internal_ip }}:9696"
+    keystone_admin_url: "http://{{ keystone_public_ip }}:9696"
+    keystone_region: "{{ keystone_region_name }}"
+    keystone_projects:
+      - keystone_project_name: service
+        keystone_project_description: "Service Project"
+        keystone_user: neutron
+        keystone_domain: "{{ keystone_domain_id }}"
+        keystone_password: "{{ neutron_admin_password }}"
+        keystone_role: admin
+
 - hosts:
     - neutron_controller
     - neutron_compute
@@ -29,24 +50,3 @@
          - forwardfor
          - httpchk
          - httplog
-
-- hosts: keystone[0]
-  user: ansible
-  max_fail_percentage: 0
-  roles:
-    - os_keystone_service
-  vars:
-    keystone_service_name: neutron
-    keystone_service_type: network
-    keystone_service_description: "OpenStack Networking Service"
-    keystone_public_url: "http://{{ keystone_internal_ip }}:9696"
-    keystone_internal_url: "http://{{ keystone_internal_ip }}:9696"
-    keystone_admin_url: "http://{{ keystone_public_ip }}:9696"
-    keystone_region: "{{ keystone_region_name }}"
-    keystone_projects:
-      - keystone_project_name: service
-        keystone_project_description: "Service Project"
-        keystone_user: neutron
-        keystone_domain: "{{ keystone_domain_id }}"
-        keystone_password: "{{ neutron_admin_password }}"
-        keystone_role: admin

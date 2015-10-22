@@ -1,5 +1,26 @@
 ---
 
+- hosts: nova_controller[0]
+  user: ansible
+  max_fail_percentage: 0
+  roles:
+    - os_keystone_service
+  vars:
+    keystone_service_name: nova
+    keystone_service_type: compute
+    keystone_service_description: "OpenStack Compute Service"
+    keystone_public_url: "http://{{ keystone_internal_ip }}:8774/v2/%(tenant_id)s"
+    keystone_internal_url: "http://{{ keystone_internal_ip }}:8774/v2/%(tenant_id)s"
+    keystone_admin_url: "http://{{ keystone_public_ip }}:8774/v2/%(tenant_id)s"
+    keystone_region: "{{ keystone_region_name }}"
+    keystone_projects:
+      - keystone_project_name: service
+        keystone_project_description: "Service Project"
+        keystone_user: nova
+        keystone_domain: "{{ keystone_domain_id }}"
+        keystone_password: "{{ nova_admin_password }}"
+        keystone_role: admin
+
 - hosts:
     - nova_controller
     - nova_compute
@@ -59,24 +80,3 @@
         haproxy_timeout_client: 60m
         haproxy_timeout_server: 60m
         haproxy_balance_alg: source
-
-- hosts: keystone[0]
-  user: ansible
-  max_fail_percentage: 0
-  roles:
-    - os_keystone_service
-  vars:
-    keystone_service_name: nova
-    keystone_service_type: compute
-    keystone_service_description: "OpenStack Compute Service"
-    keystone_public_url: "http://{{ keystone_internal_ip }}:8774/v2/%(tenant_id)s"
-    keystone_internal_url: "http://{{ keystone_internal_ip }}:8774/v2/%(tenant_id)s"
-    keystone_admin_url: "http://{{ keystone_public_ip }}:8774/v2/%(tenant_id)s"
-    keystone_region: "{{ keystone_region_name }}"
-    keystone_projects:
-      - keystone_project_name: service
-        keystone_project_description: "Service Project"
-        keystone_user: nova
-        keystone_domain: "{{ keystone_domain_id }}"
-        keystone_password: "{{ nova_admin_password }}"
-        keystone_role: admin

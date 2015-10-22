@@ -1,5 +1,26 @@
 ---
 
+- hosts: glance[0]
+  user: ansible
+  max_fail_percentage: 0
+  roles:
+    - os_keystone_service
+  vars:
+    keystone_service_name: glance
+    keystone_service_type: image
+    keystone_service_description: "OpenStack Image Service"
+    keystone_public_url: "http://{{ keystone_internal_ip }}:9292"
+    keystone_internal_url: "http://{{ keystone_internal_ip }}:9292"
+    keystone_admin_url: "http://{{ keystone_public_ip }}:9292"
+    keystone_region: "{{ keystone_region_name }}"
+    keystone_projects:
+      - keystone_project_name: service
+        keystone_project_description: "Service Project"
+        keystone_user: glance
+        keystone_domain: "{{ keystone_domain_id }}"
+        keystone_password: "{{ glance_admin_password }}"
+        keystone_role: admin
+
 - hosts: glance
   user: ansible
   sudo: True
@@ -35,24 +56,3 @@
           - "{{ vip_public }}"
         haproxy_port: 9191
         haproxy_balance_type: http
-
-- hosts: keystone[0]
-  user: ansible
-  max_fail_percentage: 0
-  roles:
-    - os_keystone_service
-  vars:
-    keystone_service_name: glance
-    keystone_service_type: image
-    keystone_service_description: "OpenStack Image Service"
-    keystone_public_url: "http://{{ keystone_internal_ip }}:9292"
-    keystone_internal_url: "http://{{ keystone_internal_ip }}:9292"
-    keystone_admin_url: "http://{{ keystone_public_ip }}:9292"
-    keystone_region: "{{ keystone_region_name }}"
-    keystone_projects:
-      - keystone_project_name: service
-        keystone_project_description: "Service Project"
-        keystone_user: glance
-        keystone_domain: "{{ keystone_domain_id }}"
-        keystone_password: "{{ glance_admin_password }}"
-        keystone_role: admin
