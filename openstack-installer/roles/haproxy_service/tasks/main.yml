@@ -3,4 +3,5 @@
 - name: install haproxy service config
   template: src=haproxy_service.cfg.j2 dest=/etc/haproxy/conf.d/{{ item.haproxy_service_name }}.cfg owner=root group=root mode=0644
   with_items: haproxy_services
+  when: item.haproxy_backend_nodes | length > 0
   notify: reload haproxy
