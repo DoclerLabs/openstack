@@ -7,7 +7,6 @@
 # Print debugging output (set logging level to DEBUG instead of default INFO
 # level). (boolean value)
 #debug = false
-debug = True
 
 # If set to false, will disable INFO logging level, making WARNING the default.
 # (boolean value)
@@ -192,6 +191,12 @@ stack_domain_admin_password = {{ heat_domain_admin_password }}
 stack_user_domain_name = {{ heat_user_domain }}
 
 [heat_api]
+bind_host = {{ ip.mgmt }}
+
+[heat_api_cloudwatch]
+bind_host = {{ ip.mgmt }}
+
+[heat_api_cfn]
 bind_host = {{ ip.mgmt }}
 
 [database]
