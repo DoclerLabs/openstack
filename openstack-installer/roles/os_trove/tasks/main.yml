@@ -1,0 +1,128 @@
+---
+
+- name: create trove user in rabbitmq
+  rabbitmq_user: user="{{ trove_rabbit_user }}" password="{{ trove_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: disable autostart of trove services
+  copy: content='manual' dest=/etc/init/{{ item }}.override mode=0644 owner=root group=root force=no
+  with_items:
+    - trove-api
+    - trove-conductor
+    - trove-taskmanager
+
+- name: install trove packages
+  apt: name={{ item }} state=latest
+  with_items:
+    - python-troveclient
+    - python-keystoneclient
+    - python-glanceclient
+    - trove-api
+    - trove-taskmanager
+    - trove-conductor
+    - trove-taskmanager
+  notify: restart trove
+
+- name: set up trove network in neutron
+  quantum_network: >
+    auth_url="http://{{ keystone_admin_ip }}:35357/v3"
+    login_tenant_name=trove
+    login_username=trove
+    login_password="{{ trove_admin_password }}"
+    tenant_name=trove
+    region_name="{{ keystone_region_name }}"
+    name="{{ trove_net_name }}"
+    provider_network_type={{ trove_net_type }}
+    provider_physical_network={{ trove_physical_network }}
+    provider_segmentation_id="{{ trove_net_segmentation_id }}"
+    router_external=no
+  register: trove_net
+  run_once: True
+
+- name: set up trove subnet in neutron
+  quantum_subnet: >
+    auth_url="http://{{ keystone_admin_ip }}:35357/v3"
+    login_tenant_name=trove
+    login_username=trove
+    login_password="{{ trove_admin_password }}"
+    tenant_name=trove
+    region_name="{{ keystone_region_name }}"
+    name=trove-subnet
+    network_name="{{ trove_net_name }}"
+    cidr="{{ trove_subnet_cidr }}"
+  run_once: True
+
+- name: install trove configs
+  template: src={{ item }}.j2 dest=/etc/trove/{{ item }} mode=0460 owner=trove group=root
+  with_items:
+    - trove.conf
+    - trove-guestagent.conf
+  notify: restart trove
+
+- name: create trove database
+  mysql_db: name={{ trove_db }}
+    login_host={{ trove_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create trove database user
+  mysql_user: name={{ trove_db_user }} password={{ trove_db_password }} host={{ item }} priv={{ trove_db }}.*:ALL
+    login_host={{ trove_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - "{{ groups['trove'] }}"
+    - '%'
+
+#Workaround for https://bugs.launchpad.net/trove/+bug/1473226
+- name: disable foreign key checks
+  shell: echo "SET GLOBAL foreign_key_checks=0" | mysql -u root -p{{ mysql_root_password }} -s trove
+
+- name: sync trove db
+  command: su trove -s /bin/sh -c "/usr/bin/trove-manage db_sync"
+  register: db_sync
+  changed_when: '"migrate.versioning.api" in db_sync.stderr'
+  run_once: True
+
+- name: enable foreign key checks
+  shell: echo "SET GLOBAL foreign_key_checks=1" | mysql -u root -p{{ mysql_root_password }} -s trove
+
+- meta: flush_handlers
+
+- name: ensure trove services are started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - trove-api
+    - trove-taskmanager
+    - trove-conductor
+
+#- name: get trove instance image
+#  get_url: url=http://tarballs.openstack.org/trove/images/ubuntu/mysql.qcow2
+#    dest=/root/trove-mysql.qcow2
+#  run_once: True
+
+- name: upload trove image to glance
+  local_action: glance_image
+    auth_url="http://{{ keystone_admin_ip }}:35357/v3"
+    login_username=trove
+    login_tenant_name=trove
+    login_password="{{ trove_admin_password }}"
+    file="{{ trove_image_path }}"
+    name=trove-mysql-image
+    owner=trove
+  run_once: True
+  register: trove_image
+
+- name: update trove datastore
+  command: su trove -s /bin/sh -c 'trove-manage datastore_update mysql ""'
+  run_once: True
+
+- name: update trove datastore version
+  command: su trove -s /bin/sh -c 'trove-manage datastore_version_update mysql "5.6" mysql "{{ trove_image.id }}" "mysql-server-5.6" 1'
+  run_once: True
+
+- name: update trove datastore
+  command: su trove -s /bin/sh -c 'trove-manage datastore_update mysql "5.6"'
+  run_once: True

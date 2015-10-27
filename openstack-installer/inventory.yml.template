@@ -60,6 +60,9 @@ ceilometer_compute:
 heat:
   inherit: controller
 
+trove:
+  inherit: controller
+
 # -------- Compute --------
 compute:
   jsm-devops-swify-test-1:

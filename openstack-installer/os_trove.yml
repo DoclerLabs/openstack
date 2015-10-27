@@ -1,0 +1,50 @@
+---
+
+- hosts: trove[0]
+  user: ansible
+  max_fail_percentage: 0
+  roles:
+    - os_keystone_service
+  vars:
+    keystone_service_name: trove
+    keystone_service_type: database
+    keystone_service_description: "OpenStack Database Service"
+    keystone_public_url: "http://{{ keystone_internal_ip }}:8779/v1.0/$(tenant_id)s"
+    keystone_internal_url: "http://{{ keystone_internal_ip }}:8779/v1.0/$(tenant_id)s"
+    keystone_admin_url: "http://{{ keystone_public_ip }}:8779/v1.0/$(tenant_id)s"
+    keystone_region: "{{ keystone_region_name }}"
+    keystone_projects:
+      - keystone_project_name: trove
+        keystone_project_description: "Trove Project"
+        keystone_user: trove
+        keystone_domain: "{{ keystone_domain_id }}"
+        keystone_password: "{{ trove_admin_password }}"
+        keystone_role: admin
+
+- hosts: trove
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - common
+    - os_trove
+
+- hosts: haproxy
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - haproxy_service
+  vars:
+    haproxy_services:
+      - haproxy_service_name: trove_api
+        haproxy_backend_nodes: "{{ groups['trove'] }}"
+        haproxy_bind_hosts:
+          - "{{ vip_mgmt }}"
+          - "{{ vip_public }}"
+        haproxy_port: 8779
+        haproxy_balance_type: http
+        haproxy_backend_options:
+          - forwardfor
+          - httpchk
+          - httplog

@@ -1,0 +1,16 @@
+trove_db_user: trove
+trove_mysql_server: "{{ vip_mgmt }}"
+trove_db: trove
+trove_rabbit_user: trove
+trove_domain_id: "{{ keystone_domain_id }}"
+
+trove_project_name: trove
+trove_project_description: Project for trove created VMs
+
+trove_net_name: trove-net
+trove_net_segmentation_id: 915
+trove_net_type: vlan
+trove_physical_network: vlan
+trove_subnet_cidr: 10.20.30.0/24
+
+trove_image_path: /etc/openstack_deploy/trove-mysql.qcow2

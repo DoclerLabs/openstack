@@ -1,0 +1,117 @@
+[DEFAULT]
+
+#=========== RPC Configuration ======================
+
+# URL representing the messaging driver to use and its full configuration.
+# If not set, we fall back to the 'rpc_backend' option and driver specific
+# configuration.
+#transport_url=<None>
+
+# The messaging driver to use. Options include rabbit, qpid and zmq.
+# Default is rabbit. (string value)
+#rpc_backend=rabbit
+
+# The default exchange under which topics are scoped. May be
+# overridden by an exchange name specified in the 'transport_url option.
+control_exchange = trove
+
+# ========== Configuration options for Swift ==========
+
+# The swift_url can be specified directly or fetched from Keystone catalog.
+
+# To fetch from Keystone, comment out swift_url, and uncomment the others.
+# swift_url = http://10.0.0.1:8080/v1/AUTH_
+# Region name of this node. Default value is None.
+# os_region_name = RegionOne
+# Service type to use when searching catalog.
+# swift_service_type = object-store
+
+# ========== Datastore Manager Configurations ==========
+# Datastore manager implementations.
+# Format: list of 'datastore-type:datastore.manager.implementation.module'
+# datastore_registry_ext = mysql:trove.guestagent.datastore.mysql.manager.Manager, percona:trove.guestagent.datastore.mysql.manager.Manager
+
+
+# ========== Default Users / DBs Configuration ==========
+
+# Users to ignore for user create/list/delete operations
+ignore_users = os_admin
+
+# Databases to ignore for db create/list/delete operations
+ignore_dbs = lost+found, mysql, information_schema, performance_schema
+
+# Permissions to grant "root" user by default
+root_grant = ALL
+root_grant_option = True
+# root_grant = ALTER ROUTINE, CREATE, ALTER, CREATE ROUTINE, CREATE TEMPORARY TABLES, CREATE VIEW, CREATE USER, DELETE, DROP, EVENT, EXECUTE, INDEX, INSERT, LOCK TABLES, PROCESS, REFERENCES, SELECT, SHOW DATABASES, SHOW VIEW, TRIGGER, UPDATE, USAGE
+# root_grant_option = False
+
+# Default password Length for root password
+# default_password_length = 36
+
+
+# ========== Default Storage Options for backup ==========
+
+# Default configuration for storage strategy and storage options
+# for backups
+
+# For storage to Swift, use the following as defaults:
+# storage_strategy = SwiftStorage
+# storage_namespace = trove.guestagent.strategies.storage.swift
+
+# Default config options for storing backups to swift
+# backup_swift_container = database_backups
+# backup_use_gzip_compression = True
+# backup_use_openssl_encryption = True
+# backup_aes_cbc_key = "default_aes_cbc_key"
+# backup_use_snet = False
+# backup_chunk_size = 65536
+# backup_segment_max_size = 2147483648
+
+# ========== Sample Logging Configuration ==========
+
+# Show more verbose log output (sets INFO log level output)
+verbose = False
+
+# Show debugging output in logs (sets DEBUG log level output)
+debug = False
+
+# Directory and path for log files
+log_dir = /var/log/trove/
+log_file = logfile.txt
+
+[oslo_messaging_rabbit]
+rabbit_port = 5672
+rabbit_userid = {{ trove_rabbit_user }}
+rabbit_password = {{ trove_rabbit_password }}
+rabbit_ha_queues = true
+rabbit_hosts = {% for host in groups['rabbitmq'] %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
+
+[profiler]
+# If False fully disable profiling feature.
+#enabled = False
+# If False doesn't trace SQL requests.
+#trace_sqlalchemy = True
+
+# ========== Datastore Specific Configuration Options ==========
+
+hostname_require_valid_ip = False
+
+[mysql]
+
+# For mysql, the following are the defaults for backup, and restore:
+# backup_strategy = InnoBackupEx
+# backup_namespace = trove.guestagent.strategies.backup.mysql_impl
+# restore_namespace = trove.guestagent.strategies.restore.mysql_impl
+
+# Default configuration for mysql replication
+# replication_strategy = MysqlBinlogReplication
+# replication_namespace = trove.guestagent.strategies.replication.mysql_binlog
+# replication_user = slave_user
+# replication_password = slave_password
+
+[vertica]
+# For vertica, following are the defaults needed:
+# mount_point = /var/lib/vertica
+# readahead_size = 2048
+# guestagent_strategy = trove.common.strategies.cluster.experimental.vertica.guestagent.VerticaGuestAgentStrategy

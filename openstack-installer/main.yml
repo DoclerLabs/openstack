@@ -14,3 +14,4 @@
 - include: os_neutron.yml
 - include: os_ceilometer.yml
 - include: os_heat.yml
+- include: os_trove.yml

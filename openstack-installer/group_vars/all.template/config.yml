@@ -18,3 +18,10 @@ neutron_physical_interface_mappings: vlan:br-vlan
 neutron_vlan_ranges: vlan:901:915
 neutron_ha_network_type: vlan
 neutron_ha_network_physical_name: vlan
+
+trove_net_name: trove-net
+trove_net_segmentation_id: 915
+trove_net_type: vlan
+trove_physical_network: vlan
+trove_subnet_cidr: 10.20.30.0/24
+trove_image_path: /etc/openstack_deploy/trove-mysql.qcow2

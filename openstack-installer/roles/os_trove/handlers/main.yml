@@ -1,0 +1,6 @@
+- name: restart trove
+  service: name={{ item }} state=restarted
+  with_items:
+    - trove-api
+    - trove-taskmanager
+    - trove-conductor
