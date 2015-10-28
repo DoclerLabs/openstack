@@ -1,0 +1,91 @@
+---
+
+- name: install ceph packages
+  apt: name={{ item }} state=present
+  with_items:
+    - ceph
+
+- name: fetch or generate the uuid of the cluster
+  shell: "if [ -f /etc/ceph/monmap ]; then monmaptool --print /etc/ceph/monmap | grep fsid | cut -d' ' -f2; else uuidgen; fi"
+  register: ceph_fsid
+  run_once: True
+
+- name: generate ceph config file
+  ini_file: dest=/etc/ceph/ceph.conf
+    section=global
+    option="{{ item.key }}"
+    value="{{ item.value }}"
+  with_dict:
+    { "fsid": "{{ ceph_fsid.stdout }}",
+      "mon initial members": "{{ play_hosts | join(',') }}",
+      "mon host": "{% for host in play_hosts %}{{ hostvars[host].ip.mgmt }}{% if not loop.last %},{% endif %}{% endfor %}",
+      "auth cluster required": "cephx",
+      "auth service required": "cephx",
+      "auth client required": "cephx"
+   }
+
+- name: create keyrings
+  command: /usr/bin/ceph-authtool --create-keyring /etc/ceph/ceph.{{ item }}.keyring
+    creates=/etc/ceph/ceph.{{ item }}.keyring
+  with_items:
+    - mon
+    - client.admin
+  run_once: True
+
+- name: query the keyring for the client.admin key
+  command: /usr/bin/ceph-authtool /etc/ceph/ceph.client.admin.keyring -n client.admin -p
+  register: ceph_key
+  changed_when: False
+  run_once: True
+
+- name: generate the client.admin key
+  command: /usr/bin/ceph-authtool /etc/ceph/ceph.client.admin.keyring -n client.admin --gen-key --set-uid=0 --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow'
+  when: "'not found' in ceph_key.stderr"
+  run_once: True
+
+- name: query the keyring for the mon. key
+  command: /usr/bin/ceph-authtool /etc/ceph/ceph.mon.keyring -n mon. -p
+  register: ceph_key
+  changed_when: False
+  run_once: True
+
+- name: generate the mon. key
+  command: /usr/bin/ceph-authtool /etc/ceph/ceph.mon.keyring -n mon. --gen-key --cap mon 'allow *'
+  when: "'not found' in ceph_key.stderr"
+  run_once: True
+
+- name: import the client.admin key to the mon. keyring
+  command: ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /etc/ceph/ceph.client.admin.keyring
+  run_once: True
+
+- name: create the monitor map
+  command: monmaptool --create --fsid "{{ ceph_fsid.stdout }}" /etc/ceph/monmap creates=/etc/ceph/monmap
+
+- name: add the monitor hosts to the monitor map
+  command: monmaptool --add {{ item }} {{ hostvars[item].ip.mgmt }} /etc/ceph/monmap
+  with_items: play_hosts
+  register: monmap_result
+  failed_when: monmap_result.rc != 0 and 'map already contains' not in monmap_result.stderr
+  changed_when: "'writing' in monmap_result.stdout"
+
+- name: fetch the monitoring keyring
+  fetch: src=/etc/ceph/ceph.mon.keyring dest=workdir/ceph.mon.keyring flat=yes
+  run_once: True
+
+- name: distribute the monitoring keyring
+  copy: src=workdir/ceph.mon.keyring dest=/etc/ceph/ceph.mon.keyring owner=root group=root mode=0600
+
+- name: create the default data directories
+  file: dest=/var/lib/ceph/mon/{{ ceph_cluster_name }}-{{ inventory_hostname }} state=directory owner=root group=root mode=0644
+
+- name: populate the monitor daemon(s) with the monitor map and keyring
+  command: ceph-mon --cluster {{ ceph_cluster_name }} --mkfs -i {{ inventory_hostname }} --monmap /etc/ceph/monmap --keyring /etc/ceph/ceph.mon.keyring
+
+- name: mark the config as 'done'
+  copy: content='' dest=/var/lib/ceph/mon/{{ ceph_cluster_name }}-{{ inventory_hostname }}/{{ item }} owner=root group=root mode=0644
+  with_items:
+    - upstart
+    - done
+
+- name: ensure ceph monitor is started
+  service: name=ceph-mon state=started enabled=yes args="id={{ inventory_hostname }}"

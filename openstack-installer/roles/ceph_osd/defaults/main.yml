@@ -1,0 +1,8 @@
+ceph_cluster_name: ceph
+ceph_osd journal size: 1024
+ceph_filestore_xattr_use_omap: true
+ceph_osd_pool_default_size: 2
+ceph_osd_pool_default_min_size: 1
+ceph_osd_pool_default_pg_num: 333
+ceph_osd_pool_default_pgp_num: 333
+ceph_osd_crush_chooseleaf_type: 1

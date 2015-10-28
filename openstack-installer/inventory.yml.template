@@ -63,6 +63,44 @@ heat:
 trove:
   inherit: controller
 
+# -------- Ceph ---------
+ceph_monitor:
+  jsm-ceph-osd-lubet-5:
+    ip:
+      mgmt: 10.97.36.132
+  jsm-ceph-osd-lubet-7:
+    ip:
+      mgmt: 10.97.36.133
+  jsm-ceph-osd-lubet-8:
+    ip:
+      mgmt: 10.97.36.135
+
+ceph_osd:
+  jsm-ceph-osd-lubet-5:
+    ip:
+      mgmt: 10.97.36.132
+    osd:
+      - { path: "/var/lib/osd1" }
+      - { path: "/var/lib/osd2" }
+  jsm-ceph-osd-lubet-7:
+    ip:
+      mgmt: 10.97.36.133
+    osd:
+      - { path: "/var/lib/osd1" }
+      - { disk: "/dev/vg00/ceph" }
+  jsm-ceph-osd-lubet-8:
+    ip:
+      mgmt: 10.97.36.135
+    osd:
+      - { path: "/var/lib/osd1" }
+      - { disk: "/dev/vg00/ceph" }
+  jsm-ceph-osd-lubet-9:
+    ip:
+      mgmt: 10.97.36.134
+    osd:
+      - { path: "/var/lib/osd1" }
+      - { disk: "/dev/vg00/ceph" }
+
 # -------- Compute --------
 compute:
   jsm-devops-swify-test-1:

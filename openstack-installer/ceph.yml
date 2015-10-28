@@ -1,0 +1,17 @@
+---
+
+- hosts: ceph_monitor
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - common
+    - ceph_monitor
+
+- hosts: ceph_osd
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - common
+    - ceph_osd
