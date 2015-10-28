@@ -63,6 +63,7 @@ vncserver_proxyclient_address = {{ ip.mgmt }}
 # Cinder
 [cinder]
 catalog_info = volumev2:cinderv2:internalURL
+os_region_name = {{ keystone_region_name }}
 
 [spice]
 agent_enabled = True
