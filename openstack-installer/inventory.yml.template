@@ -63,6 +63,14 @@ heat:
 trove:
   inherit: controller
 
+cinder:
+  inherit: controller
+
+cinder_volume:
+  jsm-devops-gyurcostorage-test-0:
+    ip:
+      mgmt: 10.97.36.129
+
 # -------- Ceph ---------
 ceph_monitor:
   jsm-ceph-osd-lubet-5:

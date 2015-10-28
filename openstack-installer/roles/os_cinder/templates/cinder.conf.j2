@@ -1,0 +1,75 @@
+[DEFAULT]
+
+debug = False
+verbose = True
+
+my_ip = {{ ip.mgmt }}
+osapi_volume_listen = {{ ip.mgmt }}
+
+{% if inventory_hostname in groups['cinder_volume'] %}
+
+{% if cinder_volume_backend == 'lvm' %}
+
+volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
+volume_group = cinder-volumes
+iscsi_protocol = iscsi
+iscsi_helper = tgtadm
+volume_name_template = volume-%s
+volume_group = cinder-volumes
+
+{% elif cinder_volume_backend == 'ceph' %}
+volume_driver=cinder.volume.drivers.rbd.RBDDriver
+backup_driver=cinder.backup.drivers.ceph
+rbd_ceph_conf = /etc/ceph/ceph.conf
+rbd_pool = {{ cinder_volume_rbd_pool }}
+rbd_user = {{ cinder_volume_rbd_user }}
+rbd_secret_uuid = {{ cinder_volume_secret_uuid }}
+backup_ceph_pool = {{ cinder_backup_rbd_pool }}
+backup_ceph_user = {{ cinder_backup_rbd_user }}
+{% endif %}
+
+{% endif %}
+
+rootwrap_config = /etc/cinder/rootwrap.conf
+api_paste_confg = /etc/cinder/api-paste.ini
+state_path = /var/lib/cinder
+lock_path = /var/lock/cinder
+volumes_dir = /var/lib/cinder/volumes
+
+auth_strategy = keystone
+
+notification_driver = messagingv2
+
+[database]
+connection = mysql+pymysql://{{ cinder_db_user }}:{{ cinder_db_password }}@{{ cinder_mysql_server }}/{{ cinder_db }}?charset=utf8
+max_retries = -1
+
+[keymgr]
+encryption_auth_url = http://{{ keystone_internal_ip }}/v3
+
+[keystone_authtoken]
+auth_plugin = password
+signing_dir = /var/lib/cinder
+auth_uri = http://{{ keystone_internal_ip }}:5000
+auth_url = http://{{ keystone_internal_ip }}:35357
+auth_region = {{ keystone_region_name }}
+username = cinder
+password = {{ cinder_admin_password }}
+project_domain_id = {{ cinder_domain_id }}
+user_domain_id = {{ cinder_domain_id }}
+project_name = service
+
+memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
+
+memcache_security_strategy = ENCRYPT
+memcache_secret_key = {{ memcache_secret_key }}
+
+[oslo_concurrency]
+lock_path = /var/lock/cinder
+
+[oslo_messaging_rabbit]
+rabbit_port = 5672
+rabbit_userid = {{ cinder_rabbit_user }}
+rabbit_password = {{ cinder_rabbit_password }}
+rabbit_ha_queues = true
+rabbit_hosts = {% for host in groups['rabbitmq'] %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}

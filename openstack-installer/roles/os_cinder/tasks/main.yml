@@ -1,0 +1,76 @@
+---
+
+- name: create cinder user in rabbitmq
+  rabbitmq_user: user="{{ cinder_rabbit_user }}" password="{{ cinder_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: disable autostarting of cinder
+  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+  with_items:
+    - cinder-api
+    - cinder-scheduler
+    - cinder-volume
+    - cinder-backup
+
+- name: install cinder
+  apt: name={{ item }}
+  with_items:
+    - cinder-api
+    - cinder-scheduler
+    - python-cinderclient
+  when: inventory_hostname in groups['cinder']
+
+- name: install cinder-volume
+  apt: name={{ item }}
+  with_items:
+    - cinder-volume
+    - cinder-backup
+    - python-cinderclient
+  when: inventory_hostname in groups['cinder_volume']
+
+- name: create cinder database
+  mysql_db: name={{ cinder_db }}
+    login_host={{ cinder_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create cinder database user
+  mysql_user: name={{ cinder_db_user }} password={{ cinder_db_password }} host={{ item }} priv={{ cinder_db }}.*:ALL
+    login_host={{ cinder_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - "{{ groups['cinder'] }}"
+    - '%'
+
+- name: install cinder configs
+  template: src={{ item }}.conf.j2 dest=/etc/cinder/{{ item }}.conf owner=cinder group=root mode=0460
+  with_items:
+    - cinder
+  notify:
+    - restart cinder
+    - restart cinder-volume
+
+- name: sync cinder db
+  command: su cinder -s /bin/sh -c "/usr/bin/cinder-manage db sync"
+  register: db_sync
+  changed_when: '"migrate.versioning.api" in db_sync.stderr'
+  run_once: True
+
+- meta: flush_handlers
+
+- name: ensure cinder is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - cinder-api
+    - cinder-scheduler
+  when: inventory_hostname in groups['cinder']
+
+- name: ensure cinder-volume is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - cinder-volume
+    - cinder-backup
+  when: inventory_hostname in groups['cinder_volume']

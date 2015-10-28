@@ -25,3 +25,6 @@ trove_net_type: vlan
 trove_physical_network: vlan
 trove_subnet_cidr: 10.20.30.0/24
 trove_image_path: /etc/openstack_deploy/trove-mysql.qcow2
+
+cinder_volume_backend: ceph
+cinder_volume_secret_uuid: d048aa33-c46c-4573-a0c9-dd014d56e2b4
