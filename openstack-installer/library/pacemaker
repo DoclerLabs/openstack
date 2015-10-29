@@ -64,6 +64,11 @@ REX = re.compile(
     r"""([^ ]+)(=(['"])((?:\\.|(?!\3).)*)\3|)""",
     re.DOTALL | re.VERBOSE)
 
+def unquote(str):
+    if str[0]==str[-1] and str[0] in '\'\"':
+        return str[1:-1]
+    else:
+        return str
 
 class BaseParser(object):
     id_name = None
@@ -107,7 +112,7 @@ class PrimitiveParser(BaseParser):
             )
         mode = None
         while (len(args) > 0):
-            arg = args.pop(0)
+            arg = unquote(args.pop(0))
             if (arg in ["params", "meta", "utilization",
                         "operations", "op"]):
                 mode = arg
@@ -132,12 +137,11 @@ class PrimitiveParser(BaseParser):
             if (mode == "op"):
                 if op_type not in ret[mode]:
                     ret[mode][op_type] = {}
-                ret[mode][op_type][key] = value
+                ret[mode][op_type][key] = unquote(value)
             else:
                 if mode not in ret:
                     ret[mode] = {}
-                ret[mode][key] = value
-
+                ret[mode][key] = unquote(value)
         return ret
 
 
@@ -443,14 +447,17 @@ def main():
 
     state = module.params['state']
     need_commit = module.params['commit']
+    shadow = module.params['shadow']
     args = splitter(module.params['args'])
     changed = False
 
     if len(args) == 0:
         module.fail_json(rc=256, msg="no command given")
 
+    shadowparam=[ '-c', shadow ] if shadow else []
+
     if args[0] == "commit":
-        rc, out, err = module.run_command(["crm", "configure", "commit"])
+        rc, out, err = module.run_command(["crm"] + shadowparam + ["configure", "commit"])
         if rc:
             module.fail_json(rc=256, msg="crm command failed")
         module.exit_json(args=args, changed=True)
@@ -458,7 +465,7 @@ def main():
     parser = CIBParser(module)
     new = parser.parse_cib(args)
 
-    crm_args = ["crm", "configure", "show"]
+    crm_args = ["crm"] + shadowparam + ["configure", "show"]
     rc, out, err = module.run_command(crm_args)
     if rc:
         module.fail_json(rc=256, msg="crm command failed")
@@ -488,18 +495,20 @@ def main():
             need_delete = True
         need_append = True
 
+
     crm_config_commands = []
     if need_delete:
-        crm_config_commands.append(["resource", "stop", new.id])
+        if not shadow:
+            crm_config_commands.append(["resource", "stop", new.id])
         crm_config_commands.append(["configure", "delete", new.id])
     if need_append:
         crm_config_commands.append(["configure"] + args)
     if need_commit:
         crm_config_commands.append(["configure", "commit"])
     for command in crm_config_commands:
-        rc, out, err = module.run_command(["crm", "-F"] + command)
+        rc, out, err = module.run_command(["crm", "-F"] + shadowparam + command)
         if rc:
-            module.fail_json(rc=256, msg="crm command failed")
+            module.fail_json(rc=256, msg="crm command failed \n%s\n" %command)
             #FIXME: Re-enable error messages.
             #module.fail_json(rc=256, msg="crm command failed \n%s"%err)
 
@@ -527,7 +536,8 @@ class PacemakerModule(AnsibleModule):
 
         params["state"] = "present"
         params["commit"] = True
-        r = re.compile(r'(^|\s)(state)=(?P<quote>[\'"])?(.*?)(?(quote)(?<!\\)(?P=quote))((?<!\\)(?=\s)|$)')
+        params["shadow"] = None
+        r = re.compile(r'(^|\s)(state|shadow)=(?P<quote>[\'"])?(.*?)(?(quote)(?<!\\)(?P=quote))((?<!\\)(?=\s)|$)')
         for m in r.finditer(args):
             v = m.group(4).replace("\\", "")
             if m.group(2) == "state":
@@ -541,6 +551,12 @@ class PacemakerModule(AnsibleModule):
                             rc=256, msg="commit= is either yes or no")
                 if v == 'yes':
                     params['commit'] = True
+            if m.group(2) == "shadow":
+                if v == '':
+                    self.fail_json(
+                            rc=256, msg="shadow requires a parameter")
+                params['shadow'] = v
+
         args = r.sub("", args)
 
         params["args"] = args.strip()
