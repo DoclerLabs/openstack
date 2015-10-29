@@ -2,3 +2,11 @@
 
 - name: restart xinetd
   service: name=xinetd state=restarted
+
+- name: cleanup galera resource
+  command: crm_resource --cleanup --resource p_galera
+  when: '"galera" in crm_resource_list.stdout'
+
+- name: commit shadow cib
+  command: crm_shadow --commit shadowcib --force
+  run_once: True

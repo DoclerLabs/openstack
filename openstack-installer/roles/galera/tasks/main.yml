@@ -10,8 +10,21 @@
     - xinetd
     - python-mysqldb
 
-- name: ensure mysql is running
+- name: list pacemaker resources
+  command: crm_resource --list
+  register: crm_resource_list
+  changed_when: False
+
+- name: check if galera is already configured
+  stat: path=/etc/mysql/conf.d/galera.cnf
+  register: galera_stat
+
+- name: install my.cnf
+  template: src=my.cnf.j2 dest=/etc/mysql/my.cnf owner=mysql group=root mode=0460
+
+- name: ensure mysql is running if not configured yet
   service: name=mysql state=started
+  when: galera_stat.stat.exists == False
 
 - name: set up mysql root password
   mysql_user: name=root host="{{ item }}" password="{{ mysql_root_password }}" priv=*.*:ALL,GRANT
@@ -21,46 +34,82 @@
     - 127.0.0.1
     - '%'
     - "{{ groups['galera'] }}"
+  when: galera_stat.stat.exists == False
 
 - name: create wsrep user
   mysql_user: name=wsrep password={{ galera_wsrep_password }} priv=*.*:ALL
     login_user=root login_password={{ mysql_root_password }}
-
-- name: determine if the replication is already running
-  shell: echo "show variables like 'wsrep_on'" | mysql -u root -p{{ mysql_root_password }} -s
-  changed_when: False
-  register: mysql_result
-
-- name: stop mysql if the replication is not running
-  service: name=mysql state=stopped
-  when: "'OFF' in mysql_result.stdout"
-
-- name: set bind-address in my.cnf
-  lineinfile: dest=/etc/mysql/my.cnf
-    regexp='^bind-address'
-    line='bind-address = {{ ip.mgmt }}'
-
-- name: install galera.cnf
-  template: src=galera.cnf.j2 dest=/etc/mysql/conf.d/galera.cnf owner=mysql group=root mode=0460
-
-- name: start the first mysql if the replication is not running
-  command: /etc/init.d/mysql bootstrap-pxc
-  when: "'OFF' in mysql_result.stdout and inventory_hostname == groups['galera'][0]"
-
-- name: wait for the first mysql to start
-  wait_for: host={{ ip.mgmt }} port=3306
-  when: inventory_hostname == groups['galera'][0]
-
-- name: ensure all mysql servers are running
-  service: name=mysql state=started enabled=yes
-
-- name: wait for the mysql servers to start
-  wait_for: host={{ ip.mgmt }} port=3306
+  when: galera_stat.stat.exists == False
 
 - name: create clustecheck user
   mysql_user: name=clustercheck password={{ galera_clustercheck_password }} priv=*.*:USAGE
     login_user=root login_password={{ mysql_root_password }}
+  when: galera_stat.stat.exists == False
+
+- name: stop mysql if it is not already managed by pacemaker
+  service: name=mysql state=stopped
+  when: galera_stat.stat.exists == False
+
+- name: install galera.cnf
+  template: src=galera.cnf.j2 dest=/etc/mysql/conf.d/galera.cnf owner=mysql group=root mode=0460
+  notify: cleanup galera resource
+
+- name: install /etc/default/clustercheck
+  template: src=clustercheck.j2 dest=/etc/default/clustercheck owner=root group=nogroup mode=0640
+  notify: cleanup galera resource
+
+- name: install galera OCF script
+  copy: src=galera dest=/usr/lib/ocf/resource.d/heartbeat/galera owner=root group=root mode=0755
+  notify: cleanup galera resource
+
+- name: create shadow CIB database
+  command: crm_shadow --create shadowcib -b --force
+  changed_when: False
+
+- name: install pacemaker galera service
+  pacemaker: primitive p_galera ocf:heartbeat:galera
+    meta target-role="Started"
+    op start "timeout=120" "interval=0"
+    op stop "timeout=120" "interval=0"
+    op promote "timeout=300" "interval=0"
+    op demote "timeout=120" "interval=0"
+    params wsrep_cluster_address="gcomm://{% for host in groups['galera'] %}{{ host }}{% if not loop.last %},{% endif %}{% endfor %}"
+           config="/etc/mysql/my.cnf"
+           socket="{{ mysql_sock_file }}"
+           pid="{{ mysql_pid_file }}"
+           log="{{ mysql_log_error }}"
+    shadow="shadowcib"
+  notify: commit shadow cib
   run_once: True
+
+- name: install Master-Slave galera pacemaker service
+  pacemaker: ms ms_galera p_galera
+    meta target-role="Started"
+         master-max="{{ groups['galera'] | length }}"
+    shadow="shadowcib"
+  notify: commit shadow cib
+  run_once: True
+
+- meta: flush_handlers
+
+- name: delete the shadow CIB
+  command: crm_shadow --delete shadowcib --force
+  changed_when: False
+  run_once: True
+
+- name: wait for the mysql servers to start
+  wait_for: host={{ ip.mgmt }} port=3306
+
+- name: wait until the replication is finished
+  command: mysql -nNs --user=clustercheck --password={{ galera_clustercheck_password }} -e 'show status like "wsrep_cluster_status"'
+  changed_when: False
+  register: mysql_result
+  retries: 20
+  delay: 10
+  until: "'Primary' in mysql_result.stdout"
+
+- name: make sure mysql is disabled at boot
+  service: name=mysql enabled=no
 
 - name: add mysqlchk to /etc/services
   lineinfile: dest=/etc/services 

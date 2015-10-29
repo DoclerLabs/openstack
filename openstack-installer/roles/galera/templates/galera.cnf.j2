@@ -1,14 +1,7 @@
 [mysqld]
 
-max_connections={{ galera_max_connections }}
-binlog_format=ROW
-default_storage_engine=innodb
-innodb_autoinc_lock_mode=2
-innodb_flush_log_at_trx_commit=0
-innodb_buffer_pool_size=122M
 wsrep_provider=/usr/lib/libgalera_smm.so
 wsrep_provider_options="gcache.size=300M; gcache.page_size=1G"
 wsrep_cluster_name="openstack_cluster"
-wsrep_cluster_address="gcomm://{% for host in groups['galera'] %}{{ hostvars[host].ip.mgmt }}{% if not loop.last %},{% endif %}{% endfor %}"
 wsrep_sst_method=xtrabackup-v2
 wsrep_sst_auth=wsrep:{{ galera_wsrep_password }}
