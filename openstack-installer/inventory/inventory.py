@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+import sys
+import os
 import argparse
 import yaml
 import json
@@ -15,7 +17,7 @@ def get_parent_group(yml, group, nesting_level):
 
 def inventory(hostname):
 
-    with open("inventory.yml", 'r') as f:
+    with open(os.path.dirname(sys.argv[0])+"/inventory.yml", 'r') as f:
         yml=yaml.safe_load(f)
 
     if hostname:
