@@ -190,7 +190,7 @@ notification_driver = messagingv2
 #connection = sqlite:////var/lib/trove/trove_test.sqlite
 #connection = mysql://root:e1a2c042c828d3566d0a@localhost/trove
 #connection = postgresql://trove:trove@localhost/trove
-connection = mysql://{{ trove_db_user }}:{{ trove_db_password }}@{{ trove_mysql_server }}/{{ trove_db }}?charset=utf8
+connection = mysql+pymysql://{{ trove_db_user }}:{{ trove_db_password }}@{{ trove_mysql_server }}/{{ trove_db }}?charset=utf8
 max_retries = -1
 
 [keystone_authtoken]
