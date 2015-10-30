@@ -6,6 +6,7 @@
 - name: cleanup galera resource
   command: crm_resource --cleanup --resource p_galera
   when: '"galera" in crm_resource_list.stdout'
+  run_once: True
 
 - name: commit shadow cib
   command: crm_shadow --commit shadowcib --force

@@ -52,7 +52,6 @@
 
 - name: install galera.cnf
   template: src=galera.cnf.j2 dest=/etc/mysql/conf.d/galera.cnf owner=mysql group=root mode=0460
-  notify: cleanup galera resource
 
 - name: install /etc/default/clustercheck
   template: src=clustercheck.j2 dest=/etc/default/clustercheck owner=root group=nogroup mode=0640
