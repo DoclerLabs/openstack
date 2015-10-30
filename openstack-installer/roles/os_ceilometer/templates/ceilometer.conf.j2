@@ -213,7 +213,7 @@ host = {{ ip.mgmt }}
 #connection = <None>
 connection = mongodb://ceilometer:{{ ceilometer_db_password }}@{% for host in groups['mongodb'] %}{{ hostvars[host].ip.mgmt }}:27017{% if not loop.last %},{% endif %}{% endfor %}/ceilometer
 
-mongodb_replica_set = ceilometer
+mongodb_replica_set = {{ mongodb_replica_set }}
 
 # The SQLAlchemy connection string to use to connect to the slave
 # database. (string value)
@@ -457,7 +457,6 @@ memcache_secret_key = {{ memcache_secret_key }}
 # value)
 #identity_uri = <None>
 identity_uri = http://{{ keystone_internal_ip }}:35357
-auth_url = http://{{ keystone_internal_ip }}:35357
 
 # This option is deprecated and may be removed in a future release.
 # Single shared secret with the Keystone configuration used for
@@ -468,15 +467,21 @@ auth_url = http://{{ keystone_internal_ip }}:35357
 
 # Service username. (string value)
 #admin_user = <None>
-admin_user = ceilometer
 
 # Service user password. (string value)
 #admin_password = <None>
-admin_password = {{ ceilometer_admin_password }}
 
 # Service tenant name. (string value)
 #admin_tenant_name = admin
-admin_tenant_name = service
+
+auth_plugin = password
+auth_url = http://{{ keystone_internal_ip }}:35357
+auth_region = {{ keystone_region_name }}
+username = ceilometer
+password = {{ ceilometer_admin_password }}
+project_domain_id = {{ ceilometer_domain_id }}
+user_domain_id = {{ ceilometer_domain_id }}
+project_name = service
 
 [service_credentials]
 os_auth_url = http://{{ keystone_internal_ip }}:5000/v2.0

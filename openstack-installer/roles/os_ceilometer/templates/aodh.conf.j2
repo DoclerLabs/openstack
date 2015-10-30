@@ -213,7 +213,7 @@ host = {{ ip.mgmt }}
 #connection = <None>
 connection = mongodb://ceilometer:{{ ceilometer_db_password }}@{% for host in groups['mongodb'] %}{{ hostvars[host].ip.mgmt }}:27017{% if not loop.last %},{% endif %}{% endfor %}/ceilometer
 
-mongodb_replica_set = ceilometer
+mongodb_replica_set = {{ mongodb_replica_set }}
 
 # The SQLAlchemy connection string to use to connect to the slave
 # database. (string value)

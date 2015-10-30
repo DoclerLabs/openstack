@@ -2,3 +2,6 @@
 
 ceilometer_rabbit_user: ceilometer
 ceilometer_domain_id: "{{ keystone_domain_id }}"
+aodh_domain_id: "{{ keystone_domain_id }}"
+
+mongodb_replica_set: openstack
