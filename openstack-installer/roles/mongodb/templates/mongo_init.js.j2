@@ -1,0 +1,10 @@
+config = {
+    _id : "{{ mongodb_replica_set }}",
+     members : [
+{% for host in groups['mongodb'] %}
+         {_id : {{ groups['mongodb'].index(host) }}, host : "{{ host }}:27017"},
+{% endfor %}
+     ]
+}
+
+rs.initiate(config);
