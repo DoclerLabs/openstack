@@ -1,7 +1,7 @@
 [mysqld]
 
 wsrep_provider=/usr/lib/libgalera_smm.so
-wsrep_provider_options="gcache.size=300M; gcache.page_size=1G"
+wsrep_provider_options="gcache.size=300M; gcache.page_size=1G; gmcast.listen_addr=tcp://{{ ip.mgmt }}:4567;"
 wsrep_cluster_name="openstack_cluster"
 wsrep_sst_method=xtrabackup-v2
 wsrep_sst_auth=wsrep:{{ galera_wsrep_password }}
