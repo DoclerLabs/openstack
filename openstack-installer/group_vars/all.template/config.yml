@@ -28,3 +28,8 @@ trove_image_path: /etc/openstack_deploy/trove-mysql.qcow2
 
 cinder_volume_backend: ceph
 cinder_volume_secret_uuid: d048aa33-c46c-4573-a0c9-dd014d56e2b4
+
+#ceph or files
+glance_backend: ceph
+glance_ceph_pool: images
+glance_ceph_user: glance
