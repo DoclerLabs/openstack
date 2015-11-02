@@ -35,17 +35,15 @@
   when: hostvars[item].mongo_status.stdout != ''
   with_items: groups['mongodb']
 
-- name: generate replica set initialize script
-  template: src=mongo_init.js.j2 dest=/root/mongo_init.js owner=root group=root mode=0644
-  when: inventory_hostname==groups['mongodb'][0] and mongo_initialized == False
-
 - name: initialize replica set
-  command: mongo --quiet /root/mongo_init.js
-  when: inventory_hostname==groups['mongodb'][0] and mongo_initialized == False
+  command: mongo --quiet --eval '{{ lookup('template','../templates/mongo_init.js.j2') }}'
+  when: mongo_initialized == False
+  run_once: True
 
 - name: wait until the replica set is initialized
   shell: echo "rs.status().myState; " | mongo --quiet
   register: mongo_status
   until: mongo_status.stdout == '1' or mongo_status.stdout == '2'
+  changed_when: False
   retries: 10
   delay: 5
