@@ -1,10 +1,5 @@
 ---
 
-- name: install ceph client packages
-  apt: name={{ item }}
-  with_items:
-    - python-rbd
-
 - name: create ceph user
   command: 'ceph auth get-or-create client.{{ ceph_user }} {{ ceph_rights }}'
   register: ceph_auth
@@ -28,3 +23,4 @@
 
 - name: write out ceph keyring
   copy: content='{{ ceph_auth.stdout }}\n' dest=/etc/ceph/ceph.client.{{ ceph_user}}.keyring owner={{ ceph_keyring_owner }} group=root mode=0440
+  when: ceph_keyring_owner is defined
