@@ -155,3 +155,4 @@ rabbit_hosts = {% for host in groups['rabbitmq'] %}{{ hostvars[host].ip.mgmt }}:
 use_usb_tablet = False
 use_virtio_for_bridges = True
 virt_type = {{ nova_virt_type }}
+live_migration_uri = qemu+ssh://nova@%s/system?keyfile=/var/lib/nova/.ssh/id_rsa&no_tty=1&no_verify=1
