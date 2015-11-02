@@ -77,7 +77,7 @@ network_label_regex = .* //with neutron enabled
 
 # Config options for enabling volume service
 #trove_volume_support = True
-trove_volume_support = False
+trove_volume_support = True
 block_device_mapping = vdb
 device_path = /dev/vdb
 # Maximum volume size for an instance
@@ -245,7 +245,7 @@ root_on_create = False
 # Format (single port or port range): A, B-C
 # where C greater than B
 tcp_ports = 3306
-volume_support = False
+volume_support = True
 device_path = /dev/vdb
 
 [redis]
