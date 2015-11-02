@@ -67,9 +67,7 @@ cinder:
   inherit: controller
 
 cinder_volume:
-  jsm-devops-gyurcostorage-test-0:
-    ip:
-      mgmt: 10.97.36.129
+  inherit: controller
 
 # -------- Ceph ---------
 ceph_monitor:

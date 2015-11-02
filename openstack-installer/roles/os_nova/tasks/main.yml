@@ -39,6 +39,8 @@
 - name: install nova
   apt: name={{ item }}
   with_items:
+    - python-rbd
+    - python-rados
     - nova-compute
   when: inventory_hostname in groups['nova_compute']
 
@@ -57,6 +59,14 @@
     - localhost
     - "{{ groups['nova_controller'] }}"
     - '%'
+
+- name: install virsh secret.xml
+  template: src=secret.xml.j2 dest=/root/secret.xml owner=root group=root mode=0664
+  when: inventory_hostname in groups['nova_compute'] and cinder_backend=='ceph'
+
+- name: configure virsh secret.xml
+  command: virsh secret-define --file /root/secret.xml
+  when: inventory_hostname in groups['nova_compute'] and cinder_backend=='ceph'
 
 - name: install nova configs
   template: src=nova.conf.j2 dest=/etc/nova/nova.conf owner=nova group=root mode=0460

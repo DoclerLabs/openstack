@@ -24,6 +24,9 @@
 - name: install cinder-volume
   apt: name={{ item }}
   with_items:
+    - python-rbd
+    - python-rados
+    - ceph-common
     - cinder-volume
     - cinder-backup
     - python-cinderclient

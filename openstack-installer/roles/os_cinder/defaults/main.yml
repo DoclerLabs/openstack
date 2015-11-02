@@ -6,8 +6,8 @@ cinder_db: cinder
 cinder_rabbit_user: cinder
 cinder_domain_id: "{{ keystone_domain_id }}"
 
-cinder_volume_backend: lvm
-cinder_volume_rbd_user: volume
-cinder_volume_rbd_pool: volume
-cinder_backup_rbd_pool: backup
-cinder_backup_rbd_user: backup
+cinder_backend: lvm
+cinder_ceph_pool: volumes
+cinder_ceph_user: cinder
+cinder_backup_ceph_pool: backups
+cinder_backup_ceph_user: cinder-backup

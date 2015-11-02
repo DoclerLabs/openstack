@@ -51,6 +51,12 @@ instance_usage_audit_period = hour
 notify_on_state_change = vm_and_task_state
 notification_driver = messagingv2
 
+#ceph
+{% if cinder_backend == 'ceph' %}
+rbd_user = {{ cinder_ceph_user }}
+rbd_secret_uuid = {{ cinder_volume_secret_uuid }}
+{% endif %}
+
 #vnc
 novncproxy_host = {{ ip.mgmt }}
 [vnc]

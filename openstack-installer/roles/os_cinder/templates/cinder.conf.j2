@@ -8,7 +8,7 @@ osapi_volume_listen = {{ ip.mgmt }}
 
 {% if inventory_hostname in groups['cinder_volume'] %}
 
-{% if cinder_volume_backend == 'lvm' %}
+{% if cinder_backend == 'lvm' %}
 
 volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
 volume_group = cinder-volumes
@@ -17,15 +17,17 @@ iscsi_helper = tgtadm
 volume_name_template = volume-%s
 volume_group = cinder-volumes
 
-{% elif cinder_volume_backend == 'ceph' %}
+{% elif cinder_backend == 'ceph' %}
+
 volume_driver=cinder.volume.drivers.rbd.RBDDriver
 backup_driver=cinder.backup.drivers.ceph
 rbd_ceph_conf = /etc/ceph/ceph.conf
-rbd_pool = {{ cinder_volume_rbd_pool }}
-rbd_user = {{ cinder_volume_rbd_user }}
+rbd_pool = {{ cinder_ceph_pool }}
+rbd_user = {{ cinder_ceph_user }}
 rbd_secret_uuid = {{ cinder_volume_secret_uuid }}
-backup_ceph_pool = {{ cinder_backup_rbd_pool }}
-backup_ceph_user = {{ cinder_backup_rbd_user }}
+backup_ceph_pool = {{ cinder_backup_ceph_pool }}
+backup_ceph_user = {{ cinder_backup_ceph_user }}
+
 {% endif %}
 
 {% endif %}
@@ -45,7 +47,7 @@ connection = mysql+pymysql://{{ cinder_db_user }}:{{ cinder_db_password }}@{{ ci
 max_retries = -1
 
 [keymgr]
-encryption_auth_url = http://{{ keystone_internal_ip }}/v3
+encryption_auth_url = http://{{ keystone_internal_ip }}:5000/v3
 
 [keystone_authtoken]
 auth_plugin = password
