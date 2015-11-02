@@ -1,0 +1,30 @@
+---
+
+- name: install ceph client packages
+  apt: name={{ item }}
+  with_items:
+    - python-rbd
+
+- name: create ceph user
+  command: 'ceph auth get-or-create client.{{ ceph_user }} {{ ceph_rights }}'
+  register: ceph_auth
+  delegate_to: "{{ groups['ceph_monitor'][0] }}"
+  run_once: True
+
+- name: ensure /etc/ceph exists
+  file: path=/etc/ceph state=directory owner=root group=root mode=0755
+
+- name: generate ceph config file
+  ini_file: dest=/etc/ceph/ceph.conf
+    section=global
+    option="{{ item.key }}"
+    value="{{ item.value }}"
+  with_dict:
+    { "mon host": "{% for host in groups['ceph_monitor'] %}{{ hostvars[host].ip.mgmt }}{% if not loop.last %},{% endif %}{% endfor %}",
+      "auth cluster required": "cephx",
+      "auth service required": "cephx",
+      "auth client required": "cephx"
+   }
+
+- name: write out ceph keyring
+  copy: content='{{ ceph_auth.stdout }}\n' dest=/etc/ceph/ceph.client.{{ ceph_user}}.keyring owner={{ ceph_keyring_owner }} group=root mode=0440
