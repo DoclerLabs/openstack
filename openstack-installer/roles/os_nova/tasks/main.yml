@@ -36,11 +36,12 @@
     - python-novaclient
   when: inventory_hostname in groups['nova_controller']
 
-- name: install nova
+- name: install nova compute
   apt: name={{ item }}
   with_items:
     - python-rbd
     - python-rados
+    - sysfsutils
     - nova-compute
   when: inventory_hostname in groups['nova_compute']
 
@@ -100,3 +101,27 @@
     - nova-compute
   when: inventory_hostname in groups['nova_compute']
 
+- name: create ssh key for nova-compute
+  local_action: command ssh-keygen -f workdir/nova_id_rsa -b 2048 -P "" creates=workdir/nova_id_rsa.pub
+  run_once: True
+  sudo: False
+
+- name: make sure .ssh directory exists
+  file: path=/var/lib/nova/.ssh state=directory owner=nova group=nova mode=0750
+  when: inventory_hostname in groups['nova_compute']
+
+- name: install the public key for nova-compute
+  copy: src=workdir/nova_id_rsa.pub dest=/var/lib/nova/.ssh/authorized_keys owner=nova group=root mode=0640
+  when: inventory_hostname in groups['nova_compute']
+
+- name: install the private key for nova-compute
+  copy: src=workdir/nova_id_rsa dest=/var/lib/nova/.ssh/id_rsa owner=nova group=nova mode=0600
+  when: inventory_hostname in groups['nova_compute']
+
+- name: install the ssh config for nova-compute
+  copy: content='Host *\nStrictHostKeyChecking no\nUserKnownHostsFile=/dev/null\n' dest=/var/lib/nova/.ssh/config owner=nova group=nova mode=0640
+  when: inventory_hostname in groups['nova_compute']
+
+- name: set the login shell to /bin/sh on compute hosts for nova
+  user: name=nova shell=/bin/sh
+  when: inventory_hostname in groups['nova_compute']
