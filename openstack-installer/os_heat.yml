@@ -82,7 +82,7 @@
           - httpchk
           - httplog
 
-      - haproxy_service_name: heat_api_cloudwarch
+      - haproxy_service_name: heat_api_cloudwatch
         haproxy_backend_nodes: "{{ groups['heat'] }}"
         haproxy_bind_hosts:
           - "{{ vip_mgmt }}"

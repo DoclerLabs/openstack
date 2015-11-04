@@ -9,6 +9,7 @@
   copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
   with_items:
     - heat-api
+    - heat-api-cloudwatch
     - heat-api-cfn
     - heat-engine
 
@@ -16,6 +17,7 @@
   apt: name={{ item }}
   with_items:
     - heat-api
+    - heat-api-cloudwatch
     - heat-api-cfn
     - heat-engine
     - python-heatclient
@@ -33,7 +35,6 @@
   run_once: True
   with_items:
     - localhost
-    - "{{ groups['heat'] }}"
     - '%'
 
 - name: create heat domain admin
@@ -64,5 +65,6 @@
   service: name={{ item }} state=started enabled=yes
   with_items:
     - heat-api
+    - heat-api-cloudwatch
     - heat-api-cfn
     - heat-engine

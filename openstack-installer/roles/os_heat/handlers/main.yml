@@ -4,5 +4,6 @@
   service: name={{ item }} state=restarted
   with_items:
     - heat-api
+    - heat-api-cloudwatch
     - heat-api-cfn
     - heat-engine
