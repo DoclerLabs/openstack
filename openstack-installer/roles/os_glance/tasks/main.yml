@@ -33,7 +33,6 @@
   run_once: True
   with_items:
     - localhost
-    - "{{ groups['glance'] }}"
     - '%'
 
 - name: install glance configs

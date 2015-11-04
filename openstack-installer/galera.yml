@@ -29,6 +29,7 @@
         haproxy_port: 3306
         haproxy_check_port: 9200
         haproxy_balance_type: tcp
+        haproxy_balance_alg: roundrobin
         haproxy_timeout_client: 5000s
         haproxy_timeout_server: 5000s
         haproxy_backend_options:

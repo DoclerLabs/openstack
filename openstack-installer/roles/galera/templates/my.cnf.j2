@@ -41,6 +41,7 @@ datadir         = /var/lib/mysql
 tmpdir          = /tmp
 lc-messages-dir = /usr/share/mysql
 skip-external-locking
+skip-name-resolve
 #
 # Instead of skip-networking the default is now to listen only on
 # localhost which is more compatible and is not less secure.
@@ -56,6 +57,7 @@ thread_cache_size       = 8
 # the first time they are touched
 myisam-recover         = BACKUP
 #max_connections        = 100
+max_connections={{ mysql_max_connections }}
 #table_cache            = 64
 #thread_concurrency     = 10
 #
@@ -107,7 +109,10 @@ max_binlog_size         = 100M
 # ssl-cert=/etc/mysql/server-cert.pem
 # ssl-key=/etc/mysql/server-key.pem
 
-max_connections={{ mysql_max_connections }}
+max_allowed_packet = 16M
+max-connect-errors = 1000000
+wait_timeout = 28800
+
 binlog_format=ROW
 default_storage_engine=innodb
 innodb_autoinc_lock_mode=2

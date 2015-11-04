@@ -33,7 +33,6 @@
     - localhost
     - 127.0.0.1
     - '%'
-    - "{{ groups['galera'] }}"
   when: galera_stat.stat.exists == False
 
 - name: create wsrep user

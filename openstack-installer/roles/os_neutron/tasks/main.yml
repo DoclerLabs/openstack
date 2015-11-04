@@ -78,7 +78,6 @@
   run_once: True
   with_items:
     - localhost
-    - "{{ groups['neutron_controller'] }}"
     - '%'
 
 - name: install neutron configs on controllers

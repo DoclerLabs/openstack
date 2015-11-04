@@ -58,7 +58,6 @@
   run_once: True
   with_items:
     - localhost
-    - "{{ groups['nova_controller'] }}"
     - '%'
 
 - name: install virsh secret.xml
