@@ -23,6 +23,9 @@
 - name: install rabbitmq.config
   template: src=rabbitmq.config.j2 dest=/etc/rabbitmq/rabbitmq.config owner=rabbitmq group=rabbitmq mode=0400
 
+- name: setup rabbitmq fd limit
+  copy: content='ulimit -n {{ rabbitmq_fd_limit }}\n' dest=/etc/default/rabbitmq-server owner=root group=root mode=0644
+
 - name: ensure the first rabbitmq server is started
   service: name=rabbitmq-server state=started
   when: inventory_hostname == groups['rabbitmq'][0]
