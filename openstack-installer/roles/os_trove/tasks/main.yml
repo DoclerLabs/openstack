@@ -73,7 +73,6 @@
   run_once: True
   with_items:
     - localhost
-    - "{{ groups['trove'] }}"
     - '%'
 
 #Workaround for https://bugs.launchpad.net/trove/+bug/1473226

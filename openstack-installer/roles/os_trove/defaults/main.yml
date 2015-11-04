@@ -14,3 +14,6 @@ trove_physical_network: vlan
 trove_subnet_cidr: 10.20.30.0/24
 
 trove_image_path: /etc/openstack_deploy/trove-mysql.qcow2
+
+trove_backup_use_openssl_encryption: False
+trove_backup_aes_cbc_key: "default_aes_cbc_key"

@@ -23,8 +23,10 @@ control_exchange = trove
 # swift_url = http://10.0.0.1:8080/v1/AUTH_
 # Region name of this node. Default value is None.
 # os_region_name = RegionOne
+os_region_name = {{ keystone_region_name }}
 # Service type to use when searching catalog.
 # swift_service_type = object-store
+swift_service_type = object-store
 
 # ========== Datastore Manager Configurations ==========
 # Datastore manager implementations.
@@ -58,12 +60,17 @@ root_grant_option = True
 # For storage to Swift, use the following as defaults:
 # storage_strategy = SwiftStorage
 # storage_namespace = trove.guestagent.strategies.storage.swift
+storage_strategy = SwiftStorage
+storage_namespace = trove.guestagent.strategies.storage.swift
 
 # Default config options for storing backups to swift
 # backup_swift_container = database_backups
 # backup_use_gzip_compression = True
-# backup_use_openssl_encryption = True
+# backup_use_openssl_encryption = False
 # backup_aes_cbc_key = "default_aes_cbc_key"
+backup_use_openssl_encryption = {{ trove_backup_use_openssl_encryption }}
+backup_aes_cbc_key = "{{ trove_backup_aes_cbc_key }}"
+
 # backup_use_snet = False
 # backup_chunk_size = 65536
 # backup_segment_max_size = 2147483648
