@@ -6,18 +6,24 @@
 
 - name: install haproxy
   apt: name=haproxy state=latest
-  notify: restart haproxy
+  notify:
+    - restart rsyslog
+    - restart haproxy
 
 - name: install haproxy.cfg
   template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg owner=root group=root mode=0644
-  notify: restart haproxy
+  notify:
+    - restart rsyslog
+    - restart haproxy
 
 - name: create haproxy/conf.d
   file: dest=/etc/haproxy/conf.d state=directory owner=root group=root mode=0644
 
 - name: replace haproxy init script
   copy: src=haproxy.init dest=/etc/init.d/haproxy owner=root group=root mode=0755
-  notify: restart haproxy
+  notify:
+    - restart rsyslog
+    - restart haproxy
 
 - meta: flush_handlers
 
