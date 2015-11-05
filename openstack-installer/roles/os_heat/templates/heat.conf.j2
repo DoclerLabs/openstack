@@ -479,6 +479,25 @@ user_domain_name = {{ heat_domain_name }}
 project_name = service
 auth_plugin = password
 
+[trustee]
+
+auth_uri = http://{{ keystone_admin_ip }}:5000
+auth_url = http://{{ keystone_admin_ip }}:35357
+auth_plugin = password
+project_domain_name = {{ heat_domain_name }}
+user_domain_name = {{ heat_domain_name }}
+project_name = service
+username = heat
+password = {{ heat_admin_password }}
+
+[clients_keystone]
+
+auth_uri = http://{{ keystone_admin_ip }}:5000
+
+[ec2authtoken]
+
+auth_uri = http://{{ keystone_admin_ip }}:5000
+
 [matchmaker_redis]
 
 #
@@ -734,6 +753,7 @@ rabbit_password = {{ heat_rabbit_password }}
 # must wipe the RabbitMQ database. (boolean value)
 # Deprecated group/name - [DEFAULT]/rabbit_ha_queues
 #rabbit_ha_queues = false
+rabbit_ha_queues = true
 
 # Number of seconds after which the Rabbit broker is considered down if
 # heartbeat's keep-alive fails (0 disable the heartbeat). EXPERIMENTAL (integer
