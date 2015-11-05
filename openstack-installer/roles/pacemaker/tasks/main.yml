@@ -58,6 +58,11 @@
   pacemaker: property stonith-enabled="false"
   run_once: True
 
+- name: set no-quorum-policy
+  pacemaker: property no-quorum-policy="ignore"
+  when: play_hosts | count < 3
+  run_once: True
+
 - name: create mgmt VIP address
   pacemaker: primitive mgmt_vip ocf:heartbeat:IPaddr2
          params ip="{{ vip_mgmt }}" cidr_netmask="{{ vip_mgmt_cidr }}" nic="{{ vip_mgmt_nic }}"
