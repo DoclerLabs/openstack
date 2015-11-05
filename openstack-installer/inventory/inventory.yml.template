@@ -107,6 +107,11 @@ ceph_osd:
       - { path: "/var/lib/osd1" }
       - { disk: "/dev/vg00/ceph" }
 
+#The radosgw keystone authentication uses the certificates for signature checking,
+#which are local to the keystone instance
+ceph_radosgw:
+  inherit: keystone
+
 # -------- Compute --------
 compute:
   jsm-devops-swify-test-1:

@@ -1,0 +1,51 @@
+---
+
+- hosts: ceph_radosgw[0]
+  user: ansible
+  max_fail_percentage: 0
+  roles:
+    - os_keystone_service
+  vars:
+    keystone_service_name: swift
+    keystone_service_type: object-store
+    keystone_service_description: "OpenStack Object Storage Service"
+    keystone_public_url: "http://{{ keystone_internal_ip }}:8080/swift/v1"
+    keystone_internal_url: "http://{{ keystone_internal_ip }}:8080/swift/v1"
+    keystone_admin_url: "http://{{ keystone_public_ip }}:8080/swift/v1"
+    keystone_region: "{{ keystone_region_name }}"
+    keystone_projects: []
+
+- hosts: ceph_radosgw
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - { role: ceph_client }
+  vars:
+    ceph_user: radosgw.gateway
+    ceph_rights: mon 'allow rwx' osd 'allow rwx'
+    ceph_keyring_owner: root
+
+- hosts: ceph_radosgw
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - common
+    - ceph_radosgw
+
+- hosts: haproxy
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - haproxy_service
+  vars:
+    haproxy_services:
+      - haproxy_service_name: ceph_radosgw
+        haproxy_backend_nodes: "{{ groups['ceph_radosgw'] }}"
+        haproxy_bind_hosts:
+          - "{{ vip_mgmt }}"
+          - "{{ vip_public }}"
+        haproxy_port: 8080
+        haproxy_balance_type: http

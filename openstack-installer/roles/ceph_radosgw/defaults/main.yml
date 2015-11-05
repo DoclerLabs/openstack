@@ -1,0 +1,3 @@
+---
+
+rgw_keystone_accepted_roles: "Member, admin, swiftoperator"
