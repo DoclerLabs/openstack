@@ -9,15 +9,15 @@
     keystone_service_name: heat
     keystone_service_type: orchestration
     keystone_service_description: "OpenStack Orchestration Service"
-    keystone_public_url: "http://{{ keystone_internal_ip }}:8004/v1/%(tenant_id)s"
-    keystone_internal_url: "http://{{ keystone_internal_ip }}:8004/v1/%(tenant_id)s"
-    keystone_admin_url: "http://{{ keystone_public_ip }}:8004/v1/%(tenant_id)s"
+    keystone_public_url: "http://{{ vip_public }}:8004/v1/%(tenant_id)s"
+    keystone_internal_url: "http://{{ vip_mgmt }}:8004/v1/%(tenant_id)s"
+    keystone_admin_url: "http://{{ vip_mgmt }}:8004/v1/%(tenant_id)s"
     keystone_region: "{{ keystone_region_name }}"
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
         keystone_user: heat
-        keystone_domain: "{{ keystone_domain_id }}"
+        keystone_domain_name: "{{ keystone_domain_name }}"
         keystone_password: "{{ heat_admin_password }}"
         keystone_role: admin
 
@@ -30,15 +30,15 @@
     keystone_service_name: heat-cfn
     keystone_service_type: cloudformation
     keystone_service_description: "OpenStack Orchestration Service"
-    keystone_public_url: "http://{{ keystone_internal_ip }}:8000/v1"
-    keystone_internal_url: "http://{{ keystone_internal_ip }}:8000/v1"
-    keystone_admin_url: "http://{{ keystone_public_ip }}:8000/v1"
+    keystone_public_url: "http://{{ vip_public }}:8000/v1"
+    keystone_internal_url: "http://{{ vip_mgmt }}:8000/v1"
+    keystone_admin_url: "http://{{ vip_mgmt }}:8000/v1"
     keystone_region: "{{ keystone_region_name }}"
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
         keystone_user: heat
-        keystone_domain: "{{ keystone_domain_id }}"
+        keystone_domain_name: "{{ keystone_domain_name }}"
         keystone_password: "{{ heat_admin_password }}"
         keystone_role: admin
 

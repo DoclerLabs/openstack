@@ -10,8 +10,8 @@ auth_url = http://{{ keystone_internal_ip }}:35357
 auth_region = {{ keystone_region_name }}
 username = neutron
 password = {{ neutron_admin_password }}
-project_domain_id = {{ neutron_domain_id }}
-user_domain_id = {{ neutron_domain_id }}
+project_domain_name = {{ neutron_domain_name }}
+user_domain_name = {{ neutron_domain_name }}
 project_name = service
 
 # Turn off verification of the certificate for ssl

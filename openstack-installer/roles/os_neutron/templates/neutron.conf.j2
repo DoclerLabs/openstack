@@ -702,8 +702,8 @@ auth_uri = http://{{ keystone_internal_ip }}:5000
 auth_url = http://{{ keystone_internal_ip }}:35357
 username = neutron
 password = {{ neutron_admin_password }}
-project_domain_id = {{ neutron_domain_id }}
-user_domain_id = {{ neutron_domain_id }}
+project_domain_name = {{ neutron_domain_name }}
+user_domain_name = {{ neutron_domain_name }}
 project_name = service
 
 memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
@@ -794,8 +794,8 @@ region_name = {{ keystone_region_name }}
 # timeout =
 
 auth_url = http://{{ vip_mgmt }}:35357
-project_domain_id = {{ neutron_domain_id }}
-user_domain_id = {{ neutron_domain_id }}
+project_domain_name = {{ neutron_domain_name }}
+user_domain_name = {{ neutron_domain_name }}
 region_name = {{ keystone_region_name }}
 project_name = service
 username = nova

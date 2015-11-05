@@ -9,15 +9,15 @@
     keystone_service_name: nova
     keystone_service_type: compute
     keystone_service_description: "OpenStack Compute Service"
-    keystone_public_url: "http://{{ keystone_internal_ip }}:8774/v2/%(tenant_id)s"
-    keystone_internal_url: "http://{{ keystone_internal_ip }}:8774/v2/%(tenant_id)s"
-    keystone_admin_url: "http://{{ keystone_public_ip }}:8774/v2/%(tenant_id)s"
+    keystone_public_url: "http://{{ vip_public }}:8774/v2/%(tenant_id)s"
+    keystone_internal_url: "http://{{ vip_mgmt }}:8774/v2/%(tenant_id)s"
+    keystone_admin_url: "http://{{ vip_mgmt }}:8774/v2/%(tenant_id)s"
     keystone_region: "{{ keystone_region_name }}"
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
         keystone_user: nova
-        keystone_domain: "{{ keystone_domain_id }}"
+        keystone_domain_name: "{{ keystone_domain_name }}"
         keystone_password: "{{ nova_admin_password }}"
         keystone_role: admin
 
@@ -43,10 +43,12 @@
       register: cinder_key
       changed_when: False
       delegate_to: "{{ groups['ceph_monitor'][0] }}"
+      when: cinder_backend == 'ceph'
       run_once: True
 
     - name: install cinder secret into virsh
       command: 'virsh secret-set-value --secret {{ cinder_volume_secret_uuid }} --base64 {{ cinder_key.stdout }}'
+      when: cinder_backend == 'ceph'
   vars:
     ceph_user: "{{ cinder_ceph_user }}"
     ceph_rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=volumes, allow rwx pool=vms, allow rx pool={{ cinder_ceph_pool }}'"

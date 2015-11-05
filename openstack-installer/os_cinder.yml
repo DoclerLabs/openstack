@@ -9,15 +9,15 @@
     keystone_service_name: cinder
     keystone_service_type: volume
     keystone_service_description: "OpenStack Block Storage Service"
-    keystone_public_url: "http://{{ keystone_internal_ip }}:8776/v1/%(tenant_id)s"
-    keystone_internal_url: "http://{{ keystone_internal_ip }}:8776/v1/%(tenant_id)s"
-    keystone_admin_url: "http://{{ keystone_public_ip }}:8776/v1/%(tenant_id)s"
+    keystone_public_url: "http://{{ vip_public }}:8776/v1/%(tenant_id)s"
+    keystone_internal_url: "http://{{ vip_mgmt }}:8776/v1/%(tenant_id)s"
+    keystone_admin_url: "http://{{ vip_mgmt }}:8776/v1/%(tenant_id)s"
     keystone_region: "{{ keystone_region_name }}"
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
         keystone_user: cinder
-        keystone_domain: "{{ keystone_domain_id }}"
+        keystone_domain_name: "{{ keystone_domain_name }}"
         keystone_password: "{{ cinder_admin_password }}"
         keystone_role: admin
 
@@ -30,15 +30,15 @@
     keystone_service_name: cinderv2
     keystone_service_type: volumev2
     keystone_service_description: "OpenStack Block Storage Service"
-    keystone_public_url: "http://{{ keystone_internal_ip }}:8776/v2/%(tenant_id)s"
-    keystone_internal_url: "http://{{ keystone_internal_ip }}:8776/v2/%(tenant_id)s"
-    keystone_admin_url: "http://{{ keystone_public_ip }}:8776/v2/%(tenant_id)s"
+    keystone_public_url: "http://{{ vip_public }}:8776/v2/%(tenant_id)s"
+    keystone_internal_url: "http://{{ vip_mgmt }}:8776/v2/%(tenant_id)s"
+    keystone_admin_url: "http://{{ vip_mgmt }}:8776/v2/%(tenant_id)s"
     keystone_region: "{{ keystone_region_name }}"
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
         keystone_user: cinder
-        keystone_domain: "{{ keystone_domain_id }}"
+        keystone_domain_name: "{{ keystone_domain_name }}"
         keystone_password: "{{ cinder_admin_password }}"
         keystone_role: admin
 

@@ -4,7 +4,7 @@ glance_db_user: glance
 glance_mysql_server: "{{ vip_mgmt }}"
 glance_db: glance
 glance_rabbit_user: glance
-glance_domain_id: "{{ keystone_domain_id }}"
+glance_domain_name: "{{ keystone_domain_name }}"
 
 glance_backend: files
 glance_ceph_pool: images

@@ -11,12 +11,14 @@
     internalurl="{{ keystone_internal_url }}"
     adminurl="{{ keystone_admin_url }}"
     region="{{ keystone_region }}"
+    ignore_other_regions=true
   when: keystone_service_name is defined
 
 - name: create the project in keystone
   keystone_user: >
     token="{{ keystone_admin_token }}"
     endpoint="http://{{ keystone_admin_ip }}:35357/v3"
+    domain="{{ item.keystone_domain_name | default('Default') }}"
     project="{{ item.keystone_project_name }}"
     project_description="{{ item.keystone_project_description }}"
   with_items: keystone_projects
@@ -27,7 +29,7 @@
     endpoint="http://{{ keystone_admin_ip }}:35357/v3"
     project="{{ item.keystone_project_name }}"
     user="{{ item.keystone_user }}"
-    domain="{{ item.keystone_domain_id | default('default') }}"
+    domain="{{ item.keystone_domain_name | default('Default') }}"
     password="{{ item.keystone_password }}"
   with_items: keystone_projects
   when: item.keystone_user is defined
@@ -38,7 +40,7 @@
     endpoint="http://{{ keystone_admin_ip }}:35357/v3"
     project="{{ item.keystone_project_name }}"
     user="{{ item.keystone_user }}"
-    domain="{{ item.keystone_domain_id | default('default') }}"
+    domain="{{ item.keystone_domain_name | default('Default') }}"
     role="{{ item.keystone_role }}"
   with_items: keystone_projects
   when: item.keystone_role is defined

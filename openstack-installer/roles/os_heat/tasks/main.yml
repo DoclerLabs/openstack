@@ -41,10 +41,18 @@
   keystone_user: >
     token="{{ keystone_admin_token }}"
     endpoint="http://{{ keystone_admin_ip }}:35357/v3"
-    project=service
     domain="{{ heat_user_domain }}"
     user="{{ heat_domain_admin }}"
     password="{{ heat_domain_admin_password }}"
+  run_once: True
+
+- name: add the admin role to the heat domain admin
+  keystone_user: >
+    token="{{ keystone_admin_token }}"
+    endpoint="http://{{ keystone_admin_ip }}:35357/v3"
+    domain="{{ heat_user_domain }}"
+    user="{{ heat_domain_admin }}"
+    role=admin
   run_once: True
 
 - name: install heat configs

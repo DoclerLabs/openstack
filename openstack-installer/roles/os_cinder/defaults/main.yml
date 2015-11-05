@@ -4,7 +4,7 @@ cinder_db_user: cinder
 cinder_mysql_server: "{{ vip_mgmt }}"
 cinder_db: cinder
 cinder_rabbit_user: cinder
-cinder_domain_id: "{{ keystone_domain_id }}"
+cinder_domain_name: "{{ keystone_domain_name }}"
 
 cinder_backend: lvm
 cinder_ceph_pool: volumes

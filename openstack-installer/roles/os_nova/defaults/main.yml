@@ -4,7 +4,7 @@ nova_db_user: nova
 nova_mysql_server: "{{ vip_mgmt }}"
 nova_db: nova
 nova_rabbit_user: nova
-nova_domain_id: "{{ keystone_domain_id }}"
+nova_domain_name: "{{ keystone_domain_name }}"
 
 nova_compute_driver: libvirt.LibvirtDriver
 

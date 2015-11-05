@@ -40,7 +40,18 @@
           - httpchk
           - httplog
 
-- hosts: keystone[0]
+#The plays below must run without an installed keystone (e.g. second region),
+#so the controller[0] host is there
+
+- hosts: controller[0]
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  tasks:
+    - name: install python-keystoneclient
+      apt: name=python-keystoneclient
+
+- hosts: controller[0]
   user: ansible
   max_fail_percentage: 0
   roles:
@@ -57,7 +68,9 @@
       - keystone_project_name: admin
         keystone_project_description: "Admin Project"
         keystone_user: admin
+        keystone_domain_name: "{{ keystone_domain_name }}"
         keystone_password: "{{ keystone_admin_password }}"
         keystone_role: admin
       - keystone_project_name: service
+        keystone_domain_name: "{{ keystone_domain_name }}"
         keystone_project_description: "Service Project"

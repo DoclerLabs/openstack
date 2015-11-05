@@ -9,15 +9,15 @@
     keystone_service_name: trove
     keystone_service_type: database
     keystone_service_description: "OpenStack Database Service"
-    keystone_public_url: "http://{{ keystone_internal_ip }}:8779/v1.0/$(tenant_id)s"
-    keystone_internal_url: "http://{{ keystone_internal_ip }}:8779/v1.0/$(tenant_id)s"
-    keystone_admin_url: "http://{{ keystone_public_ip }}:8779/v1.0/$(tenant_id)s"
+    keystone_public_url: "http://{{ vip_public }}:8779/v1.0/$(tenant_id)s"
+    keystone_internal_url: "http://{{ vip_mgmt }}:8779/v1.0/$(tenant_id)s"
+    keystone_admin_url: "http://{{ vip_mgmt }}:8779/v1.0/$(tenant_id)s"
     keystone_region: "{{ keystone_region_name }}"
     keystone_projects:
       - keystone_project_name: trove
         keystone_project_description: "Trove Project"
         keystone_user: trove
-        keystone_domain: "{{ keystone_domain_id }}"
+        keystone_domain_name: "{{ keystone_domain_name }}"
         keystone_password: "{{ trove_admin_password }}"
         keystone_role: admin
 

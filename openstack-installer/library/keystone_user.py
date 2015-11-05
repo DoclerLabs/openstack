@@ -109,22 +109,12 @@ def authenticate(endpoint, token, login_user, login_password, login_project_name
         return client.Client(auth_url=endpoint, username=login_user,
                              password=login_password, project_name=login_project_name)
 
-def project_exists(keystone, project):
-    """ Return True if project already exists"""
-    return project in [x.name for x in keystone.projects.list()]
-
-
-def user_exists(keystone, user):
-    """" Return True if user already exists"""
-    return user in [x.name for x in keystone.users.list()]
-
-
-def get_project(keystone, name):
+def get_project(keystone, domain, name):
     """ Retrieve a project by name"""
-    projects = [x for x in keystone.projects.list() if x.name == name]
+    projects = [x for x in keystone.projects.list(domain=domain) if x.name == name]
     count = len(projects)
     if count == 0:
-        raise KeyError("No keystone projects with name %s" % name)
+        raise KeyError("No keystone projects with domain %s name %s" % (domain, name))
     elif count > 1:
         raise ValueError("%d projects with name %s" % (count, name))
     else:
@@ -164,15 +154,6 @@ def get_role(keystone, name):
     else:
         return roles[0]
 
-
-def get_project_id(keystone, name):
-    return get_project(keystone, name).id
-
-
-def get_user_id(keystone, domain, name):
-    return get_user(keystone, domain, name).id
-
-
 def ensure_project_exists(keystone, project_name, project_description, project_domain,
                          check_mode):
     """ Ensure that a project exists.
@@ -181,9 +162,16 @@ def ensure_project_exists(keystone, project_name, project_description, project_d
         already existed.
     """
 
+    # Check if domain already exists
+    try:
+        domain_id = get_domain(keystone, project_domain).id
+    except KeyError:
+        # domain doesn't exist yet
+        domain_id = keystone.domains.create(name=project_domain).id
+
     # Check if project already exists
     try:
-        project = get_project(keystone, project_name)
+        project = get_project(keystone, domain_id, project_name)
     except KeyError:
         # project doesn't exist yet
         pass
@@ -204,7 +192,7 @@ def ensure_project_exists(keystone, project_name, project_description, project_d
 
     ks_project = keystone.projects.create(name=project_name,
                                         description=project_description,
-                                        domain=project_domain,
+                                        domain=domain_id,
                                         enabled=True)
     return (True, ks_project.id)
 
@@ -233,7 +221,7 @@ def ensure_user_exists(keystone, user_name, password, email, domain, project_nam
 
     # Check if domain already exists
     try:
-        domain_id = get_domain(keystone, domain)
+        domain_id = get_domain(keystone, domain).id
     except KeyError:
         # domain doesn't exist yet
         domain_id = keystone.domains.create(name=domain).id
@@ -251,10 +239,11 @@ def ensure_user_exists(keystone, user_name, password, email, domain, project_nam
     # We now know we will have to create a new user
     if check_mode:
         return (True, None)
-    project = get_project(keystone, project_name)
+
+    project_id = get_project(keystone, domain_id, project_name).id if project_name else None
 
     user = keystone.users.create(name=user_name, password=password,
-                                 email=email, domain=domain_id, default_project=project.id)
+                                 email=email, domain=domain_id, default_project=project_id)
 
     return (True, user.id)
 
@@ -268,11 +257,16 @@ def ensure_role_exists(keystone, domain, user_name, project_name, role_name,
         exists and was already assigned to the user ofr the project.
 
     """
+    domain_id = get_domain(keystone, domain).id
     # Check if the user has the role in the project
-    user = get_user(keystone, domain, user_name)
-    project = get_project(keystone, project_name)
-    roles = [x for x in keystone.roles.list(user=user, project=project)
-                     if x.name == role_name]
+    user = get_user(keystone, domain_id, user_name)
+    project = get_project(keystone, domain_id, project_name).id if project_name else None
+    if project:
+        roles = keystone.roles.list(user=user, project=project)
+    else:
+        roles = keystone.roles.list(user=user, domain=domain_id)
+
+    roles = [x for x in roles if x.name == role_name]
     count = len(roles)
 
     if count == 1:
@@ -295,7 +289,10 @@ def ensure_role_exists(keystone, domain, user_name, project_name, role_name,
         role = keystone.roles.create(role_name)
 
     # Associate the role with the user in the admin
-    keystone.roles.grant(user=user, role=role, project=project)
+    if project:
+        keystone.roles.grant(user=user, role=role, project=project)
+    else:
+        keystone.roles.grant(user=user, role=role, domain=domain_id)
     return (True, role.id)
 
 
@@ -398,15 +395,15 @@ def dispatch(keystone, user=None, password=None, project=None,
                                            project_description, domain, check_mode)
     elif project and not user and not role and state == "absent":
         changed = ensure_project_absent(keystone, project, check_mode)
-    elif project and user and not role and state == "present":
+    elif user and not role and state == "present":
         changed, id = ensure_user_exists(keystone, user, password,
                                          email, domain, project, check_mode)
-    elif project and user and not role and state == "absent":
+    elif user and not role and state == "absent":
         changed = ensure_user_absent(keystone, domain, user, check_mode)
-    elif project and user and role and state == "present":
+    elif user and role and state == "present":
         changed, id = ensure_role_exists(keystone, domain, user, project, role,
                                          check_mode)
-    elif project and user and role and state == "absent":
+    elif user and role and state == "absent":
         changed = ensure_role_absent(keystone, domain, user, project, role, check_mode)
     else:
         # Should never reach here

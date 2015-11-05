@@ -57,8 +57,8 @@ auth_url = http://{{ keystone_internal_ip }}:35357
 auth_region = {{ keystone_region_name }}
 username = cinder
 password = {{ cinder_admin_password }}
-project_domain_id = {{ cinder_domain_id }}
-user_domain_id = {{ cinder_domain_id }}
+project_domain_name = {{ cinder_domain_name }}
+user_domain_name = {{ cinder_domain_name }}
 project_name = service
 
 memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}

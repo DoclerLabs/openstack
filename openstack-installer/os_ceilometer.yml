@@ -8,15 +8,15 @@
     keystone_service_name: ceilometer
     keystone_service_type: metering
     keystone_service_description: "OpenStack Telemetry Service"
-    keystone_public_url: "http://{{ keystone_internal_ip }}:8777"
-    keystone_internal_url: "http://{{ keystone_internal_ip }}:8777"
-    keystone_admin_url: "http://{{ keystone_public_ip }}:8777"
+    keystone_public_url: "http://{{ vip_public }}:8777"
+    keystone_internal_url: "http://{{ vip_mgmt }}:8777"
+    keystone_admin_url: "http://{{ vip_mgmt }}:8777"
     keystone_region: "{{ keystone_region_name }}"
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
         keystone_user: ceilometer
-        keystone_domain: "{{ keystone_domain_id }}"
+        keystone_domain_name: "{{ keystone_domain_name }}"
         keystone_password: "{{ ceilometer_admin_password }}"
         keystone_role: admin
 
@@ -29,15 +29,15 @@
     keystone_service_name: aodh
     keystone_service_type: alarming
     keystone_service_description: "OpenStack Alarming Service"
-    keystone_public_url: "http://{{ keystone_internal_ip }}:8042"
-    keystone_internal_url: "http://{{ keystone_internal_ip }}:8042"
-    keystone_admin_url: "http://{{ keystone_public_ip }}:8042"
+    keystone_public_url: "http://{{ vip_public }}:8042"
+    keystone_internal_url: "http://{{ vip_mgmt }}:8042"
+    keystone_admin_url: "http://{{ vip_mgmt }}:8042"
     keystone_region: "{{ keystone_region_name }}"
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
         keystone_user: aodh
-        keystone_domain: "{{ keystone_domain_id }}"
+        keystone_domain_name: "{{ keystone_domain_name }}"
         keystone_password: "{{ aodh_admin_password }}"
         keystone_role: admin
 
