@@ -34,11 +34,16 @@ options:
         - Password of login user
      required: true
      default: 'yes'
-   login_tenant_name:
+   login_project_name:
      description:
-        - The tenant name of the login user
-     required: true
-     default: 'yes'
+        - The project name of the login user
+     required: false
+     default: None
+   login_domain_name:
+     description:
+        - The domain name of the login user
+     required: false
+     default: default
    auth_url:
      description:
         - The keystone url for authentication
@@ -136,10 +141,19 @@ except ImportError:
 
 
 def _get_ksclient(module, kwargs):
+    login_project_name=kwargs.get('login_project_name')
     try:
-        client = ksclient.Client(username=kwargs.get('login_username'),
+        if login_project_name:
+            client = ksclient.Client(username=kwargs.get('login_username'),
                                  password=kwargs.get('login_password'),
-                                 tenant_name=kwargs.get('login_tenant_name'),
+                                 project_name=login_project_name,
+                                 project_domain_name=kwargs.get('login_domain_name'),
+                                 user_domain_name=kwargs.get('login_domain_name'),
+                                 auth_url=kwargs.get('auth_url'))
+        else:
+            client = ksclient.Client(username=kwargs.get('login_username'),
+                                 password=kwargs.get('login_password'),
+                                 user_domain_name=kwargs.get('login_domain_name'),
                                  auth_url=kwargs.get('auth_url'))
     except Exception, e:
         module.fail_json(msg="Error authenticating to the keystone: %s " % e.message)
@@ -231,7 +245,9 @@ def main():
         timeout           = dict(default=180),
         file              = dict(default=None),
         endpoint_type     = dict(default='publicURL', choices=['publicURL', 'internalURL']),
-        state             = dict(default='present', choices=['absent', 'present'])
+        state             = dict(default='present', choices=['absent', 'present']),
+        login_domain_name = dict(default='default'),
+        login_project_name = dict(default=None)
     ))
     module = AnsibleModule(
         argument_spec=argument_spec,

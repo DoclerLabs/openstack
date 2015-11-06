@@ -108,7 +108,7 @@
   local_action: glance_image
     auth_url="http://{{ keystone_admin_ip }}:35357/v3"
     login_username=trove
-    login_tenant_name=trove
+    login_domain_name={{ trove_domain_name }}
     login_password="{{ trove_admin_password }}"
     file="{{ trove_image_path }}"
     name=trove-mysql-image
