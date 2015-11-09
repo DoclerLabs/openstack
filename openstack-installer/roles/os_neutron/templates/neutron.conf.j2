@@ -793,7 +793,7 @@ region_name = {{ keystone_region_name }}
 # Timeout value for http requests
 # timeout =
 
-auth_url = http://{{ vip_mgmt }}:35357
+auth_url = http://{{ keystone_admin_ip }}:35357
 project_domain_name = {{ neutron_domain_name }}
 user_domain_name = {{ neutron_domain_name }}
 region_name = {{ keystone_region_name }}
