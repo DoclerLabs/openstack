@@ -4,9 +4,8 @@ ironic_db_user: ironic
 ironic_mysql_server: "{{ vip_mgmt }}"
 ironic_db: ironic
 ironic_rabbit_user: ironic
+ironic_admin_user: ironic
 ironic_domain_name: "{{ keystone_domain_name }}"
 
 ironic_deploy_kernel_path: /etc/openstack_deploy/ironic-deploy.vmlinuz
-ironic_deploy_initrd_path: /etc/openstack_deploy/ironic-deploy.initramfs
-
-ironic_tftp_interface: eth1
+ironic_deploy_initramfs_path: /etc/openstack_deploy/ironic-deploy.initramfs

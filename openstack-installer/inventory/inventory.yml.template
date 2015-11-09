@@ -69,6 +69,8 @@ cinder:
 cinder_volume:
   inherit: controller
 
+ironic:
+
 # -------- Ceph ---------
 ceph_monitor:
   jsm-ceph-osd-lubet-5:

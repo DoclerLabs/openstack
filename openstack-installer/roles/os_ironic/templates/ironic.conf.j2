@@ -1189,7 +1189,7 @@ region_name={{ keystone_region_name }}
 
 # Complete public Identity API endpoint. (string value)
 #auth_uri=<None>
-auth_uri = http://{{ keystone_internal_ip }}:5000
+auth_uri = http://{{ keystone_internal_ip }}:5000/v2.0
 auth_url = http://{{ keystone_internal_ip }}:35357
 
 # API version of the admin Identity API endpoint. (string
@@ -1364,14 +1364,16 @@ identity_uri = http://{{ keystone_admin_ip }}:35357/
 
 # Service username. (string value)
 #admin_user=<None>
+admin_user={{ ironic_admin_user }}
 
 # Service user password. (string value)
 #admin_password=<None>
-
+admin_password = {{ ironic_admin_password }}
 # Service tenant name. (string value)
 #admin_tenant_name=admin
+admin_tenant_name = service
 
-username = ironic
+username = {{ ironic_admin_user }}
 password = {{ ironic_admin_password }}
 project_domain_name = {{ ironic_domain_name }}
 user_domain_name = {{ ironic_domain_name }}
@@ -1752,7 +1754,7 @@ rabbit_ha_queues=true
 # IP address of ironic-conductor node's TFTP server. (string
 # value)
 #tftp_server=$my_ip
-tftp_server={{ hostvars[inventory_hostname]['ansible_' + ironic_tftp_interface]['ipv4']['address'] }}
+tftp_server={{ ip.tftp }}
 
 # ironic-conductor node's TFTP root path. (string value)
 tftp_root=/var/lib/tftpboot

@@ -91,7 +91,7 @@
 - name: set permissions of tftpboot
   file: path=/var/lib/tftpboot recurse=yes owner=ironic
 
-- name: upload the deploy kernel to ironic
+- name: upload the deploy kernel to glance
   local_action: glance_image
     auth_url="http://{{ keystone_admin_ip }}:35357/v3"
     login_domain_name="{{ ironic_domain_name }}"
@@ -104,7 +104,7 @@
     container_format=aki
   run_once: True
 
-- name: upload the deploy initrd to ironic
+- name: upload the deploy initramfs to glance
   local_action: glance_image
     auth_url="http://{{ keystone_admin_ip }}:35357/v3"
     login_project_name=service
@@ -112,8 +112,8 @@
     login_username=ironic
     login_password="{{ ironic_admin_password }}"
     region_name="{{ keystone_region_name }}"
-    file="{{ ironic_deploy_initrd_path }}"
-    name=ironic-deploy-initrd
+    file="{{ ironic_deploy_initramfs_path }}"
+    name=ironic-deploy-initramfs
     disk_format=aki
     container_format=aki
   run_once: True

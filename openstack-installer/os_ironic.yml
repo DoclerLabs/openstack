@@ -16,7 +16,7 @@
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
-        keystone_user: ironic
+        keystone_user: "{{ ironic_admin_user | default('ironic') }}"
         keystone_domain_name: "{{ ironic_domain_name | default(keystone_domain_name) }}"
         keystone_password: "{{ ironic_admin_password }}"
         keystone_role: admin
