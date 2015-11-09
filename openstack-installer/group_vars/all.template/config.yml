@@ -13,6 +13,9 @@ keystone_public_ip: "{{ vip_mgmt }}"
 keystone_region_name: RegionONE
 keystone_domain_name: Default
 
+#Nova compute ironic driver supports only keystone v2.0
+ironic_domain_name: Default
+
 neutron_flat_networks:
 neutron_physical_interface_mappings: vlan:br-vlan
 neutron_vlan_ranges: vlan:901:915

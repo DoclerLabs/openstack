@@ -1,0 +1,119 @@
+---
+
+- name: create ironic user in rabbitmq
+  rabbitmq_user: user="{{ ironic_rabbit_user }}" password="{{ ironic_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: disable autostart of ironic services
+  copy: content='manual' dest=/etc/init/{{ item }}.override mode=0644 owner=root group=root force=no
+  with_items:
+    - ironic-api
+    - ironic-conductor
+
+- name: install ironic packages
+  apt: name={{ item }} state=latest
+  with_items:
+    - ipmitool
+    - tftpd-hpa
+    - syslinux-common
+    - syslinux
+    - qemu-utils
+    - open-iscsi
+    - ironic-api
+    - ironic-common
+    - ironic-conductor
+    - python-ironic
+    - python-ironicclient
+  notify: restart ironic
+
+- name: create ironic database
+  mysql_db: name={{ ironic_db }}
+    login_host={{ ironic_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create ironic database user
+  mysql_user: name={{ ironic_db_user }} password={{ ironic_db_password }} host={{ item }} priv={{ ironic_db }}.*:ALL
+    login_host={{ ironic_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - '%'
+
+- name: install ironic configs
+  template: src={{ item }}.j2 dest=/etc/ironic/{{ item }} mode=0460 owner=ironic group=root
+  with_items:
+    - ironic.conf
+  notify: restart ironic
+
+- name: ensure ironic-dbsync.log owned by ironic
+  file: path=/var/log/ironic/ironic-dbsync.log state=file owner=ironic group=ironic mode=0640
+
+- name: Perform a ironic DB sync
+  command: su ironic -s /bin/sh -c 'ironic-dbsync --config-file /etc/ironic/ironic.conf'
+  run_once: True
+  register: ironic_db_sync
+  changed_when: "'Running upgrade' in ironic_db_sync.stderr"
+  notify: restart ironic
+
+- meta: flush_handlers
+
+- name: ensure ironic services are started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - ironic-api
+    - ironic-conductor
+
+- name: copy pxelinux to tftpd dir
+  command: cp /usr/lib/syslinux/{{ item }} /var/lib/tftpboot creates=/var/lib/tftpboot/{{ item }}
+  with_items:
+    - pxelinux.0
+    - chain.c32
+
+- name: install map file for tftp
+  copy: src=map-file dest=/var/lib/tftpboot/map-file
+  notify: restart tftp
+
+- name: set tftpd options (use map file)
+  lineinfile: dest=/etc/default/tftpd-hpa
+    regexp='^TFTP_OPTIONS'
+    line='TFTP_OPTIONS="--secure  --map-file /var/lib/tftpboot/map-file"'
+    owner=root group=root mode=0644
+  notify: restart tftp
+
+- meta: flush_handlers
+
+- name: ensure tftpd is started
+  service: name=tftpd-hpa state=started enabled=yes
+
+- name: set permissions of tftpboot
+  file: path=/var/lib/tftpboot recurse=yes owner=ironic
+
+- name: upload the deploy kernel to ironic
+  local_action: glance_image
+    auth_url="http://{{ keystone_admin_ip }}:35357/v3"
+    login_domain_name="{{ ironic_domain_name }}"
+    login_username=ironic
+    login_password="{{ ironic_admin_password }}"
+    region_name="{{ keystone_region_name }}"
+    file="{{ ironic_deploy_kernel_path }}"
+    name=ironic-deploy-kernel
+    disk_format=aki
+    container_format=aki
+  run_once: True
+
+- name: upload the deploy initrd to ironic
+  local_action: glance_image
+    auth_url="http://{{ keystone_admin_ip }}:35357/v3"
+    login_project_name=service
+    login_domain_name="{{ ironic_domain_name }}"
+    login_username=ironic
+    login_password="{{ ironic_admin_password }}"
+    region_name="{{ keystone_region_name }}"
+    file="{{ ironic_deploy_initrd_path }}"
+    name=ironic-deploy-initrd
+    disk_format=aki
+    container_format=aki
+  run_once: True

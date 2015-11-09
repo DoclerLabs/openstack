@@ -1,0 +1,50 @@
+---
+
+- hosts: ironic[0]
+  user: ansible
+  max_fail_percentage: 0
+  roles:
+    - os_keystone_service
+  vars:
+    keystone_service_name: ironic
+    keystone_service_type: baremetal
+    keystone_service_description: "OpenStack bare metal service"
+    keystone_public_url: "http://{{ vip_public }}:6385"
+    keystone_internal_url: "http://{{ vip_mgmt }}:6385"
+    keystone_admin_url: "http://{{ vip_mgmt }}:6385"
+    keystone_region: "{{ keystone_region_name }}"
+    keystone_projects:
+      - keystone_project_name: service
+        keystone_project_description: "Service Project"
+        keystone_user: ironic
+        keystone_domain_name: "{{ ironic_domain_name | default(keystone_domain_name) }}"
+        keystone_password: "{{ ironic_admin_password }}"
+        keystone_role: admin
+
+- hosts: ironic
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - common
+    - os_ironic
+
+- hosts: haproxy
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - haproxy_service
+  vars:
+    haproxy_services:
+      - haproxy_service_name: ironic_api
+        haproxy_backend_nodes: "{{ groups['ironic'] }}"
+        haproxy_bind_hosts:
+          - "{{ vip_mgmt }}"
+          - "{{ vip_public }}"
+        haproxy_port: 6385
+        haproxy_balance_type: http
+        haproxy_backend_options:
+          - forwardfor
+          - httpchk
+          - httplog

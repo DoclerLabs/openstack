@@ -70,8 +70,14 @@
 
 - name: install nova configs
   template: src=nova.conf.j2 dest=/etc/nova/nova.conf owner=nova group=root mode=0460
-  notify: 
+  notify:
     - restart nova controller services
+    - restart nova compute services
+
+- name: install nova-compute.conf
+  copy: content='' dest=/etc/nova/nova-compute.conf owner=nova group=root mode=0460
+  when: inventory_hostname in groups['nova_compute']
+  notify:
     - restart nova compute services
 
 - name: sync nova db

@@ -7,7 +7,18 @@ rootwrap_config = /etc/nova/rootwrap.conf
 service_down_time = 120
 
 # Compute
+{% if groups['ironic'] | count > 0 %}
+compute_driver = nova.virt.ironic.IronicDriver
+scheduler_host_manager=nova.scheduler.ironic_host_manager.IronicHostManager
+ram_allocation_ratio=1.0
+reserved_host_memory_mb=0
+compute_manager=ironic.nova.compute.manager.ClusteredComputeManager
+scheduler_use_baremetal_filters=True
+scheduler_tracks_instance_changes=False
+{% else %}
 compute_driver = {{ nova_compute_driver }}
+{% endif %}
+
 instances_path = /var/lib/nova/instances
 instance_name_template = instance-%08x
 api_paste_config = /etc/nova/api-paste.ini
@@ -90,7 +101,7 @@ port = 9292
 # Neutron
 [neutron]
 url = http://{{ vip_mgmt }}:9696
-auth_url = http://{{ vip_mgmt }}:35357
+auth_url = http://{{ keystone_admin_ip }}:35357
 auth_plugin = password
 project_domain_name = {{ nova_domain_name }}
 user_domain_name = {{ nova_domain_name }}
@@ -156,3 +167,22 @@ use_usb_tablet = False
 use_virtio_for_bridges = True
 virt_type = {{ nova_virt_type }}
 live_migration_uri = qemu+ssh://nova@%s/system?keyfile=/var/lib/nova/.ssh/id_rsa&no_tty=1&no_verify=1
+
+{% if groups['ironic'] | count > 0 %}
+[ironic]
+
+# Ironic keystone admin name
+admin_username=ironic
+
+#Ironic keystone admin password.
+admin_password={{ ironic_admin_password }}
+
+# keystone API endpoint
+admin_url=http://{{ keystone_admin_ip }}:35357/v2.0
+
+# Ironic keystone tenant name.
+admin_tenant_name=service
+
+# URL for Ironic API endpoint.
+api_endpoint=http://{{ vip_mgmt }}:6385/v1
+{% endif %}
