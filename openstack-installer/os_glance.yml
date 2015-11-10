@@ -57,7 +57,7 @@
         haproxy_balance_type: http
         haproxy_backend_options:
           - forwardfor
-          - httpchk
+          - httpchk /healthcheck
           - httplog
 
       - haproxy_service_name: glance_registry
@@ -67,3 +67,5 @@
           - "{{ vip_public }}"
         haproxy_port: 9191
         haproxy_balance_type: http
+        haproxy_backend_options:
+          - httpchk /healthcheck
