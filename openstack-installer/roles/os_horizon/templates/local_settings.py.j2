@@ -50,6 +50,7 @@ ALLOWED_HOSTS = '*'
 # NOTE: The version should be formatted as it appears in the URL for the
 # service API. For example, The identity service APIs have inconsistent
 # use of the decimal point, so valid options would be 2.0 or 3.
+OPENSTACK_API_VERSIONS = { "identity": 3, }
 #OPENSTACK_API_VERSIONS = {
 #    "data-processing": 1.1,
 #    "identity": 3,
@@ -112,9 +113,10 @@ SECRET_KEY = '{{ horizon_secret_key }}'
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '{% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}',
+        'LOCATION': [{% for host in groups['memcached'] %}'{{ hostvars[host].ip.mgmt }}:11211'{% if not loop.last %},{% endif %}{% endfor %}],
     }
 }
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 #CACHES = {
 #    'default': {
@@ -139,9 +141,16 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #    ('http://cluster2.example.com:5000/v2.0', 'cluster2'),
 #]
 
+{% if horizon_regions is defined %}
+AVAILABLE_REGIONS = [
+{% for region in horizon_regions %}
+    ('{{ region.url }}', '{{ region.name }}'),
+{% endfor %}
+]
+{% endif %}
 OPENSTACK_HOST = "{{ keystone_admin_ip }}"
-OPENSTACK_KEYSTONE_URL = "http://%s:5000/v2.0" % OPENSTACK_HOST
-OPENSTACK_KEYSTONE_DEFAULT_ROLE = "user"
+OPENSTACK_KEYSTONE_URL = "http://%s:5000/v3" % OPENSTACK_HOST
+OPENSTACK_KEYSTONE_DEFAULT_ROLE = "_member_"
 
 # Enables keystone web single-sign-on if set to True.
 #WEBSSO_ENABLED = False
@@ -197,6 +206,7 @@ OPENSTACK_KEYSTONE_BACKEND = {
 # both.
 #LAUNCH_INSTANCE_LEGACY_ENABLED = True
 #LAUNCH_INSTANCE_NG_ENABLED = False
+LAUNCH_INSTANCE_NG_ENABLED = True
 
 # The Xen Hypervisor has the ability to set the mount point for volumes
 # attached to instances (other Hypervisors currently do not). Setting
@@ -222,7 +232,7 @@ OPENSTACK_NEUTRON_NETWORK = {
     'enable_quotas': True,
     'enable_ipv6': True,
     'enable_distributed_router': False,
-    'enable_ha_router': False,
+    'enable_ha_router': True,
     'enable_lb': True,
     'enable_firewall': True,
     'enable_vpn': True,

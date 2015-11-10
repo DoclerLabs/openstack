@@ -41,3 +41,7 @@ cinder_volume_secret_uuid: d048aa33-c46c-4573-a0c9-dd014d56e2b4
 glance_backend: ceph
 glance_ceph_pool: images
 glance_ceph_user: glance
+
+#horizon_regions:
+#  - { name: "RegionONE", url: "http://10.97.36.127:5000/v3" }
+#  - { name: "RegionTWO", url: "http://10.97.36.127:5000/v3" }
