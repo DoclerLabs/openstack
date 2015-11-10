@@ -468,7 +468,7 @@ auth_url = http://{{ keystone_internal_ip }}:35357
 
 # Service username. (string value)
 #admin_user = <None>
-admin_user = aodh
+admin_user = {{ aodh_admin_user }}
 
 # Service user password. (string value)
 #admin_password = <None>
@@ -480,7 +480,7 @@ admin_tenant_name = service
 
 [service_credentials]
 os_auth_url = http://{{ keystone_internal_ip }}:5000/v2.0
-os_username = aodh
+os_username = {{ aodh_admin_user }}
 os_tenant_name = service
 os_password = {{ aodh_admin_password }}
 os_endpoint_type = internalURL

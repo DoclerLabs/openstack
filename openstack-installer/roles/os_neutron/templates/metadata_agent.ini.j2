@@ -8,7 +8,7 @@
 auth_uri = http://{{ keystone_internal_ip }}:5000
 auth_url = http://{{ keystone_internal_ip }}:35357
 auth_region = {{ keystone_region_name }}
-username = neutron
+username = {{ neutron_admin_user }}
 password = {{ neutron_admin_password }}
 project_domain_name = {{ neutron_domain_name }}
 user_domain_name = {{ neutron_domain_name }}

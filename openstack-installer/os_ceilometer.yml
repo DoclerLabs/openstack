@@ -15,8 +15,8 @@
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
-        keystone_user: ceilometer
-        keystone_domain_name: "{{ keystone_domain_name }}"
+        keystone_user: "{{ ceilometer_admin_user | default('ceilometer') }}"
+        keystone_domain_name: "{{ ceilometer_domain_name | default(keystone_domain_name) }}"
         keystone_password: "{{ ceilometer_admin_password }}"
         keystone_role: admin
 
@@ -36,8 +36,8 @@
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
-        keystone_user: aodh
-        keystone_domain_name: "{{ keystone_domain_name }}"
+        keystone_user: "{{ aodh_admin_user | default('aodh') }}"
+        keystone_domain_name: "{{ aodh_domain_name | default(keystone_domain_name) }}"
         keystone_password: "{{ aodh_admin_password }}"
         keystone_role: admin
 

@@ -16,8 +16,8 @@
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
-        keystone_user: cinder
-        keystone_domain_name: "{{ keystone_domain_name }}"
+        keystone_user: "{{ cinder_admin_user | default('cinder') }}"
+        keystone_domain_name: "{{ cinder_domain_name | default(keystone_domain_name) }}"
         keystone_password: "{{ cinder_admin_password }}"
         keystone_role: admin
 
@@ -37,8 +37,8 @@
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
-        keystone_user: cinder
-        keystone_domain_name: "{{ keystone_domain_name }}"
+        keystone_user: "{{ cinder_admin_user | default('cinder') }}"
+        keystone_domain_name: "{{ cinder_domain_name | default(keystone_domain_name) }}"
         keystone_password: "{{ cinder_admin_password }}"
         keystone_role: admin
 

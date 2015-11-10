@@ -16,8 +16,8 @@
     keystone_projects:
       - keystone_project_name: trove
         keystone_project_description: "Trove Project"
-        keystone_user: trove
-        keystone_domain_name: "{{ keystone_domain_name }}"
+        keystone_user: "{{ trove_admin_user | default('trove') }}"
+        keystone_domain_name: "{{ trove_domain_name | default(keystone_domain_name) }}"
         keystone_password: "{{ trove_admin_password }}"
         keystone_role: admin
 

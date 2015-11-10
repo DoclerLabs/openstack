@@ -16,8 +16,8 @@
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
-        keystone_user: heat
-        keystone_domain_name: "{{ keystone_domain_name }}"
+        keystone_user: "{{ heat_admin_user | default('heat') }}"
+        keystone_domain_name: "{{ heat_domain_name | default(keystone_domain_name) }}"
         keystone_password: "{{ heat_admin_password }}"
         keystone_role: admin
 
@@ -37,8 +37,8 @@
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
-        keystone_user: heat
-        keystone_domain_name: "{{ keystone_domain_name }}"
+        keystone_user: "{{ heat_admin_user | default('heat') }}"
+        keystone_domain_name: "{{ heat_domain_name | default(keystone_domain_name) }}"
         keystone_password: "{{ heat_admin_password }}"
         keystone_role: admin
 

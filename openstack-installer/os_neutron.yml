@@ -16,8 +16,8 @@
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
-        keystone_user: neutron
-        keystone_domain_name: "{{ keystone_domain_name }}"
+        keystone_user: "{{ neutron_admin_user | default('neutron') }}"
+        keystone_domain_name: "{{ neutron_domain_name | default(keystone_domain_name) }}"
         keystone_password: "{{ neutron_admin_password }}"
         keystone_role: admin
 

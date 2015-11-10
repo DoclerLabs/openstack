@@ -103,11 +103,11 @@ port = 9292
 url = http://{{ vip_mgmt }}:9696
 auth_url = http://{{ keystone_admin_ip }}:35357
 auth_plugin = password
-project_domain_name = {{ nova_domain_name }}
-user_domain_name = {{ nova_domain_name }}
+project_domain_name = {{ neutron_domain_name }}
+user_domain_name = {{ neutron_domain_name }}
 region_name = {{ keystone_region_name }}
 project_name = service
-username = neutron
+username = {{ neutron_admin_user }}
 password = {{ neutron_admin_password }}
 
 service_metadata_proxy = True

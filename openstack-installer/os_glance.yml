@@ -16,8 +16,8 @@
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
-        keystone_user: glance
-        keystone_domain_name: "{{ keystone_domain_name }}"
+        keystone_user: "{{ glance_admin_user | default('glance') }}"
+        keystone_domain_name: "{{ glance_domain_name | default(keystone_domain_name) }}"
         keystone_password: "{{ glance_admin_password }}"
         keystone_role: admin
 

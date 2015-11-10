@@ -527,7 +527,7 @@ notification_driver = messagingv2
 
 # The file name to use with SQLite. (string value)
 # Deprecated group/name - [DEFAULT]/sqlite_db
-sqlite_db = /var/lib/glance/glance.sqlite
+#sqlite_db = /var/lib/glance/glance.sqlite
 
 # If True, SQLite uses synchronous mode. (boolean value)
 # Deprecated group/name - [DEFAULT]/sqlite_synchronous
@@ -535,7 +535,7 @@ sqlite_db = /var/lib/glance/glance.sqlite
 
 # The back end to use for the database. (string value)
 # Deprecated group/name - [DEFAULT]/db_backend
-backend = sqlalchemy
+#backend = sqlalchemy
 
 # The SQLAlchemy connection string to use to connect to the database.
 # (string value)
@@ -968,6 +968,7 @@ filesystem_store_datadir = /var/lib/glance/images
 
 # Region name of this node (string value)
 #os_region_name = <None>
+os_region_name = {{ keystone_region_name }}
 
 # Location of ca certicates file to use for cinder client requests.
 # (string value)
@@ -1043,9 +1044,11 @@ auth_url = http://{{ keystone_internal_ip }}:35357
 
 # The region in which the identity server can be found. (string value)
 #region_name = <None>
+region_name = {{ keystone_region_name }}
 
 # Directory used to cache files related to PKI tokens. (string value)
 #signing_dir = <None>
+signing_dir = /var/lib/glance/cache/api
 
 # Optionally specify a list of memcached server(s) to use for caching.
 # If left undefined, tokens will instead be cached in-process. (list
@@ -1173,7 +1176,7 @@ identity_uri = http://{{ keystone_admin_ip }}:35357/
 # Service tenant name. (string value)
 #admin_tenant_name = admin
 
-username = glance
+username = {{ glance_admin_user }}
 password = {{ glance_admin_password }}
 project_domain_name = {{ glance_domain_name }}
 user_domain_name = {{ glance_domain_name }}

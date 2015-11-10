@@ -14,3 +14,6 @@ nova_virt_type: kvm
 #spice or vnc
 nova_console_type: spice
 nova_console_keymap: en-us
+
+neutron_domain_name: "{{ keystone_domain_name }}"
+neutron_admin_user: neutron

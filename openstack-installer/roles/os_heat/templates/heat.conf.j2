@@ -344,6 +344,7 @@ auth_uri = http://{{ keystone_internal_ip }}:5000/v2.0
 
 # The region in which the identity server can be found. (string value)
 #region_name = <None>
+region_name = {{ keystone_region_name }}
 
 # Directory used to cache files related to PKI tokens. (string value)
 #signing_dir = <None>
@@ -462,7 +463,7 @@ auth_url = http://{{ keystone_admin_ip }}:35357/
 
 # Service username. (string value)
 #admin_user = <None>
-admin_user = heat
+admin_user = {{ heat_admin_user }}
 
 # Service user password. (string value)
 #admin_password = <None>
@@ -472,7 +473,7 @@ admin_password = {{ heat_admin_password }}
 #admin_tenant_name = admin
 admin_tenant_name = service
 
-username = heat
+username = {{ heat_admin_user }}
 password = {{ heat_admin_password }}
 project_domain_name = {{ heat_domain_name }}
 user_domain_name = {{ heat_domain_name }}
@@ -487,7 +488,7 @@ auth_plugin = password
 project_domain_name = {{ heat_domain_name }}
 user_domain_name = {{ heat_domain_name }}
 project_name = service
-username = heat
+username = {{ heat_admin_user }}
 password = {{ heat_admin_password }}
 
 [clients_keystone]
