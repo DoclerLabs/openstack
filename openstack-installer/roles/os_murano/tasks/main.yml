@@ -1,0 +1,55 @@
+---
+
+- name: create murano user in rabbitmq
+  rabbitmq_user: user="{{ murano_rabbit_user }}" password="{{ murano_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: disable autostarting of murano
+  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+  with_items:
+    - murano-api
+    - murano-cfapi
+    - murano-engine
+
+- name: install murano
+  apt: name={{ item }}
+  with_items:
+    - murano-api
+    - murano-cfapi
+    - murano-engine
+    - python-muranoclient
+
+- name: create murano database
+  mysql_db: name={{ murano_db }}
+    login_host={{ murano_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create murano database user
+  mysql_user: name={{ murano_db_user }} password={{ murano_db_password }} host={{ item }} priv={{ murano_db }}.*:ALL
+    login_host={{ murano_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - '%'
+
+- name: install murano configs
+  template: src={{ item }}.conf.j2 dest=/etc/murano/{{ item }}.conf owner=murano group=root mode=0460
+  with_items:
+    - murano
+  notify: restart murano
+
+- name: sync murano db
+  command: su murano -s /bin/sh -c 'murano-db-manage --config-file /etc/murano/murano.conf upgrade'
+  run_once: True
+
+- meta: flush_handlers
+
+- name: ensure murano is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - murano-api
+    - murano-cfapi
+    - murano-engine

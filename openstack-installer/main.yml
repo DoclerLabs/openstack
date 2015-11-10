@@ -18,3 +18,4 @@
 - include: os_heat.yml
 - include: os_trove.yml
 - include: os_ironic.yml
+- include: os_murano.yml

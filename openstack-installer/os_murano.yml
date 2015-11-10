@@ -1,0 +1,50 @@
+---
+
+- hosts: murano[0]
+  user: ansible
+  max_fail_percentage: 0
+  roles:
+    - os_keystone_service
+  vars:
+    keystone_service_name: murano
+    keystone_service_type: application_catalog
+    keystone_service_description: "OpenStack Application Catalog Service"
+    keystone_public_url: "http://{{ vip_public }}:8082"
+    keystone_internal_url: "http://{{ vip_mgmt }}:8082"
+    keystone_admin_url: "http://{{ vip_mgmt }}:8082"
+    keystone_region: "{{ keystone_region_name }}"
+    keystone_projects:
+      - keystone_project_name: service
+        keystone_project_description: "Service Project"
+        keystone_user: "{{ murano_admin_user | default('murano') }}"
+        keystone_domain_name: "{{ murano_domain_name | default(keystone_domain_name) }}"
+        keystone_password: "{{ murano_admin_password }}"
+        keystone_role: admin
+
+- hosts: murano
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - common
+    - os_murano
+
+- hosts: haproxy
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - haproxy_service
+  vars:
+    haproxy_services:
+      - haproxy_service_name: murano_api
+        haproxy_backend_nodes: "{{ groups['murano'] }}"
+        haproxy_bind_hosts:
+          - "{{ vip_mgmt }}"
+          - "{{ vip_public }}"
+        haproxy_port: 8082
+        haproxy_balance_type: http
+        haproxy_backend_options:
+          - forwardfor
+          - httpchk
+          - httplog
