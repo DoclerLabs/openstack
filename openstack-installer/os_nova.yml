@@ -16,8 +16,8 @@
     keystone_projects:
       - keystone_project_name: service
         keystone_project_description: "Service Project"
-        keystone_user: nova
-        keystone_domain_name: "{{ keystone_domain_name }}"
+        keystone_user: "{{ nova_admin_user | default('nova') }}"
+        keystone_domain_name: "{{ nova_domain_name | default(keystone_domain_name) }}"
         keystone_password: "{{ nova_admin_password }}"
         keystone_role: admin
 
