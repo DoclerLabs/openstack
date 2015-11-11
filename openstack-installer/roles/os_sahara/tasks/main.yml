@@ -1,0 +1,56 @@
+---
+
+- name: create sahara user in rabbitmq
+  rabbitmq_user: user="{{ sahara_rabbit_user }}" password="{{ sahara_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: disable autostarting of sahara
+  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+  with_items:
+    - sahara-api
+    - sahara-engine
+
+- name: install sahara
+  apt: name={{ item }}
+  with_items:
+    - sahara-api
+    - sahara-engine
+    - python-saharaclient
+
+- name: create sahara database
+  mysql_db: name={{ sahara_db }}
+    login_host={{ sahara_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create sahara database user
+  mysql_user: name={{ sahara_db_user }} password={{ sahara_db_password }} host={{ item }} priv={{ sahara_db }}.*:ALL
+    login_host={{ sahara_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - '%'
+
+- name: ensure /var/lib/sahara/cache is writeable
+  file: path=/var/lib/sahara/cache state=directory owner=sahara group=sahara mode=0700
+  notify: restart sahara
+
+- name: install sahara configs
+  template: src={{ item }}.conf.j2 dest=/etc/sahara/{{ item }}.conf owner=sahara group=root mode=0460
+  with_items:
+    - sahara
+  notify: restart sahara
+
+- name: sync sahara db
+  command: su sahara -s /bin/sh -c 'sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head'
+  run_once: True
+
+- meta: flush_handlers
+
+- name: ensure sahara is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - sahara-api
+    - sahara-engine

@@ -72,6 +72,9 @@ cinder_volume:
 murano:
   inherit: controller
 
+sahara:
+  inherit: controller
+
 ironic:
 
 # -------- Ceph ---------

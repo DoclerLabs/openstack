@@ -1,0 +1,46 @@
+---
+
+- hosts: sahara[0]
+  user: ansible
+  max_fail_percentage: 0
+  roles:
+    - os_keystone_service
+  vars:
+    keystone_service_name: sahara
+    keystone_service_type: data-processing
+    keystone_service_description: "OpenStack Data Processing Service"
+    keystone_public_url: "http://{{ vip_public }}:8386/v1.1/%(tenant_id)s"
+    keystone_internal_url: "http://{{ vip_mgmt }}:8386/v1.1/%(tenant_id)s"
+    keystone_admin_url: "http://{{ vip_mgmt }}:8386/v1.1/%(tenant_id)s"
+    keystone_region: "{{ keystone_region_name }}"
+    keystone_projects:
+      - keystone_project_name: service
+        keystone_project_description: "Service Project"
+        keystone_user: "{{ sahara_admin_user | default('sahara') }}"
+        keystone_domain_name: "{{ sahara_domain_name | default(keystone_domain_name) }}"
+        keystone_password: "{{ sahara_admin_password }}"
+        keystone_role: admin
+
+- hosts: sahara
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - common
+    - os_sahara
+
+- hosts: haproxy
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - haproxy_service
+  vars:
+    haproxy_services:
+      - haproxy_service_name: sahara_api
+        haproxy_backend_nodes: "{{ groups['sahara'] }}"
+        haproxy_bind_hosts:
+          - "{{ vip_mgmt }}"
+          - "{{ vip_public }}"
+        haproxy_port: 8386
+        haproxy_balance_type: http
