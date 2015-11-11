@@ -41,7 +41,7 @@ fi
 
 haproxy_start()
 {
-        start-stop-daemon --start --pidfile "$PIDFILE" \
+        start-stop-daemon --oknodo --start --pidfile "$PIDFILE" \
                 --exec $HAPROXY -- -f "$CONFIG" $CONFIG_DIR_FILES -D -p "$PIDFILE" \
                 $EXTRAOPTS || return 2
         return 0
@@ -62,7 +62,7 @@ haproxy_stop()
 
 haproxy_reload()
 {
-        $HAPROXY -f "$CONFIG" $CONFIG_DIR_FILES -p $PIDFILE -D $EXTRAOPTS -sf $(cat $PIDFILE) \
+        $HAPROXY -f "$CONFIG" $CONFIG_DIR_FILES -p $PIDFILE -D $EXTRAOPTS -st $(cat $PIDFILE) \
                 || return 2
         return 0
 }
@@ -158,7 +158,8 @@ status)
                 echo "haproxy is running."
                 ;;
         1)
-                echo "haproxy dead, but $PIDFILE exists."
+                echo "haproxy dead, but pid file exists."
+                ret=3
                 ;;
         *)
                 echo "haproxy not running."
