@@ -41,6 +41,10 @@
     - murano
   notify: restart murano
 
+- name: ensure /var/lib/murano/cache is writeable
+  file: path=/var/lib/murano/cache state=directory owner=murano group=murano mode=0700
+  notify: restart murano
+
 - name: sync murano db
   command: su murano -s /bin/sh -c 'murano-db-manage --config-file /etc/murano/murano.conf upgrade'
   run_once: True
