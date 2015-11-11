@@ -1,11 +1,10 @@
 ---
 
 - name: Install mongodb packages
-  apt: name={{ item }} state=latest
+  apt: name={{ item }}
   with_items:
     - mongodb
     - python-pymongo
-  notify: restart mongodb
 
 - name: deploy mongodb configuration
   template: src=mongodb.conf.j2 dest=/etc/mongodb.conf owner=mongodb group=root mode=0460

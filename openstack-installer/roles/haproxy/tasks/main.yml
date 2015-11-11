@@ -5,10 +5,7 @@
   notify: reload sysctl
 
 - name: install haproxy
-  apt: name=haproxy state=latest
-  notify:
-    - restart rsyslog
-    - restart haproxy
+  apt: name=haproxy
 
 - name: install haproxy.cfg
   template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg owner=root group=root mode=0644

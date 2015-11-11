@@ -13,7 +13,7 @@
     - trove-taskmanager
 
 - name: install trove packages
-  apt: name={{ item }} state=latest
+  apt: name={{ item }}
   with_items:
     - python-troveclient
     - python-keystoneclient
@@ -22,7 +22,6 @@
     - trove-taskmanager
     - trove-conductor
     - trove-taskmanager
-  notify: restart trove
 
 - name: set up trove network in neutron
   quantum_network: >
