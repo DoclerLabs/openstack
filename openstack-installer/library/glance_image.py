@@ -160,9 +160,13 @@ def _get_ksclient(module, kwargs):
     return client 
 
 
-def _get_endpoint(module, client, endpoint_type):
+def _get_endpoint(module, client, region_name, endpoint_type):
     try:
-        endpoint = client.service_catalog.url_for(service_type='image', endpoint_type=endpoint_type)
+        if region_name:
+            endpoint = client.service_catalog.url_for(service_type='image', endpoint_type=endpoint_type, region_name=region_name)
+        else:
+            endpoint = client.service_catalog.url_for(service_type='image', endpoint_type=endpoint_type)
+
     except Exception, e:
         module.fail_json(msg="Error getting endpoint for glance: %s" % e.message)
     return endpoint
@@ -171,7 +175,7 @@ def _get_endpoint(module, client, endpoint_type):
 def _get_glance_client(module, kwargs):
     _ksclient = _get_ksclient(module, kwargs)
     token = _ksclient.auth_token
-    endpoint =_get_endpoint(module, _ksclient, kwargs.get('endpoint_type'))
+    endpoint =_get_endpoint(module, _ksclient, kwargs.get('region_name'), kwargs.get('endpoint_type'))
     kwargs = {
             'token': token,
     }

@@ -109,6 +109,7 @@
     login_username=trove
     login_domain_name={{ trove_domain_name }}
     login_password="{{ trove_admin_password }}"
+    region_name="{{ keystone_region_name }}"
     file="{{ trove_image_path }}"
     name=trove-mysql-image
     owner=trove
