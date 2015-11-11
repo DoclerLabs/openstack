@@ -6,3 +6,10 @@ neutron_db: neutron
 neutron_rabbit_user: neutron
 neutron_admin_user: neutron
 neutron_domain_name: "{{ keystone_domain_name }}"
+neutron_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+neutron_project_name: "{{ keystone_service_project_name | default('service') }}"
+
+nova_admin_user: nova
+nova_domain_name: "{{ keystone_domain_name }}"
+nova_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+nova_project_name: "{{ keystone_service_project_name | default('service') }}"

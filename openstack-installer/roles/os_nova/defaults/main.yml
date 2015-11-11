@@ -6,6 +6,8 @@ nova_db: nova
 nova_rabbit_user: nova
 nova_admin_user: nova
 nova_domain_name: "{{ keystone_domain_name }}"
+nova_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+nova_project_name: "{{ keystone_service_project_name | default('service') }}"
 
 nova_compute_driver: libvirt.LibvirtDriver
 
@@ -18,3 +20,8 @@ nova_console_keymap: en-us
 
 neutron_domain_name: "{{ keystone_domain_name }}"
 neutron_admin_user: neutron
+neutron_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+neutron_project_name: "{{ keystone_service_project_name | default('service') }}"
+
+ironic_admin_user: ironic
+ironic_project_name: "{{ keystone_service_project_name | default('service') }}"

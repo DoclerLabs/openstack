@@ -13,12 +13,12 @@
     keystone_internal_url: "http://{{ vip_mgmt }}:6385"
     keystone_admin_url: "http://{{ vip_mgmt }}:6385"
     keystone_region: "{{ keystone_region_name }}"
-    keystone_projects:
-      - keystone_project_name: service
-        keystone_project_description: "Service Project"
-        keystone_user: "{{ ironic_admin_user | default('ironic') }}"
+    keystone_users:
+      - keystone_user: "{{ ironic_admin_user | default('ironic') }}"
         keystone_domain_name: "{{ ironic_domain_name | default(keystone_domain_name) }}"
         keystone_password: "{{ ironic_admin_password }}"
+        keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+        keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
         keystone_role: admin
 
 - hosts: ironic

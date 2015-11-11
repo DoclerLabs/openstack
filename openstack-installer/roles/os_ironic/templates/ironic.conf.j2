@@ -1371,13 +1371,13 @@ admin_user={{ ironic_admin_user }}
 admin_password = {{ ironic_admin_password }}
 # Service tenant name. (string value)
 #admin_tenant_name=admin
-admin_tenant_name = service
+admin_tenant_name = {{ ironic_project_name }}
 
+user_domain_name = {{ ironic_domain_name }}
 username = {{ ironic_admin_user }}
 password = {{ ironic_admin_password }}
-project_domain_name = {{ ironic_domain_name }}
-user_domain_name = {{ ironic_domain_name }}
-project_name = service
+project_domain_name = {{ ironic_project_domain_name }}
+project_name = {{ ironic_project_name }}
 auth_plugin = password
 
 [matchmaker_redis]

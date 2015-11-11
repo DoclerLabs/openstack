@@ -12,12 +12,12 @@
     keystone_internal_url: "http://{{ vip_mgmt }}:8777"
     keystone_admin_url: "http://{{ vip_mgmt }}:8777"
     keystone_region: "{{ keystone_region_name }}"
-    keystone_projects:
-      - keystone_project_name: service
-        keystone_project_description: "Service Project"
-        keystone_user: "{{ ceilometer_admin_user | default('ceilometer') }}"
+    keystone_users:
+      - keystone_user: "{{ ceilometer_admin_user | default('ceilometer') }}"
         keystone_domain_name: "{{ ceilometer_domain_name | default(keystone_domain_name) }}"
         keystone_password: "{{ ceilometer_admin_password }}"
+        keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+        keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
         keystone_role: admin
 
 - hosts: ceilometer_controller[0]
@@ -33,12 +33,12 @@
     keystone_internal_url: "http://{{ vip_mgmt }}:8042"
     keystone_admin_url: "http://{{ vip_mgmt }}:8042"
     keystone_region: "{{ keystone_region_name }}"
-    keystone_projects:
-      - keystone_project_name: service
-        keystone_project_description: "Service Project"
-        keystone_user: "{{ aodh_admin_user | default('aodh') }}"
+    keystone_users:
+      - keystone_user: "{{ aodh_admin_user | default('aodh') }}"
         keystone_domain_name: "{{ aodh_domain_name | default(keystone_domain_name) }}"
         keystone_password: "{{ aodh_admin_password }}"
+        keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+        keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
         keystone_role: admin
 
 - hosts: mongodb

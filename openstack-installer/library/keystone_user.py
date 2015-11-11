@@ -62,9 +62,14 @@ options:
         - An email address for the user
      required: false
      default: None
-   domain:
+   user_domain:
      description:
         - The domain for the user
+     required: false
+     default: default
+   project_domain:
+     description:
+        - The domain of the project
      required: false
      default: default
    role:
@@ -164,14 +169,14 @@ def ensure_project_exists(keystone, project_name, project_description, project_d
 
     # Check if domain already exists
     try:
-        domain_id = get_domain(keystone, project_domain).id
+        project_domain_id = get_domain(keystone, project_domain).id
     except KeyError:
         # domain doesn't exist yet
-        domain_id = keystone.domains.create(name=project_domain).id
+        project_domain_id = keystone.domains.create(name=project_domain).id
 
     # Check if project already exists
     try:
-        project = get_project(keystone, domain_id, project_name)
+        project = get_project(keystone, project_domain_id, project_name)
     except KeyError:
         # project doesn't exist yet
         pass
@@ -192,12 +197,12 @@ def ensure_project_exists(keystone, project_name, project_description, project_d
 
     ks_project = keystone.projects.create(name=project_name,
                                         description=project_description,
-                                        domain=domain_id,
+                                        domain=project_domain_id,
                                         enabled=True)
     return (True, ks_project.id)
 
 
-def ensure_project_absent(keystone, project, check_mode):
+def ensure_project_absent(keystone, project, project_domain, check_mode):
     """ Ensure that a project does not exist
 
          Return True if the project was removed, False if it didn't exist
@@ -211,7 +216,7 @@ def ensure_project_absent(keystone, project, check_mode):
         return True
 
 
-def ensure_user_exists(keystone, user_name, password, email, domain, project_name,
+def ensure_user_exists(keystone, user_name, password, email, user_domain, project_domain, project_name,
                        check_mode):
     """ Check if user exists
 
@@ -221,14 +226,14 @@ def ensure_user_exists(keystone, user_name, password, email, domain, project_nam
 
     # Check if domain already exists
     try:
-        domain_id = get_domain(keystone, domain).id
+        user_domain_id = get_domain(keystone, user_domain).id
     except KeyError:
         # domain doesn't exist yet
-        domain_id = keystone.domains.create(name=domain).id
+        user_domain_id = keystone.domains.create(name=user_domain).id
 
     # Check if user already exists
     try:
-        user = get_user(keystone, domain_id, user_name)
+        user = get_user(keystone, user_domain_id, user_name)
     except KeyError:
         # user doesn't exist yet
         pass
@@ -240,10 +245,12 @@ def ensure_user_exists(keystone, user_name, password, email, domain, project_nam
     if check_mode:
         return (True, None)
 
-    project_id = get_project(keystone, domain_id, project_name).id if project_name else None
+    project_domain_id = get_domain(keystone, project_domain).id
+
+    project_id = get_project(keystone, project_domain_id, project_name).id if project_name else None
 
     user = keystone.users.create(name=user_name, password=password,
-                                 email=email, domain=domain_id, default_project=project_id)
+                                 email=email, domain=user_domain_id, default_project=project_id)
 
     return (True, user.id)
 
@@ -296,7 +303,7 @@ def ensure_role_exists(keystone, domain, user_name, project_name, role_name,
     return (True, role.id)
 
 
-def ensure_user_absent(keystone, domain, user, check_mode):
+def ensure_user_absent(keystone, user_domain, user, check_mode):
     raise NotImplementedError("Not yet implemented")
 
 
@@ -310,7 +317,8 @@ def main():
     argument_spec.update(dict(
             project_description=dict(required=False),
             email=dict(required=False),
-            domain=dict(required=False, default="default"),
+            user_domain=dict(required=False, default="default"),
+            project_domain=dict(required=False, default="default"),
             user=dict(required=False),
             project=dict(required=False),
             password=dict(required=False),
@@ -341,7 +349,8 @@ def main():
     project = module.params['project']
     project_description = module.params['project_description']
     email = module.params['email']
-    domain = module.params['domain']
+    user_domain = module.params['user_domain']
+    project_domain = module.params['project_domain']
     role = module.params['role']
     state = module.params['state']
     endpoint = module.params['endpoint']
@@ -356,7 +365,7 @@ def main():
 
     try:
         d = dispatch(keystone, user, password, project, project_description,
-                     email, domain, role, state, endpoint, token, login_user,
+                     email, user_domain, project_domain, role, state, endpoint, token, login_user,
                      login_password, check_mode)
     except Exception, e:
         if check_mode:
@@ -370,7 +379,7 @@ def main():
 
 
 def dispatch(keystone, user=None, password=None, project=None,
-             project_description=None, email=None, domain=None, role=None,
+             project_description=None, email=None, user_domain=None, project_domain=None, role=None,
              state="present", endpoint=None, token=None, login_user=None,
              login_password=None, check_mode=False):
     """ Dispatch to the appropriate method.
@@ -392,19 +401,19 @@ def dispatch(keystone, user=None, password=None, project=None,
     id = None
     if project and not user and not role and state == "present":
         changed, id = ensure_project_exists(keystone, project,
-                                           project_description, domain, check_mode)
+                                           project_description, project_domain, check_mode)
     elif project and not user and not role and state == "absent":
-        changed = ensure_project_absent(keystone, project, check_mode)
+        changed = ensure_project_absent(keystone, project, project_domain, check_mode)
     elif user and not role and state == "present":
         changed, id = ensure_user_exists(keystone, user, password,
-                                         email, domain, project, check_mode)
+                                         email, user_domain, project_domain, project, check_mode)
     elif user and not role and state == "absent":
-        changed = ensure_user_absent(keystone, domain, user, check_mode)
+        changed = ensure_user_absent(keystone, user_domain, user, check_mode)
     elif user and role and state == "present":
-        changed, id = ensure_role_exists(keystone, domain, user, project, role,
+        changed, id = ensure_role_exists(keystone, user_domain, user, project, role,
                                          check_mode)
     elif user and role and state == "absent":
-        changed = ensure_role_absent(keystone, domain, user, project, role, check_mode)
+        changed = ensure_role_absent(keystone, domain, user_domain, project, role, check_mode)
     else:
         # Should never reach here
         raise ValueError("Code should never reach here")

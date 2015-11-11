@@ -6,6 +6,8 @@ glance_db: glance
 glance_rabbit_user: glance
 glance_admin_user: glance
 glance_domain_name: "{{ keystone_domain_name }}"
+glance_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+glance_project_name: "{{ keystone_service_project_name | default('service') }}"
 
 glance_backend: files
 glance_ceph_pool: images

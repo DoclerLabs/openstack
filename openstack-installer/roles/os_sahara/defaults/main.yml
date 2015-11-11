@@ -6,3 +6,5 @@ sahara_db: sahara
 sahara_rabbit_user: sahara
 sahara_admin_user: sahara
 sahara_domain_name: "{{ keystone_domain_name }}"
+sahara_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+sahara_project_name: "{{ keystone_service_project_name | default('service') }}"

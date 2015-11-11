@@ -103,12 +103,12 @@ port = 9292
 url = http://{{ vip_mgmt }}:9696
 auth_url = http://{{ keystone_admin_ip }}:35357
 auth_plugin = password
-project_domain_name = {{ neutron_domain_name }}
-user_domain_name = {{ neutron_domain_name }}
 region_name = {{ keystone_region_name }}
-project_name = service
+user_domain_name = {{ neutron_domain_name }}
 username = {{ neutron_admin_user }}
 password = {{ neutron_admin_password }}
+project_domain_name = {{ neutron_project_domain_name }}
+project_name = {{ neutron_project_name }}
 
 service_metadata_proxy = True
 metadata_proxy_shared_secret = {{ metadata_proxy_shared_secret }}
@@ -124,11 +124,11 @@ signing_dir = /var/lib/nova/cache/api
 auth_uri = http://{{ keystone_internal_ip }}:5000
 auth_url = http://{{ keystone_internal_ip }}:35357
 auth_region = {{ keystone_region_name }}
+user_domain_name = {{ nova_domain_name }}
 username = {{ nova_admin_user }}
 password = {{ nova_admin_password }}
-project_domain_name = {{ nova_domain_name }}
-user_domain_name = {{ nova_domain_name }}
-project_name = service
+project_domain_name = {{ nova_project_domain_name }}
+project_name = {{ nova_project_name }}
 
 
 memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
@@ -172,7 +172,7 @@ live_migration_uri = qemu+ssh://nova@%s/system?keyfile=/var/lib/nova/.ssh/id_rsa
 [ironic]
 
 # Ironic keystone admin name
-admin_username=ironic
+admin_username={{ ironic_admin_user }}
 
 #Ironic keystone admin password.
 admin_password={{ ironic_admin_password }}
@@ -181,7 +181,7 @@ admin_password={{ ironic_admin_password }}
 admin_url=http://{{ keystone_admin_ip }}:35357/v2.0
 
 # Ironic keystone tenant name.
-admin_tenant_name=service
+admin_tenant_name={{ ironic_project_name }}
 
 # URL for Ironic API endpoint.
 api_endpoint=http://{{ vip_mgmt }}:6385/v1

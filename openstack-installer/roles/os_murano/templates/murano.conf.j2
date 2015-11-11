@@ -363,11 +363,11 @@ auth_url = http://{{ keystone_admin_ip }}:35357/
 # Service tenant name. (string value)
 #admin_tenant_name = admin
 
+user_domain_name = {{ murano_domain_name }}
 username = {{ murano_admin_user }}
 password = {{ murano_admin_password }}
-project_domain_name = {{ murano_domain_name }}
-user_domain_name = {{ murano_domain_name }}
-project_name = service
+project_domain_name = {{ murano_project_domain_name }}
+project_name = {{ murano_project_name }}
 auth_plugin = password
 
 [matchmaker_redis]

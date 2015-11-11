@@ -471,13 +471,13 @@ admin_password = {{ heat_admin_password }}
 
 # Service tenant name. (string value)
 #admin_tenant_name = admin
-admin_tenant_name = service
+admin_tenant_name = {{ heat_project_name }}
 
+user_domain_name = {{ heat_domain_name }}
 username = {{ heat_admin_user }}
 password = {{ heat_admin_password }}
-project_domain_name = {{ heat_domain_name }}
-user_domain_name = {{ heat_domain_name }}
-project_name = service
+project_domain_name = {{ heat_project_domain_name }}
+project_name = {{ heat_project_name }}
 auth_plugin = password
 
 [trustee]
@@ -485,9 +485,9 @@ auth_plugin = password
 auth_uri = http://{{ keystone_admin_ip }}:5000
 auth_url = http://{{ keystone_admin_ip }}:35357
 auth_plugin = password
-project_domain_name = {{ heat_domain_name }}
+project_domain_name = {{ heat_project_domain_name }}
+project_name = {{ heat_project_name }}
 user_domain_name = {{ heat_domain_name }}
-project_name = service
 username = {{ heat_admin_user }}
 password = {{ heat_admin_password }}
 

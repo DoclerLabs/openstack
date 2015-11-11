@@ -6,6 +6,8 @@ cinder_db: cinder
 cinder_rabbit_user: cinder
 cinder_admin_user: cinder
 cinder_domain_name: "{{ keystone_domain_name }}"
+cinder_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+cinder_project_name: "{{ keystone_service_project_name | default('service') }}"
 
 cinder_backend: lvm
 cinder_ceph_pool: volumes

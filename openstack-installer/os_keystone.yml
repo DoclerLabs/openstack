@@ -67,10 +67,14 @@
     keystone_projects:
       - keystone_project_name: admin
         keystone_project_description: "Admin Project"
-        keystone_user: admin
-        keystone_domain_name: "{{ keystone_domain_name }}"
-        keystone_password: "{{ keystone_admin_password }}"
-        keystone_role: admin
-      - keystone_project_name: service
-        keystone_domain_name: "{{ keystone_domain_name }}"
+        keystone_project_domain_name: "{{ keystone_domain_name | default('Default') }}"
+      - keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+        keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
         keystone_project_description: "Service Project"
+    keystone_users:
+      - keystone_user: admin
+        keystone_domain_name: "{{ keystone_domain_name | default('Default') }}"
+        keystone_password: "{{ keystone_admin_password }}"
+        keystone_project_name: admin
+        keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+        keystone_role: admin

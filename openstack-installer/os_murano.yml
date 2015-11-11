@@ -13,12 +13,12 @@
     keystone_internal_url: "http://{{ vip_mgmt }}:8082"
     keystone_admin_url: "http://{{ vip_mgmt }}:8082"
     keystone_region: "{{ keystone_region_name }}"
-    keystone_projects:
-      - keystone_project_name: service
-        keystone_project_description: "Service Project"
-        keystone_user: "{{ murano_admin_user | default('murano') }}"
+    keystone_users:
+      - keystone_user: "{{ murano_admin_user | default('murano') }}"
         keystone_domain_name: "{{ murano_domain_name | default(keystone_domain_name) }}"
         keystone_password: "{{ murano_admin_password }}"
+        keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+        keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
         keystone_role: admin
 
 - hosts: murano

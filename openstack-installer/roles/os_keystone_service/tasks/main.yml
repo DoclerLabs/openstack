@@ -18,29 +18,32 @@
   keystone_user: >
     token="{{ keystone_admin_token }}"
     endpoint="http://{{ keystone_admin_ip }}:35357/v3"
-    domain="{{ item.keystone_domain_name | default('Default') }}"
+    project_domain="{{ item.keystone_project_domain_name | default('Default') }}"
     project="{{ item.keystone_project_name }}"
     project_description="{{ item.keystone_project_description }}"
   with_items: keystone_projects
+  when: keystone_projects is defined
 
 - name: create the user in keystone
   keystone_user: >
     token="{{ keystone_admin_token }}"
     endpoint="http://{{ keystone_admin_ip }}:35357/v3"
     project="{{ item.keystone_project_name }}"
+    project_domain="{{ item.keystone_project_domain_name | default('Default') }}"
     user="{{ item.keystone_user }}"
-    domain="{{ item.keystone_domain_name | default('Default') }}"
+    user_domain="{{ item.keystone_domain_name | default('Default') }}"
     password="{{ item.keystone_password }}"
-  with_items: keystone_projects
-  when: item.keystone_user is defined
+  with_items: keystone_users
+  when: keystone_users is defined
 
 - name: assign role to the user in keystone
   keystone_user: >
     token="{{ keystone_admin_token }}"
     endpoint="http://{{ keystone_admin_ip }}:35357/v3"
     project="{{ item.keystone_project_name }}"
+    project_domain="{{ item.keystone_project_domain_name | default('Default') }}"
     user="{{ item.keystone_user }}"
-    domain="{{ item.keystone_domain_name | default('Default') }}"
+    user_domain="{{ item.keystone_domain_name | default('Default') }}"
     role="{{ item.keystone_role }}"
-  with_items: keystone_projects
-  when: item.keystone_role is defined
+  with_items: keystone_users
+  when: keystone_users is defined and item.keystone_role is defined

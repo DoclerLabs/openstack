@@ -13,12 +13,12 @@
     keystone_internal_url: "http://{{ vip_mgmt }}:8774/v2/%(tenant_id)s"
     keystone_admin_url: "http://{{ vip_mgmt }}:8774/v2/%(tenant_id)s"
     keystone_region: "{{ keystone_region_name }}"
-    keystone_projects:
-      - keystone_project_name: service
-        keystone_project_description: "Service Project"
-        keystone_user: "{{ nova_admin_user | default('nova') }}"
+    keystone_users:
+      - keystone_user: "{{ nova_admin_user | default('nova') }}"
         keystone_domain_name: "{{ nova_domain_name | default(keystone_domain_name) }}"
         keystone_password: "{{ nova_admin_password }}"
+        keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+        keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
         keystone_role: admin
 
 - hosts:

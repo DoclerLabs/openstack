@@ -97,9 +97,9 @@ use_nova_server_config_drive = True
 # These options are for an admin user in your keystone config.
 # It proxy's the token received from the user to send to nova via this admin users creds,
 # basically acting like the client via that proxy token.
-nova_proxy_admin_user = nova
+nova_proxy_admin_user = {{ nova_admin_user }}
 nova_proxy_admin_pass = {{ nova_admin_password }}
-nova_proxy_admin_tenant_name = service
+nova_proxy_admin_tenant_name = {{ nova_project_name }}
 
 # Manager impl for the taskmanager
 taskmanager_manager=trove.taskmanager.manager.Manager
@@ -110,7 +110,6 @@ taskmanager_manager=trove.taskmanager.manager.Manager
 # Workaround for https://bugs.launchpad.net/trove/+bug/1402055
 exists_notification_transformer =
 
-notification_driver = messagingv2
 exists_notification_ticks = 30
 
 # Taskmanager queue name
@@ -195,15 +194,16 @@ max_retries = -1
 
 [keystone_authtoken]
 auth_plugin = password
+region_name = {{ keystone_region_name }}
 signing_dir = /var/lib/trove/cache/api
 auth_uri = http://{{ keystone_internal_ip }}:5000
 auth_url = http://{{ keystone_internal_ip }}:35357
 auth_region = {{ keystone_region_name }}
+user_domain_name = {{ trove_domain_name }}
 username = {{ trove_admin_user }}
 password = {{ trove_admin_password }}
-project_domain_name = {{ trove_domain_name }}
-user_domain_name = {{ trove_domain_name }}
-project_name = trove
+project_domain_name = {{ trove_project_domain_name }}
+project_name = {{ trove_project_name }}
 
 memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
 

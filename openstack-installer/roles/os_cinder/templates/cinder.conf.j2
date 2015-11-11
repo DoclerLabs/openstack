@@ -51,15 +51,15 @@ encryption_auth_url = http://{{ keystone_internal_ip }}:5000/v3
 
 [keystone_authtoken]
 auth_plugin = password
-signing_dir = /var/lib/cinder
+signing_dir = /var/lib/cinder/cache
 auth_uri = http://{{ keystone_internal_ip }}:5000
 auth_url = http://{{ keystone_internal_ip }}:35357
 auth_region = {{ keystone_region_name }}
+user_domain_name = {{ cinder_domain_name }}
 username = {{ cinder_admin_user }}
 password = {{ cinder_admin_password }}
-project_domain_name = {{ cinder_domain_name }}
-user_domain_name = {{ cinder_domain_name }}
-project_name = service
+project_domain_name = {{ cinder_project_domain_name }}
+project_name = {{ cinder_project_name }}
 
 memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
 
