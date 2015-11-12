@@ -5,7 +5,7 @@
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 
-- name: disable autostarting of nova
+- name: disable autostarting of nova controller services
   copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
   with_items:
     - nova-api
@@ -17,13 +17,13 @@
     - nova-cert
   when: inventory_hostname in groups['nova_controller']
 
-- name: disable autostarting of nova
+- name: disable autostarting of nova compute services
   copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
   with_items:
     - nova-compute
   when: inventory_hostname in groups['nova_compute']
 
-- name: install nova
+- name: install nova controller packages
   apt: name={{ item }}
   with_items:
     - nova-api
@@ -36,7 +36,7 @@
     - python-novaclient
   when: inventory_hostname in groups['nova_controller']
 
-- name: install nova compute
+- name: install nova compute packages
   apt: name={{ item }}
   with_items:
     - python-rbd
@@ -74,7 +74,7 @@
     - restart nova controller services
     - restart nova compute services
 
-- name: install nova-compute.conf
+- name: clear nova-compute.conf
   copy: content='' dest=/etc/nova/nova-compute.conf owner=nova group=root mode=0460
   when: inventory_hostname in groups['nova_compute']
   notify:
@@ -88,7 +88,7 @@
 
 - meta: flush_handlers
 
-- name: ensure nova is started
+- name: ensure nova controller servies are started
   service: name={{ item }} state=started enabled=yes
   with_items:
     - nova-api
@@ -100,7 +100,7 @@
     - nova-cert
   when: inventory_hostname in groups['nova_controller']
 
-- name: ensure nova is started
+- name: ensure nova compute is started
   service: name={{ item }} state=started enabled=yes
   with_items:
     - nova-compute
