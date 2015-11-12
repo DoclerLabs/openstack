@@ -162,6 +162,8 @@ rabbit_password = {{ nova_rabbit_password }}
 rabbit_ha_queues = true
 rabbit_hosts = {% for host in groups['rabbitmq'] %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
 
+{% if inventory_hostname in groups['nova_compute'] %}
+
 [libvirt]
 use_usb_tablet = False
 use_virtio_for_bridges = True
@@ -185,4 +187,6 @@ admin_tenant_name={{ ironic_project_name }}
 
 # URL for Ironic API endpoint.
 api_endpoint=http://{{ vip_mgmt }}:6385/v1
+{% endif %}
+
 {% endif %}
