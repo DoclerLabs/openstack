@@ -5,10 +5,24 @@
   with_items:
     - ceph
 
-- name: fetch or generate the uuid of the cluster
-  shell: "if [ -f /etc/ceph/monmap ]; then monmaptool --print /etc/ceph/monmap | grep fsid | cut -d' ' -f2; else uuidgen; fi"
-  register: ceph_fsid
+- name: fetch the uuid of the cluster
+  shell: "if [ -f /etc/ceph/monmap ]; then monmaptool --print /etc/ceph/monmap | grep fsid | cut -d' ' -f2; fi"
+  register: ceph_fsid_result
+
+- set_fact: ceph_fsid=''
+
+- set_fact: ceph_fsid="{{ hostvars[item].ceph_fsid_result.stdout }}"
+  when: hostvars[item].ceph_fsid_result.stdout != ''
+  with_items: play_hosts
+
+- name: generate a new uuid for the cluster
+  command: uuidgen
+  register: ceph_fsid_result
+  when: ceph_fsid == ''
   run_once: True
+
+- set_fact: ceph_fsid="{{ hostvars[play_hosts[0]].ceph_fsid_result.stdout }}"
+  when: hostvars[play_hosts[0]].ceph_fsid_result.stdout is defined
 
 - name: generate ceph config file
   ini_file: dest=/etc/ceph/ceph.conf
@@ -16,12 +30,13 @@
     option="{{ item.key }}"
     value="{{ item.value }}"
   with_dict:
-    { "fsid": "{{ ceph_fsid.stdout }}",
+    { "fsid": "{{ ceph_fsid }}",
       "mon initial members": "{{ play_hosts | join(',') }}",
       "mon host": "{% for host in play_hosts %}{{ hostvars[host].ip.mgmt }}{% if not loop.last %},{% endif %}{% endfor %}",
       "auth cluster required": "cephx",
       "auth service required": "cephx",
-      "auth client required": "cephx"
+      "auth client required": "cephx",
+      "cephx require signatures": "true"
    }
 
 - name: create keyrings
@@ -30,36 +45,61 @@
   with_items:
     - mon
     - client.admin
-  run_once: True
 
+# Search for existing admin and monitor keys
 - name: query the keyring for the client.admin key
   command: /usr/bin/ceph-authtool /etc/ceph/ceph.client.admin.keyring -n client.admin -p
-  register: ceph_key
+  register: ceph_admin_key_results
   changed_when: False
-  run_once: True
-
-- name: generate the client.admin key
-  command: /usr/bin/ceph-authtool /etc/ceph/ceph.client.admin.keyring -n client.admin --gen-key --set-uid=0 --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow'
-  when: "'not found' in ceph_key.stderr"
-  run_once: True
 
 - name: query the keyring for the mon. key
   command: /usr/bin/ceph-authtool /etc/ceph/ceph.mon.keyring -n mon. -p
-  register: ceph_key
+  register: ceph_mon_key_results
   changed_when: False
+
+- set_fact: admin_key=''
+- set_fact: mon_key=''
+
+- set_fact: admin_key="{{ hostvars[item].ceph_admin_key_results.stdout }}"
+  when: "'not found' not in hostvars[item].ceph_admin_key_results.stderr"
+  with_items: play_hosts
+
+- set_fact: mon_key="{{ hostvars[item].ceph_mon_key_results.stdout }}"
+  when: "'not found' not in hostvars[item].ceph_mon_key_results.stderr"
+  with_items: play_hosts
+
+# Generate new keys if old keys are not found
+- name: generate new admin key
+  command: ceph-authtool --gen-print-key
+  register: ceph_admin_key_results
+  when: admin_key == ''
   run_once: True
 
-- name: generate the mon. key
-  command: /usr/bin/ceph-authtool /etc/ceph/ceph.mon.keyring -n mon. --gen-key --cap mon 'allow *'
-  when: "'not found' in ceph_key.stderr"
+- name: generate new mon. key
+  command: ceph-authtool --gen-print-key
+  register: ceph_mon_key_results
+  when: admin_key == ''
   run_once: True
+
+- set_fact: admin_key="{{ hostvars[play_hosts[0]].ceph_admin_key_results.stdout }}"
+  when: hostvars[play_hosts[0]].ceph_admin_key_results.stdout is defined
+
+- set_fact: mon_key="{{ hostvars[play_hosts[0]].ceph_mon_key_results.stdout }}"
+  when: hostvars[play_hosts[0]].ceph_mon_key_results.stdout is defined
+
+# Put the existing or new keys into the keyrings
+- name: put the client.admin key into the keyring
+  command: /usr/bin/ceph-authtool /etc/ceph/ceph.client.admin.keyring -n client.admin --add-key {{ admin_key }} --set-uid=0 --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow'
+
+- name: put the mon. key into the keyring
+  command: /usr/bin/ceph-authtool /etc/ceph/ceph.mon.keyring -n mon. --add-key {{ mon_key }} --cap mon 'allow *'
 
 - name: import the client.admin key to the mon. keyring
   command: ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /etc/ceph/ceph.client.admin.keyring
-  run_once: True
 
+# Continue with the monitor setup
 - name: create the monitor map
-  command: monmaptool --create --fsid "{{ ceph_fsid.stdout }}" /etc/ceph/monmap creates=/etc/ceph/monmap
+  command: monmaptool --create --fsid "{{ ceph_fsid }}" /etc/ceph/monmap creates=/etc/ceph/monmap
 
 - name: add the monitor hosts to the monitor map
   command: monmaptool --add {{ item }} {{ hostvars[item].ip.mgmt }} /etc/ceph/monmap
@@ -67,13 +107,6 @@
   register: monmap_result
   failed_when: monmap_result.rc != 0 and 'map already contains' not in monmap_result.stderr
   changed_when: "'writing' in monmap_result.stdout"
-
-- name: fetch the monitoring keyring
-  fetch: src=/etc/ceph/ceph.mon.keyring dest=workdir/ceph.mon.keyring flat=yes
-  run_once: True
-
-- name: distribute the monitoring keyring
-  copy: src=workdir/ceph.mon.keyring dest=/etc/ceph/ceph.mon.keyring owner=root group=root mode=0600
 
 - name: create the default data directories
   file: dest=/var/lib/ceph/mon/{{ ceph_cluster_name }}-{{ inventory_hostname }} state=directory owner=root group=root mode=0644

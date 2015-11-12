@@ -23,6 +23,7 @@
       "auth cluster required": "cephx",
       "auth service required": "cephx",
       "auth client required": "cephx",
+      "cephx require signatures": "true",
       "osd journal size": "{{ ceph_osd_journal_size }}",
       "filestore xattr use omap": "{{ ceph_filestore_xattr_use_omap }}",
       "osd pool default size": "{{ ceph_osd_pool_default_size }}",
@@ -32,28 +33,15 @@
       "osd crush chooseleaf type": "{{ ceph_osd_crush_chooseleaf_type }}"
    }
 
-- name: fetch the client.admin keyring
-  fetch: src=/etc/ceph/ceph.client.admin.keyring dest=workdir/ceph.client.admin.keyring flat=yes
+- name: fetch the bootstrap-osd key
+  command: ceph auth print-key client.bootstrap-osd
+  register: bootstrap_osd_key_results
   delegate_to: "{{ groups['ceph_monitor'][0] }}"
   run_once: True
-
-- name: fetch the client.bootstrap-osd keyring
-  fetch: src=/var/lib/ceph/bootstrap-osd/ceph.keyring dest=workdir/bootstrap-osd.keyring flat=yes
-  delegate_to: "{{ groups['ceph_monitor'][0] }}"
-  run_once: True
-
-- name: distribute the client.admin keyring
-  copy: dest=/etc/ceph/ceph.client.admin.keyring src=workdir/ceph.client.admin.keyring owner=root group=root mode=0600
 
 - name: distribute the bootstrap-osd keyring
-  copy: dest=/var/lib/ceph/bootstrap-osd/ceph.keyring src=workdir/bootstrap-osd.keyring owner=root group=root mode=0600
-
-#### Add node
-- name: add the Ceph Node to the CRUSH map
-  command: ceph --cluster {{ ceph_cluster_name }} osd crush add-bucket {{ inventory_hostname }} host
-
-- name: place the Ceph Node under the root default
-  command: ceph --cluster {{ ceph_cluster_name}} osd crush move {{ inventory_hostname }} root=default
+  copy: content="[client.bootstrap-osd]\n\tkey = {{ bootstrap_osd_key_results.stdout }}\n"
+        dest=/var/lib/ceph/bootstrap-osd/ceph.keyring owner=root group=root mode=0600
 
 ### Add path-based OSDs
 - name: make sure OSD directories are exists

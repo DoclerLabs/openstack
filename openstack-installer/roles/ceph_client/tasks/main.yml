@@ -18,7 +18,8 @@
     { "mon host": "{% for host in groups['ceph_monitor'] %}{{ hostvars[host].ip.mgmt }}{% if not loop.last %},{% endif %}{% endfor %}",
       "auth cluster required": "cephx",
       "auth service required": "cephx",
-      "auth client required": "cephx"
+      "auth client required": "cephx",
+      "cephx require signatures": "true"
    }
 
 - name: write out ceph keyring
