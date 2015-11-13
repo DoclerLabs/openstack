@@ -76,5 +76,5 @@
         keystone_domain_name: "{{ keystone_domain_name | default('Default') }}"
         keystone_password: "{{ keystone_admin_password }}"
         keystone_project_name: admin
-        keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+        keystone_project_domain_name: "{{ keystone_domain_name | default('Default') }}"
         keystone_role: admin
