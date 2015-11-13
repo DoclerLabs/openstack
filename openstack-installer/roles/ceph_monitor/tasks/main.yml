@@ -39,6 +39,20 @@
       "cephx require signatures": "true"
    }
 
+- name: set up ceph public network
+  ini_file: dest=/etc/ceph/ceph.conf
+    section=global
+    option="public network"
+    value="{{ ceph_public_network }}"
+  when: ceph_public_network is defined
+
+- name: set up ceph cluster network
+  ini_file: dest=/etc/ceph/ceph.conf
+    section=global
+    option="cluster network"
+    value="{{ ceph_cluster_network }}"
+  when: ceph_cluster_network is defined
+
 - name: create keyrings
   command: /usr/bin/ceph-authtool --create-keyring /etc/ceph/ceph.{{ item }}.keyring
     creates=/etc/ceph/ceph.{{ item }}.keyring
@@ -88,14 +102,11 @@
   when: hostvars[play_hosts[0]].ceph_mon_key_results.stdout is defined
 
 # Put the existing or new keys into the keyrings
-- name: put the client.admin key into the keyring
-  command: /usr/bin/ceph-authtool /etc/ceph/ceph.client.admin.keyring -n client.admin --add-key {{ admin_key }} --set-uid=0 --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow'
+- name: generate ceph.client.admin.keyring
+  template: src=ceph.client.admin.keyring.j2 dest=/etc/ceph/ceph.client.admin.keyring owner=root group=root mode=0600
 
-- name: put the mon. key into the keyring
-  command: /usr/bin/ceph-authtool /etc/ceph/ceph.mon.keyring -n mon. --add-key {{ mon_key }} --cap mon 'allow *'
-
-- name: import the client.admin key to the mon. keyring
-  command: ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /etc/ceph/ceph.client.admin.keyring
+- name: generate ceph.mon.keyring
+  template: src=ceph.mon.keyring.j2 dest=/etc/ceph/ceph.mon.keyring owner=root group=root mode=0600
 
 # Continue with the monitor setup
 - name: create the monitor map

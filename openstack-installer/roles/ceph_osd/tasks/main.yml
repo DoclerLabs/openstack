@@ -33,6 +33,20 @@
       "osd crush chooseleaf type": "{{ ceph_osd_crush_chooseleaf_type }}"
    }
 
+- name: set up ceph public network
+  ini_file: dest=/etc/ceph/ceph.conf
+    section=global
+    option="public network"
+    value="{{ ceph_public_network }}"
+  when: ceph_public_network is defined
+
+- name: set up ceph cluster network
+  ini_file: dest=/etc/ceph/ceph.conf
+    section=global
+    option="cluster network"
+    value="{{ ceph_cluster_network }}"
+  when: ceph_cluster_network is defined
+
 - name: fetch the bootstrap-osd key
   command: ceph auth print-key client.bootstrap-osd
   register: bootstrap_osd_key_results
