@@ -12,19 +12,16 @@ keystone_public_ip: "{{ vip_mgmt }}"
 
 keystone_region_name: RegionONE
 keystone_domain_name: Default
-keystone_service_project_domain_name: Default
-
-#Nova compute ironic driver supports only keystone v2.0
-ironic_domain_name: Default
 
 neutron_flat_networks:
 neutron_physical_interface_mappings: vlan:br-vlan
-neutron_vlan_ranges: vlan:901:915
+neutron_vlan_ranges: vlan:901:915,vlan:917:975
 neutron_ha_network_type: vlan
 neutron_ha_network_physical_name: vlan
+neutron_ha_routers: False
 
 trove_net_name: trove-net
-trove_net_segmentation_id: 915
+trove_net_segmentation_id: 901
 trove_net_type: vlan
 trove_physical_network: vlan
 trove_subnet_cidr: 10.20.30.0/24
@@ -32,7 +29,7 @@ trove_image_path: /etc/openstack_deploy/trove-mysql.qcow2
 
 #ceph or lvm
 cinder_backend: ceph
-cinder_ceph_pool: images
+cinder_ceph_pool: volumes
 cinder_ceph_user: cinder
 cinder_backup_ceph_pool: backups
 cinder_backup_ceph_user: cinder-backup

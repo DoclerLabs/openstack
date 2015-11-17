@@ -77,6 +77,13 @@ sahara:
 
 ironic:
 
+# -------- Tempest ------
+tempest:
+  localhost:
+    ip:
+      mgmt: 127.0.0.1
+    ansible_connection: local
+
 # -------- Ceph ---------
 ceph_monitor:
   jsm-ceph-osd-lubet-5:
