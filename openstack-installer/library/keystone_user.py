@@ -254,8 +254,20 @@ def ensure_user_exists(keystone, user_name, password, email, user_domain, projec
 
     return (True, user.id)
 
+def ensure_role_exists(keystone, role_name, check_mode):
+    # Get the role if it exists
+    try:
+        role = get_role(keystone, role_name)
+        return (False, role.id)
+    except KeyError:
+        # Role doesn't exist yet
+        if check_mode:
+            return (True, None)
+        else:
+            role = keystone.roles.create(role_name)
+            return (True, role.id)
 
-def ensure_role_exists(keystone, domain, user_name, project_name, role_name,
+def ensure_role_exists_for_user(keystone, domain, user_name, project_name, role_name,
                        check_mode):
     """ Check if role exists
 
@@ -307,7 +319,7 @@ def ensure_user_absent(keystone, user_domain, user, check_mode):
     raise NotImplementedError("Not yet implemented")
 
 
-def ensure_role_absent(keystone, domain, user, project, role, check_mode):
+def ensure_role_absent_for_user(keystone, domain, user, project, role, check_mode):
     raise NotImplementedError("Not yet implemented")
 
 
@@ -392,8 +404,13 @@ def dispatch(keystone, user=None, password=None, project=None,
           X                  absent      ensure_project_absent
           X      X           present     ensure_user_exists
           X      X           absent      ensure_user_absent
-          X      X     X     present     ensure_role_exists
-          X      X     X     absent      ensure_role_absent
+                 X           present     ensure_user_exists
+                 X           absent      ensure_user_absent
+          X      X     X     present     ensure_role_exists_for_user
+          X      X     X     absent      ensure_role_absent_for_user
+                 X     X     present     ensure_role_exists_for_user
+                 X     X     absent      ensure_role_absent_for_user
+                       X     present     ensure_role_exists
 
 
         """
@@ -410,10 +427,12 @@ def dispatch(keystone, user=None, password=None, project=None,
     elif user and not role and state == "absent":
         changed = ensure_user_absent(keystone, user_domain, user, check_mode)
     elif user and role and state == "present":
-        changed, id = ensure_role_exists(keystone, user_domain, user, project, role,
+        changed, id = ensure_role_exists_for_user(keystone, user_domain, user, project, role,
                                          check_mode)
     elif user and role and state == "absent":
-        changed = ensure_role_absent(keystone, domain, user_domain, project, role, check_mode)
+        changed = ensure_role_absent_for_user(keystone, domain, user_domain, project, role, check_mode)
+    elif role and state == "present":
+        changed, id = ensure_role_exists(keystone, role, check_mode)
     else:
         # Should never reach here
         raise ValueError("Code should never reach here")
