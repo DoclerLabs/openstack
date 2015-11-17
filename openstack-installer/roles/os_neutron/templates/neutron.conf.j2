@@ -260,7 +260,7 @@ dhcp_agents_per_network = {{ groups['neutron_controller'] | length }}
 # =========== items for l3 extension ==============
 # Enable high availability for virtual routers.
 # l3_ha = False
-l3_ha = True
+l3_ha = {{ neutron_ha_routers }}
 #
 # Maximum number of l3 agents which a HA router will be scheduled on. If it
 # is set to 0 the router will be scheduled on every agent.
