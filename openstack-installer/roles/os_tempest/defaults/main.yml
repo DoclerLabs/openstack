@@ -1,0 +1,22 @@
+---
+
+tempest_git_repo: https://git.openstack.org/openstack/tempest
+tempest_version: master
+tempest_dest: "{{ ansible_env.HOME }}/tempest"
+
+cirros_image_url: http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-disk.img
+cirros_ssh_user: cirros
+cirros_ssh_password: cubswin:)
+
+external_net_name: ext-net
+external_net_type: vlan
+external_physical_network: vlan
+external_net_segmentation_id: 996
+external_subnet_cidr: 10.97.37.0/25
+external_subnet_gateway_ip: 10.97.37.126
+
+neutron_api_extensions: dns-integration,ext-gw-mode,binding,agent,subnet_allocation,l3_agent_scheduler,external-net,flavors,fwaasrouterinsertion,
+  net-mtu,quotas,l3-ha,provider,multi-provider,lbaas,extraroute,lbaas_agent_scheduler,fwaas,router,extra_dhcp_opt,service-type,security-group,
+  dhcp_agent_scheduler,rbac-policies,port-security,allowed-address-pairs,dvr
+
+tenant_network_cidr: 10.100.0.0/16

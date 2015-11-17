@@ -1,0 +1,58 @@
+---
+
+- name: install packages for tempest
+  apt: name={{ item }}
+  sudo: True
+  with_items:
+    - git
+    - libffi-dev
+    - libssl-dev
+    - python-dev
+    - python-subunit
+
+- name: ensure cirros image exists in glance
+  glance_image:
+    auth_url="http://{{ keystone_admin_ip }}:35357/v3"
+    login_username=admin
+    login_domain_name=Default
+    login_password="{{ keystone_admin_password }}"
+    region_name="{{ keystone_region_name }}"
+    copy_from="{{ cirros_image_url }}"
+    name=cirros-image
+  run_once: True
+  register: cirros_image
+
+- name: ensure external network exists in neutron
+  quantum_network: >
+    login_tenant_name=admin
+    login_username=admin
+    login_password="{{ keystone_admin_password }}"
+    auth_url="http://{{ keystone_admin_ip }}:35357/v3"
+    region_name="{{ keystone_region_name }}"
+    name="{{ external_net_name }}"
+    provider_network_type={{ external_net_type }}
+    provider_physical_network={{ external_physical_network }}
+    provider_segmentation_id="{{ external_net_segmentation_id }}"
+    router_external=yes
+  register: external_net
+  run_once: True
+
+- name: set up external subnet in neutron
+  quantum_subnet: >
+    auth_url="http://{{ keystone_admin_ip }}:35357/v3"
+    login_tenant_name=admin
+    login_username=admin
+    login_password="{{ keystone_admin_password }}"
+    region_name="{{ keystone_region_name }}"
+    name=external-subnet
+    network_name="{{ external_net_name }}"
+    cidr="{{ external_subnet_cidr }}"
+    enable_dhcp=False
+    gateway_ip={{ external_subnet_gateway_ip }}
+  run_once: True
+
+- name: install tempest from git
+  git: dest={{ tempest_dest }} repo={{ tempest_git_repo }} version={{ tempest_version }}
+
+- name: install tempest config
+  template: src=tempest.conf.j2 dest={{ tempest_dest }}/etc/tempest.conf

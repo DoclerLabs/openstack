@@ -1,0 +1,6 @@
+---
+
+- hosts: tempest
+  max_fail_percentage: 0
+  roles:
+    - os_tempest
