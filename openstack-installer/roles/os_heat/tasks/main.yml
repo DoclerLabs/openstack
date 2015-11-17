@@ -55,6 +55,16 @@
     role=admin
   run_once: True
 
+- name: create roles for heat
+  keystone_user: >
+    token="{{ keystone_admin_token }}"
+    endpoint="http://{{ keystone_admin_ip }}:35357/v3"
+    role={{ item }}
+  with_items:
+    - heat_stack_owner
+    - heat_stack_user
+  run_once: True
+
 - name: install heat configs
   template: src={{ item }}.conf.j2 dest=/etc/heat/{{ item }}.conf owner=heat group=root mode=0460
   with_items:
