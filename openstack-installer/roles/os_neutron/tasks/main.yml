@@ -45,9 +45,10 @@
   notify: reload sysctl
   when: inventory_hostname in groups['neutron_controller']
 
-- name: install neutron
+- name: install neutron server packages
   apt: name={{ item }}
   with_items:
+    - conntrack
     - keepalived
     - neutron-server
     - neutron-plugin-ml2
@@ -59,9 +60,10 @@
     - python-neutronclient
   when: inventory_hostname in groups['neutron_controller']
 
-- name: install neutron
+- name: install neutron compute packages
   apt: name={{ item }}
   with_items:
+    - conntrack
     - neutron-plugin-linuxbridge-agent
   when: inventory_hostname in groups['neutron_compute']
 
