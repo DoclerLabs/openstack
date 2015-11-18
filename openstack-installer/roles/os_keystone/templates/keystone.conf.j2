@@ -344,6 +344,7 @@ backend = keystone.cache.memcache_pool
 # Global toggle for all caching using the should_cache_fn mechanism. (boolean
 # value)
 #enabled = false
+enabled = true
 
 # Extra debugging from the cache backend (cache keys, get/set/delete/etc
 # calls). This is only really useful if you need to see the specific cache-
@@ -1919,7 +1920,7 @@ provider = uuid
 # keystone.token.persistence namespace. Supplied drivers are kvs, memcache,
 # memcache_pool, and sql. (string value)
 #driver = sql
-driver = memcache
+driver = memcache_pool
 
 # Toggle for token system caching. This has no effect unless global caching is
 # enabled. (boolean value)
