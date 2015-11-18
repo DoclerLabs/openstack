@@ -106,13 +106,14 @@
 - name: upload trove image to glance
   local_action: glance_image
     auth_url="http://{{ keystone_admin_ip }}:35357/v3"
-    login_username=trove
-    login_domain_name={{ trove_domain_name }}
-    login_password="{{ trove_admin_password }}"
+    login_username=admin
+    login_domain_name="Default"
+    login_project_name="admin"
+    login_password="{{ keystone_admin_password }}"
     region_name="{{ keystone_region_name }}"
     file="{{ trove_image_path }}"
     name=trove-mysql-image
-    owner=trove
+    owner="{{ trove_project_name }}"
   run_once: True
   register: trove_image
 

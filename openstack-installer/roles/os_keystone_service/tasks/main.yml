@@ -28,8 +28,6 @@
   keystone_user: >
     token="{{ keystone_admin_token }}"
     endpoint="http://{{ keystone_admin_ip }}:35357/v3"
-    project="{{ item.keystone_project_name }}"
-    project_domain="{{ item.keystone_project_domain_name | default('Default') }}"
     user="{{ item.keystone_user }}"
     user_domain="{{ item.keystone_domain_name | default('Default') }}"
     password="{{ item.keystone_password }}"

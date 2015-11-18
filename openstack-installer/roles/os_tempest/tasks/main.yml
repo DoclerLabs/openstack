@@ -23,6 +23,7 @@
 - name: ensure cirros image exists in glance
   glance_image:
     auth_url="http://{{ keystone_admin_ip }}:35357/v3"
+    login_project_name=admin
     login_username=admin
     login_domain_name="Default"
     login_password="{{ keystone_admin_password }}"
