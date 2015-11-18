@@ -394,6 +394,7 @@ floating_ip_range = 10.0.0.0/29
 # by some multinode specific tests to ensure that requests match the
 # expected size of the cluster you are testing with. (integer value)
 #min_compute_nodes = 1
+min_compute_nodes = {{ groups['nova_compute'] | count }}
 
 
 [compute-feature-enabled]
@@ -659,11 +660,13 @@ region = {{ keystone_region_name }}
 # This option is deprecated for removal.
 # Its value may be silently ignored in the future.
 #username = <None>
+username = {{ heat_stack_owner_user }}
 
 # Tenant name to use for Nova API requests. (string value)
 # This option is deprecated for removal.
 # Its value may be silently ignored in the future.
 #tenant_name = <None>
+tenant_name = {{ heat_stack_owner_project }}
 
 # Role required to administrate keystone. (string value)
 #admin_role = admin
@@ -672,6 +675,7 @@ region = {{ keystone_region_name }}
 # This option is deprecated for removal.
 # Its value may be silently ignored in the future.
 #password = <None>
+password = {{ heat_stack_owner_password }}
 
 # Domain name for authentication (Keystone V3).The same domain applies
 # to user and project (string value)
@@ -1044,6 +1048,7 @@ api_extensions = {{ neutron_api_extensions }}
 # Instance type for tests. Needs to be big enough for a full OS plus
 # the test workload (string value)
 #instance_type = m1.micro
+instance_type = m1.tiny
 
 # Name of existing keypair to launch servers with. (string value)
 #keypair_name = <None>
@@ -1083,10 +1088,12 @@ lock_path = /var/lock/tempest
 
 # Directory containing image files (string value)
 #img_dir = /opt/stack/new/devstack/files/images/cirros-0.3.1-x86_64-uec
+img_dir = {{ tempest_images_dest }}
 
 # Image file name (string value)
 # Deprecated group/name - [DEFAULT]/qcow2_img_file
 #img_file = cirros-0.3.1-x86_64-disk.img
+img_file = {{ tempest_image_file }}
 
 # Image disk format (string value)
 #img_disk_format = qcow2
@@ -1100,12 +1107,15 @@ lock_path = /var/lock/tempest
 
 # AMI image file name (string value)
 #ami_img_file = cirros-0.3.1-x86_64-blank.img
+ami_img_file =
 
 # ARI image file name (string value)
 #ari_img_file = cirros-0.3.1-x86_64-initrd
+ari_img_file = {{ tempest_image_ari_img_file }}
 
 # AKI image file name (string value)
 #aki_img_file = cirros-0.3.1-x86_64-vmlinuz
+aki_img_file = {{ tempest_image_aki_img_file }}
 
 # ssh username for the image file (string value)
 #ssh_user = cirros
