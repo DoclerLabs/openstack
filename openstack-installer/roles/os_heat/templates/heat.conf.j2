@@ -137,6 +137,7 @@ verbose = True
 # The Drivers(s) to handle sending notifications. Possible values are
 # messaging, messagingv2, routing, log, test, noop (multi valued)
 #notification_driver =
+notification_driver = messagingv2
 
 # AMQP topic used for OpenStack notifications. (list value)
 # Deprecated group/name - [rpc_notifier2]/topics
@@ -183,9 +184,9 @@ rpc_backend = rabbit
 # service (at DEBUG level). (boolean value)
 #log_options = true
 
-
-heat_metadata_server_url = http://{{ vip_mgmt }}:8000
-heat_waitcondition_server_url = http://{{ vip_mgmt }}:8000/v1/waitcondition
+heat_watch_server_url = http://{{ vip_public }}:8003
+heat_metadata_server_url = http://{{ vip_public }}:8000
+heat_waitcondition_server_url = http://{{ vip_public }}:8000/v1/waitcondition
 stack_domain_admin = {{ heat_domain_admin }}
 stack_domain_admin_password = {{ heat_domain_admin_password }}
 stack_user_domain_name = {{ heat_user_domain }}
@@ -348,6 +349,7 @@ region_name = {{ keystone_region_name }}
 
 # Directory used to cache files related to PKI tokens. (string value)
 #signing_dir = <None>
+signing_dir = /var/lib/heat/cache/api
 
 # Optionally specify a list of memcached server(s) to use for caching. If left
 # undefined, tokens will instead be cached in-process. (list value)
@@ -463,15 +465,15 @@ auth_url = http://{{ keystone_admin_ip }}:35357/
 
 # Service username. (string value)
 #admin_user = <None>
-admin_user = {{ heat_admin_user }}
+#admin_user = {{ heat_admin_user }}
 
 # Service user password. (string value)
 #admin_password = <None>
-admin_password = {{ heat_admin_password }}
+#admin_password = {{ heat_admin_password }}
 
 # Service tenant name. (string value)
 #admin_tenant_name = admin
-admin_tenant_name = {{ heat_project_name }}
+#admin_tenant_name = {{ heat_project_name }}
 
 user_domain_name = {{ heat_domain_name }}
 username = {{ heat_admin_user }}
@@ -485,19 +487,20 @@ auth_plugin = password
 auth_uri = http://{{ keystone_admin_ip }}:5000
 auth_url = http://{{ keystone_admin_ip }}:35357
 auth_plugin = password
-project_domain_name = {{ heat_project_domain_name }}
-project_name = {{ heat_project_name }}
+signing_dir = /var/lib/heat/cache/api
+#project_domain_name = {{ heat_project_domain_name }}
+#project_name = {{ heat_project_name }}
 user_domain_name = {{ heat_domain_name }}
 username = {{ heat_admin_user }}
 password = {{ heat_admin_password }}
 
 [clients_keystone]
 
-auth_uri = http://{{ keystone_admin_ip }}:5000
+auth_uri = http://{{ keystone_admin_ip }}:5000/v3
 
 [ec2authtoken]
 
-auth_uri = http://{{ keystone_admin_ip }}:5000
+auth_uri = http://{{ keystone_admin_ip }}:5000/v3
 
 [matchmaker_redis]
 
