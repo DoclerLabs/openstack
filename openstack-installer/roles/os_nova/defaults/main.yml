@@ -16,7 +16,7 @@ nova_default_floating_pool: ext-net
 nova_virt_type: kvm
 
 #spice or vnc
-nova_console_type: spice
+nova_console_type: vnc
 nova_console_keymap: en-us
 
 neutron_domain_name: "{{ keystone_domain_name }}"
