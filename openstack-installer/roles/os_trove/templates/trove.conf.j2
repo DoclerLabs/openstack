@@ -221,11 +221,7 @@ rabbit_port = 5672
 rabbit_userid = {{ trove_rabbit_user }}
 rabbit_password = {{ trove_rabbit_password }}
 rabbit_ha_queues = true
-{% set rabbit_hosts=groups['rabbitmq'] %}
-{% if inventory_hostname in rabbit_hosts %}
-{% set _ = rabbit_hosts.remove(inventory_hostname) %}
-{% set _ = rabbit_hosts.insert(0, inventory_hostname) %}
-{% endif %}
+{% set rabbit_hosts=groups['rabbitmq'][(play_hosts.index(inventory_hostname) % groups['rabbitmq'] | count):] + groups['rabbitmq'][:(play_hosts.index(inventory_hostname) % groups['rabbitmq'] | count)] %}
 rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
 
 
