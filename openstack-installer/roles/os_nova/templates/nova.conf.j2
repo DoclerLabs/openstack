@@ -161,7 +161,12 @@ rabbit_port = 5672
 rabbit_userid = {{ nova_rabbit_user }}
 rabbit_password = {{ nova_rabbit_password }}
 rabbit_ha_queues = true
-rabbit_hosts = {% for host in groups['rabbitmq'] %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
+{% set rabbit_hosts=groups['rabbitmq'] %}
+{% if inventory_hostname in rabbit_hosts %}
+{% set _ = rabbit_hosts.remove(inventory_hostname) %}
+{% set _ = rabbit_hosts.insert(0, inventory_hostname) %}
+{% endif %}
+rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
 
 {% if inventory_hostname in groups['nova_compute'] %}
 

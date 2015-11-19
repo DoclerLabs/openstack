@@ -173,6 +173,7 @@ log_dir=/var/log/ironic
 # values are messaging, messagingv2, routing, log, test, noop
 # (multi valued)
 #notification_driver=
+notification_driver=messagingv2
 
 # AMQP topic used for OpenStack notifications. (list value)
 # Deprecated group/name - [rpc_notifier2]/topics
@@ -1631,7 +1632,12 @@ url=http://{{ vip_mgmt }}:9696
 
 # RabbitMQ HA cluster host:port pairs. (list value)
 #rabbit_hosts=$rabbit_host:$rabbit_port
-rabbit_hosts = {% for host in groups['rabbitmq'] %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
+{% set rabbit_hosts=groups['rabbitmq'] %}
+{% if inventory_hostname in rabbit_hosts %}
+{% set _ = rabbit_hosts.remove(inventory_hostname) %}
+{% set _ = rabbit_hosts.insert(0, inventory_hostname) %}
+{% endif %}
+rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
 
 # Connect over SSL for RabbitMQ. (boolean value)
 #rabbit_use_ssl=false

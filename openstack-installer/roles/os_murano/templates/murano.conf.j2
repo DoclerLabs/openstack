@@ -594,7 +594,12 @@ auth_plugin = password
 # RabbitMQ HA cluster host:port pairs. (list value)
 # Deprecated group/name - [DEFAULT]/rabbit_hosts
 #rabbit_hosts = $rabbit_host:$rabbit_port
-rabbit_hosts = {% for host in groups['rabbitmq'] %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
+{% set rabbit_hosts=groups['rabbitmq'] %}
+{% if inventory_hostname in rabbit_hosts %}
+{% set _ = rabbit_hosts.remove(inventory_hostname) %}
+{% set _ = rabbit_hosts.insert(0, inventory_hostname) %}
+{% endif %}
+rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
 
 # Connect over SSL for RabbitMQ. (boolean value)
 # Deprecated group/name - [DEFAULT]/rabbit_use_ssl

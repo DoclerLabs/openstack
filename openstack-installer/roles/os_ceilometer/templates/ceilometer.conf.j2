@@ -142,6 +142,7 @@ verbose = true
 # The Drivers(s) to handle sending notifications. Possible values are
 # messaging, messagingv2, routing, log, test, noop (multi valued)
 #notification_driver =
+notification_driver = messagingv2
 
 # AMQP topic used for OpenStack notifications. (list value)
 # Deprecated group/name - [rpc_notifier2]/topics
@@ -733,7 +734,12 @@ os_region_name = {{ keystone_region_name }}
 # RabbitMQ HA cluster host:port pairs. (list value)
 # Deprecated group/name - [DEFAULT]/rabbit_hosts
 #rabbit_hosts = $rabbit_host:$rabbit_port
-rabbit_hosts = {% for host in groups['rabbitmq'] %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
+{% set rabbit_hosts=groups['rabbitmq'] %}
+{% if inventory_hostname in rabbit_hosts %}
+{% set _ = rabbit_hosts.remove(inventory_hostname) %}
+{% set _ = rabbit_hosts.insert(0, inventory_hostname) %}
+{% endif %}
+rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
 
 # Connect over SSL for RabbitMQ. (boolean value)
 # Deprecated group/name - [DEFAULT]/rabbit_use_ssl
