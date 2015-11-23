@@ -5,7 +5,7 @@ verbose = True
 use_stderr = False
 log_dir = /var/log/nova
 rootwrap_config = /etc/nova/rootwrap.conf
-service_down_time = 120
+service_down_time = {{ nova_service_down_time }}
 
 # Compute
 {% if groups['ironic'] | count > 0 %}

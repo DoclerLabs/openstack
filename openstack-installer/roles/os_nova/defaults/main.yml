@@ -12,6 +12,9 @@ nova_project_name: "{{ keystone_service_project_name | default('service') }}"
 nova_compute_driver: libvirt.LibvirtDriver
 nova_default_floating_pool: ext-net
 
+#Must be greater than MySQL failover time
+nova_service_down_time: 150
+
 #kvm or qemu
 nova_virt_type: kvm
 
