@@ -1078,7 +1078,7 @@ instance_type = m1.tiny
 # If external locks are used, a lock path must be set. (string value)
 # Deprecated group/name - [DEFAULT]/lock_path
 #lock_path = <None>
-lock_path = /var/lock/tempest
+lock_path = {{ tempest_lock_path }}
 
 [scenario]
 

@@ -9,6 +9,9 @@
     - libssl-dev
     - python-dev
     - python-subunit
+    - python-glanceclient
+    - python-neutronclient
+  when: ansible_os_family == 'Debian'
 
 - name: make sure the images directory exists
   file: path="{{ tempest_images_dest }}" state=directory

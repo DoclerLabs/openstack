@@ -3,6 +3,7 @@
 tempest_git_repo: https://git.openstack.org/openstack/tempest
 tempest_version: master
 tempest_dest: "{{ ansible_env.HOME }}/tempest"
+tempest_lock_path: "{{ ansible_env.HOME }}/tempest/lock"
 tempest_images_dest: "{{ ansible_env.HOME }}/tempest/images"
 tempest_images_url: http://download.cirros-cloud.net/0.3.4
 tempest_image_file: cirros-0.3.4-x86_64-disk.img
