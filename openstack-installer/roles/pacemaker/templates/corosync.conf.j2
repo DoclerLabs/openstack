@@ -28,10 +28,10 @@ logging {
 }
 
 nodelist {
-{% for node in groups['controller'] %}
+{% for node in groups['pacemaker'] %}
         node {
                 ring0_addr: {{ hostvars[node].ip.mgmt }}
-                nodeid: {{ groups['controller'].index(node) + 1 }}
+                nodeid: {{ groups['pacemaker'].index(node) + 1 }}
         }
 {% endfor %}
 
