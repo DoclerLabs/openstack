@@ -51,8 +51,11 @@
     - restart ceilometer compute services
 
 - name: install aodh configs
-  template: src=aodh.conf.j2 dest=/etc/aodh/aodh.conf owner=aodh group=root mode=0460
-  notify: 
+  template: src={{ item }}.j2 dest=/etc/aodh/{{ item }} owner=aodh group=root mode=0460
+  with_items:
+    - aodh.conf
+    - api_paste.ini
+  notify:
     - restart aodh
   when: inventory_hostname in groups['ceilometer_controller']
 
