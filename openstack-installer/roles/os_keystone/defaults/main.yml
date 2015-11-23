@@ -4,3 +4,5 @@ keystone_db_user: keystone
 keystone_mysql_server: "{{ vip_mgmt }}"
 keystone_db: keystone
 keystone_rabbit_user: keystone
+
+keystone_processes: "{{ ansible_processor_vcpus }}"
