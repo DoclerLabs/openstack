@@ -6,11 +6,11 @@
     - libnss3-tools
 
 - name: set up rgw.conf in apache
-  template: src=rgw.conf dest=/etc/apache2/conf-available/rgw.conf owner=root group=root mode=0644
+  template: src=rgw.conf dest=/etc/apache2/sites-available/rgw.conf owner=root group=root mode=0644
   notify: restart apache2
 
 - name: enable rgw.conf
-  file: state=link dest=/etc/apache2/conf-enabled/rgw.conf src=../conf-available/rgw.conf
+  file: state=link dest=/etc/apache2/sites-enabled/rgw.conf src=../sites-available/rgw.conf
   notify: restart apache2
 
 - name: enable apache modules
