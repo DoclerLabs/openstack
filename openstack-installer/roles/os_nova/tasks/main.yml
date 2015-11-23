@@ -45,6 +45,13 @@
     - nova-compute
   when: inventory_hostname in groups['nova_compute']
 
+### Remove this ugly hack after nova is fixed!
+- name: patch nova/servicegroup/drivers/db.py (#1517926)
+  lineinfile: "dest=/usr/lib/python2.7/dist-packages/nova/servicegroup/drivers/db.py line='        except Exception: pass'"
+  notify:
+    - restart nova controller services
+    - restart nova compute services
+
 - name: create nova database
   mysql_db: name={{ nova_db }}
     login_host={{ nova_mysql_server }} login_user=root login_password={{ mysql_root_password }}
