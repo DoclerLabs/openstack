@@ -13,6 +13,9 @@ frontend {{ item.haproxy_service_name }}-front
     option  tcplog
     {%- set request_option = "tcp" %}
 {% endif %}
+{% for option in item.haproxy_frontend_options|default([]) %}
+    option {{ option }}
+{% endfor %}
 
 {% if item.haproxy_timeout_client is defined %}
     timeout client {{ item.haproxy_timeout_client }}
@@ -27,7 +30,6 @@ frontend {{ item.haproxy_service_name }}-front
 
     mode {{ item.haproxy_balance_type }}
     default_backend {{ item.haproxy_service_name }}-back
-
 
 {% if item.haproxy_backend_port is not defined %}
   {% set haproxy_backend_port = item.haproxy_port %}
