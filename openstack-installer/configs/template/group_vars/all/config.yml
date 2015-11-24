@@ -40,6 +40,10 @@ glance_backend: ceph
 glance_ceph_pool: images
 glance_ceph_user: glance
 
+#ceph or local
+nova_ephermal_backend: ceph
+nova_ephermal_ceph_pool: vms
+
 #horizon_regions:
 #  - { name: "RegionONE", url: "http://10.97.36.127:5000/v3" }
 #  - { name: "RegionTWO", url: "http://10.97.36.127:5000/v3" }

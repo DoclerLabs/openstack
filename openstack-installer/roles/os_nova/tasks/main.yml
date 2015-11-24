@@ -39,6 +39,7 @@
 - name: install nova compute packages
   apt: name={{ item }}
   with_items:
+    - ceph-common
     - python-rbd
     - python-rados
     - sysfsutils
