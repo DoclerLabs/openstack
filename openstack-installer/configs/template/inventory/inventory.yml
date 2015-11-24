@@ -23,7 +23,7 @@ rabbitmq:
   inherit: controller
 
 galera:
-  inherit: controller
+  inherit: pacemaker
 
 mongodb:
   inherit: controller
