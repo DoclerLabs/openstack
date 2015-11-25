@@ -23,7 +23,7 @@
   wait_for: port=27017
 
 - name: query the replica set status
-  shell: echo "rs.status().myState; " | mongo --quiet
+  command: mongo --quiet --eval 'rs.status().myState;'
   changed_when: False
   register: mongo_status
 
@@ -38,6 +38,25 @@
   command: mongo --quiet --eval '{{ lookup('template','../templates/mongo_init.js.j2') }}'
   when: mongo_initialized == False
   run_once: True
+
+- name: wait until the replica set is initialized
+  command: mongo --quiet --eval 'rs.status().myState;'
+  register: mongo_status
+  run_once: True
+  when: mongo_initialized == False
+  until: mongo_status.stdout == '1'
+
+- name: query the replica set status
+  command: mongo --quiet --eval 'rs.status().myState;'
+  changed_when: False
+  register: mongo_status
+
+- name: add missing members to the replica set
+  command: mongo --quiet --eval 'rs.add("{{ item }}").ok'
+  when: mongo_status.stdout == '1'
+  register: mongo_result
+  changed_when: mongo_result.stdout == '1'
+  with_items: groups['mongodb']
 
 - name: wait until the replica set is initialized
   shell: echo "rs.status().myState; " | mongo --quiet
