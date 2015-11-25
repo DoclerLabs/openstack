@@ -12,11 +12,11 @@
 - include: os_glance.yml
 - include: os_horizon.yml
 - include: os_cinder.yml
-- include: os_nova.yml
 - include: os_neutron.yml
+- include: os_nova.yml
 - include: os_ceilometer.yml
 - include: os_heat.yml
-- include: os_trove.yml
 - include: os_ironic.yml
 - include: os_murano.yml
 - include: os_sahara.yml
+- include: os_trove.yml
