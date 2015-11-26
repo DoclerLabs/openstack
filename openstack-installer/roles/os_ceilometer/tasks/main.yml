@@ -5,6 +5,11 @@
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 
+- name: create aodh user in rabbitmq
+  rabbitmq_user: user="{{ aodh_rabbit_user }}" password="{{ aodh_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
 - name: disable autostarting of ceilometer
   copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
   with_items:

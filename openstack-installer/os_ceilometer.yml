@@ -55,6 +55,10 @@
       mongodb_user: database=ceilometer name=ceilometer password={{ ceilometer_db_password }}
       when: mongo_master.stdout == 'true'
 
+    - name: create aodh mongo user
+      mongodb_user: database=aodh name=aodh password={{ aodh_db_password }}
+      when: mongo_master.stdout == 'true'
+
 - hosts:
     - ceilometer_controller
     - ceilometer_compute

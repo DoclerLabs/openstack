@@ -213,7 +213,7 @@ host = {{ ip.mgmt }}
 # Deprecated group/name - [DATABASE]/sql_connection
 # Deprecated group/name - [sql]/connection
 #connection = <None>
-connection = mongodb://ceilometer:{{ ceilometer_db_password }}@{% for host in groups['mongodb'] %}{{ hostvars[host].ip.mgmt }}:27017{% if not loop.last %},{% endif %}{% endfor %}/ceilometer
+connection = mongodb://aodh:{{ aodh_db_password }}@{% for host in groups['mongodb'] %}{{ hostvars[host].ip.mgmt }}:27017{% if not loop.last %},{% endif %}{% endfor %}/aodh
 
 mongodb_replica_set = {{ mongodb_replica_set }}
 
@@ -744,12 +744,12 @@ rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{%
 # The RabbitMQ userid. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_userid
 #rabbit_userid = guest
-rabbit_userid = {{ ceilometer_rabbit_user }}
+rabbit_userid = {{ aodh_rabbit_user }}
 
 # The RabbitMQ password. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_password
 #rabbit_password = guest
-rabbit_password = {{ ceilometer_rabbit_password }}
+rabbit_password = {{ aodh_rabbit_password }}
 
 # The RabbitMQ login method. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_login_method
