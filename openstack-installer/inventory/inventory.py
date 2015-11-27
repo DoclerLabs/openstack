@@ -39,9 +39,14 @@ def inventory(hostname):
                 print json.dumps(hostvars, indent=4)
                 return
     else:
-        inventory={}
-        for group in yml:
+        inventory={ "_meta": { "hostvars" : {} } }
+        for group, data in yml.iteritems():
             inventory[group]=sorted(expand_group(yml,group,0))
+            if data:
+                for host, hostvars in data.iteritems():
+                    if host != 'inherit':
+                        inventory['_meta']['hostvars'][host]=hostvars
+                        inventory['_meta']['hostvars'][host]['ansible_ssh_host']=hostvars['ip']['mgmt']
 
         print json.dumps(inventory, indent=4)
 
