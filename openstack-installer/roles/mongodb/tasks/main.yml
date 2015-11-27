@@ -59,7 +59,7 @@
   with_items: groups['mongodb']
 
 - name: wait until the replica set is initialized
-  shell: echo "rs.status().myState; " | mongo --quiet
+  command: mongo --quiet --eval 'rs.status().myState;'
   register: mongo_status
   until: mongo_status.stdout == '1' or mongo_status.stdout == '2'
   changed_when: False

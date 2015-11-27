@@ -47,7 +47,7 @@
   max_fail_percentage: 0
   tasks:
     - name: determine the primary node
-      shell: echo 'rs.isMaster().ismaster'| mongo --quiet
+      command: mongo --quiet --eval 'rs.isMaster().ismaster'
       register: mongo_master
       changed_when: False
 
