@@ -32,9 +32,9 @@ def inventory(hostname):
         yml=yaml.safe_load(f)
 
     if hostname:
-        for group in yml:
-            if yml[group] and hostname in yml[group]:
-                hostvars=yml[group][hostname]
+        for group, data in yml.iteritems():
+            if data and hostname in data:
+                hostvars=data[hostname]
                 hostvars['ansible_ssh_host']=hostvars['ip']['mgmt']
                 print json.dumps(hostvars, indent=4)
                 return
