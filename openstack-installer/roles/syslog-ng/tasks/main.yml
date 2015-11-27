@@ -1,0 +1,18 @@
+---
+
+- name: install syslog-ng
+  apt: name={{ item }}
+  with_items:
+    - libmongo-client0
+    - syslog-ng-core
+    - syslog-ng-mod-mongodb
+
+- name: install mongodb.conf
+  template: src=mongodb.conf.j2 dest=/etc/syslog-ng/conf.d/mongodb.conf owner=root group=root mode=0640
+  notify:
+    - restart syslog-ng
+
+- meta: flush_handlers
+
+- name: ensure syslog-ng is started
+  service: name=syslog-ng state=started enabled=yes

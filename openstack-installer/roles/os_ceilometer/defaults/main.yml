@@ -12,3 +12,5 @@ aodh_project_domain_name: "{{ keystone_service_project_domain_name | default(key
 aodh_project_name: "{{ keystone_service_project_name | default('service') }}"
 
 mongodb_replica_set: openstack
+
+ceilometer_syslog_use: "{{ syslog_use | default('False') }}"

@@ -3,6 +3,7 @@
 debug = False
 verbose = True
 use_stderr = False
+use_syslog = {{ nova_syslog_use }}
 log_dir = /var/log/nova
 rootwrap_config = /etc/nova/rootwrap.conf
 service_down_time = {{ nova_service_down_time }}

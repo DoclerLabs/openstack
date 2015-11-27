@@ -14,3 +14,5 @@ cinder_ceph_pool: volumes
 cinder_ceph_user: cinder
 cinder_backup_ceph_pool: backups
 cinder_backup_ceph_user: cinder-backup
+
+cinder_syslog_use: "{{ syslog_use | default('False') }}"

@@ -18,6 +18,8 @@ trove_image_path: /etc/openstack_deploy/trove-mysql.qcow2
 trove_backup_use_openssl_encryption: False
 trove_backup_aes_cbc_key: "default_aes_cbc_key"
 
+trove_syslog_use: "{{ syslog_use | default('False') }}"
+
 nova_admin_user: nova
 nova_domain_name: "{{ keystone_domain_name }}"
 nova_project_name: "{{ keystone_service_project_name | default('service') }}"

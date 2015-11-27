@@ -15,3 +15,5 @@ nova_project_domain_name: "{{ keystone_service_project_domain_name | default(key
 nova_project_name: "{{ keystone_service_project_name | default('service') }}"
 
 neutron_ha_routers: True
+
+neutron_syslog_use: "{{ syslog_use | default('False') }}"

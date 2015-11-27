@@ -6,6 +6,11 @@ vip_public: 10.97.36.127
 vip_public_cidr: 24
 vip_public_nic: br-vlan
 
+#Openstack services log to syslog
+syslog_use: False
+#Send logs to mongodb
+syslog_use_mongodb: False
+
 keystone_internal_ip: "{{ vip_mgmt }}"
 keystone_admin_ip: "{{ vip_mgmt }}"
 keystone_public_ip: "{{ vip_mgmt }}"

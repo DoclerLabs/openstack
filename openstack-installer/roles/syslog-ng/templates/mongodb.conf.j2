@@ -1,0 +1,22 @@
+{% if syslog_use_mongodb %}
+destination d_mongodb {
+    mongodb(
+        servers({% for host in groups['mongodb'] %}"{{ hostvars[host].ip.mgmt }}:27017"{% if not loop.last %},{% endif %}{% endfor %})
+        database("syslog")
+        collection("messages")
+        username("syslog")
+        password("{{ syslog_db_password }}")
+        value-pairs(
+            pair("pid" "$PID")
+            pair("time" "$DATE")
+            pair("sys" "$HOST")
+            pair("msg" "$MESSAGE")
+            pair("syslog_fac" "$FACILITY")
+            pair("syslog_sever" "$PRIORITY")
+            pair("procid" "$PROGRAM")
+        )
+    );
+};
+
+log { source(s_src); destination(d_mongodb); };
+{% endif %}

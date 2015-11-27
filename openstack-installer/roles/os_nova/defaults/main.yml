@@ -29,3 +29,5 @@ neutron_project_name: "{{ keystone_service_project_name | default('service') }}"
 
 ironic_admin_user: ironic
 ironic_project_name: "{{ keystone_service_project_name | default('service') }}"
+
+nova_syslog_use: "{{ syslog_use | default('False') }}"

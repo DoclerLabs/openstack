@@ -30,6 +30,9 @@
 # publish_errors                       -> notification system
 
 # use_syslog = False
+#Don't use syslog until oslo-log is fixed
+#https://github.com/openstack/oslo.log/commit/69e0ba3d75f0fa6411e9f3e8344049a625979fd8
+#use_syslog = {{ neutron_syslog_use }}
 # syslog_log_facility = LOG_USER
 
 # use_stderr = True

@@ -28,6 +28,10 @@ galera:
 mongodb:
   inherit: controller
 
+syslog:
+  inherit:
+    - compute
+    - controller
 
 # -------- OpenStack ---------
 keystone:

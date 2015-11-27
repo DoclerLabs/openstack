@@ -1,0 +1,29 @@
+---
+
+- hosts: mongodb
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  tasks:
+    - name: determine the primary node
+      command: mongo --quiet --eval 'rs.isMaster().ismaster'
+      register: mongo_master
+      changed_when: False
+      when: syslog_use_mongodb
+
+    - name: create syslog mongo user
+      mongodb_user: database=syslog name=syslog password={{ syslog_db_password }}
+      when: syslog_use_mongodb and mongo_master.stdout == 'true'
+
+- hosts: syslog
+  user: ansible
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - common
+    - syslog-ng
+  vars:
+    apt_extra_repos:
+      - { name: "syslog-ng", repo: "http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_14.04/ ./" }
+    apt_extra_keys:
+      - { keyurl: "http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_14.04/Release.key" }

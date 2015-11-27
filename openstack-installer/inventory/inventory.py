@@ -6,14 +6,25 @@ import argparse
 import yaml
 import json
 
-def get_parent_group(yml, group, nesting_level):
+MAX_NESTING_LEVEL = 10
+
+def expand_group(yml, group, nesting_level):
+
     nesting_level+=1
-    if nesting_level == 10:
+    if nesting_level == MAX_NESTING_LEVEL:
         raise(Exception, "Too many nesting level of groups, probably a loop?")
-    if yml[group] and 'inherit' in yml[group]:
-        return get_parent_group(yml, yml[group]['inherit'], nesting_level)
-    else:
-        return group
+    hosts=[]
+    if yml[group]:
+        for host, key in yml[group].iteritems():
+            if host == 'inherit':
+                if isinstance(key,list):
+                    for inherited_group in key:
+                        hosts.extend(expand_group(yml,inherited_group,nesting_level))
+                else:
+                     hosts.extend(expand_group(yml,key,nesting_level))
+            else:
+                hosts.append(host)
+    return hosts
 
 def inventory(hostname):
 
@@ -30,8 +41,7 @@ def inventory(hostname):
     else:
         inventory={}
         for group in yml:
-            groupname=get_parent_group(yml, group,0)
-            inventory[group]=sorted(yml[groupname].keys()) if yml[groupname] else []
+            inventory[group]=sorted(expand_group(yml,group,0))
 
         print json.dumps(inventory, indent=4)
 
