@@ -24,6 +24,6 @@
     - syslog-ng
   vars:
     apt_extra_repos:
-      - { name: "syslog-ng", repo: "http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_14.04/ ./" }
+      - { name: "syslog-ng", repo: "http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng-3.6/xUbuntu_14.04/ ./" }
     apt_extra_keys:
-      - { keyurl: "http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_14.04/Release.key" }
+      - { keyurl: "http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng-3.6/xUbuntu_14.04/Release.key" }
