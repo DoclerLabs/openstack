@@ -115,9 +115,11 @@ wait_timeout = 28800
 
 binlog_format=ROW
 default_storage_engine=innodb
+innodb_additional_mem_pool_size=24M
 innodb_autoinc_lock_mode=2
 innodb_flush_log_at_trx_commit=0
-innodb_buffer_pool_size=122M
+innodb_buffer_pool_size=8G
+innodb_flush_method=O_DIRECT
 innodb_log_file_size=1G
 innodb_file_per_table=1
 
