@@ -76,6 +76,7 @@
 - name: query local OSD IDs
   command: cat "{{ item.path }}/whoami"
   with_items: osd
+  changed_when: False
   register: osd_ids
   when: item.path is defined
 
@@ -85,26 +86,15 @@
   when: item.skipped is not defined or item.skipped != True
 
 ### Add disk-based OSDs
-### TODO ###
+- name: prepare disks
+  command: ceph-disk prepare "{{ item.disk }}" {{ item.journal | default('') }}
+  register: ceph_disk_status
+  failed_when: ceph_disk_status.rc != 0 and ('Could not create partition 2' not in ceph_disk_status.stderr) and ('Device is mounted' not in ceph_disk_status.stderr)
+  changed_when: ceph_disk_status.rc == 0
+  with_items: osd
+  when: item.disk is defined
 
-#- name: generate OSD
-#  command: ceph osd create
-#  register: osd_id
-
-#- name: create the OSD directory
-#  file: dest=/var/lib/ceph/osd/{{ ceph_cluster_name }}-{{ osd_id.stdout }} state=directory owner=root group=root mode=0644
-
-#- name: initialize the OSD data directory
-#  command: ceph-osd --cluster {{ ceph_cluster_name}} -i {{ osd_id.stdout }} --mkfs --mkkey
-
-#- name: register the OSD authentication key
-#  command: ceph auth add osd.{{ osd_id.stdout }} osd 'allow *' mon 'allow profile osd' -i /var/lib/ceph/osd/{{ ceph_cluster_name}}-{{ osd_id.stdout }}/keyring
-
-#- name: add the OSD to the CRUSH map
-#  command: ceph --cluster {{ ceph_cluster_name }} osd crush add {{ osd_id.stdout }} 1.0 host={{ inventory_hostname }}
-
-#- name: mark the config as 'done'
-#  copy: content='' dest=/var/lib/ceph/osd/{{ ceph_cluster_name }}-{{ osd_id.stdout }}/upstart owner=root group=root mode=0644
-
-#- name: ensure ceph OSD is started
-#  service: name=ceph-osd state=started enabled=yes args="id={{ osd_id.stdout }} cluster={{ ceph_cluster_name }}"
+- name: activate disks
+  command: ceph-disk activate "{{ item.disk }}1"
+  with_items: osd
+  when: item.disk is defined
