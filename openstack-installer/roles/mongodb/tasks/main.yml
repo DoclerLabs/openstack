@@ -23,7 +23,7 @@
   wait_for: port=27017
 
 - name: query the replica set status
-  command: mongo --quiet --eval 'rs.status().myState;'
+  command: mongo --quiet --eval 'rs.status().errmsg;' admin
   changed_when: False
   register: mongo_status
 
@@ -31,35 +31,46 @@
 
 - name: determine if the replica set is already initialized
   set_fact: mongo_initialized=True
-  when: hostvars[item].mongo_status.stdout != ''
+  when: hostvars[item].mongo_status.stdout.find('EMPTYCONFIG') == -1
   with_items: groups['mongodb']
+  run_once: True
 
 - name: initialize replica set
-  command: mongo --quiet --eval '{{ lookup('template','../templates/mongo_init.js.j2') }}'
+  command: mongo --quiet --eval '{{ lookup('template','../templates/mongo_init.js.j2') }}' admin
   when: mongo_initialized == False
   run_once: True
 
 - name: wait until the replica set is initialized
-  command: mongo --quiet --eval 'rs.status().myState;'
+  command: mongo --quiet --eval 'rs.status().myState;' admin
   register: mongo_status
   run_once: True
   when: mongo_initialized == False
   until: mongo_status.stdout == '1'
 
-- name: query the replica set status
-  command: mongo --quiet --eval 'rs.status().myState;'
+- name: determine the master node
+  command: mongo --quiet --eval 'rs.isMaster().ismaster' admin
   changed_when: False
-  register: mongo_status
+  register: mongo_master
 
+- name: ensure the admin user exists
+  mongodb_user: database=admin name=admin password={{ mongodb_admin_password }} roles=userAdminAnyDatabase
+  when: mongo_master.stdout == 'true'
+
+- name: ensure the cluster admin user exists
+  mongodb_user: database=admin login_user=admin login_password={{ mongodb_admin_password }}
+    name=clusteradmin password={{ mongodb_clusteradmin_password }} roles="readAnyDatabase,clusterAdmin,clusterManager"
+  when: mongo_master.stdout == 'true'
+
+# Cluster expansion
 - name: add missing members to the replica set
-  command: mongo --quiet --eval 'rs.add("{{ item }}").ok'
-  when: mongo_status.stdout == '1'
+  command: mongo -u clusteradmin -p {{ mongodb_clusteradmin_password }} --quiet --eval 'rs.add("{{ item }}").ok' admin
+  when: mongo_master.stdout == 'true'
   register: mongo_result
   changed_when: mongo_result.stdout == '1'
   with_items: groups['mongodb']
 
 - name: wait until the replica set is initialized
-  command: mongo --quiet --eval 'rs.status().myState;'
+  command: mongo -u clusteradmin -p {{ mongodb_clusteradmin_password }} --quiet --eval 'rs.status().myState;' admin
   register: mongo_status
   until: mongo_status.stdout == '1' or mongo_status.stdout == '2'
   changed_when: False

@@ -12,7 +12,7 @@
       when: syslog_use_mongodb
 
     - name: create syslog mongo user
-      mongodb_user: database=syslog name=syslog password={{ syslog_db_password }}
+      mongodb_user: login_user=admin login_password={{ mongodb_admin_password }} database=syslog name=syslog password={{ syslog_db_password }}
       when: syslog_use_mongodb and mongo_master.stdout == 'true'
 
 - hosts: syslog
