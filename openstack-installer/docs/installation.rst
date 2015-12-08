@@ -31,3 +31,13 @@ It does not install the base OS, also doesn't configure the hardware (network in
 - Edit group_vars/all/config.yml to further refine the OpenStack configuration.
 - Run ansible-playbook -i inventory/inventory.py main.yml
 - Wait until the installation finishes. If it stops somewhere, just correct the configuration, and re-run the previous command.
+
+4. Test the cloud
+-----------------
+
+It is a good idea to run tempest on the installed cloud. The steps for preparing it:
+
+- Check roles/os_tempest/defaults/main.yml file. You must set up the external_* parameters for your enviroment, so copy the external_* variables to group_vars/all/config.yml, and set the appropriately.
+- Run ansible-playbook -i inventory/inventory.py os_tempest.yml.
+  The default inventory uses the deployment hosts for running tempest. It'll try to install some packages, so if you don't have sudo rights, then you'll get an error. Install those packages manually with a root user then.
+- The default installation directory for tempest is ~/tempest, so do a cd ~/tempest; ./run_tempest.sh
