@@ -284,14 +284,14 @@ l3_ha = {{ neutron_ha_routers }}
 # By default or if empty, the first 'tenant_network_types'
 # is used. This is helpful when the VRRP traffic should use a specific
 # network which not the default one.
-# ha_network_type =
-# Example: ha_network_type = flat
-ha_network_type = {{ neutron_ha_network_type }}
+# l3_ha_network_type =
+# Example: l3_ha_network_type = flat
+l3_ha_network_type = {{ neutron_ha_network_type }}
 #
 # The physical network name with which the HA network can be created.
-# ha_network_physical_name =
-# Example: ha_network_physical_name = physnet1
-ha_network_physical_name = {{ neutron_ha_network_physical_name }}
+# l3_ha_network_physical_name =
+# Example: l3_ha_network_physical_name = physnet1
+l3_ha_network_physical_name = {{ neutron_ha_network_physical_name }}
 # =========== end of items for l3 extension =======
 
 # =========== items for metadata proxy configuration ==============
