@@ -17,3 +17,6 @@ nova_project_name: "{{ keystone_service_project_name | default('service') }}"
 neutron_ha_routers: True
 
 neutron_syslog_use: "{{ syslog_use | default('False') }}"
+
+vxlan_vni_ranges: "65537:69999"
+vxlan_group: 239.0.0.0/8
