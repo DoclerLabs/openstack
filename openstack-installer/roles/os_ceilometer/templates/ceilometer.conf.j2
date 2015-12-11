@@ -479,7 +479,7 @@ identity_uri = http://{{ keystone_internal_ip }}:35357
 
 auth_plugin = password
 auth_url = http://{{ keystone_internal_ip }}:35357
-auth_region = {{ keystone_region_name }}
+region_name = {{ keystone_region_name }}
 username = {{ ceilometer_admin_user }}
 user_domain_name = {{ ceilometer_domain_name }}
 password = {{ ceilometer_admin_password }}
