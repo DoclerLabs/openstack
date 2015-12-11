@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import sys
 import os
@@ -6,53 +6,69 @@ import argparse
 import yaml
 import json
 
+
 MAX_NESTING_LEVEL = 10
+
 
 def expand_group(yml, group, nesting_level):
 
-    nesting_level+=1
+    nesting_level += 1
     if nesting_level == MAX_NESTING_LEVEL:
-        raise(Exception, "Too many nesting level of groups, probably a loop?")
-    hosts=[]
+        sys.stderr.write("ERROR: Too many nesting level of groups, probably a loop?\n")  # nopep8
+        sys.exit(1)
+
+    hosts = []
     if yml[group]:
         for host, key in yml[group].iteritems():
             if host == 'inherit':
-                if isinstance(key,list):
+                if isinstance(key, list):
                     for inherited_group in key:
-                        hosts.extend(expand_group(yml,inherited_group,nesting_level))
+                        hosts += expand_group(yml, inherited_group, nesting_level)  # nopep8
                 else:
-                     hosts.extend(expand_group(yml,key,nesting_level))
+                    hosts += expand_group(yml, key, nesting_level)
             else:
                 hosts.append(host)
+
     return hosts
+
 
 def inventory(hostname):
 
-    with open(os.path.dirname(sys.argv[0])+"/inventory.yml", 'r') as f:
-        yml=yaml.safe_load(f)
+    with open(os.path.join(os.path.dirname(sys.argv[0]), "inventory.yml"), 'r') as f:  # nopep8
+        yml = yaml.safe_load(f)
 
     if hostname:
         for group, data in yml.iteritems():
             if data and hostname in data:
-                hostvars=data[hostname]
-                hostvars['ansible_ssh_host']=hostvars['ip']['mgmt']
+                hostvars = data[hostname]
+                hostvars['ansible_ssh_host'] = hostvars['ip']['mgmt']
                 print json.dumps(hostvars, indent=4)
-                return
+                break
+        else:
+            sys.stderr.write("ERROR: No host found with name '{0}'\n".format(hostname))  # nopep8
+            sys.exit(1)
     else:
-        inventory={ "_meta": { "hostvars" : {} } }
+        inventory = {"_meta": {"hostvars": {}}}
         for group, data in yml.iteritems():
-            inventory[group]=sorted(expand_group(yml,group,0))
+            inventory[group] = sorted(expand_group(yml, group, 0))
             if data:
                 for host, hostvars in data.iteritems():
                     if host != 'inherit':
-                        inventory['_meta']['hostvars'][host]=hostvars
-                        inventory['_meta']['hostvars'][host]['ansible_ssh_host']=hostvars['ip']['mgmt']
-
+                        inventory['_meta']['hostvars'][host] = hostvars
+                        inventory['_meta']['hostvars'][host]['ansible_ssh_host'] = hostvars['ip']['mgmt']  # nopep8
         print json.dumps(inventory, indent=4)
 
-parser = argparse.ArgumentParser(description='Dynamic inventory for Openstack.')
-parser.add_argument('--list', help='list the hosts', action='store_true')
-parser.add_argument('--host', help='returnt the variables for the hosts')
-args = parser.parse_args()
 
-inventory(args.host)
+def main():
+
+    parser = argparse.ArgumentParser(description='Dynamic inventory for Openstack.')  # nopep8
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--list', help='list the hosts', action='store_true')
+    group.add_argument('--host', help='returnt the variables for the hosts')
+    args = parser.parse_args()
+
+    inventory(args.host)
+
+
+if __name__ == '__main__':
+    main()
