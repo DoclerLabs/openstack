@@ -25,7 +25,7 @@
   notify: restart pacemaker
 
 - name: create corosync authkey if it doesn't exist
-  command: corosync-keygen creates=/etc/corosync/authkey
+  command: corosync-keygen -l creates=/etc/corosync/authkey
   notify: restart pacemaker
   when: inventory_hostname == play_hosts[0]
 
