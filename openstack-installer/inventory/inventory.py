@@ -62,10 +62,18 @@ def inventory(hostname):
 
         print json.dumps(inventory, indent=4)
 
-parser = argparse.ArgumentParser(
-    description='Dynamic inventory for Openstack.')
-parser.add_argument('--list', help='list the hosts', action='store_true')
-parser.add_argument('--host', help='returnt the variables for the hosts')
-args = parser.parse_args()
 
-inventory(args.host)
+def main():
+
+    parser = argparse.ArgumentParser(
+        description='Dynamic inventory for Openstack.')
+    group = parser.add_mutually_exclusive_group(required=False)
+    group.add_argument('--list', help='list the hosts', action='store_true')
+    group.add_argument('--host', help='returnt the variables for the hosts')
+    args = parser.parse_args()
+
+    inventory(args.host)
+
+
+if __name__ == '__main__':
+    main()
