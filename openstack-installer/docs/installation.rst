@@ -28,7 +28,7 @@ It does not install the base OS, also doesn't configure the hardware (network in
 
 ::
 
-  $ cp -r configs/template/* .
+  $ scripts/restorecfg.sh template
 
 - Preparare the inventory
 
