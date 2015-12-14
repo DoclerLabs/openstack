@@ -1,7 +1,6 @@
 ---
 
 - hosts: cinder[0]
-  user: ansible
   max_fail_percentage: 0
   roles:
     - os_keystone_service
@@ -22,7 +21,6 @@
         keystone_role: admin
 
 - hosts: cinder[0]
-  user: ansible
   max_fail_percentage: 0
   roles:
     - os_keystone_service
@@ -38,7 +36,6 @@
 - hosts:
     - cinder
     - cinder_volume
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:
@@ -46,7 +43,6 @@
     - os_cinder
 
 - hosts: cinder
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:
@@ -57,7 +53,6 @@
     ceph_keyring_owner: cinder
 
 - hosts: cinder
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:
@@ -68,7 +63,6 @@
     ceph_keyring_owner: cinder
 
 - hosts: haproxy
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:

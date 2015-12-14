@@ -1,7 +1,6 @@
 ---
 
 - hosts: trove[0]
-  user: ansible
   max_fail_percentage: 0
   roles:
     - os_keystone_service
@@ -26,7 +25,6 @@
         keystone_role: admin
 
 - hosts: trove
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:
@@ -34,7 +32,6 @@
     - os_trove
 
 - hosts: haproxy
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:

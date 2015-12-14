@@ -1,7 +1,6 @@
 ---
 
 - hosts: galera
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:
@@ -14,7 +13,6 @@
       - { keyserver: "keys.gnupg.net", keyid: "1C4CBDCDCD2EFD2A" }
 
 - hosts: haproxy
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:

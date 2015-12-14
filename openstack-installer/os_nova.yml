@@ -1,7 +1,6 @@
 ---
 
 - hosts: nova_controller[0]
-  user: ansible
   max_fail_percentage: 0
   roles:
     - os_keystone_service
@@ -24,7 +23,6 @@
 - hosts:
     - nova_controller
     - nova_compute
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:
@@ -32,7 +30,6 @@
     - os_nova
 
 - hosts: nova_compute
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:
@@ -55,7 +52,6 @@
     ceph_keyring_owner: nova
 
 - hosts: haproxy
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:

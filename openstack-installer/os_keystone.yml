@@ -1,7 +1,6 @@
 ---
 
 - hosts: keystone
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:
@@ -9,7 +8,6 @@
     - os_keystone
 
 - hosts: haproxy
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:
@@ -44,7 +42,6 @@
 #so the controller[0] host is there
 
 - hosts: controller[0]
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   tasks:
@@ -52,7 +49,6 @@
       apt: name=python-keystoneclient
 
 - hosts: controller[0]
-  user: ansible
   max_fail_percentage: 0
   roles:
     - os_keystone_service

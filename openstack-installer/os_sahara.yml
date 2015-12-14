@@ -1,7 +1,6 @@
 ---
 
 - hosts: sahara[0]
-  user: ansible
   max_fail_percentage: 0
   roles:
     - os_keystone_service
@@ -22,7 +21,6 @@
         keystone_role: admin
 
 - hosts: sahara
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:
@@ -30,7 +28,6 @@
     - os_sahara
 
 - hosts: haproxy
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:
