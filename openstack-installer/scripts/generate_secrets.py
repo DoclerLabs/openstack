@@ -28,5 +28,15 @@ def generate_secrets(filename):
     with open(filename, 'w') as f:
         f.write(''.join(secrets))
 
-generate_secrets(os.path.join(
-    os.path.dirname(sys.argv[0]), "..", "group_vars", "all", "secrets.yml"))
+
+def main():
+    generate_secrets(os.path.join(
+        os.path.dirname(sys.argv[0]),
+        "..",
+        "group_vars",
+        "all",
+        "secrets.yml"))
+
+if __name__ == "__main__":
+    # execute only if run as a script
+    main()
