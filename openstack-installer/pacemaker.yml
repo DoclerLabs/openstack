@@ -1,7 +1,6 @@
 ---
 
 - hosts: pacemaker
-  user: ansible
   sudo: True
   serial: 1
   max_fail_percentage: 0
@@ -10,7 +9,6 @@
       fetch: src=/etc/corosync/authkey dest=workdir/authkey fail_on_missing=False flat=True
 
 - hosts: pacemaker
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:

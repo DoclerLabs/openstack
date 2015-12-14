@@ -1,7 +1,6 @@
 ---
 
 - hosts: mongodb
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   tasks:
@@ -16,7 +15,6 @@
       when: syslog_use_mongodb and mongo_master.stdout == 'true'
 
 - hosts: syslog
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:

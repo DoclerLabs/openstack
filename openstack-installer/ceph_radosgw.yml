@@ -1,7 +1,6 @@
 ---
 
 - hosts: ceph_radosgw[0]
-  user: ansible
   max_fail_percentage: 0
   roles:
     - os_keystone_service
@@ -16,7 +15,6 @@
     keystone_projects: []
 
 - hosts: ceph_radosgw
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:
@@ -27,7 +25,6 @@
     ceph_keyring_owner: root
 
 - hosts: ceph_radosgw
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:
@@ -35,7 +32,6 @@
     - ceph_radosgw
 
 - hosts: haproxy
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:

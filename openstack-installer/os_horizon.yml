@@ -1,7 +1,6 @@
 ---
 
 - hosts: horizon
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:
@@ -9,7 +8,6 @@
     - os_horizon
 
 - hosts: haproxy
-  user: ansible
   sudo: True
   max_fail_percentage: 0
   roles:

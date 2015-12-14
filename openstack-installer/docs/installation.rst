@@ -48,7 +48,7 @@ It does not install the base OS, also doesn't configure the hardware (network in
 
 ::
 
-  $ ansible-playbook -i inventory/inventory.py ceph.yml
+  $ ansible-playbook ceph.yml
 
 - Wait until the ceph monitor and OSD nodes are installed.
 - Log in to a ceph monitor host, and create the pools for the OpenStack storage:
@@ -66,7 +66,7 @@ It does not install the base OS, also doesn't configure the hardware (network in
 
 ::
 
-  $ ansible-playbook -i inventory/inventory.py main.yml
+  $ ansible-playbook main.yml
 
 - Wait until the installation finishes. If it stops somewhere, just correct the configuration, and re-run the previous command.
 
