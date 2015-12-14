@@ -28,4 +28,5 @@ def generate_secrets(filename):
     with open(filename, 'w') as f:
         f.write(''.join(secrets))
 
-generate_secrets(os.path.dirname(sys.argv[0])+"/../group_vars/all/secrets.yml")
+generate_secrets(os.path.join(
+    os.path.dirname(sys.argv[0]), "..", "group_vars", "all", "secrets.yml"))

@@ -33,7 +33,8 @@ def expand_group(yml, group, nesting_level):
 
 def inventory(hostname):
 
-    with open(os.path.dirname(sys.argv[0])+"/inventory.yml", 'r') as f:
+    with open(os.path.join(os.path.dirname(sys.argv[0]),
+                           "inventory.yml"), 'r') as f:
         yml = yaml.safe_load(f)
 
     if hostname:
