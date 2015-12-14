@@ -13,7 +13,9 @@ def expand_group(yml, group, nesting_level):
 
     nesting_level += 1
     if nesting_level == MAX_NESTING_LEVEL:
-        raise(Exception, "Too many nesting level of groups, probably a loop?")
+        sys.stderr.write("ERROR: Too many nesting level of groups, "
+                         "probably a loop?\n")
+        sys.exit(1)
     hosts = []
     if yml[group]:
         for host, key in yml[group].iteritems():
@@ -40,7 +42,10 @@ def inventory(hostname):
                 hostvars = data[hostname]
                 hostvars['ansible_ssh_host'] = hostvars['ip']['mgmt']
                 print json.dumps(hostvars, indent=4)
-                return
+                break
+        else:
+            sys.stderr.write("ERROR: No host '{0}' found\n".format(hostname))
+            sys.exit(1)
     else:
         inventory = {"_meta": {"hostvars": {}}}
         for group, data in yml.iteritems():
