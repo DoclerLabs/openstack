@@ -9,6 +9,6 @@ fi
 
 BASEDIR=$(dirname "$0")/..
 CONFDIR="$BASEDIR/configs/$1"
-mkdir -p "$CONFDIR"/{group_vars/all,inventory}
-cp group_vars/all/* "$CONFDIR/group_vars/all"
-cp "inventory/inventory.yml" "$CONFDIR/inventory/inventory.yml"
+mkdir -p "$CONFDIR"/group_vars/all "$CONFDIR"/inventory
+cp "$BASEDIR"/group_vars/all/* "$CONFDIR/group_vars/all"
+cp "$BASEDIR/inventory/inventory.yml" "$CONFDIR/inventory/inventory.yml"
