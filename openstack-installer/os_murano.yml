@@ -27,6 +27,16 @@
     - common
     - os_murano
 
+- hosts: murano
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - apache_frontend
+  vars:
+    service_name: murano
+    service_ports:
+      - 8082
+
 - hosts: haproxy
   sudo: True
   max_fail_percentage: 0

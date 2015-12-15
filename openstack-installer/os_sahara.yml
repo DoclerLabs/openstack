@@ -27,6 +27,16 @@
     - common
     - os_sahara
 
+- hosts: sahara
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - apache_frontend
+  vars:
+    service_name: sahara
+    service_ports:
+      - 8386
+
 - hosts: haproxy
   sudo: True
   max_fail_percentage: 0

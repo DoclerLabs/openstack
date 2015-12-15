@@ -29,6 +29,17 @@
     - common
     - os_nova
 
+- hosts: nova_controller
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - apache_frontend
+  vars:
+    service_name: nova
+    service_ports:
+      - 8774
+      - 8775
+
 - hosts: nova_compute
   sudo: True
   max_fail_percentage: 0

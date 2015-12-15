@@ -29,6 +29,16 @@
     - common
     - os_neutron
 
+- hosts: neutron_controller
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - apache_frontend
+  vars:
+    service_name: neutron
+    service_ports:
+      - 9696
+
 - hosts: haproxy
   sudo: True
   max_fail_percentage: 0

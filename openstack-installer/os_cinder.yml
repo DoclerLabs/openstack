@@ -46,6 +46,16 @@
   sudo: True
   max_fail_percentage: 0
   roles:
+    - apache_frontend
+  vars:
+    service_name: cinder
+    service_ports:
+      - 8776
+
+- hosts: cinder
+  sudo: True
+  max_fail_percentage: 0
+  roles:
     - { role: ceph_client, when: cinder_backend == 'ceph' }
   vars:
     ceph_user: "{{ cinder_ceph_user }}"

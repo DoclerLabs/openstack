@@ -1,0 +1,13 @@
+{% for port in service_ports %}
+Listen {{ ip.mgmt }}:{{ port }}
+{% endfor %}
+
+{% for port in service_ports %}
+<VirtualHost *:{{ port }}>
+    ProxyPreserveHost Off
+
+    ProxyPass / http://127.0.0.1:{{ port }}/
+    ProxyPassReverse / http://127.0.0.1:{{ port }}/
+</VirtualHost>
+
+{% endfor %}

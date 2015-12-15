@@ -40,6 +40,18 @@
     - common
     - os_heat
 
+- hosts: heat
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - apache_frontend
+  vars:
+    service_name: heat
+    service_ports:
+      - 8004
+      - 8000
+      - 8003
+
 - hosts: haproxy
   sudo: True
   max_fail_percentage: 0

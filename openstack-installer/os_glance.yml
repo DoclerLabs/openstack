@@ -31,6 +31,17 @@
   sudo: True
   max_fail_percentage: 0
   roles:
+    - apache_frontend
+  vars:
+    service_name: glance
+    service_ports:
+      - 9292
+      - 9191
+
+- hosts: glance
+  sudo: True
+  max_fail_percentage: 0
+  roles:
     - { role: ceph_client, when: glance_backend == 'ceph' }
   vars:
     ceph_user: "{{ glance_ceph_user }}"
