@@ -312,7 +312,7 @@ max_retries = -1
 
 # Complete public Identity API endpoint. (string value)
 #auth_uri = <None>
-auth_uri = http://{{ keystone_internal_ip }}:5000/v2.0
+auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v2.0
 
 # API version of the admin Identity API endpoint. (string value)
 #auth_version = <None>
@@ -344,6 +344,7 @@ auth_uri = http://{{ keystone_internal_ip }}:5000/v2.0
 
 # Verify HTTPS connections. (boolean value)
 #insecure = false
+insecure = {{ ssl_insecure }}
 
 # The region in which the identity server can be found. (string value)
 #region_name = <None>
@@ -455,8 +456,8 @@ memcache_secret_key = "{{ memcache_secret_key }}"
 # Complete admin Identity API endpoint. This should specify the unversioned
 # root endpoint e.g. https://localhost:35357/ (string value)
 #identity_uri = <None>
-identity_uri = http://{{ keystone_admin_ip }}:35357/
-auth_url = http://{{ keystone_admin_ip }}:35357/
+identity_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:35357/
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357/
 
 # This option is deprecated and may be removed in a future release. Single
 # shared secret with the Keystone configuration used for bootstrapping a
@@ -486,8 +487,9 @@ auth_plugin = password
 
 [trustee]
 
-auth_uri = http://{{ keystone_admin_ip }}:5000
-auth_url = http://{{ keystone_admin_ip }}:35357
+insecure = {{ ssl_insecure }}
+auth_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
 auth_plugin = password
 signing_dir = /var/lib/heat/cache/api
 #project_domain_name = {{ heat_project_domain_name }}
@@ -496,13 +498,18 @@ user_domain_name = {{ heat_domain_name }}
 username = {{ heat_admin_user }}
 password = {{ heat_admin_password }}
 
+[clients]
+insecure = {{ ssl_insecure }}
+
 [clients_keystone]
 
-auth_uri = http://{{ keystone_admin_ip }}:5000/v3
+#auth_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3
+#insecure = {{ ssl_insecure }}
 
 [ec2authtoken]
 
-auth_uri = http://{{ keystone_admin_ip }}:5000/v3
+auth_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3
+insecure = {{ ssl_insecure }}
 
 [matchmaker_redis]
 

@@ -13,3 +13,6 @@ ironic_deploy_kernel_path: /etc/openstack_deploy/ironic-deploy.vmlinuz
 ironic_deploy_initramfs_path: /etc/openstack_deploy/ironic-deploy.initramfs
 
 ironic_syslog_use: "{{ syslog_use | default('False') }}"
+
+keystone_proto: "{{ (keystone_ssl | default('False')) | ternary('https', 'http') }}"
+ssl_insecure: False

@@ -775,8 +775,8 @@ os_region_name = {{ keystone_region_name }}
 
 # Complete public Identity API endpoint. (string value)
 #auth_uri = <None>
-auth_uri = http://{{ keystone_internal_ip }}:5000
-auth_url = http://{{ keystone_internal_ip }}:35357
+auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
+auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
 
 # API version of the admin Identity API endpoint. (string value)
 #auth_version = <None>
@@ -811,6 +811,7 @@ auth_url = http://{{ keystone_internal_ip }}:35357
 
 # Verify HTTPS connections. (boolean value)
 #insecure = false
+insecure = {{ ssl_insecure }}
 
 # The region in which the identity server can be found. (string value)
 #region_name = <None>
@@ -928,7 +929,7 @@ memcache_secret_key = "{{ memcache_secret_key }}"
 # unversioned root endpoint e.g. https://localhost:35357/ (string
 # value)
 #identity_uri = <None>
-identity_uri = http://{{ keystone_admin_ip }}:35357
+identity_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
 
 # This option is deprecated and may be removed in a future release.
 # Single shared secret with the Keystone configuration used for

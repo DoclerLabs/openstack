@@ -571,6 +571,7 @@ dashboard_url = http://{{ vip_public }}/horizon
 
 # Set to True if using self-signed SSL certificates. (boolean value)
 #disable_ssl_certificate_validation = false
+disable_ssl_certificate_validation = {{ ssl_insecure }}
 
 # Specify a CA bundle file to use in verifying a TLS (https) server
 # certificate. (string value)
@@ -578,11 +579,11 @@ dashboard_url = http://{{ vip_public }}/horizon
 
 # Full URI of the OpenStack Identity API (Keystone), v2 (string value)
 #uri = <None>
-uri = http://{{ keystone_internal_ip }}:5000/v2.0
+uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v2.0
 
 # Full URI of the OpenStack Identity API (Keystone), v3 (string value)
 #uri_v3 = <None>
-uri_v3 = http://{{ keystone_internal_ip }}:5000/v3
+uri_v3 = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v3
 
 # Identity API version to be used for authentication for API tests.
 # (string value)

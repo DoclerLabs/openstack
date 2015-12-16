@@ -29,3 +29,6 @@ tenant_network_cidr: 10.100.0.0/16
 heat_stack_owner_project: demo
 heat_stack_owner_user: demo
 heat_stack_owner_password: demo
+
+keystone_proto: "{{ (keystone_ssl | default('False')) | ternary('https', 'http') }}"
+ssl_insecure: False

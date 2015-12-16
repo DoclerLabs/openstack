@@ -3,7 +3,7 @@
 - name: create the service in keystone
   keystone_service: >
     token="{{ keystone_admin_token }}"
-    auth_url="http://{{ keystone_admin_ip }}:35357/v2.0"
+    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v2.0"
     name="{{ keystone_service_name }}"
     type="{{ keystone_service_type }}"
     description="{{ keystone_service_description }}"
@@ -12,36 +12,40 @@
     adminurl="{{ keystone_admin_url }}"
     region="{{ keystone_region }}"
     ignore_other_regions=true
+    insecure={{ ssl_insecure | ternary("true", "false") }}
   when: keystone_service_name is defined
 
 - name: create the project in keystone
   keystone_user: >
     token="{{ keystone_admin_token }}"
-    endpoint="http://{{ keystone_admin_ip }}:35357/v3"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     project_domain="{{ item.keystone_project_domain_name | default('Default') }}"
     project="{{ item.keystone_project_name }}"
     project_description="{{ item.keystone_project_description }}"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
   with_items: keystone_projects
   when: keystone_projects is defined
 
 - name: create the user in keystone
   keystone_user: >
     token="{{ keystone_admin_token }}"
-    endpoint="http://{{ keystone_admin_ip }}:35357/v3"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     user="{{ item.keystone_user }}"
     user_domain="{{ item.keystone_domain_name | default('Default') }}"
     password="{{ item.keystone_password }}"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
   with_items: keystone_users
   when: keystone_users is defined
 
 - name: assign role to the user in keystone
   keystone_user: >
     token="{{ keystone_admin_token }}"
-    endpoint="http://{{ keystone_admin_ip }}:35357/v3"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     project="{{ item.keystone_project_name }}"
     project_domain="{{ item.keystone_project_domain_name | default('Default') }}"
     user="{{ item.keystone_user }}"
     user_domain="{{ item.keystone_domain_name | default('Default') }}"
     role="{{ item.keystone_role }}"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
   with_items: keystone_users
   when: keystone_users is defined and item.keystone_role is defined

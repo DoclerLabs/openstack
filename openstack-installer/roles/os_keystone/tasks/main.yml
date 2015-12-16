@@ -42,6 +42,19 @@
   changed_when: '"migrate.versioning.api" in db_sync.stderr'
   run_once: True
 
+- name: install certificates
+  copy: src={{ item.src }} dest={{ item.dest }} owner=www-data group=root mode={{ item.mode }}
+  with_items:
+    - { src: '{{ SSLCertificateKeyFileSource | default("") }}', dest: '{{ SSLCertificateKeyFile }}', mode: '0460' }
+    - { src: '{{ SSLCertificateFileSource | default("") }}', dest: '{{ SSLCertificateFile }}', mode: '0464' }
+  when: item.src != ''
+  notify: restart apache
+
+- name: enable mod_ssl
+  file: src=../mods-available/ssl.load dest=/etc/apache2/mods-enabled/ssl.load state=link
+  when: SSLCertificateKeyFileSource is defined
+  notify: restart apache
+
 - name: install wsgi-keystone.conf
   template: src=wsgi-keystone.conf.j2 dest=/etc/apache2/sites-available/wsgi-keystone.conf owner=root group=root mode=0644
   notify: restart apache

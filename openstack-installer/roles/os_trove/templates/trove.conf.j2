@@ -46,7 +46,7 @@ control_exchange = trove
 db_api_implementation = "trove.db.sqlalchemy.api"
 
 # Configuration options for talking to nova via the novaclient.
-trove_auth_url = http://{{ keystone_internal_ip }}/v3
+trove_auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}/v3
 #nova_compute_url = http://localhost:8774/v2
 #cinder_url = http://localhost:8776/v1
 #swift_url = http://localhost:8080/v1/AUTH_
@@ -197,11 +197,12 @@ connection = mysql+pymysql://{{ trove_db_user }}:{{ trove_db_password }}@{{ trov
 max_retries = -1
 
 [keystone_authtoken]
+insecure = {{ ssl_insecure }}
 auth_plugin = password
 region_name = {{ keystone_region_name }}
 signing_dir = /var/lib/trove/cache/api
-auth_uri = http://{{ keystone_internal_ip }}:5000
-auth_url = http://{{ keystone_internal_ip }}:35357
+auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
+auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
 region_name = {{ keystone_region_name }}
 user_domain_name = {{ trove_domain_name }}
 username = {{ trove_admin_user }}

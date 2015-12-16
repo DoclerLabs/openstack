@@ -25,7 +25,8 @@
 
 - name: ensure cirros image exists in glance
   glance_image:
-    auth_url="http://{{ keystone_admin_ip }}:35357/v3"
+    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
     login_project_name=admin
     login_username=admin
     login_domain_name="Default"
@@ -39,7 +40,8 @@
 - name: ensure the heat stack owner project exists in keystone
   keystone_user: >
     token="{{ keystone_admin_token }}"
-    endpoint="http://{{ keystone_admin_ip }}:35357/v3"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
     project_domain="Default"
     project="{{ heat_stack_owner_project }}"
     project_description="Heat stack owner demo project"
@@ -48,7 +50,8 @@
 - name: ensure the heat stack owner user exists in keystone
   keystone_user: >
     token="{{ keystone_admin_token }}"
-    endpoint="http://{{ keystone_admin_ip }}:35357/v3"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
     project="{{ heat_stack_owner_project }}"
     project_domain="Default"
     user="{{ heat_stack_owner_user }}"
@@ -59,7 +62,8 @@
 - name: ensure the heat stack owner user has the correct role
   keystone_user: >
     token="{{ keystone_admin_token }}"
-    endpoint="http://{{ keystone_admin_ip }}:35357/v3"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
     project_domain="Default"
     project="{{ heat_stack_owner_project }}"
     user="{{ heat_stack_owner_user }}"
@@ -72,7 +76,8 @@
     login_tenant_name=admin
     login_username=admin
     login_password="{{ keystone_admin_password }}"
-    auth_url="http://{{ keystone_admin_ip }}:35357/v3"
+    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
     region_name="{{ keystone_region_name }}"
     name="{{ external_net_name }}"
     provider_network_type={{ external_net_type }}
@@ -84,7 +89,8 @@
 
 - name: set up external subnet in neutron
   quantum_subnet: >
-    auth_url="http://{{ keystone_admin_ip }}:35357/v3"
+    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
     login_tenant_name=admin
     login_username=admin
     login_password="{{ keystone_admin_password }}"

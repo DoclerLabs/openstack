@@ -40,7 +40,8 @@
 - name: create heat domain admin
   keystone_user: >
     token="{{ keystone_admin_token }}"
-    endpoint="http://{{ keystone_admin_ip }}:35357/v3"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
     user_domain="{{ heat_user_domain }}"
     user="{{ heat_domain_admin }}"
     password="{{ heat_domain_admin_password }}"
@@ -49,7 +50,8 @@
 - name: add the admin role to the heat domain admin
   keystone_user: >
     token="{{ keystone_admin_token }}"
-    endpoint="http://{{ keystone_admin_ip }}:35357/v3"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
     user_domain="{{ heat_user_domain }}"
     user="{{ heat_domain_admin }}"
     role=admin
@@ -58,7 +60,8 @@
 - name: create roles for heat
   keystone_user: >
     token="{{ keystone_admin_token }}"
-    endpoint="http://{{ keystone_admin_ip }}:35357/v3"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
     role={{ item }}
   with_items:
     - heat_stack_owner

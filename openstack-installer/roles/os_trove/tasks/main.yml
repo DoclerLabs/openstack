@@ -25,7 +25,8 @@
 
 - name: set up trove network in neutron
   quantum_network: >
-    auth_url="http://{{ keystone_admin_ip }}:35357/v3"
+    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
     login_tenant_name=trove
     login_username=trove
     login_password="{{ trove_admin_password }}"
@@ -41,7 +42,8 @@
 
 - name: set up trove subnet in neutron
   quantum_subnet: >
-    auth_url="http://{{ keystone_admin_ip }}:35357/v3"
+    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
     login_tenant_name=trove
     login_username=trove
     login_password="{{ trove_admin_password }}"
@@ -105,7 +107,8 @@
 
 - name: upload trove image to glance
   local_action: glance_image
-    auth_url="http://{{ keystone_admin_ip }}:35357/v3"
+    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
     login_username=admin
     login_domain_name="Default"
     login_project_name="admin"

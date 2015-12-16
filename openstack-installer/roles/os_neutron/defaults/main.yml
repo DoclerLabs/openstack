@@ -20,3 +20,6 @@ neutron_syslog_use: "{{ syslog_use | default('False') }}"
 
 vxlan_vni_ranges: "65537:69999"
 vxlan_group: 239.0.0.0/8
+
+keystone_proto: "{{ (keystone_ssl | default('False')) | ternary('https', 'http') }}"
+ssl_insecure: False

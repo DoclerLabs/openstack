@@ -4,9 +4,9 @@
 
 # The Neutron user information for accessing the Neutron API.
 
-
-auth_uri = http://{{ keystone_internal_ip }}:5000
-auth_url = http://{{ keystone_internal_ip }}:35357
+insecure = {{ ssl_insecure }}
+auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
+auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
 auth_region = {{ keystone_region_name }}
 user_domain_name = {{ neutron_domain_name }}
 username = {{ neutron_admin_user }}

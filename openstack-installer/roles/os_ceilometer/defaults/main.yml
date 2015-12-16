@@ -14,3 +14,6 @@ aodh_project_name: "{{ keystone_service_project_name | default('service') }}"
 mongodb_replica_set: openstack
 
 ceilometer_syslog_use: "{{ syslog_use | default('False') }}"
+
+keystone_proto: "{{ (keystone_ssl | default('False')) | ternary('https', 'http') }}"
+ssl_insecure: False

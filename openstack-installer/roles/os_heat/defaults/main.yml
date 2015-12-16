@@ -13,3 +13,6 @@ heat_user_domain: heat_user_domain
 heat_domain_admin: heat_domain_admin
 
 heat_syslog_use: "{{ syslog_use | default('False') }}"
+
+keystone_proto: "{{ (keystone_ssl | default('False')) | ternary('https', 'http') }}"
+ssl_insecure: False

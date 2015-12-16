@@ -20,23 +20,17 @@
           - "{{ vip_mgmt }}"
           - "{{ vip_public }}"
         haproxy_port: 35357
-        haproxy_balance_type: http
+        haproxy_balance_type: "{{ (keystone_ssl | default('False')) | ternary('tcp', 'http') }}"
         haproxy_balance_alg: leastconn
-        haproxy_backend_options:
-          - forwardfor
-          - httpchk
-          - httplog
+        haproxy_backend_options: "{{ (keystone_ssl | default('False')) | ternary([], ['forwardfor', 'httpchk', 'httplog']) }}"
       - haproxy_service_name: keystone_service
         haproxy_backend_nodes: "{{ groups['keystone'] }}"
         haproxy_bind_hosts:
           - "{{ vip_public }}"
         haproxy_port: 5000
-        haproxy_balance_type: http
+        haproxy_balance_type: "{{ (keystone_ssl | default('False')) | ternary('tcp', 'http') }}"
         haproxy_balance_alg: leastconn
-        haproxy_backend_options:
-          - forwardfor
-          - httpchk
-          - httplog
+        haproxy_backend_options: "{{ (keystone_ssl | default('False')) | ternary([], ['forwardfor', 'httpchk', 'httplog']) }}"
 
 #The plays below must run without an installed keystone (e.g. second region),
 #so the controller[0] host is there
@@ -56,9 +50,9 @@
     keystone_service_name: keystone
     keystone_service_type: identity
     keystone_service_description: "OpenStack Identity"
-    keystone_public_url: "http://{{ keystone_internal_ip }}:5000/v3"
-    keystone_internal_url: "http://{{ keystone_internal_ip }}:5000/v3"
-    keystone_admin_url: "http://{{ keystone_public_ip }}:35357/v3"
+    keystone_public_url: "{{ (keystone_ssl | default('False')) | ternary('https', 'http') }}://{{ keystone_internal_address }}:5000/v3"
+    keystone_internal_url: "{{ (keystone_ssl | default('False')) | ternary('https', 'http') }}://{{ keystone_internal_address }}:5000/v3"
+    keystone_admin_url: "{{ (keystone_ssl | default('False')) | ternary('https', 'http') }}://{{ keystone_public_address }}:35357/v3"
     keystone_region: "{{ keystone_region_name }}"
     keystone_projects:
       - keystone_project_name: admin

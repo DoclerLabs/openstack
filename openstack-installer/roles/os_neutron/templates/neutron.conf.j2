@@ -702,11 +702,12 @@ notification_driver = messagingv2
 # quota_firewall_rule = 100
 
 [keystone_authtoken]
+insecure = {{ ssl_insecure }}
 signing_dir = /var/lib/neutron/cache
 region_name = {{ keystone_region_name }}
 auth_plugin = password
-auth_uri = http://{{ keystone_internal_ip }}:5000
-auth_url = http://{{ keystone_internal_ip }}:35357
+auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
+auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
 user_domain_name = {{ neutron_domain_name }}
 username = {{ neutron_admin_user }}
 password = {{ neutron_admin_password }}
@@ -789,6 +790,7 @@ auth_plugin = password
 
 # Verify HTTPS connections.
 # insecure = False
+insecure = {{ ssl_insecure }}
 
 # PEM encoded client certificate key file
 # keyfile =
@@ -800,7 +802,7 @@ region_name = {{ keystone_region_name }}
 # Timeout value for http requests
 # timeout =
 
-auth_url = http://{{ keystone_admin_ip }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
 user_domain_name = {{ nova_domain_name }}
 username = {{ nova_admin_user }}
 password = {{ nova_admin_password }}

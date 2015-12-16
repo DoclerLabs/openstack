@@ -24,3 +24,6 @@ nova_admin_user: nova
 nova_domain_name: "{{ keystone_domain_name }}"
 nova_project_name: "{{ keystone_service_project_name | default('service') }}"
 nova_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+
+keystone_proto: "{{ (keystone_ssl | default('False')) | ternary('https', 'http') }}"
+ssl_insecure: False

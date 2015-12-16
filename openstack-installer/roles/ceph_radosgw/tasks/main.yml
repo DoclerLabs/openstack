@@ -33,7 +33,7 @@
       "rgw frontends": "fastcgi socket_port=9000 socket_host=127.0.0.1",
       "log file": "/var/log/ceph/client.radosgw.gateway.log",
       "rgw print continue": "false",
-      "rgw keystone url": "http://{{ ip.mgmt }}:5000",
+      "rgw keystone url": "{{ keystone_proto }}://{{ ip.mgmt }}:5000",
       "rgw keystone admin token" : "{{ keystone_admin_token }}",
       "rgw keystone accepted roles": "{{ rgw_keystone_accepted_roles }}",
       "rgw keystone token cache size": 500,

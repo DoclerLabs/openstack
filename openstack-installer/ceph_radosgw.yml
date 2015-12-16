@@ -8,9 +8,9 @@
     keystone_service_name: swift
     keystone_service_type: object-store
     keystone_service_description: "OpenStack Object Storage Service"
-    keystone_public_url: "http://{{ keystone_internal_ip }}:8080/swift/v1"
-    keystone_internal_url: "http://{{ keystone_internal_ip }}:8080/swift/v1"
-    keystone_admin_url: "http://{{ keystone_public_ip }}:8080/swift/v1"
+    keystone_public_url: "http://{{ keystone_internal_address }}:8080/swift/v1"
+    keystone_internal_url: "http://{{ keystone_internal_address }}:8080/swift/v1"
+    keystone_admin_url: "http://{{ keystone_public_address }}:8080/swift/v1"
     keystone_region: "{{ keystone_region_name }}"
     keystone_projects: []
 

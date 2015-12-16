@@ -107,7 +107,7 @@ port = 9292
 # Neutron
 [neutron]
 url = http://{{ vip_mgmt }}:9696
-auth_url = http://{{ keystone_admin_ip }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
 auth_plugin = password
 region_name = {{ keystone_region_name }}
 user_domain_name = {{ neutron_domain_name }}
@@ -115,6 +115,7 @@ username = {{ neutron_admin_user }}
 password = {{ neutron_admin_password }}
 project_domain_name = {{ neutron_project_domain_name }}
 project_name = {{ neutron_project_name }}
+insecure = {{ ssl_insecure }}
 
 service_metadata_proxy = True
 metadata_proxy_shared_secret = {{ metadata_proxy_shared_secret }}
@@ -127,15 +128,15 @@ manager = nova.conductor.manager.ConductorManager
 [keystone_authtoken]
 auth_plugin = password
 signing_dir = /var/lib/nova/cache/api
-auth_uri = http://{{ keystone_internal_ip }}:5000
-auth_url = http://{{ keystone_internal_ip }}:35357
+auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
+auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
 region_name = {{ keystone_region_name }}
 user_domain_name = {{ nova_domain_name }}
 username = {{ nova_admin_user }}
 password = {{ nova_admin_password }}
 project_domain_name = {{ nova_project_domain_name }}
 project_name = {{ nova_project_name }}
-
+insecure = {{ ssl_insecure }}
 
 memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
 
@@ -200,7 +201,7 @@ admin_username={{ ironic_admin_user }}
 admin_password={{ ironic_admin_password }}
 
 # keystone API endpoint
-admin_url=http://{{ keystone_admin_ip }}:35357/v2.0
+admin_url={{ keystone_proto }}://{{ keystone_admin_address }}:35357/v2.0
 
 # Ironic keystone tenant name.
 admin_tenant_name={{ ironic_project_name }}
