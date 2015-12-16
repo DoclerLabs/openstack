@@ -1,0 +1,4 @@
+---
+
+SSLCertificateKeyFile: /etc/ssl/private/openstack.key
+SSLCertificateFile: /etc/ssl/certs/openstack.crt

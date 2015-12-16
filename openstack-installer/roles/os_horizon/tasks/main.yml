@@ -5,8 +5,30 @@
   with_items:
     - openstack-dashboard
 
+- name: install certificates
+  copy: src={{ item.src }} dest={{ item.dest }} owner=www-data group=root mode={{ item.mode }}
+  with_items:
+    - { src: '{{ SSLCertificateKeyFileSource | default("") }}', dest: '{{ SSLCertificateKeyFile }}', mode: '0460' }
+    - { src: '{{ SSLCertificateFileSource | default("") }}', dest: '{{ SSLCertificateFile }}', mode: '0464' }
+  when: item.src != ''
+  notify: restart apache
+
+- name: enable mod_ssl
+  file: src=../mods-available/ssl.load dest=/etc/apache2/mods-enabled/ssl.load state=link
+  when: SSLCertificateKeyFileSource is defined
+  notify: restart apache
+
 - name: install ports.conf
   template: src=ports.conf.j2 dest=/etc/apache2/ports.conf owner=root group=root mode=0644
+  notify: restart apache
+
+- name: install default-ssl.conf
+  template: src=default-ssl.conf.j2 dest=/etc/apache2/sites-available/default-ssl.conf owner=root group=root mode=0644
+  notify: restart apache
+
+- name: enable default-ssl site
+  file: src=../sites-available/default-ssl.conf dest=/etc/apache2/sites-enabled/default-ssl.conf state=link
+  when: SSLCertificateKeyFileSource is defined
   notify: restart apache
 
 - name: install local_settings.py

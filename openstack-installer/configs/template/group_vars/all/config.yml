@@ -18,6 +18,10 @@ keystone_public_ip: "{{ vip_mgmt }}"
 keystone_region_name: RegionONE
 keystone_domain_name: Default
 
+#Cert and key file for (optionally, but strongly recommended) enabling TLS
+#SSLCertificateFileSource:
+#SSLCertificateKeyFileSource:
+
 neutron_flat_networks:
 neutron_physical_interface_mappings: vlan:br-vlan
 neutron_vlan_ranges: vlan:901:915,vlan:917:975

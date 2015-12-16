@@ -25,3 +25,10 @@
           - forwardfor
           - httpchk
           - httplog
+      - haproxy_service_name: horizon-ssl
+        haproxy_backend_nodes: "{{ groups['horizon'] }}"
+        haproxy_bind_hosts:
+          - "{{ vip_mgmt }}"
+          - "{{ vip_public }}"
+        haproxy_port: 443
+        haproxy_balance_type: tcp
