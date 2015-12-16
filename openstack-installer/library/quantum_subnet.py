@@ -133,7 +133,8 @@ def _get_ksclient(module, kwargs):
         kclient = ksclient.Client(username=kwargs.get('login_username'),
                                  password=kwargs.get('login_password'),
                                  tenant_name=kwargs.get('login_tenant_name'),
-                                 auth_url=kwargs.get('auth_url'))
+                                 auth_url=kwargs.get('auth_url'),
+                                 insecure=kwargs.get('insecure'))
     except Exception, e:
         module.fail_json(msg = "Error authenticating to the keystone: %s" %e.message)
     global _os_keystone
@@ -265,6 +266,7 @@ def main():
             dns_nameservers         = dict(default=None),
             allocation_pool_start   = dict(default=None),
             allocation_pool_end     = dict(default=None),
+            insecure                = dict(required=False, default=False, choices=BOOLEANS)
     ))
     module = AnsibleModule(argument_spec=argument_spec)
     neutron = _get_neutron_client(module, module.params)

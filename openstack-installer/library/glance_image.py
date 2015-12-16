@@ -149,12 +149,14 @@ def _get_ksclient(module, kwargs):
                                  project_name=login_project_name,
                                  project_domain_name=kwargs.get('login_domain_name'),
                                  user_domain_name=kwargs.get('login_domain_name'),
-                                 auth_url=kwargs.get('auth_url'))
+                                 auth_url=kwargs.get('auth_url'),
+                                 insecure=kwargs.get('insecure'))
         else:
             client = ksclient.Client(username=kwargs.get('login_username'),
                                  password=kwargs.get('login_password'),
                                  user_domain_name=kwargs.get('login_domain_name'),
-                                 auth_url=kwargs.get('auth_url'))
+                                 auth_url=kwargs.get('auth_url'),
+                                 insecure=kwargs.get('insecure'))
     except Exception, e:
         module.fail_json(msg="Error authenticating to the keystone: %s " % e.message)
     return client 
@@ -249,6 +251,7 @@ def main():
         timeout           = dict(default=180),
         file              = dict(default=None),
         endpoint_type     = dict(default='publicURL', choices=['publicURL', 'internalURL']),
+        insecure          = dict(required=False, default=False, choices=BOOLEANS),
         state             = dict(default='present', choices=['absent', 'present']),
         login_domain_name = dict(default='default'),
         login_project_name = dict(default=None)

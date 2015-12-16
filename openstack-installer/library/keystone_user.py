@@ -105,14 +105,15 @@ else:
     keystoneclient_found = True
 
 
-def authenticate(endpoint, token, login_user, login_password, login_project_name):
+def authenticate(endpoint, token, login_user, login_password, login_project_name, insecure):
     """Return a keystone client object"""
 
     if token:
-        return client.Client(endpoint=endpoint, token=token)
+        return client.Client(endpoint=endpoint, token=token, insecure=insecure)
     else:
         return client.Client(auth_url=endpoint, username=login_user,
-                             password=login_password, project_name=login_project_name)
+                             password=login_password, project_name=login_project_name,
+                             insecure=insecure)
 
 def get_project(keystone, domain, name):
     """ Retrieve a project by name"""
@@ -339,6 +340,7 @@ def main():
             endpoint=dict(required=False,
                           default="http://127.0.0.1:35357/v2.0"),
             token=dict(required=False),
+            insecure=dict(required=False, default=False, choices=BOOLEANS),
             login_user=dict(required=False),
             login_password=dict(required=False),
             login_project_name=dict(required=False)
@@ -367,11 +369,12 @@ def main():
     state = module.params['state']
     endpoint = module.params['endpoint']
     token = module.params['token']
+    insecure = module.boolean(module.params['insecure'])
     login_user = module.params['login_user']
     login_password = module.params['login_password']
     login_project_name = module.params['login_project_name']
 
-    keystone = authenticate(endpoint, token, login_user, login_password, login_project_name)
+    keystone = authenticate(endpoint, token, login_user, login_password, login_project_name, insecure)
 
     check_mode = module.check_mode
 
