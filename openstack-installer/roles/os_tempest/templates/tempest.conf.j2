@@ -291,14 +291,6 @@ image_ref_alt = {{ cirros_image.id }}
 # Valid secondary flavor to be used in tests. (string value)
 #flavor_ref_alt = 2
 
-# User name used to authenticate to an instance. (string value)
-#image_ssh_user = root
-image_ssh_user = {{ cirros_ssh_user }}
-
-# Password used to authenticate to an instance. (string value)
-#image_ssh_password = password
-image_ssh_password = {{ cirros_ssh_password }}
-
 # User name used to authenticate to an instance using the alternate
 # image. (string value)
 #image_alt_ssh_user = root
@@ -310,43 +302,6 @@ image_ssh_password = {{ cirros_ssh_password }}
 # that do not define build_timeout will inherit this value. (integer
 # value)
 #build_timeout = 300
-
-# Shell fragments to use before executing a command when sshing to a
-# guest. (string value)
-#ssh_shell_prologue = set -eu -o pipefail; PATH=$$PATH:/sbin;
-
-# Auth method used for authenticate to the instance. Valid choices
-# are: keypair, configured, adminpass and disabled. Keypair: start the
-# servers with a ssh keypair. Configured: use the configured user and
-# password. Adminpass: use the injected adminPass. Disabled: avoid
-# using ssh when it is an option. (string value)
-# Allowed values: keypair, configured, adminpass, disabled
-#ssh_auth_method = keypair
-ssh_auth_method = configured
-
-# How to connect to the instance? fixed: using the first ip belongs
-# the fixed network floating: creating and using a floating ip.
-# (string value)
-# Allowed values: fixed, floating
-#ssh_connect_method = floating
-
-# User name used to authenticate to an instance. (string value)
-#ssh_user = root
-
-# Timeout in seconds to wait for ping to succeed. (integer value)
-#ping_timeout = 120
-
-# The packet size for ping packets originating from remote linux hosts
-# (integer value)
-#ping_size = 56
-
-# The number of ping packets originating from remote linux hosts
-# (integer value)
-#ping_count = 1
-
-# Additional wait time for clean state, when there is no OS-EXT-STS
-# extension available (integer value)
-#ready_wait = 0
 
 # Name of the fixed network that is visible to all test tenants. If
 # multiple networks are available for a tenant this is the network
@@ -1267,6 +1222,7 @@ trove = {{ groups['trove'] | count > 0 }}
 # resources to enable remote access (boolean value)
 # Deprecated group/name - [compute]/run_ssh
 #run_validation = false
+run_validation = true
 
 # Enable/disable security groups. (boolean value)
 #security_group = true
@@ -1302,6 +1258,8 @@ trove = {{ groups['trove'] | count > 0 }}
 # Deprecated group/name - [compute]/ssh_timeout
 #ssh_timeout = 300
 
+# User name used to authenticate to an instance.
+image_ssh_user = {{ cirros_ssh_user }}
 
 [volume]
 
