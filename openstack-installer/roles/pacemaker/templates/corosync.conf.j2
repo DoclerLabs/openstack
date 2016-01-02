@@ -32,6 +32,7 @@ nodelist {
         node {
                 ring0_addr: {{ hostvars[node].ip.mgmt }}
                 nodeid: {{ groups['pacemaker'].index(node) + 1 }}
+                name: {{ node }}
         }
 {% endfor %}
 
