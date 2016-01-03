@@ -476,6 +476,7 @@ min_compute_nodes = {{ groups['nova_compute'] | count }}
 
 # Where the dashboard can be found (string value)
 #dashboard_url = http://localhost/
+dashboard_url = http://{{ vip_public }}/horizon
 
 # Login page for the dashboard (string value)
 # This option is deprecated for removal.
