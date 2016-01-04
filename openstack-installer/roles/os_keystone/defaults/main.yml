@@ -7,7 +7,7 @@ keystone_rabbit_user: keystone
 
 keystone_processes: "{{ ansible_processor_vcpus }}"
 
-keystone_syslog_use: "{{ syslog_use | default('False') }}"
+keystone_syslog_use: "{{ syslog_use | default(False) }}"
 
 keystone_ssl: False
 SSLCertificateKeyFile: /etc/ssl/private/openstack.key

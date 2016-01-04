@@ -13,7 +13,7 @@ glance_backend: files
 glance_ceph_pool: images
 glance_ceph_user: glance
 
-glance_syslog_use: "{{ syslog_use | default('False') }}"
+glance_syslog_use: "{{ syslog_use | default(False) }}"
 
-keystone_proto: "{{ (keystone_ssl | default('False')) | ternary('https', 'http') }}"
+keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
