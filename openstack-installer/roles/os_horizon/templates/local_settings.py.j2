@@ -60,11 +60,12 @@ OPENSTACK_API_VERSIONS = { "identity": 3, }
 # Set this to True if running on multi-domain model. When this is enabled, it
 # will require user to enter the Domain name in addition to username for login.
 #OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = False
-OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
+OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = {{ horizon_keystone_multidomain_support }}
 
 # Overrides the default domain used when running on single-domain model
 # with Keystone V3. All entities will be created in the default domain.
 #OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = 'Default'
+OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = '{{ horizon_keystone_default_domain }}'
 
 # Set Console type:
 # valid options are "AUTO"(default), "VNC", "SPICE", "RDP", "SERIAL" or None
@@ -193,6 +194,7 @@ OPENSTACK_KEYSTONE_BACKEND = {
 # Setting this to True, will add a new "Retrieve Password" action on instance,
 # allowing Admin session password retrieval/decryption.
 #OPENSTACK_ENABLE_PASSWORD_RETRIEVE = False
+OPENSTACK_ENABLE_PASSWORD_RETRIEVE = {{ horizon_enable_password_retrieve }}
 
 # The Launch Instance user experience has been significantly enhanced.
 # You can choose whether to enable the new launch instance experience,
@@ -207,7 +209,8 @@ OPENSTACK_KEYSTONE_BACKEND = {
 # both.
 #LAUNCH_INSTANCE_LEGACY_ENABLED = True
 #LAUNCH_INSTANCE_NG_ENABLED = False
-LAUNCH_INSTANCE_NG_ENABLED = True
+LAUNCH_INSTANCE_LEGACY_ENABLED = {{ horizon_launch_instance_legacy_enabled }}
+LAUNCH_INSTANCE_NG_ENABLED = {{ horizon_launch_instance_ng_enabled }}
 
 # The Xen Hypervisor has the ability to set the mount point for volumes
 # attached to instances (other Hypervisors currently do not). Setting
@@ -215,7 +218,7 @@ LAUNCH_INSTANCE_NG_ENABLED = True
 # from the UI.
 OPENSTACK_HYPERVISOR_FEATURES = {
     'can_set_mount_point': False,
-    'can_set_password': True,
+    'can_set_password': False,
     'requires_keypair': False,
 }
 

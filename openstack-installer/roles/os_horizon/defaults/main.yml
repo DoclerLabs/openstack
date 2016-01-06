@@ -1,5 +1,11 @@
 ---
 
+horizon_keystone_multidomain_support: True
+horizon_keystone_default_domain: Default
+horizon_enable_password_retrieve: True
+horizon_launch_instance_legacy_enabled: True
+horizon_launch_instance_ng_enabled: True
+
 SSLCertificateKeyFile: /etc/ssl/private/openstack.key
 SSLCertificateFile: /etc/ssl/certs/openstack.crt
 
