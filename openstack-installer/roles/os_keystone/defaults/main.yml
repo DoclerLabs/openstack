@@ -5,6 +5,11 @@ keystone_mysql_server: "{{ vip_mgmt }}"
 keystone_db: keystone
 keystone_rabbit_user: keystone
 
+keystone_memcache_dead_retry: 60
+keystone_memcache_socket_timeout: 1
+keystone_memcache_pool_maxsize: 1000
+keystone_memcache_pool_unused_timeout: 60
+
 keystone_processes: "{{ ansible_processor_vcpus }}"
 
 keystone_syslog_use: "{{ syslog_use | default(False) }}"
