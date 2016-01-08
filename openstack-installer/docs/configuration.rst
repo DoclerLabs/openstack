@@ -109,3 +109,58 @@ The installer configures syslog-ng on the hosts. There are two options to alter 
   syslog_use_mongodb: False       # Enabling this will send the logs to the MongoDB replica set, which can be
                                   # used as a central logging service. The document format sent to Mongo is
                                   # compatible with Adiscon LogAnalyzer.
+
+Ceph
+----
+
+Ceph has 3 host groups in the inventory, namely ceph_monitor, ceph_osd and ceph_radosgw.
+
+Ceph monitor is the 'brain' of the ceph cluster, it is recommended to have at least 3 hosts. Monitors are
+forming a cluster with quorum, so odd number of monitor hosts is recommended.
+
+Ceph OSDs (Object Store Daemons) are the actual storage nodes. For performance reasons, it is recommended
+to use bare disks (so if you have a RAID controller, set it to JBOD mode), possibly use a separate fast 
+device for journal and to not share disks between monitor and OSD usage.
+
+Radosgw is an Amazon S3 or Swift compatible object storage backed by the Ceph storage cluster.
+
+Important configuration options:
+
+::
+
+  ceph_cluster_name: ceph            # Name of the cluster. 'ceph' is the default, it is best to leave it as is.
+  ceph_osd_journal_size: 10000       # The default journal size. Look at the ceph docs to calculate the correct size.
+                                     # Default value is 10GB, it is good for the most use cases.
+  ceph_osd_pool_default_size: 3      # The number of replicas of a pool. By default, 3 copies of each data is
+                                     # maintained across the cluster. It is not recommended to lower it, but if you
+                                     # have less than 3 OSDs (testing for example), then do it.
+  ceph_osd_pool_default_min_size: 0  # The minimum number of active replicas for a pool to work. The default '0' value
+                                     # means size - (size / 2).
+  ceph_osd_pool_default_pg_num: 64   # The default number of placement groups for an automatically created pool.
+
+  ceph_public_network:               # It is recommended to have separate networks for the front-end and the internal
+  ceph_cluster_network:              # side of the ceph nodes, for performance reasons. Give a network/netmask value here.
+                                     # There is no default value, since it depends on your environment. Not giving any
+                                     # value here will use the same network for front-end and replication traffic.
+
+Configuring ceph includes setting up disk space for OSD usage. The recommended way is to give whole disks to Ceph,
+and to use a fast journal device (like fast SSDs, or even NVMes). Since the disk configuration likely different
+on the storage nodes, it is the best to put it as host variables in the inventory. If you're absolutely sure that
+the same disk configuration is used on all ceph_osd nodes, then you can put it into config.yml, too.
+
+Example OSD configuration in the inventory:
+
+::
+
+  ceph_osd:
+    os-ceph-1:
+      ip:
+        mgmt: 192.168.0.1          # Address of the os-ceph-0 node.
+      osd:
+        - { disk: "/dev/sdb" }     # Use the whole device directly.
+        - { disk: "/dev/sdc", journal: "/dev/sdf1" }  # For the OSD on /dev/sdc, create a journal on /dev/sdf1
+    os-ceph-2:
+      ip:
+        mgmt: 192.168.0.2          # Address of the os-ceph-1 node.
+      osd:
+        - { path: "/mnt/osd" }     # Use an already formatted and mounted FS for the OSD.
