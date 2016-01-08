@@ -1,12 +1,12 @@
 1. Introduction
----------------
+===============
 
 This is Another OpenStack Installer. It can deploy an OpenStack cluster (with or without HA controllers).
 It uses Ansible, the best configuration management software, to install the infrastructure and the OpenStack components.
 It does not install the base OS, also doesn't configure the hardware (network interfaces, disks, NTP), but everything after that.
 
 2. Pre-requisite
-----------------
+================
 
 - A deployment node, which can connect to the provisioned nodes via ssh. Install ansible on it.
 - Ubuntu 14.04 LTS for the base OS. Need odd number of controller nodes, and arbitary number of compute nodes.
@@ -22,7 +22,7 @@ It does not install the base OS, also doesn't configure the hardware (network in
 - All nodes must have an user 'ansible' created, ssh passwordless login enabled from the deployment node, and sudo rights.
 
 3. Installation
----------------
+===============
 
 - Copy the configuration templates from configs/template to the base directory of the installer:
 
@@ -71,7 +71,7 @@ It does not install the base OS, also doesn't configure the hardware (network in
 - Wait until the installation finishes. If it stops somewhere, just correct the configuration, and re-run the previous command.
 
 4. Test the cloud
------------------
+=================
 
 It is a good idea to run tempest on the installed cloud. The steps for preparing it:
 
