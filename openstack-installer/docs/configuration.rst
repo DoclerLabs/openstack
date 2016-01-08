@@ -155,12 +155,12 @@ Example OSD configuration in the inventory:
   ceph_osd:
     os-ceph-1:
       ip:
-        mgmt: 192.168.0.1          # Address of the os-ceph-0 node.
+        mgmt: 192.168.0.1          # Address of the os-ceph-1 node.
       osd:
         - { disk: "/dev/sdb" }     # Use the whole device directly.
         - { disk: "/dev/sdc", journal: "/dev/sdf1" }  # For the OSD on /dev/sdc, create a journal on /dev/sdf1
     os-ceph-2:
       ip:
-        mgmt: 192.168.0.2          # Address of the os-ceph-1 node.
+        mgmt: 192.168.0.2          # Address of the os-ceph-2 node.
       osd:
         - { path: "/mnt/osd" }     # Use an already formatted and mounted FS for the OSD.
