@@ -18,7 +18,6 @@
         haproxy_backend_nodes: "{{ groups['keystone'] }}"
         haproxy_bind_hosts:
           - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
         haproxy_port: 35357
         haproxy_balance_type: "{{ (keystone_ssl | default(False)) | ternary('tcp', 'http') }}"
         haproxy_balance_alg: leastconn
@@ -26,6 +25,7 @@
       - haproxy_service_name: keystone_service
         haproxy_backend_nodes: "{{ groups['keystone'] }}"
         haproxy_bind_hosts:
+          - "{{ vip_mgmt }}"
           - "{{ vip_public }}"
         haproxy_port: 5000
         haproxy_balance_type: "{{ (keystone_ssl | default(False)) | ternary('tcp', 'http') }}"
