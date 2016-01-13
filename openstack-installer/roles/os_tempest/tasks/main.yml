@@ -100,6 +100,8 @@
     cidr="{{ external_subnet_cidr }}"
     enable_dhcp=False
     gateway_ip={{ external_subnet_gateway_ip }}
+    allocation_pool_start={{ external_subnet_allocation_start }}
+    allocation_pool_end={{ external_subnet_allocation_end }}
   run_once: True
 
 - name: install tempest from git

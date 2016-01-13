@@ -19,6 +19,8 @@ external_physical_network: vlan
 external_net_segmentation_id: 996
 external_subnet_cidr: 10.97.37.0/25
 external_subnet_gateway_ip: 10.97.37.126
+external_subnet_allocation_start: 10.97.37.1
+external_subnet_allocation_end: 10.97.37.125
 
 neutron_api_extensions: dns-integration,ext-gw-mode,binding,agent,subnet_allocation,l3_agent_scheduler,external-net,flavors,fwaasrouterinsertion,
   net-mtu,quotas,l3-ha,provider,multi-provider,lbaas,extraroute,lbaas_agent_scheduler,fwaas,router,extra_dhcp_opt,service-type,security-group,
