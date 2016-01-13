@@ -339,12 +339,6 @@ image_ref_alt = {{ cirros_image.id }}
 # for as long as the time. (integer value)
 #shelved_offload_time = 0
 
-# Unallocated floating IP range, which will be used to test the
-# floating IP bulk feature for CRUD operation. This block must not
-# overlap an existing floating IP pool. (string value)
-#floating_ip_range = 10.0.0.0/29
-floating_ip_range = 10.0.0.0/29
-
 # The minimum number of compute nodes expected. This will be utilized
 # by some multinode specific tests to ensure that requests match the
 # expected size of the cluster you are testing with. (integer value)
@@ -1262,6 +1256,12 @@ run_validation = true
 
 # User name used to authenticate to an instance.
 image_ssh_user = {{ cirros_ssh_user }}
+
+# Unallocated floating IP range, which will be used to test the
+# floating IP bulk feature for CRUD operation. This block must not
+# overlap an existing floating IP pool. (string value)
+#floating_ip_range = 10.0.0.0/29
+floating_ip_range = 10.0.0.0/29
 
 [volume]
 
