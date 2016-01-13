@@ -14,7 +14,7 @@ syslog_use_mongodb: False
 #Keystone addresses should be domain names in case of SSL (when keystone_ssl: True)
 keystone_internal_address: "{{ vip_mgmt }}"
 keystone_admin_address: "{{ vip_mgmt }}"
-keystone_public_address: "{{ vip_mgmt }}"
+keystone_public_address: "{{ vip_public }}"
 
 keystone_region_name: RegionONE
 keystone_domain_name: Default
