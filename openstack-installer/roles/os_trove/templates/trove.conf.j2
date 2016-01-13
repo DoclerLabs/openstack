@@ -52,6 +52,12 @@ trove_auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}/v3
 #swift_url = http://localhost:8080/v1/AUTH_
 #neutron_url = http://localhost:9696/
 
+cinder_endpoint_type = internalURL
+heat_endpoint_type = internalURL
+neutron_endpoint_type = internalURL
+nova_compute_endpoint_type = internalURL
+swift_endpoint_type = internalURL
+
 # nova_compute_url, cinder_url, swift_url, and heat_url can all be fetched
 # from Keystone. To fetch from Keystone, comment out nova_compute_url,
 # cinder_url, swift_url, and heat_url and optionally uncomment the lines below.
