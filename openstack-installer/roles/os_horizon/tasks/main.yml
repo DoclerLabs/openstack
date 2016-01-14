@@ -26,6 +26,10 @@
   template: src=default-ssl.conf.j2 dest=/etc/apache2/sites-available/default-ssl.conf owner=root group=root mode=0644
   notify: restart apache
 
+- name: install 000-default.conf
+  template: src=000-default.conf.j2 dest=/etc/apache2/sites-available/000-default.conf owner=root group=root mode=0644
+  notify: restart apache
+
 - name: enable default-ssl site
   file: src=../sites-available/default-ssl.conf dest=/etc/apache2/sites-enabled/default-ssl.conf state=link
   when: SSLCertificateKeyFileSource is defined
