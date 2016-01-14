@@ -8,10 +8,12 @@
         # However, you must set it for any further virtual host explicitly.
         #ServerName www.example.com
 
-{% if SSLCertificateKeyFileSource is defined %}
         RewriteEngine On
+{% if SSLCertificateKeyFileSource is defined %}
         RewriteCond %{HTTPS} !=on
         RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
+{% else %}
+        RewriteRule  ^/$ /horizon/  [R,L]
 {% endif %}
 
         ServerAdmin webmaster@localhost
