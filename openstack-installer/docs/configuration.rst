@@ -164,3 +164,29 @@ Example OSD configuration in the inventory:
         mgmt: 192.168.0.2          # Address of the os-ceph-2 node.
       osd:
         - { path: "/mnt/osd" }     # Use an already formatted and mounted FS for the OSD.
+
+Keystone
+--------
+
+Keystone is the central authentication service in OpenStack. Currently UUID tokens are implemented in this installer.
+
+For a multi-region setup, the installation can be skipped with an empty inventory for the 'keystone' group. In this case,
+the keystone_xxx_address settings (see below) should point to the central keystone instance.
+
+Settings which most likely have to be changed in a production installation:
+
+::
+
+  keystone_internal_address: "{{ vip_mgmt }}"  # These are the internal, admin and public endpoint addresses
+  keystone_admin_address: "{{ vip_mgmt }}"     # of the keystone service. By default, they are set to the management
+  keystone_public_address: "{{ vip_public }}"  # and public VIPs, but if you're using TLS, you'll want to use domain name(s) here.
+
+  keystone_region_name: RegionONE              # The region name where this OpenStack installation belongs to.
+  keystone_domain_name: Default                # The keystone v3 domain where the service accounts will created. Note: 'Default'
+                                               # is a special domain which allows compatibility with keystone v2.0.
+  keystone_ssl: False                          # Enable TLS for keystone. A certificate and a private key file must be supplied in
+                                               # SSLCertificateFileSource and SSLCertificateKeyFileSource.
+  ssl_insecure: False                          # It's a global setting for all OpenStack components, where you can disable certificate
+                                               # checking (e.g. in case of self-signed certificates). Don't use it in production.
+
+There are some other settings in roles/os_keystone/defaults/main.yml, they can be overridden to fine-tune the service.
