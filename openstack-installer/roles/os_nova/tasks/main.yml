@@ -68,6 +68,13 @@
     - localhost
     - '%'
 
+- name: install certificates
+  copy: src={{ item.src }} dest={{ item.dest }} owner=nova group=root mode={{ item.mode }}
+  with_items:
+    - { src: '{{ SSLCertificateKeyFileSource | default("") }}', dest: '{{ SSLCertificateKeyFile }}', mode: '0460' }
+    - { src: '{{ SSLCertificateFileSource | default("") }}', dest: '{{ SSLCertificateFile }}', mode: '0464' }
+  when: inventory_hostname in groups['nova_controller'] and item.src != '' and nova_novncproxy_ssl
+
 - name: install virsh secret.xml
   template: src=secret.xml.j2 dest=/root/secret.xml owner=root group=root mode=0664
   when: inventory_hostname in groups['nova_compute'] and cinder_backend=='ceph'
