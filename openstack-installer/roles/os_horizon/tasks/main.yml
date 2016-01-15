@@ -18,6 +18,10 @@
   when: SSLCertificateKeyFileSource is defined
   notify: restart apache
 
+- name: enable mod_rewrite
+  file: src=../mods-available/rewrite.load dest=/etc/apache2/mods-enabled/rewrite.load state=link
+  notify: restart apache
+
 - name: install ports.conf
   template: src=ports.conf.j2 dest=/etc/apache2/ports.conf owner=root group=root mode=0644
   notify: restart apache
