@@ -1,0 +1,7 @@
+---
+
+- name: restart barbican
+  service: name={{ item }} state=restarted
+  with_items:
+    - barbican-api
+    - barbican-worker

@@ -79,6 +79,8 @@ murano:
 sahara:
   inherit: controller
 
+barbican:
+
 ironic:
 
 # -------- Tempest ------

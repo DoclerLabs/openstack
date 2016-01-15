@@ -1,0 +1,15 @@
+---
+
+barbican_db_user: barbican
+barbican_mysql_server: "{{ vip_mgmt }}"
+barbican_db: barbican
+barbican_rabbit_user: barbican
+barbican_admin_user: barbican
+barbican_domain_name: "{{ keystone_domain_name }}"
+barbican_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+barbican_project_name: "{{ keystone_service_project_name | default('service') }}"
+
+barbican_syslog_use: "{{ syslog_use | default(False) }}"
+
+keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
+ssl_insecure: False
