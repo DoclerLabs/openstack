@@ -37,6 +37,7 @@
     provider_physical_network={{ trove_physical_network }}
     provider_segmentation_id="{{ trove_net_segmentation_id }}"
     router_external=no
+    shared=yes
   register: trove_net
   run_once: True
 
@@ -52,6 +53,16 @@
     name=trove-subnet
     network_name="{{ trove_net_name }}"
     cidr="{{ trove_subnet_cidr }}"
+  run_once: True
+
+- name: determine nova project id
+  keystone_user:
+    token="{{ keystone_admin_token }}"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    project_domain="{{ nova_project_domain_name }}"
+    project="{{ nova_project_name }}"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
+  register: nova_project_id
   run_once: True
 
 - name: install trove configs

@@ -182,7 +182,7 @@ def ensure_project_exists(keystone, project_name, project_description, project_d
         # project doesn't exist yet
         pass
     else:
-        if project.description == project_description:
+        if not project_description or project.description == project_description:
             return (False, project.id)
         else:
             # We need to update the project description
