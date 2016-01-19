@@ -65,26 +65,46 @@
   changed_when: False
 
 - name: install pacemaker galera service
-  pacemaker: primitive p_galera ocf:heartbeat:galera
-    meta target-role="Started"
-    op start "timeout=120" "interval=0"
-    op stop "timeout=120" "interval=0"
-    op promote "timeout=300" "interval=0"
-    op demote "timeout=120" "interval=0"
-    params wsrep_cluster_address="gcomm://{% for host in groups['galera'] %}{{ host }}{% if not loop.last %},{% endif %}{% endfor %}"
-           config="/etc/mysql/my.cnf"
-           socket="{{ mysql_sock_file }}"
-           pid="{{ mysql_pid_file }}"
-           log="{{ mysql_log_error }}"
-    shadow="shadowcib"
+  pacemaker:
+    action: primitive
+    name: p_galera
+    params:
+      type: ocf:heartbeat:galera
+      meta:
+        target-role: Started
+      op:
+        start:
+          timeout: "120"
+          interval: "0"
+        stop:
+          timeout: "120"
+          interval: "0"
+        promote:
+           timeout: "300"
+           interval: "0"
+        demote:
+           timeout: "120"
+           interval: "0"
+      params:
+        wsrep_cluster_address: "gcomm://{% for host in groups['galera'] %}{{ host }}{% if not loop.last %},{% endif %}{% endfor %}"
+        config: "/etc/mysql/my.cnf"
+        socket: "{{ mysql_sock_file }}"
+        pid: "{{ mysql_pid_file }}"
+        log: "{{ mysql_log_error }}"
+    shadow: shadowcib
   notify: commit shadow cib
   run_once: True
 
 - name: install Master-Slave galera pacemaker service
-  pacemaker: ms ms_galera p_galera
-    meta target-role="Started"
-         master-max="{{ groups['galera'] | length }}"
-    shadow="shadowcib"
+  pacemaker:
+    action: ms
+    name: ms_galera
+    params:
+      rsc: p_galera
+      meta:
+         target-role: Started
+         master-max: "{{ groups['galera'] | length }}"
+    shadow: shadowcib
   notify: commit shadow cib
   run_once: True
 

@@ -56,23 +56,38 @@
   delay: 5
 
 - name: disable STONITH
-  pacemaker: property stonith-enabled="false"
+  pacemaker: action='property' params='stonith-enabled=false'
   run_once: True
 
 - name: set no-quorum-policy
-  pacemaker: property no-quorum-policy="ignore"
+  pacemaker: action='property' params='no-quorum-policy=ignore'
   when: play_hosts | count < 3
   run_once: True
 
 - name: create mgmt VIP address
-  pacemaker: primitive mgmt_vip ocf:heartbeat:IPaddr2
-         params ip="{{ vip_mgmt }}" cidr_netmask="{{ vip_mgmt_cidr }}" nic="{{ vip_mgmt_nic }}"
-         state=present
+  pacemaker:
+    action: primitive
+    name: mgmt_vip
+    params:
+      type: ocf:heartbeat:IPaddr2
+      params:
+        ip: "{{ vip_mgmt }}"
+        cidr_netmask: "{{ vip_mgmt_cidr }}"
+        nic: "{{ vip_mgmt_nic }}"
+    state: present
   run_once: True
 
 - name: create public VIP address
-  pacemaker: primitive public_vip ocf:heartbeat:IPaddr2
-         params ip="{{ vip_public }}" cidr_netmask="{{ vip_public_cidr }}" nic="{{ vip_public_nic }}"
-         state=present
+  pacemaker:
+    action: primitive
+    name: public_vip
+    params:
+      type: ocf:heartbeat:IPaddr2
+      params:
+        ip: "{{ vip_public }}"
+        cidr_netmask: "{{ vip_public_cidr }}"
+        nic: "{{ vip_public_nic }}"
+    state: present
   run_once: True
   when: vip_mgmt != vip_public
+

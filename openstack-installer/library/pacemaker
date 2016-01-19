@@ -75,7 +75,6 @@ class BaseParser(object):
     id = None
     partial_compare = False
     module = None
-    no_delete = False
 
     def __init__(self, args, module=None):
         if module:
@@ -89,15 +88,13 @@ class BaseParser(object):
         raise NotImplementedError()
 
     def is_same(self, obj):
-        obj_key = obj.cib.keys()
-        for key, value in self.cib.iteritems():
-            if key not in obj_key:
-                return False
-            if value != obj.cib.get(key):
-                return False
-            obj_key.remove(key)
-        if len(obj_key) and not self.partial_compare:
+        if len(obj) + 2 != len(self.cib) and not self.partial_compare:
             return False
+        for key, value in obj.iteritems():
+            if key not in self.cib.keys():
+                return False
+            if value != self.cib.get(key):
+                return False
         return True
 
 
@@ -223,7 +220,7 @@ class CloneParser(BaseParser):
                     msg="no value in key=value option (key=%s)" % key)
             if mode not in ret:
                 ret[mode] = {}
-            ret[mode][key] = value
+            ret[mode][key] = unquote(value)
     
         return ret
 
@@ -318,7 +315,6 @@ class OrderParser(BaseParser):
 
 class PropertyParser(BaseParser):
     partial_compare = True
-    no_delete = True
 
     def parse(self, args):
         ret = dict(
@@ -329,7 +325,7 @@ class PropertyParser(BaseParser):
 
         if args[0].startswith("cib-bootstrap-options:"):
             args.pop(0)
-    
+
         while (args):
             arg = args.pop(0)
             if '=' not in arg:
@@ -337,7 +333,7 @@ class PropertyParser(BaseParser):
                     rc=258,
                     msg="no key-value :%s" % arg)
             key, value = arg.split("=")
-    
+
             if key == "":
                 self.module.fail_json(
                     rc=258,
@@ -346,19 +342,17 @@ class PropertyParser(BaseParser):
                 self.module.fail_json(
                     rc=258,
                     msg="no value in key=value option (key=%s)" % key)
-            ret[key] = value
-    
+            ret[key] = unquote(value)
+
         return ret
 
 
 class RscDefaultsParser(PropertyParser):
     partial_compare = True
-    no_delete = True
 
 
 class FencingTopologyParser(BaseParser):
     partial_compare = True
-    no_delete = True
 
     def parse(self, args):
         ret = dict(
@@ -438,32 +432,54 @@ class CIBParser(object):
                 new_line = ""
         return cibs
 
+def buildcommand(command, params, op=False):
+    for key,value in params.iteritems():
+        if op:
+            command.append('op')
+        if key in ('type', 'rsc'):
+            command.insert(0, value)
+        elif isinstance(value, dict):
+            if key != 'op':
+              command.append(key)
+            buildcommand(command, value, key=='op')
+        else:
+            command.append(key + '="' + str(value) + '"')
+    return command
 
 def main():
 
-    # the command module is the one ansible module that does not take key=value args
-    # hence don't copy this one if you are looking to build others!
-    module = PacemakerModule(argument_spec=dict())
+    module = AnsibleModule(
+        argument_spec = dict(
+            state=dict(default='present', choices=['present', 'absent'], type='str'),
+            shadow=dict(default=None, type='str'),
+            action=dict(required=True, default=None, type='str'),
+            name=dict(required=False, default=None, type='str'),
+            type=dict(required=False, default=None, type='str'),
+            params=dict(default=None, type='dict'),
+        ),
+        supports_check_mode=True
+    )
 
     state = module.params['state']
-    need_commit = module.params['commit']
     shadow = module.params['shadow']
-    args = splitter(module.params['args'])
+    action = module.params['action']
+    name = module.params['name']
+    type = module.params['name']
+    params = module.params['params']
     changed = False
 
-    if len(args) == 0:
+    if action == None:
         module.fail_json(rc=256, msg="no command given")
 
     shadowparam=[ '-c', shadow ] if shadow else []
 
-    if args[0] == "commit":
+    if action == "commit":
         rc, out, err = module.run_command(["crm"] + shadowparam + ["configure", "commit"])
         if rc:
             module.fail_json(rc=256, msg="crm command failed")
-        module.exit_json(args=args, changed=True)
+        module.exit_json(args=params, changed=True)
 
     parser = CIBParser(module)
-    new = parser.parse_cib(args)
 
     crm_args = ["crm"] + shadowparam + ["configure", "show"]
     rc, out, err = module.run_command(crm_args)
@@ -472,39 +488,39 @@ def main():
 
     is_same = None
     for cur in parser.parse_cibs(out.splitlines()):
-        if new.command != cur.command:
+        if action != cur.command:
             continue
-        if new.id != cur.id:
+        if name != cur.id:
             continue
-        is_same = new.is_same(cur)
+        is_same = cur.is_same(params)
         break
 
     need_delete = False
     need_append = False
     if state == 'absent':
         if is_same is None:
-            module.exit_json(args=args, changed=False)
+            module.exit_json(args=params, changed=False)
         elif is_same:
-            if new.id is None:
-                module.fail_json(rc=256, msg="can't delete %s" % new.command)
             need_delete = True
     else:
         if is_same:
-            module.exit_json(args=args, changed=False)
-        elif is_same is False and not new.no_delete:
+            module.exit_json(args=params, changed=False)
+        elif is_same is False and action not in ('property', 'rsc_defaults', 'fencing_topology'):
             need_delete = True
         need_append = True
-
 
     crm_config_commands = []
     if need_delete:
         if not shadow:
-            crm_config_commands.append(["resource", "stop", new.id])
-        crm_config_commands.append(["configure", "delete", new.id])
+            crm_config_commands.append(["resource", "stop", name])
+        crm_config_commands.append(["configure", "delete", name])
     if need_append:
-        crm_config_commands.append(["configure"] + args)
-    if need_commit:
-        crm_config_commands.append(["configure", "commit"])
+        command = ["configure"] + [action]
+        if name:
+            command.append(name)
+        command+=buildcommand([], params)
+        crm_config_commands.append(command)
+
     for command in crm_config_commands:
         rc, out, err = module.run_command(["crm", "-F"] + shadowparam + command)
         if rc:
@@ -512,54 +528,10 @@ def main():
             #FIXME: Re-enable error messages.
             #module.fail_json(rc=256, msg="crm command failed \n%s"%err)
 
-    module.exit_json(args=args, changed=True)
+    module.exit_json(args=params, changed=True)
 
 
 # import module snippets
 from ansible.module_utils.basic import *
-
-# only the command module should ever need to do this
-# everything else should be simple key=value
-
-class PacemakerModule(AnsibleModule):
-
-    def _handle_aliases(self):
-        return {}
-
-    def _check_invalid_arguments(self):
-        pass
-
-    def _load_params(self):
-        ''' read the input and return a dictionary and the arguments string '''
-        args = MODULE_ARGS
-        params = {}
-
-        params["state"] = "present"
-        params["commit"] = True
-        params["shadow"] = None
-        r = re.compile(r'(^|\s)(state|shadow)=(?P<quote>[\'"])?(.*?)(?(quote)(?<!\\)(?P=quote))((?<!\\)(?=\s)|$)')
-        for m in r.finditer(args):
-            v = m.group(4).replace("\\", "")
-            if m.group(2) == "state":
-                if v not in ["present", "absent"]:
-                    self.fail_json(
-                            rc=256, msg="state= is either present or absent")
-                params['state'] = v
-            if m.group(2) == "commit":
-                if v not in ["yes", "no"]:
-                    self.fail_json(
-                            rc=256, msg="commit= is either yes or no")
-                if v == 'yes':
-                    params['commit'] = True
-            if m.group(2) == "shadow":
-                if v == '':
-                    self.fail_json(
-                            rc=256, msg="shadow requires a parameter")
-                params['shadow'] = v
-
-        args = r.sub("", args)
-
-        params["args"] = args.strip()
-        return (params, params["args"])
 
 main()
