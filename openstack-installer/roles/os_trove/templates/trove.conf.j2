@@ -82,9 +82,9 @@ os_region_name = {{ keystone_region_name }}
 # You can also optionally specify regex'es to match the actual IP addresses
 # ip_regex (white-list) is applied before black_list_regex in the filter chain
 #network_label_regex = ^private$
-network_label_regex = .* //with neutron enabled
-#ip_regex = ^(15.|123.)
-#black_list_regex = ^10.0.0.
+network_label_regex = {{ trove_network_label_regex }}
+ip_regex = {{ trove_network_ip_regex }}
+black_list_regex = {{ trove_network_black_list_regex }}
 
 # Config options for enabling volume service
 #trove_volume_support = True

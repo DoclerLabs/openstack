@@ -13,6 +13,10 @@ trove_net_type: vlan
 trove_physical_network: vlan
 trove_subnet_cidr: 10.20.30.0/24
 
+trove_network_label_regex: ^(?!{{ trove_net_name }}).*
+trove_network_ip_regex: .*
+trove_network_black_list_regex:
+
 trove_image_path: /etc/openstack_deploy/trove-mysql.qcow2
 
 trove_backup_use_openssl_encryption: False
