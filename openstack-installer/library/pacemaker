@@ -27,36 +27,77 @@ import os
 
 DOCUMENTATION = '''
 ---
-module: command
+module: pacemaker
 version_added: historical
-short_description: Executes a command on a remote node
+short_description: Manage pacemaker cluster resources
 description:
-     - The M(command) module takes the command name followed by a list of space-delimited arguments.
-     - The given command will be executed on all selected nodes. It will not be
-       processed through the shell, so variables like C($HOME) and operations
-       like C("<"), C(">"), C("|"), and C("&") will not work (use the M(shell)
-       module if you need these features).
+  Manage pacemaker cluster resources through the crm command.
 options:
-  free_form:
+  action:
     description:
-      - the command module takes a free form command to run
+      The requested action. Allowed actions:
+          - commit
+          - primitive
+          - monitor
+          - group
+          - clone
+          - ms
+          - rsc_template
+          - location
+          - colocation
+          - order
+          - property
+          - rsc_defaults
+          - fencing_topology
     required: true
     default: null
-    aliases: []
-notes:
-    -  If you want to run a command through the shell (say you are using C(<),
-       C(>), C(|), etc), you actually want the M(shell) module instead. The
-       M(command) module is much more secure as it's not affected by the user's
-       environment.
-author: Michael DeHaan
+  shadow:
+    description:
+      Use a shadow cib for the operations
+    required: false
+    default: null
+  name:
+    description:
+      The resource name where applicable
+    required: false
+    default: null
+  state:
+    description:
+      - Indicate desired state of the resource
+    choices: ['present', 'absent']
+    default: present
+  params:
+    description: the various parameters for the resource
+
+notes: Currently only property, primitive and ms resources are tested.
+author: Akira Yoshiyama, Gyorgy Szombathelyi
 '''
 
 EXAMPLES = '''
-# Example from Ansible Playbooks
-- command: /sbin/shutdown -t now
+# Define a property
+- pacemaker: action='property' params='stonith-enabled=false'
 
-# Run the command if the specified file does not exist
-- command: /usr/bin/make_database.sh arg1 arg2
+# Define a primitive
+- pacemaker:
+    action: primitive
+    name: vip
+    params:
+      type: ocf:heartbeat:IPaddr2
+      params:
+        ip: 192.168.0.250
+        cidr_netmask: "24"
+        nic: eth0
+    state: present
+
+# Define a master-slave resource
+- pacemaker:
+    action: ms
+    name: ms_galera
+    params:
+      rsc: p_galera
+      meta:
+         target-role: Started
+         master-max: "3"
 '''
 
 
@@ -464,7 +505,6 @@ def main():
     shadow = module.params['shadow']
     action = module.params['action']
     name = module.params['name']
-    type = module.params['name']
     params = module.params['params']
     changed = False
 
