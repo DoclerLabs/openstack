@@ -16,6 +16,7 @@ trove_subnet_cidr: 10.20.30.0/24
 trove_network_label_regex: ^(?!{{ trove_net_name }}).*
 trove_network_ip_regex: .*
 trove_network_black_list_regex:
+trove_verify_swift_checksum_on_restore: True
 
 trove_datastores:
  - { datastore: "mysql", version: "5.6", image: "/etc/openstack_deploy/trove-mysql.qcow2", manager: "mysql", packages: "mysql-server-5.6" }

@@ -18,6 +18,7 @@ control_exchange = trove
 # ========== Configuration options for Swift ==========
 
 # The swift_url can be specified directly or fetched from Keystone catalog.
+trove_auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v2.0
 
 # To fetch from Keystone, comment out swift_url, and uncomment the others.
 # swift_url = http://10.0.0.1:8080/v1/AUTH_
@@ -27,6 +28,9 @@ os_region_name = {{ keystone_region_name }}
 # Service type to use when searching catalog.
 # swift_service_type = object-store
 swift_service_type = object-store
+swift_endpoint_type = internalURL
+
+verify_swift_checksum_on_restore = {{ trove_verify_swift_checksum_on_restore }}
 
 # ========== Datastore Manager Configurations ==========
 # Datastore manager implementations.

@@ -59,6 +59,8 @@ neutron_endpoint_type = internalURL
 nova_compute_endpoint_type = internalURL
 swift_endpoint_type = internalURL
 
+verify_swift_checksum_on_restore = {{ trove_verify_swift_checksum_on_restore }}
+
 # nova_compute_url, cinder_url, swift_url, and heat_url can all be fetched
 # from Keystone. To fetch from Keystone, comment out nova_compute_url,
 # cinder_url, swift_url, and heat_url and optionally uncomment the lines below.
