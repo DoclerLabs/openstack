@@ -17,7 +17,8 @@ trove_network_label_regex: ^(?!{{ trove_net_name }}).*
 trove_network_ip_regex: .*
 trove_network_black_list_regex:
 
-trove_image_path: /etc/openstack_deploy/trove-mysql.qcow2
+trove_datastores:
+ - { datastore: "mysql", version: "5.6", image: "/etc/openstack_deploy/trove-mysql.qcow2", manager: "mysql", packages: "mysql-server-5.6" }
 
 trove_backup_use_openssl_encryption: False
 trove_backup_aes_cbc_key: "default_aes_cbc_key"

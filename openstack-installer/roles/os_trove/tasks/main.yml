@@ -125,20 +125,24 @@
     login_project_name="admin"
     login_password="{{ keystone_admin_password }}"
     region_name="{{ keystone_region_name }}"
-    file="{{ trove_image_path }}"
-    name=trove-mysql-image
+    file="{{ item.image }}"
+    name="trove-{{ item.datastore }}-{{ item.version }}-image"
     owner="{{ trove_project_name }}"
   run_once: True
-  register: trove_image
+  with_items: trove_datastores
+  register: trove_images
 
 - name: update trove datastore
-  command: su trove -s /bin/sh -c 'trove-manage datastore_update mysql ""'
+  command: su trove -s /bin/sh -c 'trove-manage datastore_update {{ item.datastore }} ""'
+  with_items: trove_datastores
   run_once: True
 
 - name: update trove datastore version
-  command: su trove -s /bin/sh -c 'trove-manage datastore_version_update mysql "5.6" mysql "{{ trove_image.id }}" "mysql-server-5.6" 1'
+  command: su trove -s /bin/sh -c 'trove-manage datastore_version_update {{ item.item.datastore }} "{{ item.item.version }}" {{ item.item.manager }} "{{ item.id }}" "{{ item.item.packages }}" 1'
+  with_items: trove_images.results
   run_once: True
 
 - name: update trove datastore
-  command: su trove -s /bin/sh -c 'trove-manage datastore_update mysql "5.6"'
+  command: su trove -s /bin/sh -c 'trove-manage datastore_update {{ item.datastore }} "{{ item.version }}"'
+  with_items: trove_datastores
   run_once: True
