@@ -64,9 +64,6 @@ ceilometer_compute:
 heat:
   inherit: controller
 
-trove:
-  inherit: controller
-
 cinder:
   inherit: controller
 
@@ -77,7 +74,8 @@ murano:
   inherit: controller
 
 sahara:
-  inherit: controller
+
+trove:
 
 barbican:
 
