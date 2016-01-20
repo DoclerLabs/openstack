@@ -11,6 +11,7 @@
 
 - include: os_keystone.yml
 - include: ceph_radosgw.yml
+- include: os_barbican.yml
 - include: os_glance.yml
 - include: os_horizon.yml
 - include: os_cinder.yml
