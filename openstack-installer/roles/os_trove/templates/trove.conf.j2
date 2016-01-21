@@ -205,6 +205,7 @@ notification_driver = messagingv2
 #connection = postgresql://trove:trove@localhost/trove
 connection = mysql+pymysql://{{ trove_db_user }}:{{ trove_db_password }}@{{ trove_mysql_server }}/{{ trove_db }}?charset=utf8
 max_retries = -1
+idle_timeout=180
 
 [keystone_authtoken]
 insecure = {{ ssl_insecure }}
