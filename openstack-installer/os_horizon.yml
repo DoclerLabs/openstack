@@ -32,3 +32,5 @@
           - "{{ vip_public }}"
         haproxy_port: 443
         haproxy_balance_type: tcp
+        haproxy_backend_options:
+          - ssl-hello-chk
