@@ -1,4 +1,9 @@
 frontend {{ item.haproxy_service_name }}-front
+{% if item.haproxy_balance_type == "http" %}
+{% set mode = "http" %}
+{% else %}
+{% set mode = "tcp" %}
+{% endif %}
 {% for bind_host in item.haproxy_bind_hosts | unique %}
     bind {{ bind_host }}:{{ item.haproxy_port }}
 {% endfor %}
@@ -21,7 +26,7 @@ frontend {{ item.haproxy_service_name }}-front
     timeout client {{ item.haproxy_timeout_client }}
 {% endif %}
 
-    mode {{ item.haproxy_balance_type }}
+    mode {{ mode }}
     default_backend {{ item.haproxy_service_name }}-back
 
 {% if item.haproxy_backend_port is not defined %}
@@ -37,7 +42,7 @@ frontend {{ item.haproxy_service_name }}-front
 {% endif %}
 
 backend {{ item.haproxy_service_name }}-back
-    mode {{ item.haproxy_balance_type }}
+    mode {{ mode }}
     balance {{ item.haproxy_balance_alg|default("leastconn") }}
 {% for option in item.haproxy_backend_options|default([]) %}
     option {{ option }}
@@ -45,10 +50,14 @@ backend {{ item.haproxy_service_name }}-back
 {% if item.haproxy_timeout_server is defined %}
     timeout server {{ item.haproxy_timeout_server }}
 {% endif %}
+{% set check_mode = "check" %}
+{% if item.haproxy_balance_type == "https" %}
+{% set check_mode= 'check-ssl'  %}
+{% endif %}
 {% set hosts_count = item.haproxy_backend_nodes|count + item.haproxy_backup_nodes|default([])|count %}
 {% for host_name in item.haproxy_backend_nodes %}
-    server {{ host_name }} {{ hostvars[host_name]['ip']['mgmt'] }}:{{ haproxy_backend_port }} check port {{ haproxy_check_port }} inter {{ haproxy_interval }} rise {{ hosts_count }} fall {{ hosts_count }}
+    server {{ host_name }} {{ hostvars[host_name]['ip']['mgmt'] }}:{{ haproxy_backend_port }} {{ check_mode }} port {{ haproxy_check_port }} inter {{ haproxy_interval }} rise {{ hosts_count }} fall {{ hosts_count }}
 {% endfor %}
 {% for host_name in item.haproxy_backup_nodes|default([]) %}
-    server {{ host_name }} {{ hostvars[host_name]['ip']['mgmt'] }}:{{ haproxy_backend_port }} check port {{ haproxy_check_port }} inter {{ haproxy_interval }} rise {{ hosts_count }} fall {{ hosts_count }} backup
+    server {{ host_name }} {{ hostvars[host_name]['ip']['mgmt'] }}:{{ haproxy_backend_port }} {{ check_mode }} port {{ haproxy_check_port }} inter {{ haproxy_interval }} rise {{ hosts_count }} fall {{ hosts_count }} backup
 {% endfor %}

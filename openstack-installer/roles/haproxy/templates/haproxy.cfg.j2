@@ -19,7 +19,8 @@ global
         # For more information, see ciphers(1SSL). This list is from:
         #  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
         ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS
-        ssl-default-bind-options no-sslv3
+        ssl-default-bind-options no-tlsv10 no-sslv3
+        ssl-server-verify none
 
 defaults
         log     global
