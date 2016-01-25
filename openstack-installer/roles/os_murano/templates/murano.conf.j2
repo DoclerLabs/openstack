@@ -227,6 +227,9 @@ auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
 # A PEM encoded Certificate Authority to use when verifying HTTPs
 # connections. Defaults to system CAs. (string value)
 #cafile = <None>
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
 
 # Verify HTTPS connections. (boolean value)
 #insecure = false

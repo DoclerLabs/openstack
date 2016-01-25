@@ -702,6 +702,9 @@ notification_driver = messagingv2
 # quota_firewall_rule = 100
 
 [keystone_authtoken]
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
 insecure = {{ ssl_insecure }}
 signing_dir = /var/lib/neutron/cache
 region_name = {{ keystone_region_name }}
@@ -784,6 +787,9 @@ auth_plugin = password
 
 # PEM encoded Certificate Authority to use when verifying HTTPs connections.
 # cafile =
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
 
 # PEM encoded client certificate cert file
 # certfile =

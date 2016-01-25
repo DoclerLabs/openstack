@@ -33,3 +33,5 @@ nova_project_domain_name: "{{ keystone_service_project_domain_name | default(key
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
+SSLCACertificateFileSource:
+SSLCACertificateFile: "{{ (SSLCACertificateFileSource is not none and SSLCACertificateFileSource | trim != '') | ternary('/etc/ssl/certs/openstack.ca.crt','') }}"

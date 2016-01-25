@@ -121,6 +121,9 @@ username = {{ neutron_admin_user }}
 password = {{ neutron_admin_password }}
 project_domain_name = {{ neutron_project_domain_name }}
 project_name = {{ neutron_project_name }}
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
 insecure = {{ ssl_insecure }}
 
 service_metadata_proxy = True
@@ -142,6 +145,9 @@ username = {{ nova_admin_user }}
 password = {{ nova_admin_password }}
 project_domain_name = {{ nova_project_domain_name }}
 project_name = {{ nova_project_name }}
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
 insecure = {{ ssl_insecure }}
 
 memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}

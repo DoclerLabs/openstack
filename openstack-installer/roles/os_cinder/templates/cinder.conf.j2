@@ -54,6 +54,9 @@ encryption_auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:500
 
 [keystone_authtoken]
 insecure = {{ ssl_insecure }}
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
 auth_plugin = password
 signing_dir = /var/lib/cinder/cache
 auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000

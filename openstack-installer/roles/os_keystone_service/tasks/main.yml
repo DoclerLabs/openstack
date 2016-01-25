@@ -1,5 +1,10 @@
 ---
 
+- name: install CA certificate
+  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  when: SSLCACertificateFile != ''
+  sudo: True
+
 - name: create the service in keystone
   keystone_service: >
     token="{{ keystone_admin_token }}"
@@ -12,6 +17,7 @@
     adminurl="{{ keystone_admin_url }}"
     region="{{ keystone_region }}"
     ignore_other_regions=true
+    cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
   when: keystone_service_name is defined
 
@@ -22,6 +28,7 @@
     project_domain="{{ item.keystone_project_domain_name | default('Default') }}"
     project="{{ item.keystone_project_name }}"
     project_description="{{ item.keystone_project_description }}"
+    cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
   with_items: keystone_projects
   when: keystone_projects is defined
@@ -33,6 +40,7 @@
     user="{{ item.keystone_user }}"
     user_domain="{{ item.keystone_domain_name | default('Default') }}"
     password="{{ item.keystone_password }}"
+    cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
   with_items: keystone_users
   when: keystone_users is defined
@@ -46,6 +54,7 @@
     user="{{ item.keystone_user }}"
     user_domain="{{ item.keystone_domain_name | default('Default') }}"
     role="{{ item.keystone_role }}"
+    cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
   with_items: keystone_users
   when: keystone_users is defined and item.keystone_role is defined

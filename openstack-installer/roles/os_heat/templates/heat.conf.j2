@@ -341,6 +341,9 @@ auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v2.0
 # A PEM encoded Certificate Authority to use when verifying HTTPs connections.
 # Defaults to system CAs. (string value)
 #cafile = <None>
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
 
 # Verify HTTPS connections. (boolean value)
 #insecure = false
@@ -486,7 +489,9 @@ project_name = {{ heat_project_name }}
 auth_plugin = password
 
 [trustee]
-
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
 insecure = {{ ssl_insecure }}
 auth_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
@@ -499,7 +504,11 @@ username = {{ heat_admin_user }}
 password = {{ heat_admin_password }}
 
 [clients]
+{% if SSLCACertificateFile != '' %}
+ca_file = {{ SSLCACertificateFile }}
+{% endif %}
 insecure = {{ ssl_insecure }}
+endpoint_type = internalURL
 
 [clients_keystone]
 
@@ -509,6 +518,9 @@ insecure = {{ ssl_insecure }}
 [ec2authtoken]
 
 auth_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
 insecure = {{ ssl_insecure }}
 
 [matchmaker_redis]

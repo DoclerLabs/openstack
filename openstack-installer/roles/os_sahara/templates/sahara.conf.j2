@@ -125,6 +125,9 @@ max_retries = -1
 
 
 [keystone_authtoken]
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
 insecure = {{ ssl_insecure }}
 auth_plugin = password
 signing_dir = /var/lib/sahara/cache/api

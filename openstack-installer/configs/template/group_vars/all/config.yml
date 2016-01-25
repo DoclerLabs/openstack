@@ -22,8 +22,9 @@ keystone_domain_name: Default
 #Cert and key file for (optionally, but strongly recommended) enabling TLS
 #SSLCertificateFileSource:
 #SSLCertificateKeyFileSource:
-#Don't check certificates:
-#ssl_insecure: True
+#SSLCACertificateKeyFileSource:
+#Don't check certificates if set to True:
+#ssl_insecure: False
 #Use TLS for keystone, too (without this, only Horizon will secured)
 #keystone_ssl: False
 

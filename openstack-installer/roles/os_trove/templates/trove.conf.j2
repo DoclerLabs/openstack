@@ -208,6 +208,9 @@ max_retries = -1
 idle_timeout=180
 
 [keystone_authtoken]
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
 insecure = {{ ssl_insecure }}
 auth_plugin = password
 region_name = {{ keystone_region_name }}

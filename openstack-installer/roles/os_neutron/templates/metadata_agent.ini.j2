@@ -16,8 +16,12 @@ project_name = {{ neutron_project_name }}
 
 # Turn off verification of the certificate for ssl
 # auth_insecure = False
+auth_insecure = {{ ssl_insecure }}
 # Certificate Authority public key (CA cert) file for ssl
 # auth_ca_cert =
+{% if SSLCACertificateFile != '' %}
+auth_ca_cert = {{ SSLCACertificateFile }}
+{% endif %}
 
 # Network service endpoint type to pull from the keystone catalog
 # endpoint_type = adminURL

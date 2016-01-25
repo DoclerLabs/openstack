@@ -5,6 +5,10 @@
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 
+- name: install CA certificate
+  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  when: SSLCACertificateFile != ''
+
 - name: disable autostarting of cinder
   copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
   with_items:

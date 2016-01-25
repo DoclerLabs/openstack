@@ -5,6 +5,10 @@
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 
+- name: install CA certificate
+  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  when: SSLCACertificateFile != ''
+
 - name: disable autostart of trove services
   copy: content='manual' dest=/etc/init/{{ item }}.override mode=0644 owner=root group=root force=no
   with_items:
@@ -26,6 +30,7 @@
 - name: set up trove network in neutron
   quantum_network: >
     auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
     login_tenant_name=trove
     login_username=trove
@@ -44,6 +49,7 @@
 - name: set up trove subnet in neutron
   quantum_subnet: >
     auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
     login_tenant_name=trove
     login_username=trove
@@ -61,6 +67,7 @@
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     project_domain="{{ nova_project_domain_name }}"
     project="{{ nova_project_name }}"
+    cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
   register: nova_project_id
   run_once: True

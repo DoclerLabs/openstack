@@ -41,6 +41,7 @@
   keystone_user: >
     token="{{ keystone_admin_token }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    cacert={{ SSLCACertificateFileSource }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
     project_domain="Default"
     project="{{ heat_stack_owner_project }}"
@@ -51,6 +52,7 @@
   keystone_user: >
     token="{{ keystone_admin_token }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    cacert={{ SSLCACertificateFileSource }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
     project="{{ heat_stack_owner_project }}"
     project_domain="Default"
@@ -63,6 +65,7 @@
   keystone_user: >
     token="{{ keystone_admin_token }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    cacert={{ SSLCACertificateFileSource }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
     project_domain="Default"
     project="{{ heat_stack_owner_project }}"
@@ -77,6 +80,7 @@
     login_username=admin
     login_password="{{ keystone_admin_password }}"
     auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    cacert={{ SSLCACertificateFileSource }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
     region_name="{{ keystone_region_name }}"
     name="{{ external_net_name }}"
@@ -90,6 +94,7 @@
 - name: set up external subnet in neutron
   quantum_subnet: >
     auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    cacert={{ SSLCACertificateFileSource }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
     login_tenant_name=admin
     login_username=admin

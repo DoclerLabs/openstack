@@ -5,6 +5,10 @@
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 
+- name: install CA certificate
+  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  when: SSLCACertificateFile != ''
+
 - name: disable autostarting of heat
   copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
   with_items:
@@ -41,6 +45,7 @@
   keystone_user: >
     token="{{ keystone_admin_token }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
     user_domain="{{ heat_user_domain }}"
     user="{{ heat_domain_admin }}"
@@ -51,6 +56,7 @@
   keystone_user: >
     token="{{ keystone_admin_token }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
     user_domain="{{ heat_user_domain }}"
     user="{{ heat_domain_admin }}"
@@ -61,6 +67,7 @@
   keystone_user: >
     token="{{ keystone_admin_token }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
     role={{ item }}
   with_items:

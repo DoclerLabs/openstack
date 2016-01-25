@@ -341,6 +341,9 @@ auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
 # A PEM encoded Certificate Authority to use when verifying HTTPs
 # connections. Defaults to system CAs. (string value)
 #cafile = <None>
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
 
 # Verify HTTPS connections. (boolean value)
 #insecure = false
@@ -488,6 +491,10 @@ project_name = {{ aodh_project_name }}
 project_domain_name = {{ aodh_project_domain_name }}
 
 [service_credentials]
+{% if SSLCACertificateFile != '' %}
+os_cacert = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
 os_auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v2.0
 os_username = {{ aodh_admin_user }}
 os_tenant_name = {{ aodh_project_name }}
