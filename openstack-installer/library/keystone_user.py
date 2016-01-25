@@ -77,6 +77,16 @@ options:
         - The name of the role to be assigned or created
      required: false
      default: None
+   cacert:
+     description:
+         - Path to the Privacy Enhanced Mail (PEM) file which contains the trusted authority X.509 certificates needed to established SSL connection with the identity service.
+     required: no
+   insecure:
+     description:
+         - allow use of self-signed SSL certificates
+     required: no
+     choices: [ "yes", "no" ]
+     default: no
    state:
      description:
         - Indicate desired state of the resource
@@ -105,15 +115,15 @@ else:
     keystoneclient_found = True
 
 
-def authenticate(endpoint, token, login_user, login_password, login_project_name, insecure):
+def authenticate(endpoint, token, login_user, login_password, login_project_name, cacert, insecure):
     """Return a keystone client object"""
 
     if token:
-        return client.Client(endpoint=endpoint, token=token, insecure=insecure)
+        return client.Client(endpoint=endpoint, token=token, cacert=cacert, insecure=insecure)
     else:
         return client.Client(auth_url=endpoint, username=login_user,
                              password=login_password, project_name=login_project_name,
-                             insecure=insecure)
+                             cacert=cacert, insecure=insecure)
 
 def get_project(keystone, domain, name):
     """ Retrieve a project by name"""
@@ -340,6 +350,7 @@ def main():
             endpoint=dict(required=False,
                           default="http://127.0.0.1:35357/v2.0"),
             token=dict(required=False),
+            cacert=dict(required=False),
             insecure=dict(required=False, default=False, choices=BOOLEANS),
             login_user=dict(required=False),
             login_password=dict(required=False),
@@ -369,12 +380,13 @@ def main():
     state = module.params['state']
     endpoint = module.params['endpoint']
     token = module.params['token']
+    cacert = module.params['cacert']
     insecure = module.boolean(module.params['insecure'])
     login_user = module.params['login_user']
     login_password = module.params['login_password']
     login_project_name = module.params['login_project_name']
 
-    keystone = authenticate(endpoint, token, login_user, login_password, login_project_name, insecure)
+    keystone = authenticate(endpoint, token, login_user, login_password, login_project_name, cacert, insecure)
 
     check_mode = module.check_mode
 

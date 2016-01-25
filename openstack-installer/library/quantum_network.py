@@ -103,6 +103,16 @@ options:
         - Whether the state should be marked as up or down
      required: false
      default: true
+   cacert:
+     description:
+         - Path to the Privacy Enhanced Mail (PEM) file which contains the trusted authority X.509 certificates needed to established SSL connection with the identity service.
+     required: no
+   insecure:
+     description:
+         - allow use of self-signed SSL certificates
+     required: no
+     choices: [ "yes", "no" ]
+     default: no
 requirements: ["quantumclient", "neutronclient", "keystoneclient"]
 
 '''
@@ -128,6 +138,7 @@ def _get_ksclient(module, kwargs):
                                  password=kwargs.get('login_password'),
                                  project_name=kwargs.get('login_tenant_name'),
                                  auth_url=kwargs.get('auth_url'),
+                                 cacert=kwargs.get('cacert'),
                                  insecure=kwargs.get('insecure'))
     except Exception, e:
         module.fail_json(msg = "Error authenticating to the keystone: %s" %e.message)
@@ -243,6 +254,7 @@ def main():
             shared                          = dict(default=False, type='bool'),
             admin_state_up                  = dict(default=True, type='bool'),
             state                           = dict(default='present', choices=['absent', 'present']),
+            cacert                          = dict(default=None),
             insecure                        = dict(required=False, default=False, choices=BOOLEANS)
     ))
     module = AnsibleModule(argument_spec=argument_spec)

@@ -36,6 +36,10 @@ options:
         - 'Alias: I(adminurl)'
     required: no
     default: value of public_url
+  cacert:
+    description:
+        - Path to the Privacy Enhanced Mail (PEM) file which contains the trusted authority X.509 certificates needed to established SSL connection with the identity service.
+    required: no
   insecure:
     description:
         - allow use of self-signed SSL certificates
@@ -94,15 +98,15 @@ import traceback
 
 
 def authenticate(endpoint, token, login_user, login_password, tenant_name,
-                 insecure):
+                 cacert, insecure):
     """Return a keystone client object"""
 
     if token:
-        return client.Client(endpoint=endpoint, token=token, insecure=insecure)
+        return client.Client(endpoint=endpoint, token=token, cacert=cacert, insecure=insecure)
     else:
         return client.Client(auth_url=endpoint, username=login_user,
                              password=login_password, tenant_name=tenant_name,
-                             insecure=insecure)
+                             cacert=cacert,insecure=insecure)
 
 
 def get_service(keystone, name):
@@ -286,6 +290,7 @@ def main():
                           default="http://127.0.0.1:35357/v2.0",
                           aliases=['auth_url']),
             token=dict(required=False),
+            cacert=dict(required=False),
             insecure=dict(required=False, default=False, choices=BOOLEANS),
 
             login_user=dict(required=False),
@@ -303,6 +308,7 @@ def main():
     login_user = module.params['login_user']
     login_password = module.params['login_password']
     tenant_name = module.params['tenant_name']
+    cacert = module.params['cacert']
     insecure = module.boolean(module.params['insecure'])
     name = module.params['name']
     service_type = module.params['type']
@@ -319,7 +325,7 @@ def main():
     state = module.params['state']
 
     keystone = authenticate(endpoint, token, login_user, login_password,
-                            tenant_name, insecure)
+                            tenant_name, cacert, insecure)
     check_mode = module.check_mode
 
     try:

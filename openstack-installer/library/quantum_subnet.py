@@ -114,6 +114,16 @@ options:
         - From the subnet pool the last IP that should be assigned to the virtual machines
      required: false
      default: None
+   cacert:
+     description:
+         - Path to the Privacy Enhanced Mail (PEM) file which contains the trusted authority X.509 certificates needed to established SSL connection with the identity service.
+     required: no
+   insecure:
+     description:
+         - allow use of self-signed SSL certificates
+     required: no
+     choices: [ "yes", "no" ]
+     default: no
 requirements: ["quantumclient", "neutronclient", "keystoneclient"]
 '''
 
@@ -134,6 +144,7 @@ def _get_ksclient(module, kwargs):
                                  password=kwargs.get('login_password'),
                                  tenant_name=kwargs.get('login_tenant_name'),
                                  auth_url=kwargs.get('auth_url'),
+                                 cacert=kwargs.get('cacert'),
                                  insecure=kwargs.get('insecure'))
     except Exception, e:
         module.fail_json(msg = "Error authenticating to the keystone: %s" %e.message)
@@ -266,6 +277,7 @@ def main():
             dns_nameservers         = dict(default=None),
             allocation_pool_start   = dict(default=None),
             allocation_pool_end     = dict(default=None),
+            cacert                  = dict(default=None),
             insecure                = dict(required=False, default=False, choices=BOOLEANS)
     ))
     module = AnsibleModule(argument_spec=argument_spec)
