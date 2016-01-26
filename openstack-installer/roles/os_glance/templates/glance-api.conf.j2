@@ -245,7 +245,7 @@ bind_host = 127.0.0.1
 
 # Address to find the registry server. (string value)
 #registry_host = 0.0.0.0
-registry_host = {{ vip_mgmt }}
+registry_host = {{ os_internal_address }}
 
 # Port the registry server is listening on. (integer value)
 # Minimum value: 1
@@ -289,6 +289,7 @@ registry_host = {{ vip_mgmt }}
 # The protocol to use for communication with the registry server.
 # Either http or https. (string value)
 #registry_client_protocol = http
+registry_client_protocol = {{ os_proto }}
 
 # The path to the key file to use in SSL connections to the registry
 # server, if any. Alternately, you may set the GLANCE_CLIENT_KEY_FILE
@@ -306,12 +307,16 @@ registry_host = {{ vip_mgmt }}
 # the GLANCE_CLIENT_CA_FILE environment variable to a filepath of the
 # CA cert file. (string value)
 #registry_client_ca_file = <None>
+{% if SSLCACertificateFile != '' %}
+registry_client_ca_file = {{ SSLCACertificateFile }}
+{% endif %}
 
 # When using SSL in connections to the registry server, do not require
 # validation via a certifying authority. This is the registry's
 # equivalent of specifying --insecure on the command line using
 # glanceclient for the API. (boolean value)
 #registry_client_insecure = false
+registry_client_insecure = {{ ssl_insecure }}
 
 # The period of time, in seconds, that the API server will wait for a
 # registry request to complete. A value of 0 implies no timeout.

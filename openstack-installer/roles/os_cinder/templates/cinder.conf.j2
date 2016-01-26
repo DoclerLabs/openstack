@@ -45,6 +45,12 @@ auth_strategy = keystone
 
 notification_driver = messagingv2
 
+glance_api_servers = {{ os_proto }}://{{ os_internal_address }}:9292
+glance_api_insecure = {{ ssl_insecure }}
+{% if SSLCACertificateFile != '' %}
+glance_ca_certificates_file = {{ SSLCACertificateFile }}
+{% endif %}
+
 [database]
 connection = mysql+pymysql://{{ cinder_db_user }}:{{ cinder_db_password }}@{{ cinder_mysql_server }}/{{ cinder_db }}?charset=utf8
 max_retries = -1

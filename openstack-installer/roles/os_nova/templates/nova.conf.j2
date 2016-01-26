@@ -108,8 +108,11 @@ server_proxyclient_address = {{ ip.mgmt }}
 
 # Glance
 [glance]
-host = {{ vip_mgmt }}
+api_servers = {{ os_proto }}://{{ os_internal_address }}:9292
+host = {{ os_internal_address }}
 port = 9292
+api_insecure = {{ ssl_insecure }}
+protocol = {{ os_proto }}
 
 # Neutron
 [neutron]
@@ -129,6 +132,11 @@ insecure = {{ ssl_insecure }}
 
 service_metadata_proxy = True
 metadata_proxy_shared_secret = {{ metadata_proxy_shared_secret }}
+
+[ssl]
+{% if SSLCACertificateFile != '' %}
+ca_file = {{ SSLCACertificateFile }}
+{% endif %}
 
 [conductor]
 use_local = false
