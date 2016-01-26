@@ -6,6 +6,12 @@ Listen {{ ip.mgmt }}:{{ port }}
 <VirtualHost *:{{ port }}>
     ProxyPreserveHost Off
 
+{% if service_ssl %}
+    SSLEngine on
+    SSLCertificateFile      {{ SSLCertificateFile }}
+    SSLCertificateKeyFile {{ SSLCertificateKeyFile }}
+{% endif %}
+
     ProxyPass / http://127.0.0.1:{{ port }}/
     ProxyPassReverse / http://127.0.0.1:{{ port }}/
 </VirtualHost>

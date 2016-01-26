@@ -8,6 +8,14 @@
 - name: ensure apache2 is started
   service: name=apache2 state=started enabled=yes
 
+- name: install certificates
+  copy: src={{ item.src }} dest={{ item.dest }} owner=www-data group=root mode={{ item.mode }}
+  with_items:
+    - { src: '{{ SSLCertificateKeyFileSource | default("") }}', dest: '{{ SSLCertificateKeyFile }}', mode: '0460' }
+    - { src: '{{ SSLCertificateFileSource | default("") }}', dest: '{{ SSLCertificateFile }}', mode: '0464' }
+  when: item.src != ''
+  notify: reload apache
+
 - name: enable proxy_http
   file: src=../mods-available/proxy_http.load dest=/etc/apache2/mods-enabled/proxy_http.load state=link
   when: inventory_hostname in groups['neutron_controller']

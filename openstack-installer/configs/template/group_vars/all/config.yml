@@ -19,6 +19,11 @@ keystone_public_address: "{{ vip_public }}"
 keystone_region_name: RegionONE
 keystone_domain_name: Default
 
+#OpenStack service  addresses should be domain names in case of SSL (when os_ssl: True)
+os_internal_address: "{{ vip_mgmt }}"
+os_admin_address: "{{ vip_mgmt }}"
+os_public_address: "{{ vip_public }}"
+
 #Cert and key file for (optionally, but strongly recommended) enabling TLS
 #SSLCertificateFileSource:
 #SSLCertificateKeyFileSource:
@@ -27,6 +32,8 @@ keystone_domain_name: Default
 #ssl_insecure: False
 #Use TLS for keystone, too (without this, only Horizon will secured)
 #keystone_ssl: False
+#Use TLS for all OS services
+#os_ssl: False
 
 neutron_flat_networks:
 neutron_physical_interface_mappings: vlan:br-vlan
