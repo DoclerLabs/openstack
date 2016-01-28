@@ -8,9 +8,9 @@
     keystone_service_name: cinder
     keystone_service_type: volume
     keystone_service_description: "OpenStack Block Storage Service"
-    keystone_public_url: "http://{{ vip_public }}:8776/v1/%(tenant_id)s"
-    keystone_internal_url: "http://{{ vip_mgmt }}:8776/v1/%(tenant_id)s"
-    keystone_admin_url: "http://{{ vip_mgmt }}:8776/v1/%(tenant_id)s"
+    keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8776/v1/%(tenant_id)s"
+    keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8776/v1/%(tenant_id)s"
+    keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8776/v1/%(tenant_id)s"
     keystone_region: "{{ keystone_region_name }}"
     keystone_users:
       - keystone_user: "{{ cinder_admin_user | default('cinder') }}"
@@ -28,9 +28,9 @@
     keystone_service_name: cinderv2
     keystone_service_type: volumev2
     keystone_service_description: "OpenStack Block Storage Service"
-    keystone_public_url: "http://{{ vip_public }}:8776/v2/%(tenant_id)s"
-    keystone_internal_url: "http://{{ vip_mgmt }}:8776/v2/%(tenant_id)s"
-    keystone_admin_url: "http://{{ vip_mgmt }}:8776/v2/%(tenant_id)s"
+    keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8776/v2/%(tenant_id)s"
+    keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8776/v2/%(tenant_id)s"
+    keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8776/v2/%(tenant_id)s"
     keystone_region: "{{ keystone_region_name }}"
 
 - hosts:
@@ -49,6 +49,7 @@
     - apache_frontend
   vars:
     service_name: cinder
+    service_ssl: "{{ os_ssl | default(False) }}"
     service_ports:
       - 8776
 
@@ -85,8 +86,5 @@
           - "{{ vip_mgmt }}"
           - "{{ vip_public }}"
         haproxy_port: 8776
-        haproxy_balance_type: http
-        haproxy_backend_options:
-          - forwardfor
-          - httpchk
-          - httplog
+        haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
+        haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"

@@ -980,13 +980,16 @@ os_region_name = {{ keystone_region_name }}
 # Location of ca certicates file to use for cinder client requests.
 # (string value)
 #cinder_ca_certificates_file = <None>
+{% if SSLCACertificateFile != '' %}
+cinder_ca_certificates_file = {{ SSLCACertificateFile }}
+{% endif %}
 
 # Number of cinderclient retries on failed http calls (integer value)
 #cinder_http_retries = 3
 
 # Allow to perform insecure SSL requests to cinder (boolean value)
 #cinder_api_insecure = false
-
+cinder_api_insecure = {{ ssl_insecure }}
 
 [image_format]
 

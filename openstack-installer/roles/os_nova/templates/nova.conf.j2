@@ -89,6 +89,10 @@ enabled = False
 [cinder]
 catalog_info = volumev2:cinderv2:internalURL
 os_region_name = {{ keystone_region_name }}
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
 
 [spice]
 {% if nova_console_type == 'spice' %}
