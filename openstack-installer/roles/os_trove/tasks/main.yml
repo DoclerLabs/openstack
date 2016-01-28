@@ -126,6 +126,7 @@
 - name: upload trove image to glance
   local_action: glance_image
     auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    cacert="{{ SSLCACertificateFileSource }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
     login_username=admin
     login_domain_name="Default"
