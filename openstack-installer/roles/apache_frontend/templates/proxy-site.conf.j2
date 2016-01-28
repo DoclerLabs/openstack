@@ -12,8 +12,8 @@ Listen {{ ip.mgmt }}:{{ port }}
     SSLCertificateKeyFile {{ SSLCertificateKeyFile }}
 {% endif %}
 
-    ProxyPass / http://127.0.0.1:{{ port }}/
-    ProxyPassReverse / http://127.0.0.1:{{ port }}/
+    ProxyPass / http://127.0.0.1:{{ port }}/ retry=10
+    ProxyPassReverse / http://127.0.0.1:{{ port }}/ retry=10
 </VirtualHost>
 
 {% endfor %}
