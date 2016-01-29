@@ -19,18 +19,18 @@
         haproxy_bind_hosts:
           - "{{ vip_mgmt }}"
         haproxy_port: 35357
-        haproxy_balance_type: "{{ (keystone_ssl | default(False)) | ternary('tcp', 'http') }}"
+        haproxy_balance_type: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
         haproxy_balance_alg: leastconn
-        haproxy_backend_options: "{{ (keystone_ssl | default(False)) | ternary([], ['forwardfor', 'httpchk', 'httplog']) }}"
+        haproxy_backend_options: "{{ (keystone_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
       - haproxy_service_name: keystone_service
         haproxy_backend_nodes: "{{ groups['keystone'] }}"
         haproxy_bind_hosts:
           - "{{ vip_mgmt }}"
           - "{{ vip_public }}"
         haproxy_port: 5000
-        haproxy_balance_type: "{{ (keystone_ssl | default(False)) | ternary('tcp', 'http') }}"
+        haproxy_balance_type: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
         haproxy_balance_alg: leastconn
-        haproxy_backend_options: "{{ (keystone_ssl | default(False)) | ternary([], ['forwardfor', 'httpchk', 'httplog']) }}"
+        haproxy_backend_options: "{{ (keystone_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
 
 #The plays below must run without an installed keystone (e.g. second region),
 #so the controller[0] host is there

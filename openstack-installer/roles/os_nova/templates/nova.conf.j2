@@ -26,7 +26,7 @@ instances_path = /var/lib/nova/instances
 instance_name_template = instance-%08x
 api_paste_config = /etc/nova/api-paste.ini
 allow_resize_to_same_host = True
-osapi_compute_listen = {{ ip.mgmt }}
+osapi_compute_listen = 127.0.0.1
 enabled_apis = osapi_compute, metadata
 
 # Rpc all
@@ -89,6 +89,10 @@ enabled = False
 [cinder]
 catalog_info = volumev2:cinderv2:internalURL
 os_region_name = {{ keystone_region_name }}
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
 
 [spice]
 {% if nova_console_type == 'spice' %}
@@ -108,12 +112,15 @@ server_proxyclient_address = {{ ip.mgmt }}
 
 # Glance
 [glance]
-host = {{ vip_mgmt }}
+api_servers = {{ os_proto }}://{{ os_internal_address }}:9292
+host = {{ os_internal_address }}
 port = 9292
+api_insecure = {{ ssl_insecure }}
+protocol = {{ os_proto }}
 
 # Neutron
 [neutron]
-url = http://{{ vip_mgmt }}:9696
+url = {{ os_proto }}://{{ os_internal_address }}:9696
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
 auth_plugin = password
 region_name = {{ keystone_region_name }}
@@ -129,6 +136,11 @@ insecure = {{ ssl_insecure }}
 
 service_metadata_proxy = True
 metadata_proxy_shared_secret = {{ metadata_proxy_shared_secret }}
+
+[ssl]
+{% if SSLCACertificateFile != '' %}
+ca_file = {{ SSLCACertificateFile }}
+{% endif %}
 
 [conductor]
 use_local = false

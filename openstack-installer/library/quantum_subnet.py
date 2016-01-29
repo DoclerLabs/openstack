@@ -166,7 +166,9 @@ def _get_neutron_client(module, kwargs):
     endpoint  = _get_endpoint(module, _ksclient)
     kwargs = {
             'token':        token,
-            'endpoint_url': endpoint
+            'endpoint_url': endpoint,
+            'ca_cert': kwargs.get('cacert'),
+            'insecure': kwargs.get('insecure')
     }
     try:
         neutron = client.Client('2.0', **kwargs)

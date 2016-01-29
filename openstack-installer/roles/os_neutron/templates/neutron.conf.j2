@@ -47,7 +47,7 @@ use_stderr = False
 
 # Address to bind the API server to
 # bind_host = 0.0.0.0
-bind_host = {{ ip.mgmt }}
+bind_host = 127.0.0.1
 
 # Port the bind the API server to
 # bind_port = 9696
@@ -384,7 +384,7 @@ l3_ha_network_physical_name = {{ neutron_ha_network_physical_name }}
 
 # URL for connection to nova (Only supports one nova region currently).
 # nova_url = http://127.0.0.1:8774/v2
-nova_url = http://{{ vip_mgmt }}:8774/v2
+nova_url = {{ os_proto }}://{{ os_internal_address }}:8774/v2
 
 # Name of nova region to use. Useful if keystone manages more than one region
 # nova_region_name =
@@ -409,9 +409,13 @@ nova_region_name = {{ keystone_region_name }}
 
 # CA file for novaclient to verify server certificates
 # nova_ca_certificates_file =
+{% if SSLCACertificateFile != '' %}
+nova_ca_certificates_file = {{ SSLCACertificateFile }}
+{% endif %}
 
 # Boolean to control ignoring SSL errors on the nova url
 # nova_api_insecure = False
+nova_api_insecure = {{ ssl_insecure }}
 
 # Number of seconds between sending events to nova if there are any events to send
 # send_events_interval = 2

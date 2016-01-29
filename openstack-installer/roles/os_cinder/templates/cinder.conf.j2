@@ -6,7 +6,7 @@ use_stderr = False
 use_syslog = {{ cinder_syslog_use }}
 
 my_ip = {{ ip.mgmt }}
-osapi_volume_listen = {{ ip.mgmt }}
+osapi_volume_listen = 127.0.0.1
 
 {% if inventory_hostname in groups['cinder_volume'] %}
 
@@ -44,6 +44,12 @@ allow_availability_zone_fallback = True
 auth_strategy = keystone
 
 notification_driver = messagingv2
+
+glance_api_servers = {{ os_proto }}://{{ os_internal_address }}:9292
+glance_api_insecure = {{ ssl_insecure }}
+{% if SSLCACertificateFile != '' %}
+glance_ca_certificates_file = {{ SSLCACertificateFile }}
+{% endif %}
 
 [database]
 connection = mysql+pymysql://{{ cinder_db_user }}:{{ cinder_db_password }}@{{ cinder_mysql_server }}/{{ cinder_db }}?charset=utf8

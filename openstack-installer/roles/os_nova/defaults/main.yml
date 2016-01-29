@@ -24,7 +24,7 @@ nova_console_type: vnc
 nova_console_keymap: en-us
 
 nova_novncproxy_ssl: False
-nova_novncproxy_base_url: "http://{{ vip_public }}:6080/vnc_auto.html"
+nova_novncproxy_base_url: "{{ nova_novncproxy_ssl | ternary('https','http') }}://{{ os_public_address }}:6080/vnc_auto.html"
 
 neutron_domain_name: "{{ keystone_domain_name }}"
 neutron_admin_user: neutron
@@ -37,6 +37,7 @@ ironic_project_name: "{{ keystone_service_project_name | default('service') }}"
 nova_syslog_use: "{{ syslog_use | default(False) }}"
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
+os_proto: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
 SSLCACertificateFileSource:
 SSLCACertificateFile: "{{ (SSLCACertificateFileSource is not none and SSLCACertificateFileSource | trim != '') | ternary('/etc/ssl/certs/openstack.ca.crt','') }}"

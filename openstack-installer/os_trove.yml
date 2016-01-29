@@ -31,6 +31,16 @@
     - common
     - os_trove
 
+- hosts: trove
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - apache_frontend
+  vars:
+    service_name: trove
+    service_ports:
+      - 8779
+
 - hosts: haproxy
   sudo: True
   max_fail_percentage: 0

@@ -8,9 +8,9 @@
     keystone_service_name: glance
     keystone_service_type: image
     keystone_service_description: "OpenStack Image Service"
-    keystone_public_url: "http://{{ vip_public }}:9292"
-    keystone_internal_url: "http://{{ vip_mgmt }}:9292"
-    keystone_admin_url: "http://{{ vip_mgmt }}:9292"
+    keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:9292"
+    keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:9292"
+    keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:9292"
     keystone_region: "{{ keystone_region_name }}"
     keystone_users:
       - keystone_user: "{{ glance_admin_user | default('glance') }}"
@@ -26,6 +26,18 @@
   roles:
     - common
     - os_glance
+
+- hosts: glance
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - apache_frontend
+  vars:
+    service_name: glance
+    service_ssl: "{{ os_ssl | default(False) }}"
+    service_ports:
+      - 9292
+      - 9191
 
 - hosts: glance
   sudo: True
@@ -50,11 +62,8 @@
           - "{{ vip_mgmt }}"
           - "{{ vip_public }}"
         haproxy_port: 9292
-        haproxy_balance_type: http
-        haproxy_backend_options:
-          - forwardfor
-          - httpchk /healthcheck
-          - httplog
+        haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
+        haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk /healthcheck'], ['forwardfor', 'httpchk /healthcheck', 'httplog']) }}"
 
       - haproxy_service_name: glance_registry
         haproxy_backend_nodes: "{{ groups['glance'] }}"
@@ -62,6 +71,6 @@
           - "{{ vip_mgmt }}"
           - "{{ vip_public }}"
         haproxy_port: 9191
-        haproxy_balance_type: http
+        haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
         haproxy_backend_options:
           - httpchk /healthcheck

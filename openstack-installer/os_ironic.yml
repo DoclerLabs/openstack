@@ -27,6 +27,16 @@
     - common
     - os_ironic
 
+- hosts: ironic
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - apache_frontend
+  vars:
+    service_name: ironic
+    service_ports:
+      - 6385
+
 - hosts: haproxy
   sudo: True
   max_fail_percentage: 0

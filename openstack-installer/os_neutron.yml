@@ -8,9 +8,9 @@
     keystone_service_name: neutron
     keystone_service_type: network
     keystone_service_description: "OpenStack Networking Service"
-    keystone_public_url: "http://{{ vip_public }}:9696"
-    keystone_internal_url: "http://{{ vip_mgmt }}:9696"
-    keystone_admin_url: "http://{{ vip_mgmt }}:9696"
+    keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:9696"
+    keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:9696"
+    keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:9696"
     keystone_region: "{{ keystone_region_name }}"
     keystone_users:
       - keystone_user: "{{ neutron_admin_user | default('neutron') }}"
@@ -29,6 +29,17 @@
     - common
     - os_neutron
 
+- hosts: neutron_controller
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - apache_frontend
+  vars:
+    service_name: neutron
+    service_ssl: "{{ os_ssl | default(False) }}"
+    service_ports:
+      - 9696
+
 - hosts: haproxy
   sudo: True
   max_fail_percentage: 0
@@ -42,8 +53,5 @@
           - "{{ vip_mgmt }}"
           - "{{ vip_public }}"
         haproxy_port: 9696
-        haproxy_balance_type: http
-        haproxy_backend_options:
-         - forwardfor
-         - httpchk
-         - httplog
+        haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
+        haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"

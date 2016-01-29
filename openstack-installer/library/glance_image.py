@@ -116,6 +116,16 @@ options:
      required: false
      default: publicURL
      version_added: "1.7"
+   cacert:
+     description:
+         - Path to the Privacy Enhanced Mail (PEM) file which contains the trusted authority X.509 certificates needed to established SSL connection with the identity service.
+     required: no
+   insecure:
+     description:
+         - allow use of self-signed SSL certificates
+     required: no
+     choices: [ "yes", "no" ]
+     default: no
 requirements: ["glanceclient", "keystoneclient"]
 
 '''
@@ -150,12 +160,14 @@ def _get_ksclient(module, kwargs):
                                  project_domain_name=kwargs.get('login_domain_name'),
                                  user_domain_name=kwargs.get('login_domain_name'),
                                  auth_url=kwargs.get('auth_url'),
+                                 cacert=kwargs.get('cacert'),
                                  insecure=kwargs.get('insecure'))
         else:
             client = ksclient.Client(username=kwargs.get('login_username'),
                                  password=kwargs.get('login_password'),
                                  user_domain_name=kwargs.get('login_domain_name'),
                                  auth_url=kwargs.get('auth_url'),
+                                 cacert=kwargs.get('cacert'),
                                  insecure=kwargs.get('insecure'))
     except Exception, e:
         module.fail_json(msg="Error authenticating to the keystone: %s " % e.message)
@@ -182,7 +194,10 @@ def _get_glance_client(module, kwargs):
             'token': token,
     }
     try:
-        client = glanceclient.Client('1', endpoint, **kwargs)
+        client = glanceclient.Client('1', endpoint,
+                                          cacert=kwargs.get('cacert'),
+                                          insecure=kwargs.get('insecure'),
+                                          **kwargs)
     except Exception, e:
         module.fail_json(msg="Error in connecting to glance: %s" % e.message)
     return client
@@ -251,6 +266,7 @@ def main():
         timeout           = dict(default=180),
         file              = dict(default=None),
         endpoint_type     = dict(default='publicURL', choices=['publicURL', 'internalURL']),
+        cacert            = dict(default=None),
         insecure          = dict(required=False, default=False, choices=BOOLEANS),
         state             = dict(default='present', choices=['absent', 'present']),
         login_domain_name = dict(default='default'),

@@ -194,13 +194,13 @@ stack_domain_admin_password = {{ heat_domain_admin_password }}
 stack_user_domain_name = {{ heat_user_domain }}
 
 [heat_api]
-bind_host = {{ ip.mgmt }}
+bind_host = 127.0.0.1
 
 [heat_api_cloudwatch]
-bind_host = {{ ip.mgmt }}
+bind_host = 127.0.0.1
 
 [heat_api_cfn]
-bind_host = {{ ip.mgmt }}
+bind_host = 127.0.0.1
 
 [database]
 

@@ -65,6 +65,17 @@
     - common
     - os_ceilometer
 
+- hosts: ceilometer_controller
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - apache_frontend
+  vars:
+    service_name: ceilometer
+    service_ports:
+      - 8777
+      - 8042
+
 - hosts: haproxy
   sudo: True
   max_fail_percentage: 0

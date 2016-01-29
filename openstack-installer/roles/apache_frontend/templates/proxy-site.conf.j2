@@ -1,0 +1,19 @@
+{% for port in service_ports %}
+Listen {{ ip.mgmt }}:{{ port }}
+{% endfor %}
+
+{% for port in service_ports %}
+<VirtualHost *:{{ port }}>
+    ProxyPreserveHost Off
+
+{% if service_ssl %}
+    SSLEngine on
+    SSLCertificateFile      {{ SSLCertificateFile }}
+    SSLCertificateKeyFile {{ SSLCertificateKeyFile }}
+{% endif %}
+
+    ProxyPass / http://127.0.0.1:{{ port }}/ retry=10
+    ProxyPassReverse / http://127.0.0.1:{{ port }}/ retry=10
+</VirtualHost>
+
+{% endfor %}
