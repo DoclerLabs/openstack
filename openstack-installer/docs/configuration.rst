@@ -76,6 +76,66 @@ roles/role_name/defaults/main.yml. These values can be overwritten here (or in t
 Some variables must be defined in the global config, since they don't (or can not) have any sane defaults.
 The description of some component's configuration values follows:
 
+TLS for public facing services
+------------------------------
+
+HTTP connections to OpenStack components can be secured by TLS. It is recommended in production.
+This installer implements full end-to-end TLS connections, so HAProxy doesn't terminate the secured
+channel. One implication is that services configured to https are communicating with TLS on the
+management network, too, but some clients doesn't really support correct certificate checking (or
+turning off verifying the certs).
+
+The list of services which currently has problems:
+
+- cinder: cinder quotas code doesn't work connecting to secured keystone.
+- trove: trove cannot check, nor disable certificate checking to OS components.
+- sahara: sahara has some options to allow to set CA certificate or turn the checking off in nova,
+  neutron and cinder, but they're not implemeneted correctly.
+- radosgw: there's no way to specify a custom CA certificate or turn the checking off.
+
+Settings for TLS connections:
+
+::
+
+  SSLCertificateFileSource:        # The PEM file for the server certificate.
+  SSLCertificateKeyFileSource:     # The PEM file with the private key.
+  SSLCACertificateKeyFileSource:   # The PEM file for the CA certificate.
+  ssl_insecure:                    # Don't check the CA certificate in the clients during
+                                   # inter-communication of OS components. Not recommended in
+                                   # production.
+
+If the SSLCertificateFileSource and SSLCertificateKeyFileSource settings are defined, Horizon will
+automatically configured to https. Http connections will redirected to https, too.
+
+To turn on TLS support in other services, use the following settings:
+
+::
+
+  keystone_ssl: True              # Turn on TLS in keystone. Default is False (no TLS).
+  os_ssl: True                    # Turn on TLS in other OpenStack components.
+  nova_novncproxy_ssl: True       # Turn on TLS in nova vnc proxy.
+
+With TLS support, it is recommended to set the components address to the domain name, which is in the
+certificate. so the following settings should be set:
+
+::
+
+  os_internal_address: "{{ vip_mgmt }}"  # These should be changed from the default vip addresses
+  os_admin_address: "{{ vip_mgmt }}"     # to a domain name, which can be checked by the TLS certificate
+  os_public_address: "{{ vip_public }}"  # verification
+
+Please note, that the services are only listen on the management interface, so they'll not present
+different certificates to the clients on the public and the internal (management) network. This can be a
+problem with the certificate checking. To overcome the problem, there are some options:
+
+- Use the same network for the management and public. This is the least recommended solution.
+- Set up the domain name of the management vip to the same as the public vip locally on the hosts (e.g. in
+  /etc/hosts). So internal communication will always go to vip_mgmt, but external clients can see the vip_public
+  from DNS. In this case, all os_xxx_address settings will be the same, but they'll have different meaning for
+  internal and public clients.
+- Use certificates with two subjecAltNames, one would be the public domain name, and the other would be the
+  management domain name.
+
 Pacemaker
 ---------
 
