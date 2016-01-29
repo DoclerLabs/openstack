@@ -34,7 +34,7 @@ rpc_backend = rabbit
 
 # Metadata
 metadata_host = {{ vip_mgmt }}
-metadata_listen = 127.0.0.1
+metadata_listen = {{ ip.mgmt }}
 
 # Network
 my_ip = {{ ip.mgmt }}
