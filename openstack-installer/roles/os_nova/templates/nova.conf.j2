@@ -120,7 +120,7 @@ protocol = {{ os_proto }}
 
 # Neutron
 [neutron]
-url = http://{{ vip_mgmt }}:9696
+url = {{ os_proto }}://{{ os_internal_address }}:9696
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
 auth_plugin = password
 region_name = {{ keystone_region_name }}
