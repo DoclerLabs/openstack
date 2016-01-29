@@ -47,6 +47,9 @@ backend {{ item.haproxy_service_name }}-back
 {% for option in item.haproxy_backend_options|default([]) %}
     option {{ option }}
 {% endfor %}
+{% for opt in item.haproxy_backend_extras | default([]) %}
+    {{ opt }}
+{% endfor %}
 {% if item.haproxy_timeout_server is defined %}
     timeout server {{ item.haproxy_timeout_server }}
 {% endif %}
