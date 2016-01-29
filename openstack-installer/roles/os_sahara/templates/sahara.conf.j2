@@ -139,3 +139,6 @@ username = {{ sahara_admin_user }}
 password = {{ sahara_admin_password }}
 project_domain_name = {{ sahara_project_domain_name }}
 project_name = {{ sahara_project_name }}
+memcache_security_strategy = ENCRYPT
+memcache_secret_key = {{ memcache_secret_key }}
+memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}

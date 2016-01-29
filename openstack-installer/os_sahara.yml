@@ -41,3 +41,7 @@
           - "{{ vip_public }}"
         haproxy_port: 8386
         haproxy_balance_type: http
+        haproxy_backend_options:
+          - forwardfor
+          - httpchk
+          - httplog
