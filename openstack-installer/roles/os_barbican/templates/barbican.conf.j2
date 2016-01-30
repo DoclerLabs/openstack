@@ -3,9 +3,11 @@
 verbose = True
 
 # Show debugging output in logs (sets DEBUG log level output)
-#debug = True
+debug = False
 
 use_syslog = {{ barbican_syslog_use }}
+
+use_stderr = False
 
 # Address to bind the API server
 bind_host = {{ ip.mgmt }}
@@ -21,6 +23,8 @@ host_href = http://{{ vip_public }}:9311
 # Log to this file. Make sure you do not set the same log
 # file for both the API and registry servers!
 #log_file = /var/log/barbican/api.log
+
+log_dir = /var/log/barbican
 
 # Backlog requests when creating socket
 backlog = 4096
@@ -135,7 +139,7 @@ scrub_time = 43200
 scrubber_datadir = /var/lib/barbican/scrubber
 
 # ================= Queue Options - oslo.messaging ==========================
-
+[oslo_messaging_rabbit]
 # Rabbit and HA configuration:
 ampq_durable_queues = False
 rabbit_port = 5672

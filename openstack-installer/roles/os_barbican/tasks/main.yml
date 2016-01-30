@@ -18,6 +18,9 @@
     - barbican-worker
     - python-barbicanclient
 
+- name: ensure barbican-api is disabled at boot
+  service: name=barbican-api state=stopped enabled=no
+
 - name: create barbican database
   mysql_db: name={{ barbican_db }}
     login_host={{ barbican_mysql_server }} login_user=root login_password={{ mysql_root_password }}
@@ -35,27 +38,30 @@
 
 - name: ensure /var/lib/barbican/cache is writeable
   file: path=/var/lib/barbican/cache state=directory owner=barbican group=barbican mode=0700
-  notify: restart barbican
+  notify: signal apache to reload
 
 - name: install barbican configs
   template: src={{ item }}.j2 dest=/etc/barbican/{{ item }} owner=barbican group=root mode=0460
   with_items:
     - barbican.conf
     - barbican-api-paste.ini
-  notify: restart barbican
-
-- name: set listening address of barbican-api
-  ini_file: dest=/etc/barbican/vassals/barbican-api.ini section=uwsgi option=socket value="{{ ip.mgmt }}:9311"
-  notify: restart barbican
+  notify:
+    - restart barbican-worker
+    - signal apache to reload
 
 - name: sync barbican db
   command: su barbican -s /bin/sh -c 'barbican-db-manage upgrade'
   run_once: True
 
+- name: create /var/www/cgi-bin/barbican
+  file: path=/var/www/cgi-bin/barbican state=directory owner=root group=root mode=0755
+  notify: signal apache to reload
+
+- name: install barbican-wsgi server
+  copy: src=barbican-wsgi dest=/var/www/cgi-bin/barbican/barbican-api owner=root group=root mode=0644
+  notify: signal apache to reload
+
 - meta: flush_handlers
 
-- name: ensure barbican is started
-  service: name={{ item }} state=started enabled=yes
-  with_items:
-    - barbican-api
-    - barbican-worker
+- name: ensure barbican-worker is started
+  service: name=barbican-worker state=started enabled=yes

@@ -1,7 +1,7 @@
 ---
 
-- name: restart barbican
-  service: name={{ item }} state=restarted
-  with_items:
-    - barbican-api
-    - barbican-worker
+- name: restart barbican-worker
+  service: name=barbican-worker state=restarted
+
+- name: signal apache to reload
+  file: dest=/run/apache2.reload state=touch

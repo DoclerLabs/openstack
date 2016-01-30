@@ -27,6 +27,16 @@
     - common
     - os_barbican
 
+- hosts: barbican
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - apache_frontend
+  vars:
+    service_name: barbican
+    services:
+      - { port: 9311, wsgi_process: "barbican-api", wsgi_user: "barbican", wsgi_script: "/var/www/cgi-bin/barbican/barbican-api" }
+
 - hosts: haproxy
   sudo: True
   max_fail_percentage: 0
