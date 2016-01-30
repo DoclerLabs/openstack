@@ -17,8 +17,10 @@
   notify: reload apache
 
 - name: enable proxy_http
-  file: src=../mods-available/proxy_http.load dest=/etc/apache2/mods-enabled/proxy_http.load state=link
-  when: inventory_hostname in groups['neutron_controller']
+  file: src=../mods-available/{{ item }}.load dest=/etc/apache2/mods-enabled/{{ item }}.load state=link
+  with_items:
+    - proxy
+    - proxy_http
   notify: reload apache
 
 - name: install site.conf
