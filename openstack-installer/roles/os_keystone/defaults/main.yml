@@ -10,10 +10,4 @@ keystone_memcache_socket_timeout: 1
 keystone_memcache_pool_maxsize: 1000
 keystone_memcache_pool_unused_timeout: 60
 
-keystone_processes: "{{ ansible_processor_vcpus }}"
-
 keystone_syslog_use: "{{ syslog_use | default(False) }}"
-
-keystone_ssl: False
-SSLCertificateKeyFile: /etc/ssl/private/openstack.key
-SSLCertificateFile: /etc/ssl/certs/openstack.crt

@@ -37,8 +37,8 @@
   vars:
     service_name: nova
     service_ssl: "{{ os_ssl | default(False) }}"
-    service_ports:
-      - 8774
+    services:
+      - { port: 8774 }
 
 - hosts: nova_compute
   sudo: True

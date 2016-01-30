@@ -7,6 +7,18 @@
     - common
     - os_keystone
 
+- hosts: keystone
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - apache_frontend
+  vars:
+    service_name: keystone
+    service_ssl: "{{ keystone_ssl | default(False) }}"
+    services:
+      - { port: 5000, wsgi_process: "keystone-public", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/main" }
+      - { port: 35357, wsgi_process: "keystone-admin", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/admin" }
+
 - hosts: haproxy
   sudo: True
   max_fail_percentage: 0

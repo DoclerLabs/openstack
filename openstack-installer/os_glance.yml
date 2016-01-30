@@ -35,9 +35,9 @@
   vars:
     service_name: glance
     service_ssl: "{{ os_ssl | default(False) }}"
-    service_ports:
-      - 9292
-      - 9191
+    services:
+      - { port: 9292 }
+      - { port: 9191 }
 
 - hosts: glance
   sudo: True

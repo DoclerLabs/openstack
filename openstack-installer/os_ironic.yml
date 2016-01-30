@@ -34,8 +34,8 @@
     - apache_frontend
   vars:
     service_name: ironic
-    service_ports:
-      - 6385
+    services:
+      - { port: 6385 }
 
 - hosts: haproxy
   sudo: True

@@ -50,8 +50,8 @@
   vars:
     service_name: cinder
     service_ssl: "{{ os_ssl | default(False) }}"
-    service_ports:
-      - 8776
+    services:
+      - { port: 8776 }
 
 - hosts: cinder
   sudo: True

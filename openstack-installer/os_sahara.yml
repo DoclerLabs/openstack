@@ -34,8 +34,8 @@
     - apache_frontend
   vars:
     service_name: sahara
-    service_ports:
-      - 8386
+    services:
+      - { port: 8386 }
 
 - hosts: haproxy
   sudo: True

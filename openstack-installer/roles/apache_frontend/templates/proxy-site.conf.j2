@@ -1,10 +1,9 @@
-{% for port in service_ports %}
-Listen {{ ip.mgmt }}:{{ port }}
+{% for service in services %}
+Listen {{ ip.mgmt }}:{{ service.port }}
 {% endfor %}
 
-{% for port in service_ports %}
-<VirtualHost *:{{ port }}>
-    ProxyPreserveHost Off
+{% for service in services %}
+<VirtualHost *:{{ service.port }}>
 
 {% if service_ssl %}
     SSLEngine on
@@ -12,8 +11,18 @@ Listen {{ ip.mgmt }}:{{ port }}
     SSLCertificateKeyFile {{ SSLCertificateKeyFile }}
 {% endif %}
 
-    ProxyPass / http://127.0.0.1:{{ port }}/ retry=10
-    ProxyPassReverse / http://127.0.0.1:{{ port }}/ retry=10
+{% if service.wsgi_process is defined %}
+    WSGIDaemonProcess {{ service.wsgi_process }} processes={{ service.wsgi_process_count | default(ansible_processor_vcpus) }} threads=1 user={{ service.wsgi_user }} display-name=%{GROUP}
+    WSGIProcessGroup {{ service.wsgi_process }}
+    WSGIScriptAlias / {{ service.wsgi_script }}
+    WSGIApplicationGroup %{GLOBAL}
+    WSGIPassAuthorization On
+{% else %}
+    ProxyPreserveHost Off
+    ProxyPass / http://127.0.0.1:{{ service.port }}/ retry=10
+    ProxyPassReverse / http://127.0.0.1:{{ service.port }}/ retry=10
+{% endif %}
+
 </VirtualHost>
 
 {% endfor %}

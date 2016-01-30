@@ -72,9 +72,9 @@
     - apache_frontend
   vars:
     service_name: ceilometer
-    service_ports:
-      - 8777
-      - 8042
+    services:
+      - { port: 8777 }
+      - { port: 8042 }
 
 - hosts: haproxy
   sudo: True

@@ -37,8 +37,8 @@
   vars:
     service_name: neutron
     service_ssl: "{{ os_ssl | default(False) }}"
-    service_ports:
-      - 9696
+    services:
+      - { port: 9696 }
 
 - hosts: haproxy
   sudo: True

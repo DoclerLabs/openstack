@@ -4,6 +4,7 @@
   apt: name={{ item }}
   with_items:
     - apache2
+    - libapache2-mod-wsgi
 
 - name: ensure apache2 is started
   service: name=apache2 state=started enabled=yes
@@ -14,6 +15,11 @@
     - { src: '{{ SSLCertificateKeyFileSource | default("") }}', dest: '{{ SSLCertificateKeyFile }}', mode: '0460' }
     - { src: '{{ SSLCertificateFileSource | default("") }}', dest: '{{ SSLCertificateFile }}', mode: '0464' }
   when: item.src != ''
+  notify: reload apache
+
+- name: enable mod_ssl
+  file: src=../mods-available/ssl.load dest=/etc/apache2/mods-enabled/ssl.load state=link
+  when: SSLCertificateKeyFileSource is defined
   notify: reload apache
 
 - name: enable proxy_http
@@ -29,4 +35,8 @@
 
 - name: enable site
   file: src=../sites-available/{{ service_name }}-site.conf dest=/etc/apache2/sites-enabled/{{ service_name }}-site.conf state=link
+  notify: reload apache
+
+- name: remove reload signal
+  file: dest=/run/apache2.reload state=absent
   notify: reload apache
