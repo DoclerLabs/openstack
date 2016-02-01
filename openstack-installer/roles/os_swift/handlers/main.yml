@@ -1,0 +1,24 @@
+---
+
+- name: restart swift-proxy
+  service: name=swift-proxy state=restarted
+
+- name: restart rsync
+  service: name=rsync state=restarted
+
+- name: restart swift storage services
+  service: name={{ item }} state=restarted
+  with_items:
+    - swift-account-auditor
+    - swift-account
+    - swift-account-reaper
+    - swift-account-replicator
+    - swift-container-auditor
+    - swift-container
+    - swift-container-replicator
+    - swift-container-sync
+    - swift-container-updater
+    - swift-object-auditor
+    - swift-object
+    - swift-object-replicator
+    - swift-object-updater

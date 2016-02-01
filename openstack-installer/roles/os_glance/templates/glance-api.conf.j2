@@ -365,6 +365,7 @@ registry_client_insecure = {{ ssl_insecure }}
 # Print debugging output (set logging level to DEBUG instead of
 # default INFO level). (boolean value)
 #debug = false
+debug = true
 
 # If set to false, will disable INFO logging level, making WARNING the
 # default. (boolean value)
@@ -663,6 +664,9 @@ rbd_store_user = {{ glance_ceph_user }}
 rbd_store_ceph_conf = /etc/ceph/ceph.conf
 rbd_store_chunk_size = 8
 
+{% elif glance_backend == 'swift' %}
+stores = swift,http
+default_store = swift
 {% endif %}
 
 # List of stores enabled (list value)
@@ -755,15 +759,20 @@ filesystem_store_datadir = /var/lib/glance/images
 # If True, swiftclient won't check for a valid SSL certificate when
 # authenticating. (boolean value)
 #swift_store_auth_insecure = false
+swift_store_auth_insecure = {{ ssl_insecure }}
 
 # A string giving the CA certificate file to use in SSL connections
 # for verifying certs. (string value)
 #swift_store_cacert = <None>
+{% if SSLCACertificateFile != '' %}
+swift_store_cacert = {{ SSLCACertificateFile }}
+{% endif %}
 
 # The region of the swift endpoint to be used for single tenant. This
 # setting is only necessary if the tenant has multiple swift
 # endpoints. (string value)
 #swift_store_region = <None>
+swift_store_region = {{ keystone_region_name }}
 
 # If set, the configured endpoint will be used. If None, the storage
 # url from the auth response will be used. (string value)
@@ -773,6 +782,7 @@ filesystem_store_datadir = /var/lib/glance/images
 # (publicURL, adminURL or internalURL). This setting is only used if
 # swift_store_auth_version is 2. (string value)
 #swift_store_endpoint_type = publicURL
+swift_store_endpoint_type = internalURL
 
 # A string giving the service type of the swift service to use. This
 # setting is only used if swift_store_auth_version is 2. (string
@@ -796,6 +806,7 @@ filesystem_store_datadir = /var/lib/glance/images
 # A boolean value that determines if we create the container if it
 # does not exist. (boolean value)
 #swift_store_create_container_on_put = false
+swift_store_create_container_on_put = true
 
 # If set to True, enables multi-tenant storage mode which causes
 # Glance images to be stored in tenant specific Swift accounts.
@@ -835,20 +846,24 @@ filesystem_store_datadir = /var/lib/glance/images
 # (deprecated - use "auth_version" in swift_store_config_file) (string
 # value)
 #swift_store_auth_version = 2
+swift_store_auth_version = 3
 
 # The address where the Swift authentication service is listening.
 # (deprecated - use "auth_address" in swift_store_config_file) (string
 # value)
 #swift_store_auth_address = <None>
+swift_store_auth_address = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v3
 
 # The user to authenticate against the Swift authentication service
 # (deprecated - use "user" in swift_store_config_file) (string value)
 #swift_store_user = <None>
+swift_store_user = service:{{ glance_admin_user }}
 
 # Auth key for the user authenticating against the Swift
 # authentication service. (deprecated - use "key" in
 # swift_store_config_file) (string value)
 #swift_store_key = <None>
+swift_store_key = {{ glance_admin_password }}
 
 # The config file that has the swift account(s)configs. (string value)
 #swift_store_config_file = <None>

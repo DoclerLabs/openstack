@@ -1,0 +1,28 @@
+[DEFAULT]
+bind_ip = {{ ip.swift | default(ip.mgmt) }}
+bind_port = 6000
+workers = 2
+user = swift
+swift_dir = /etc/swift
+devices = /srv/node
+mount_check = true
+
+[pipeline:main]
+pipeline = healthcheck recon object-server
+
+[app:object-server]
+use = egg:swift#object
+
+[object-replicator]
+
+[object-updater]
+
+[object-auditor]
+
+[filter:recon]
+use = egg:swift#recon
+recon_cache_path = /var/cache/swift
+recon_lock_path = /var/lock
+
+[filter:healthcheck]
+use = egg:swift#healthcheck

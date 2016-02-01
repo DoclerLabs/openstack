@@ -1,0 +1,121 @@
+---
+
+- name: install CA certificate
+  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  when: SSLCACertificateFile != ''
+
+- name: disable autostarting of swift-proxy
+  copy: content='manual' dest=/etc/init/swift-proxy.override owner=root group=root mode=0644 force=no
+  when: inventory_hostname in groups['swift_proxy']
+
+## Proxy
+
+- name: install swift-proxy
+  apt: name={{ item }}
+  with_items:
+    - swift
+    - swift-proxy
+    - python-swiftclient
+  when: inventory_hostname in groups['swift_proxy']
+
+- name: ensure /etc/swift exists
+  file: dest=/etc/swift state=directory owner=root group=root mode=0755
+
+- name: install swift proxy config
+  template: src=proxy-server.conf.j2 dest=/etc/swift/proxy-server.conf owner=root group=swift mode=0640
+  notify: restart swift-proxy
+  when: inventory_hostname in groups['swift_proxy']
+
+- name: install swift.conf
+  template: src=swift.conf.j2 dest=/etc/swift/swift.conf owner=root group=swift mode=0640
+  notify: restart swift-proxy
+
+- meta: flush_handlers
+
+- name: ensure swift-proxy is started
+  service: name=swift-proxy state=started enabled=yes
+  when: inventory_hostname in groups['swift_proxy']
+
+## Storage
+- name: install packages for swift storage
+  apt: name={{ item }}
+  with_items:
+    - xfsprogs
+    - rsync
+    - swift-account
+    - swift-container
+    - swift-object
+  when: inventory_hostname in groups['swift_storage']
+
+- name: make sure /srv/node exists
+  file: dest=/srv/node state=directory owner=root group=root mode=0755
+  when: inventory_hostname in groups['swift_storage']
+
+- name: prepare storage for swift
+  filesystem: fstype=xfs dev="{{ item.device }}"
+  with_items: swift
+  when: inventory_hostname in groups['swift_storage']
+
+- name: mount storage for swift
+  mount: fstype=xfs
+         src="{{ item.device }}"
+         name="/srv/node/{{ item.device | regex_replace('^.*/','') }}"
+         opts="noatime,nodiratime,nobarrier"
+         state=mounted
+  with_items: swift
+  when: inventory_hostname in groups['swift_storage']
+
+- name: ensure proper rights for swift storage
+  file: dest="/srv/node/{{ item.device | regex_replace('^.*/','') }}"
+        state=directory
+        owner=swift group=swift mode=0770
+  with_items: swift
+  when: inventory_hostname in groups['swift_storage']
+
+- name: install rsyncd.conf
+  template: src=rsyncd.conf.j2 dest=/etc/rsyncd.conf owner=root group=root mode=0644
+  notify: restart rsync
+  when: inventory_hostname in groups['swift_storage']
+
+- name: enable rsyncd
+  lineinfile: dest=/etc/default/rsync
+              regexp="^RSYNC_ENABLE.*"
+              line="RSYNC_ENABLE=true"
+              owner=root group=root mode=0644
+  notify: restart rsync
+  when: inventory_hostname in groups['swift_storage']
+
+- meta: flush_handlers
+
+- name: make sure rsync is started
+  service: name=rsync state=started enabled=yes
+  when: inventory_hostname in groups['swift_storage']
+
+- name: install swift storage configs
+  template: src={{ item }}.conf.j2 dest=/etc/swift/{{ item }}.conf owner=root group=swift mode=0640
+  with_items:
+    - account-server
+    - container-server
+    - object-server
+  when: inventory_hostname in groups['swift_storage']
+  notify: restart swift storage services
+
+- meta: flush_handlers
+
+- name: make sure swift storage services are started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - swift-account-auditor
+    - swift-account
+    - swift-account-reaper
+    - swift-account-replicator
+    - swift-container-auditor
+    - swift-container
+    - swift-container-replicator
+    - swift-container-sync
+    - swift-container-updater
+    - swift-object-auditor
+    - swift-object
+    - swift-object-replicator
+    - swift-object-updater
+  when: inventory_hostname in groups['swift_storage']

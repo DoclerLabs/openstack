@@ -37,6 +37,12 @@ syslog:
 keystone:
   inherit: controller
 
+swift_proxy:
+#  inherit: controller
+
+swift_storage:
+#  inherit: controller
+
 glance:
   inherit: controller
 

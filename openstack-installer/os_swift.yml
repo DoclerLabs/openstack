@@ -1,0 +1,198 @@
+---
+
+- hosts: swift_proxy[0]
+  max_fail_percentage: 0
+  roles:
+    - os_keystone_service
+  vars:
+    keystone_service_name: swift
+    keystone_service_type: object-store
+    keystone_service_description: "OpenStack Object Storage"
+    keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8080/v1/AUTH_%(tenant_id)s"
+    keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8080/v1/AUTH_%(tenant_id)s"
+    keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8080/v1/AUTH_%(tenant_id)s"
+    keystone_region: "{{ keystone_region_name }}"
+    keystone_users:
+      - keystone_user: "{{ swift_admin_user | default('swift') }}"
+        keystone_domain_name: "{{ swift_domain_name | default(keystone_domain_name) }}"
+        keystone_password: "{{ swift_admin_password }}"
+        keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+        keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+        keystone_role: admin
+
+# TODO: move these plays to the swift role when serial: 1 will be supported per task (ansible 2)
+- hosts:
+    - swift_proxy
+    - swift_storage
+  sudo: True
+  max_fail_percentage: 0
+  serial: 1
+  tasks:
+    - name: fetch swift rings
+      fetch: src=/etc/swift/{{ item }} dest=workdir/{{ item }} fail_on_missing=False flat=True
+      with_items:
+        - account.builder
+        - account.ring.gz
+        - container.builder
+        - container.ring.gz
+        - object.builder
+        - object.ring.gz
+
+- hosts:
+    - swift_proxy
+    - swift_storage
+  sudo: True
+  max_fail_percentage: 0
+  tasks:
+
+  - name: install swift
+    apt: name=swift
+
+  - name: ensure /etc/swift exists
+    file: dest=/etc/swift state=directory owner=root group=root mode=0755
+
+  - name: check existing ring files
+    local_action: stat path=workdir/{{ item }}
+    sudo: False
+    register: ring_result
+    with_items:
+      - account.builder
+      - account.ring.gz
+      - container.builder
+      - container.ring.gz
+      - object.builder
+      - object.ring.gz
+
+  - name: distribute swift rings
+    copy: src=workdir/{{ item.item }} dest=/etc/swift/{{ item.item }} owner=root group=swift mode=0640 backup=yes
+    with_items: ring_result.results
+    when: item.stat.exists
+
+  - name: create ring builder files
+    command: swift-ring-builder {{ item }}.builder create {{ swift_part_power | default(12) }} {{ swift_replicas | default(3) }} {{ swift_min_part_hours | default(1) }}
+             chdir=/etc/swift creates=/etc/swift/{{ item }}.builder
+    with_items:
+      - account
+      - container
+      - object
+    when: inventory_hostname == groups['swift_proxy'][0]
+
+- hosts:
+    - swift_storage
+  sudo: True
+  max_fail_percentage: 0
+  serial: 1
+  tasks:
+  - name: add storage to the account ring
+    delegate_to: "{{ groups['swift_proxy'][0] }}"
+    command: swift-ring-builder-safe account.builder add
+      --region {{ item.region | default(1) }}
+      --zone {{ item.zone | default(1) }}
+      --ip {{ ip.swift | default(ip.mgmt) }}
+      --port 6002
+      --device {{ item.device | regex_replace('^.*/','') }}
+      --weight {{ item.weight | default(100) }}
+      chdir=/etc/swift
+    register: builder_result
+    failed_when: builder_result.rc != 0 and ('already uses' not in builder_result.stdout)
+    with_items: swift | default([])
+
+  - name: add storage to the container ring
+    delegate_to: "{{ groups['swift_proxy'][0] }}"
+    command: swift-ring-builder-safe container.builder add
+      --region {{ item.region | default(1) }}
+      --zone {{ item.zone | default(1) }}
+      --ip {{ ip.swift | default(ip.mgmt) }}
+      --port 6001
+      --device {{ item.device | regex_replace('^.*/','') }}
+      --weight {{ item.weight | default(100) }}
+      chdir=/etc/swift
+    register: builder_result
+    failed_when: builder_result.rc != 0 and ('already uses' not in builder_result.stdout)
+    with_items: swift | default([])
+
+  - name: add storage to the object ring
+    delegate_to: "{{ groups['swift_proxy'][0] }}"
+    command: swift-ring-builder-safe object.builder add
+      --region {{ item.region | default(1) }}
+      --zone {{ item.zone | default(1) }}
+      --ip {{ ip.swift | default(ip.mgmt) }}
+      --port 6000
+      --device {{ item.device | regex_replace('^.*/','') }}
+      --weight {{ item.weight | default(100) }}
+      chdir=/etc/swift
+    register: builder_result
+    failed_when: builder_result.rc != 0 and ('already uses' not in builder_result.stdout)
+    with_items: swift | default([])
+
+- hosts:
+    - swift_proxy
+    - swift_storage
+  sudo: True
+  max_fail_percentage: 0
+  tasks:
+  - name: rebalance rings
+    command: swift-ring-builder {{ item }}.builder rebalance chdir=/etc/swift creates=/etc/swift/{{ item }}.ring.gz
+    with_items:
+      - account
+      - container
+      - object
+    when: inventory_hostname == groups['swift_proxy'][0]
+
+  - name: fetch swift rings
+    fetch: src=/etc/swift/{{ item }} dest=workdir/{{ item }} fail_on_missing=False flat=True
+    with_items:
+      - account.builder
+      - account.ring.gz
+      - container.builder
+      - container.ring.gz
+      - object.builder
+      - object.ring.gz
+    when: inventory_hostname == groups['swift_proxy'][0]
+
+  - name: distribute swift rings
+    copy: src=workdir/{{ item }} dest=/etc/swift/{{ item }} owner=root group=swift mode=0640 backup=yes
+    with_items:
+      - account.builder
+      - account.ring.gz
+      - container.builder
+      - container.ring.gz
+      - object.builder
+      - object.ring.gz
+    when: inventory_hostname != groups['swift_proxy'][0]
+
+- hosts:
+    - swift_proxy
+    - swift_storage
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - common
+    - os_swift
+
+- hosts: swift_proxy
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - apache_frontend
+  vars:
+    service_name: swift
+    service_ssl: "{{ os_ssl | default(False) }}"
+    services:
+      - { port: 8080 }
+
+- hosts: haproxy
+  sudo: True
+  max_fail_percentage: 0
+  roles:
+    - haproxy_service
+  vars:
+    haproxy_services:
+      - haproxy_service_name: swift_proxy
+        haproxy_backend_nodes: "{{ groups['swift_proxy'] }}"
+        haproxy_bind_hosts:
+          - "{{ vip_mgmt }}"
+          - "{{ vip_public }}"
+        haproxy_port: 8080
+        haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
+        haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk GET /healthcheck'], ['forwardfor', 'httpchk GET /healthcheck', 'httplog']) }}"

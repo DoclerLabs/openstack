@@ -1102,7 +1102,7 @@ glance = {{ groups['glance'] | count > 0 }}
 
 # Whether or not swift is expected to be available (boolean value)
 #swift = true
-swift = false
+swift = {{ groups['swift_proxy'] | count > 0 }}
 
 # Whether or not nova is expected to be available (boolean value)
 #nova = true

@@ -57,7 +57,7 @@ cinder_backup_ceph_pool: backups
 cinder_backup_ceph_user: cinder-backup
 cinder_volume_secret_uuid: d048aa33-c46c-4573-a0c9-dd014d56e2b4
 
-#ceph or files
+#ceph, swift or files
 glance_backend: ceph
 glance_ceph_pool: images
 glance_ceph_user: glance

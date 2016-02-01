@@ -250,3 +250,46 @@ Settings which most likely have to be changed in a production installation:
                                                # checking (e.g. in case of self-signed certificates). Don't use it in production.
 
 There are some other settings in roles/os_keystone/defaults/main.yml, they can be overridden to fine-tune the service.
+
+Swift
+-----
+
+Swift is the standard object store component of OpenStack. Two inventory groups are belong to swift: swift_proxy and swift_storage.
+Swift proxy is best to put on controllers, and you can decide where to put storage. At least 3 storage nodes are recommended.
+Using a separate storage network for replication traffic is recommended, because of the traffic volume, and for security reasons:
+unauthenticated rsync daemons will listen on the management interfaces.
+
+Configuring the storage can be done in the inventory:
+
+::
+
+  swift_storage:
+    swift-storage-0:
+      ip:
+        mgmt: 192.168.0.1
+        swift: 192.168.1.3                    # IP of the interface used for replication traffic. If you omit this, ip.mgmt will used.
+      swift:
+        - { device: "/dev/sdb" }              # The devices used for swift storage. They'll be formatted with xfs filesystem, and
+        - { device: "/dev/sdc" }              # mounted under /srv/node.
+    swift-storage-1:
+      ip:
+        mgmt: 192.168.0.2
+        swift: 192.168.1.3
+      swift:
+        - { device: "/dev/sdb" }
+        - { device: "/dev/sdc" }
+    swift-storage-2:
+      ip:
+        mgmt: 192.168.0.3
+        swift: 192.168.1.3
+      swift:
+        - { device: "/dev/sdb" }
+        - { device: "/dev/sdc" }
+
+Global configuration affecting swift:
+
+::
+
+  swift_part_power: 12
+  swift_replicas: 3
+  swift_min_part_hours: 1
