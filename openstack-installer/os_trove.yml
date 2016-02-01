@@ -38,8 +38,8 @@
     - apache_frontend
   vars:
     service_name: trove
-    service_ports:
-      - 8779
+    services:
+      - { port: 8779 }
 
 - hosts: haproxy
   sudo: True
