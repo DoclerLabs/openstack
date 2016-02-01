@@ -1,0 +1,13 @@
+from oslo_config import cfg
+from barbican.common import config
+from paste import deploy
+
+CONF = cfg.CONF
+config_files = ['/etc/barbican/barbican-api-paste.ini',  '/etc/barbican/barbican.conf']
+config.parse_args(CONF, default_config_files=config_files)
+
+conf = '/etc/barbican/barbican-api-paste.ini'
+name = "main"
+
+options = deploy.appconfig('config:%s' % conf, name=name)
+application = deploy.loadapp('config:%s' % conf, name=name)
