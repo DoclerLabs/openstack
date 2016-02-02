@@ -14,6 +14,19 @@
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
 
+- name: ensure ceilometer account has the ResellerAdmin role
+  keystone_user:
+    token="{{ keystone_admin_token }}"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    cacert={{ SSLCACertificateFile }}
+    insecure={{ ssl_insecure | ternary("true", "false") }}
+    project_domain="{{ ceilometer_project_domain_name }}"
+    project="{{ ceilometer_project_name }}"
+    user="{{ ceilometer_admin_user }}"
+    user_domain="{{ ceilometer_domain_name }}"
+    role="ResellerAdmin"
+  when: inventory_hostname == groups['ceilometer_controller'][0] and groups['swift_proxy'] | count > 0
+
 - name: disable autostarting of ceilometer
   copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
   with_items:

@@ -77,7 +77,18 @@ user = swift
 # eventlet_debug = false
 
 [pipeline:main]
-pipeline = catch_errors gatekeeper healthcheck proxy-logging cache container_sync bulk ratelimit authtoken keystoneauth container-quotas account-quotas slo dlo versioned_writes proxy-logging proxy-server
+pipeline = catch_errors gatekeeper healthcheck proxy-logging cache container_sync bulk ratelimit authtoken keystoneauth container-quotas account-quotas slo dlo versioned_writes proxy-logging {{ (groups['ceilometer_controller'] | count > 0) | ternary('ceilometer', '') }} proxy-server
+
+{% if groups['ceilometer_controller'] | count > 0 %}
+[filter:ceilometer]
+paste.filter_factory = ceilometermiddleware.swift:filter_factory
+control_exchange = swift
+{% set rabbit_host = groups['rabbitmq'][(groups['swift_proxy'].index(inventory_hostname) % groups['rabbitmq'] | count)] %}
+url = rabbit://{{ ceilometer_rabbit_user }}:{{ ceilometer_rabbit_password }}@{{ hostvars[rabbit_host].ip.mgmt }}:5672/
+driver = messagingv2
+topic = notifications
+log_level = WARN
+{% endif %}
 
 [app:proxy-server]
 use = egg:swift#proxy
