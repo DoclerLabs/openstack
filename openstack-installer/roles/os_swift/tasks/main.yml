@@ -36,6 +36,15 @@
   service: name=swift-proxy state=started enabled=yes
   when: inventory_hostname in groups['swift_proxy']
 
+- name: create ResellerAdmin role
+  keystone_user:
+    token="{{ keystone_admin_token }}"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    cacert="{{ SSLCACertificateFile }}"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
+    role=ResellerAdmin
+  when: inventory_hostname == groups['swift_proxy'][0]
+
 ## Storage
 - name: install packages for swift storage
   apt: name={{ item }}
