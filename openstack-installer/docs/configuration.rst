@@ -259,6 +259,8 @@ Swift proxy is best to put on controllers, and you can decide where to put stora
 Using a separate storage network for replication traffic is recommended, because of the traffic volume, and for security reasons:
 unauthenticated rsync daemons will listen on the management interfaces.
 
+Radosgw and Swift is mutually exclusive in this setup, since they're using the same service ports (8080).
+
 Configuring the storage can be done in the inventory:
 
 ::
@@ -290,6 +292,6 @@ Global configuration affecting swift:
 
 ::
 
-  swift_part_power: 12
-  swift_replicas: 3
-  swift_min_part_hours: 1
+  swift_part_power: 12                        # The log2 number of partitions (default: 2^12 partitions).
+  swift_replicas: 3                           # Number of replicas of the objects.
+  swift_min_part_hours: 1                     # Minimum hours must be elapsed before a partitioning change.
