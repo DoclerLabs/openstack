@@ -323,6 +323,7 @@ revocation_cache_time = 60
 memcache_security_strategy = ENCRYPT
 memcache_secret_key = {{ memcache_secret_key }}
 
+delay_auth_decision = True
 
 [filter:keystoneauth]
 use = egg:swift#keystoneauth
