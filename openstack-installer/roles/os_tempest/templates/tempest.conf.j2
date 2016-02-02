@@ -1116,6 +1116,7 @@ heat = {{ groups['heat'] | count > 0 }}
 # value)
 #ceilometer = true
 ceilometer = {{ groups['ceilometer_controller'] | count > 0 }}
+aodh = {{ groups['ceilometer_controller'] | count > 0 }}
 
 # Whether or not Horizon is expected to be available (boolean value)
 #horizon = true
