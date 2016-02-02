@@ -5,7 +5,7 @@ Listen {{ ip.mgmt }}:{{ service.port }}
 {% for service in services %}
 <VirtualHost *:{{ service.port }}>
 
-{% if service_ssl %}
+{% if service_ssl | bool == True %}
     SSLEngine on
     SSLCertificateFile      {{ SSLCertificateFile }}
     SSLCertificateKeyFile {{ SSLCertificateKeyFile }}
