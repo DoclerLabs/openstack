@@ -9,8 +9,8 @@
     keystone_service_type: object-store
     keystone_service_description: "OpenStack Object Storage"
     keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8080/v1/AUTH_%(tenant_id)s"
-    keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8080/v1/AUTH_%(tenant_id)s"
-    keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8080/v1/AUTH_%(tenant_id)s"
+    keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8080/v1/AUTH_%(tenant_id)s"
+    keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8080/v1/AUTH_%(tenant_id)s"
     keystone_region: "{{ keystone_region_name }}"
     keystone_users:
       - keystone_user: "{{ swift_admin_user | default('swift') }}"
