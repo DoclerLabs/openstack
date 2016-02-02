@@ -85,7 +85,7 @@
   tasks:
   - name: add storage to the account ring
     delegate_to: "{{ groups['swift_proxy'][0] }}"
-    command: swift-ring-builder-safe account.builder add
+    command: swift-ring-builder account.builder add
       --region {{ item.region | default(1) }}
       --zone {{ item.zone | default(1) }}
       --ip {{ ip.swift | default(ip.mgmt) }}
@@ -99,7 +99,7 @@
 
   - name: add storage to the container ring
     delegate_to: "{{ groups['swift_proxy'][0] }}"
-    command: swift-ring-builder-safe container.builder add
+    command: swift-ring-builder container.builder add
       --region {{ item.region | default(1) }}
       --zone {{ item.zone | default(1) }}
       --ip {{ ip.swift | default(ip.mgmt) }}
@@ -113,7 +113,7 @@
 
   - name: add storage to the object ring
     delegate_to: "{{ groups['swift_proxy'][0] }}"
-    command: swift-ring-builder-safe object.builder add
+    command: swift-ring-builder object.builder add
       --region {{ item.region | default(1) }}
       --zone {{ item.zone | default(1) }}
       --ip {{ ip.swift | default(ip.mgmt) }}
