@@ -13,6 +13,26 @@ swift_syslog_use: "{{ syslog_use | default(False) }}"
 
 swift_operator_roles: admin,user,member,_Member_,ResellerAdmin
 
+swift_pipeline:
+ - catch_errors
+ - gatekeeper
+ - healthcheck
+ - proxy-logging
+ - cache
+ - container_sync
+ - bulk
+ - ratelimit
+ - authtoken
+ - keystoneauth
+ - container-quotas
+ - account-quotas
+ - slo
+ - dlo
+ - versioned_writes
+ - proxy-logging
+ - "{{ (groups['ceilometer_controller'] | count > 0) | ternary('ceilometer', '') }}"
+ - proxy-server
+
 ceilometer_rabbit_user: ceilometer
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
