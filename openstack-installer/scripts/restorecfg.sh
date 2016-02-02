@@ -11,3 +11,4 @@ BASEDIR=$(dirname "$0")/..
 CONFDIR="$BASEDIR/configs/$1"
 cp "$CONFDIR"/group_vars/all/* "$BASEDIR"/group_vars/all
 cp "$CONFDIR/inventory/inventory.yml" "$BASEDIR/inventory/inventory.yml"
+rm "$BASEDIR/workdir/"*
