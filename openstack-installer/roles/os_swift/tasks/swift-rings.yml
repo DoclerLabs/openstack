@@ -6,6 +6,9 @@
   apt: name=swift
   when: inventory_hostname in groups['swift_proxy']
 
+- name: ensure /etc/swift exists
+  file: dest=/etc/swift state=directory owner=root group=root mode=0755
+
 - name: check existing ring files
   local_action: stat path=workdir/{{ item }}
   sudo: False

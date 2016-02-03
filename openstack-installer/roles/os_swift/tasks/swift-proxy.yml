@@ -15,9 +15,6 @@
     - python-ceilometermiddleware
   when: inventory_hostname in groups['swift_proxy']
 
-- name: ensure /etc/swift exists
-  file: dest=/etc/swift state=directory owner=root group=root mode=0755
-
 - name: install swift proxy config
   template: src=proxy-server.conf.j2 dest=/etc/swift/proxy-server.conf owner=root group=swift mode=0640
   notify: restart swift-proxy
