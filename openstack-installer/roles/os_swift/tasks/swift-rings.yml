@@ -1,0 +1,108 @@
+---
+
+## Rings
+
+- name: install swift
+  apt: name=swift
+  when: inventory_hostname in groups['swift_proxy']
+
+- name: check existing ring files
+  local_action: stat path=workdir/{{ item }}
+  sudo: False
+  register: ring_result
+  with_items:
+    - account.builder
+    - account.ring.gz
+    - container.builder
+    - container.ring.gz
+    - object.builder
+    - object.ring.gz
+
+- name: distribute swift rings
+  copy: src=workdir/{{ item.item }} dest=/etc/swift/{{ item.item }} owner=root group=swift mode=0640 backup=yes
+  with_items: ring_result.results
+  when: item.stat.exists
+
+- name: create ring builder files
+  command: swift-ring-builder {{ item }}.builder create {{ swift_part_power }} {{ swift_replicas }} {{ swift_min_part_hours }}
+           chdir=/etc/swift creates=/etc/swift/{{ item }}.builder
+  with_items:
+    - account
+    - container
+    - object
+  when: inventory_hostname == groups['swift_proxy'][0]
+
+- name: add storage to the account ring
+  command: swift-ring-builder account.builder add
+    --region {{ item.region }}
+    --zone {{ item.zone }}
+    --ip {{ hostvars[item.host].ip.swift | default(hostvars[item.host].ip.mgmt) }}
+    --port 6002
+    --device {{ item.device | regex_replace('^.*/','') }}
+    --weight {{ item.weight }}
+    chdir=/etc/swift
+  register: builder_result
+  failed_when: builder_result.rc != 0 and ('already uses' not in builder_result.stdout)
+  changed_when: builder_result.rc == 0
+  with_items: swift_items | default([])
+  when: inventory_hostname == groups['swift_proxy'][0]
+
+- name: add storage to the container ring
+  command: swift-ring-builder container.builder add
+    --region {{ item.region }}
+    --zone {{ item.zone }}
+    --ip {{ hostvars[item.host].ip.swift | default(hostvars[item.host].ip.mgmt) }}
+    --port 6001
+    --device {{ item.device | regex_replace('^.*/','') }}
+    --weight {{ item.weight }}
+    chdir=/etc/swift
+  register: builder_result
+  failed_when: builder_result.rc != 0 and ('already uses' not in builder_result.stdout)
+  changed_when: builder_result.rc == 0
+  with_items: swift_items | default([])
+  when: inventory_hostname == groups['swift_proxy'][0]
+
+- name: add storage to the object ring
+  command: swift-ring-builder object.builder add
+    --region {{ item.region }}
+    --zone {{ item.zone }}
+    --ip {{ hostvars[item.host].ip.swift | default(hostvars[item.host].ip.mgmt) }}
+    --port 6000
+    --device {{ item.device | regex_replace('^.*/','') }}
+    --weight {{ item.weight }}
+    chdir=/etc/swift
+  register: builder_result
+  failed_when: builder_result.rc != 0 and ('already uses' not in builder_result.stdout)
+  changed_when: builder_result.rc == 0
+  with_items: swift_items | default([])
+  when: inventory_hostname == groups['swift_proxy'][0]
+
+- name: rebalance rings
+  command: swift-ring-builder {{ item }}.builder rebalance chdir=/etc/swift creates=/etc/swift/{{ item }}.ring.gz
+  with_items:
+    - account
+    - container
+    - object
+  when: inventory_hostname == groups['swift_proxy'][0]
+
+- name: fetch swift rings
+  fetch: src=/etc/swift/{{ item }} dest=workdir/{{ item }} flat=True
+  with_items:
+    - account.builder
+    - account.ring.gz
+    - container.builder
+    - container.ring.gz
+    - object.builder
+    - object.ring.gz
+  when: inventory_hostname == groups['swift_proxy'][0]
+
+- name: distribute swift rings
+  copy: src=workdir/{{ item }} dest=/etc/swift/{{ item }} owner=root group=swift mode=0640 backup=yes
+  with_items:
+    - account.builder
+    - account.ring.gz
+    - container.builder
+    - container.ring.gz
+    - object.builder
+    - object.ring.gz
+  when: inventory_hostname != groups['swift_proxy'][0]

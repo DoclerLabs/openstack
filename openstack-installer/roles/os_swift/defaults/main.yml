@@ -11,6 +11,9 @@ swift_project_name: "{{ keystone_service_project_name | default('service') }}"
 
 swift_syslog_use: "{{ syslog_use | default(False) }}"
 
+swift_part_power: 12
+swift_replicas: 3
+swift_min_part_hours: 1
 swift_operator_roles: admin,user,member,_Member_,ResellerAdmin
 
 swift_pipeline:

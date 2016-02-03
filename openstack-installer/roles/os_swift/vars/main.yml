@@ -1,0 +1,3 @@
+---
+
+swift_items: "[{% for host in groups['swift_storage'] %}{% for item in hostvars[host].swift %}{'host':'{{ host }}', 'device':'{{ item.device }}', 'region':'{{ item.region | default(1) }}', 'zone':'{{ item.zone | default(1) }}', 'weight':'{{ item.weight | default(100) }}' },{% endfor %}{% endfor %}]"

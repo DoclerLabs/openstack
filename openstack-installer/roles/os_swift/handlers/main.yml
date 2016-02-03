@@ -2,6 +2,7 @@
 
 - name: restart swift-proxy
   service: name=swift-proxy state=restarted
+  when: inventory_hostname in groups['swift_proxy']
 
 - name: restart rsync
   service: name=rsync state=restarted
