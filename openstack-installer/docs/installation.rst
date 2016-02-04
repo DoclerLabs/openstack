@@ -90,3 +90,19 @@ It is a good idea to run tempest on the installed cloud. The steps for preparing
 
   $ cd ~/tempest
   $ ./run_tempest.sh
+
+5. Cloud repair
+===============
+
+Hardware under the cloud sometimes fail. After replacing a faulty machine, one wants to restore the services on it. To restore OpenStack, follow the steps below:
+
+- Reinstall the OS, as in the Pre-requisite section (configure network, storage, NTP, Ansible user with public key access).
+- Re-run the OpenStack installation:
+
+::
+
+  $ ansible-playbook main.yml
+
+- Wait until the installation finishes. Thanks to Ansible, only the new node will reconfigured, the existing ones will preserved as is. In case of a compute
+  failure, the node will be fully reconfigured with the compute services. If the failed node was a controller node, and the services were still up (quroum did not lost),
+  the cluster will be restored to a fully working state.
