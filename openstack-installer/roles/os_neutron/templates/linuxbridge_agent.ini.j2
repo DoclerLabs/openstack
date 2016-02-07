@@ -33,8 +33,11 @@ physical_interface_mappings = {{ neutron_physical_interface_mappings }}
 # (StrOpt) Local IP address to use for VXLAN endpoints (required)
 # local_ip =
 {% if ip.vxlan is defined %}
+enable_vxlan = True
 local_ip = {{ ip.vxlan }}
 vxlan_group = {{ vxlan_group }}
+{% else %}
+enable_vxlan = False
 {% endif %}
 #
 # (BoolOpt) Flag to enable l2population extension. This option should be used
