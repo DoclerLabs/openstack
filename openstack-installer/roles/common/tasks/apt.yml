@@ -11,4 +11,4 @@
     - "{{ apt_extra_keys }}"
 
 - name: update apt cache
-  apt: update_cache=yes
+  apt: update_cache=yes cache_valid_time={{ apt_cache_valid_time }}

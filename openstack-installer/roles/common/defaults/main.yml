@@ -1,7 +1,7 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-liberty", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu trusty-updates/liberty main" }
+  - { name: "cloudarchive-liberty", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu trusty-updates/mitaka main" }
 
 apt_extra_repos: []
 
@@ -9,3 +9,5 @@ apt_keys:
   - { keyserver: "keyserver.ubuntu.com", keyid: "EC4926EA" }
 
 apt_extra_keys: []
+
+apt_cache_valid_time: 1800
