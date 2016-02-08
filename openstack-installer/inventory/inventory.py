@@ -26,7 +26,7 @@ def expand_group(yml, group, nesting_level):
                             expand_group(yml, inherited_group, nesting_level))
                 else:
                     hosts.extend(expand_group(yml, key, nesting_level))
-            else:
+            elif host != 'roles':
                 hosts.append(host)
     return hosts
 
@@ -50,11 +50,16 @@ def inventory(hostname):
     else:
         inventory = {"_meta": {"hostvars": {}}}
         for group, data in yml.iteritems():
-            inventory[group] = sorted(expand_group(yml, group, 0))
+            host_group = sorted(expand_group(yml, group, 0))
+            if data and 'roles' in data:
+                for role in data['roles']:
+                    inventory.setdefault(role, []).extend(host_group)
+            else:
+                inventory[group] = host_group
             if data is None:
                 continue
             for host, hostvars in data.iteritems():
-                if host == 'inherit':
+                if host in ('inherit', 'roles'):
                     continue
                 inventory['_meta']['hostvars'][host] = hostvars
                 inventory['_meta']['hostvars'][host]['ansible_ssh_host'] = \

@@ -57,6 +57,39 @@ Example for not installing Trove:
   trove:
          # Leave the host list empty
 
+It is important, that one host (with the same management IP) must be only in one host group. If you
+want to put a host into several roles, use the inherit keyword, or an alternative format: a host group can
+have a "special host", called roles. You can specify a list here, which roles must be applied to the
+machines in the list. Example:
+
+::
+
+  controller:
+    controller1:
+      ip:
+        mgmt: 192.168.0.1
+    controller2:
+      ip
+        mgmt: 192.168.0.2
+    roles:
+      - pacemaker
+      - haproxy
+      - memcached
+      - rabbitmq
+      - galera
+      - mongodb
+      - syslog
+      - keystone
+      - glance
+      - horizon
+      - nova_controller
+      - neutron_controller
+      - heat
+      - cinder
+      - cinder_volume
+
+With this notation, unused components still have to be given as an empty group.
+
 4. Secrets
 ==========
 
