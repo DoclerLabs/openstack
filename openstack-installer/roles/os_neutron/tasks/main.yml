@@ -49,6 +49,12 @@
   notify: reload sysctl
   when: inventory_hostname in groups['neutron_controller']
 
+- name: insert br_netfilter module
+  modprobe: name=br_netfilter
+
+- name: make sure br_netfilter module is loaded at boot
+  lineinfile: dest=/etc/modules line='br_netfilter' owner=root group=root mode=0644
+
 - name: install neutron server packages
   apt: name={{ item }}
   with_items:
