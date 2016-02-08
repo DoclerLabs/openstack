@@ -51,6 +51,7 @@
 
 - name: insert br_netfilter module
   modprobe: name=br_netfilter
+  when: ansible_kernel | version_compare('3.18', '>=')
 
 - name: make sure br_netfilter module is loaded at boot
   lineinfile: dest=/etc/modules line='br_netfilter' owner=root group=root mode=0644
