@@ -115,15 +115,28 @@ else:
     keystoneclient_found = True
 
 
-def authenticate(endpoint, token, login_user, login_password, login_project_name, cacert, insecure):
+def authenticate(endpoint, token, login_domain, login_user, login_password, login_project_domain, login_project_name, cacert, insecure):
     """Return a keystone client object"""
 
     if token:
-        return client.Client(endpoint=endpoint, token=token, cacert=cacert, insecure=insecure)
+        return client.Client(endpoint=endpoint, auth_url=endpoint, token=token, cacert=cacert, insecure=insecure)
     else:
-        return client.Client(auth_url=endpoint, username=login_user,
-                             password=login_password, project_name=login_project_name,
-                             cacert=cacert, insecure=insecure)
+        if login_project_name:
+            return client.Client(auth_url=endpoint,
+                                 user_domain_name=login_domain,
+                                 username=login_user,
+                                 password=login_password,
+                                 project_domain_name=login_project_domain,
+                                 project_name=login_project_name,
+                                 cacert=cacert,
+                                 insecure=insecure)
+        else:
+            return client.Client(auth_url=endpoint,
+                                 user_domain_name=login_domain,
+                                 username=login_user,
+                                 password=login_password,
+                                 cacert=cacert,
+                                 insecure=insecure)
 
 def get_project(keystone, domain, name):
     """ Retrieve a project by name"""
@@ -227,7 +240,7 @@ def ensure_project_absent(keystone, project, project_domain, check_mode):
         return True
 
 
-def ensure_user_exists(keystone, user_name, password, email, user_domain, project_domain, project_name,
+def ensure_user_exists(keystone, user_domain, user_name, password, email, project_domain, project_name,
                        check_mode):
     """ Check if user exists
 
@@ -241,27 +254,37 @@ def ensure_user_exists(keystone, user_name, password, email, user_domain, projec
     except KeyError:
         # domain doesn't exist yet
         user_domain_id = keystone.domains.create(name=user_domain).id
-
     # Check if user already exists
     try:
         user = get_user(keystone, user_domain_id, user_name)
     except KeyError:
         # user doesn't exist yet
-        pass
+        change_pass = False
     else:
-        # User does exist, we're done
-        return (False, user.id)
+        try:
+            authenticate(keystone.auth_url, None,
+                         user_domain, user_name, password,
+                         project_domain, project_name,
+                         keystone.session.verify, keystone.session.verify)
+        except:
+            change_pass = True
+        else:
+            # User does exist, we're done
+            return (False, user.id)
 
     # We now know we will have to create a new user
     if check_mode:
         return (True, None)
 
-    project_domain_id = get_domain(keystone, project_domain).id
+    if change_pass:
+        user = keystone.users.update(user.id, password=password)
+    else:
+        project_domain_id = get_domain(keystone, project_domain).id
 
-    project_id = get_project(keystone, project_domain_id, project_name).id if project_name else None
+        project_id = get_project(keystone, project_domain_id, project_name).id if project_name else None
 
-    user = keystone.users.create(name=user_name, password=password,
-                                 email=email, domain=user_domain_id, default_project=project_id)
+        user = keystone.users.create(name=user_name, password=password,
+                                     email=email, domain=user_domain_id, default_project=project_id)
 
     return (True, user.id)
 
@@ -352,8 +375,10 @@ def main():
             token=dict(required=False),
             cacert=dict(required=False),
             insecure=dict(required=False, default=False, choices=BOOLEANS),
+            login_domain_name=dict(required=False, default="Default"),
             login_user=dict(required=False),
             login_password=dict(required=False),
+            login_project_domain=dict(required=False, default="Default"),
             login_project_name=dict(required=False)
     ))
     # keystone operations themselves take an endpoint, not a keystone auth_url
@@ -361,8 +386,10 @@ def main():
     module = AnsibleModule(
         argument_spec=argument_spec,
         supports_check_mode=True,
-        mutually_exclusive=[['token', 'login_user'],
+        mutually_exclusive=[['token', 'login_domain'],
+                            ['token', 'login_user'],
                             ['token', 'login_password'],
+                            ['token', 'login_project_domain'],
                             ['token', 'login_project_name']]
     )
 
@@ -382,11 +409,13 @@ def main():
     token = module.params['token']
     cacert = module.params['cacert']
     insecure = module.boolean(module.params['insecure'])
+    login_domain_name = module.params['login_domain_name']
     login_user = module.params['login_user']
     login_password = module.params['login_password']
+    login_project_domain = module.params['login_project_domain']
     login_project_name = module.params['login_project_name']
 
-    keystone = authenticate(endpoint, token, login_user, login_password, login_project_name, cacert, insecure)
+    keystone = authenticate(endpoint, token, login_domain_name, login_user, login_password, login_project_domain, login_project_name, cacert, insecure)
 
     check_mode = module.check_mode
 
@@ -437,8 +466,8 @@ def dispatch(keystone, user=None, password=None, project=None,
     elif project and not user and not role and state == "absent":
         changed = ensure_project_absent(keystone, project, project_domain, check_mode)
     elif user and not role and state == "present":
-        changed, id = ensure_user_exists(keystone, user, password,
-                                         email, user_domain, project_domain, project, check_mode)
+        changed, id = ensure_user_exists(keystone, user_domain, user, password,
+                                         email, project_domain, project, check_mode)
     elif user and not role and state == "absent":
         changed = ensure_user_absent(keystone, user_domain, user, check_mode)
     elif user and role and state == "present":
