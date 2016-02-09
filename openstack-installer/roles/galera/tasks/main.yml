@@ -85,6 +85,10 @@
         demote:
            timeout: "120"
            interval: "0"
+        monitor:
+           role: "Master"
+           interval: "20"
+
       params:
         wsrep_cluster_address: "gcomm://{% for host in groups['galera'] %}{{ host }}{% if not loop.last %},{% endif %}{% endfor %}"
         config: "/etc/mysql/my.cnf"
