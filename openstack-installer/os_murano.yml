@@ -6,11 +6,11 @@
     - os_keystone_service
   vars:
     keystone_service_name: murano
-    keystone_service_type: application_catalog
+    keystone_service_type: application-catalog
     keystone_service_description: "OpenStack Application Catalog Service"
-    keystone_public_url: "http://{{ vip_public }}:8082"
-    keystone_internal_url: "http://{{ vip_mgmt }}:8082"
-    keystone_admin_url: "http://{{ vip_mgmt }}:8082"
+    keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8082"
+    keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8082"
+    keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8082"
     keystone_region: "{{ keystone_region_name }}"
     keystone_users:
       - keystone_user: "{{ murano_admin_user | default('murano') }}"
@@ -34,6 +34,7 @@
     - apache_frontend
   vars:
     service_name: murano
+    service_ssl: "{{ os_ssl | default(False) }}"
     services:
       - { port: 8082 }
 
@@ -50,8 +51,5 @@
           - "{{ vip_mgmt }}"
           - "{{ vip_public }}"
         haproxy_port: 8082
-        haproxy_balance_type: http
-        haproxy_backend_options:
-          - forwardfor
-          - httpchk
-          - httplog
+        haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
+        haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
