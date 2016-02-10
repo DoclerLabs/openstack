@@ -9,6 +9,8 @@ neutron_domain_name: "{{ keystone_domain_name }}"
 neutron_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
 neutron_project_name: "{{ keystone_service_project_name | default('service') }}"
 
+neutron_syslog_use: "{{ syslog_use | default(False) }}"
+
 nova_admin_user: nova
 nova_domain_name: "{{ keystone_domain_name }}"
 nova_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
@@ -16,11 +18,8 @@ nova_project_name: "{{ keystone_service_project_name | default('service') }}"
 
 neutron_ha_routers: True
 neutron_vpnaas: True
-
-neutron_syslog_use: "{{ syslog_use | default(False) }}"
-
-vxlan_vni_ranges: "65537:69999"
-vxlan_group: 239.0.0.0/8
+neutron_vxlan_vni_ranges: "65537:69999"
+neutron_vxlan_group: 239.0.0.0/8
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 os_proto: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"

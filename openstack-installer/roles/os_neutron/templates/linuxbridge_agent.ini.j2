@@ -35,7 +35,7 @@ physical_interface_mappings = {{ neutron_physical_interface_mappings }}
 {% if ip.vxlan is defined %}
 enable_vxlan = True
 local_ip = {{ ip.vxlan }}
-vxlan_group = {{ vxlan_group }}
+vxlan_group = {{ neutron_vxlan_group }}
 {% else %}
 enable_vxlan = False
 {% endif %}
