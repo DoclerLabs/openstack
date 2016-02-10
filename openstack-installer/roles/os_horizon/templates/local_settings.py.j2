@@ -242,7 +242,7 @@ OPENSTACK_NEUTRON_NETWORK = {
     'enable_ha_router': True,
     'enable_lb': True,
     'enable_firewall': True,
-    'enable_vpn': True,
+    'enable_vpn': {{ neutron_vpnaas }},
     'enable_fip_topology_check': True,
 
     # Neutron can be configured with a default Subnet Pool to be used for IPv4

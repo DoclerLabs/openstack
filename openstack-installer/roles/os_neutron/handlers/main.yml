@@ -5,7 +5,7 @@
   with_items:
     - neutron-server
     - neutron-plugin-linuxbridge-agent
-    - neutron-l3-agent
+    - "{{ neutron_vpnaas | ternary('neutron-vpn-agent', 'neutron-l3-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
     - neutron-lbaas-agent

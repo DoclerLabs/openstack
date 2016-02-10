@@ -14,6 +14,7 @@
   with_items:
     - neutron-server
     - neutron-plugin-linuxbridge-agent
+    - neutron-vpn-agent
     - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
@@ -61,13 +62,15 @@
   with_items:
     - conntrack
     - keepalived
+    - openswan
     - neutron-server
     - neutron-plugin-ml2
     - neutron-plugin-linuxbridge-agent
-    - neutron-l3-agent
+    - "{{ neutron_vpnaas | ternary('neutron-vpn-agent', 'neutron-l3-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
     - neutron-lbaas-agent
+    - python-neutron-vpnaas
     - python-neutronclient
   when: inventory_hostname in groups['neutron_controller']
 
@@ -136,7 +139,7 @@
   with_items:
     - neutron-server
     - neutron-plugin-linuxbridge-agent
-    - neutron-l3-agent
+    - "{{ neutron_vpnaas | ternary('neutron-vpn-agent', 'neutron-l3-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
     - neutron-lbaas-agent

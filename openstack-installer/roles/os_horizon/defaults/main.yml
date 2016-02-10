@@ -8,6 +8,8 @@ horizon_launch_instance_ng_enabled: True
 horizon_openstack_endpoint_type: internalURL
 horizon_cinder_enable_backup: True
 
+neutron_vpnaas: True
+
 SSLCertificateKeyFile: /etc/ssl/private/openstack.key
 SSLCertificateFile: /etc/ssl/certs/openstack.crt
 
