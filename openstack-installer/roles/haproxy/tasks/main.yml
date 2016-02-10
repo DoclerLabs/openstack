@@ -13,13 +13,17 @@
     - restart syslog-ng
     - restart haproxy
 
-- name: install haproxy.cfg
-  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg owner=root group=root mode=0644
-  notify:
-    - restart haproxy
-
 - name: create haproxy/conf.d
   file: dest=/etc/haproxy/conf.d state=directory owner=root group=root mode=0644
+
+- name: install haproxy.cfg
+  template: src=haproxy.cfg.j2 dest=/etc/haproxy/conf.d/00-haproxy.cfg owner=root group=root mode=0644
+
+- name: assemble haproxy config file
+  assemble: src=/etc/haproxy/conf.d dest=/etc/haproxy/haproxy.cfg owner=root group=root mode=0644
+    delimiter='\n#--- START FRONTEND ---\n'
+  notify:
+    - restart haproxy
 
 - name: replace haproxy init script
   copy: src=haproxy.init dest=/etc/init.d/haproxy owner=root group=root mode=0755

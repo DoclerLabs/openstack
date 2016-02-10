@@ -14,7 +14,6 @@
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 PIDFILE=/run/haproxy.pid
 CONFIG=/etc/haproxy/haproxy.cfg
-CONFIG_DIR=/etc/haproxy/conf.d
 HAPROXY=/usr/sbin/haproxy
 EXTRAOPTS=
 ENABLED=0
@@ -30,19 +29,12 @@ test -f "$CONFIG" || exit 0
 [ -f /etc/default/rcS ] && . /etc/default/rcS
 . /lib/lsb/init-functions
 
-CONFIG_DIR_FILES=""
-if [ ! -z "$CONFIG_DIR" ]; then
-  for file in $(find $CONFIG_DIR -type f); do
-    CONFIG_DIR_FILES="$CONFIG_DIR_FILES -f $file"
-  done
-fi
-
 [ -d /run/haproxy ] || mkdir /run/haproxy && chown haproxy:haproxy /run/haproxy
 
 haproxy_start()
 {
         start-stop-daemon --oknodo --start --pidfile "$PIDFILE" \
-                --exec $HAPROXY -- -f "$CONFIG" $CONFIG_DIR_FILES -D -p "$PIDFILE" \
+                --exec $HAPROXY -- -f "$CONFIG" -D -p "$PIDFILE" \
                 $EXTRAOPTS || return 2
         return 0
 }
@@ -62,7 +54,7 @@ haproxy_stop()
 
 haproxy_reload()
 {
-        $HAPROXY -f "$CONFIG" $CONFIG_DIR_FILES -p $PIDFILE -D $EXTRAOPTS -st $(cat $PIDFILE) \
+        $HAPROXY -f "$CONFIG" -p $PIDFILE -D $EXTRAOPTS -st $(cat $PIDFILE) \
                 || return 2
         return 0
 }
