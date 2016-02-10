@@ -79,6 +79,36 @@ notification_driver=messagingv2
 # option. (string value)
 #control_exchange = openstack
 
+[keystone]
+
+{% if SSLCACertificateFile != '' %}
+ca_file = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
+
+[glance]
+
+endpoint_type = internalURL
+{% if SSLCACertificateFile != '' %}
+ca_file = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
+
+[neutron]
+
+endpoint_type = internalURL
+{% if SSLCACertificateFile != '' %}
+ca_cert = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
+
+[heat]
+
+endpoint_type = internalURL
+{% if SSLCACertificateFile != '' %}
+ca_file = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
 
 [database]
 
@@ -195,7 +225,7 @@ connection = mysql+pymysql://{{ murano_db_user }}:{{ murano_db_password }}@{{ mu
 
 # Complete public Identity API endpoint. (string value)
 #auth_uri = <None>
-auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
+auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v3
 
 # API version of the admin Identity API endpoint. (string value)
 #auth_version = <None>
@@ -248,6 +278,7 @@ signing_dir = /var/lib/murano/cache/api
 # value)
 # Deprecated group/name - [DEFAULT]/memcache_servers
 #memcached_servers = <None>
+memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
 
 # In order to prevent excessive effort spent validating tokens, the
 # middleware caches previously-seen tokens for a configurable duration
