@@ -15,6 +15,8 @@ glance_ceph_user: glance
 
 glance_syslog_use: "{{ syslog_use | default(False) }}"
 
+glance_debug: False
+
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 os_proto: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
