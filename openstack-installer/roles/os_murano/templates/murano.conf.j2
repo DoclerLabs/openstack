@@ -1,6 +1,6 @@
 [DEFAULT]
 
-debug = False
+debug = {{ murano_debug }}
 verbose = True
 use_stderr = False
 use_syslog = {{ murano_syslog_use }}
@@ -109,6 +109,17 @@ endpoint_type = internalURL
 ca_file = {{ SSLCACertificateFile }}
 {% endif %}
 insecure = {{ ssl_insecure }}
+
+[murano]
+
+region_name_for_services = {{ keystone_region_name }}
+insecure = True
+
+[rabbitmq]
+
+host = {{ murano_service_rabbit_server }}
+login = {{ murano_service_rabbit_user }}
+password = {{ murano_service_rabbit_password }}
 
 [database]
 
@@ -393,13 +404,16 @@ auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357/
 
 # Service username. (string value)
 #admin_user = admin
+admin_user = {{ murano_admin_user }}
 
 # Service user password. (string value)
 #admin_password = 
+admin_password = {{ murano_admin_password }}
 
 # Service tenant name. (string value)
 #admin_tenant_name = admin
 
+admin_tenant_name = {{ murano_project_name }}
 user_domain_name = {{ murano_domain_name }}
 username = {{ murano_admin_user }}
 password = {{ murano_admin_password }}
