@@ -10,6 +10,8 @@ horizon_cinder_enable_backup: True
 
 neutron_vpnaas: True
 
+murano_repo_url: "http://storage.apps.openstack.org"
+
 SSLCertificateKeyFile: /etc/ssl/private/openstack.key
 SSLCertificateFile: /etc/ssl/certs/openstack.crt
 
