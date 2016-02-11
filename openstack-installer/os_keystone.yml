@@ -44,15 +44,8 @@
         haproxy_balance_alg: leastconn
         haproxy_backend_options: "{{ (keystone_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
 
-#The plays below must run without an installed keystone (e.g. second region),
+#The play below must run without an installed keystone (e.g. second region),
 #so the controller[0] host is there
-
-- hosts: controller[0]
-  sudo: True
-  max_fail_percentage: 0
-  tasks:
-    - name: install python-keystoneclient
-      apt: name=python-keystoneclient
 
 - hosts: controller[0]
   max_fail_percentage: 0
