@@ -13,7 +13,7 @@ murano_syslog_use: "{{ syslog_use | default(False) }}"
 
 murano_debug: False
 
-murano_service_rabbit_server: "{{ hostvars[groups['rabbitmq'][(groups['murano'].index(inventory_hostname) % groups['rabbitmq'] | count)]] }}"
+murano_service_rabbit_server: "{{ hostvars[groups['rabbitmq'][(groups['murano'].index(inventory_hostname) % groups['rabbitmq'] | count)]].ip.mgmt }}"
 murano_service_rabbit_user: "{{ murano_rabbit_user }}"
 murano_service_rabbit_password: "{{ murano_rabbit_password }}"
 
