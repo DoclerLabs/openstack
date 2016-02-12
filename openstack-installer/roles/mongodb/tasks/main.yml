@@ -7,7 +7,7 @@
     - python-pymongo
 
 - name: deploy mongodb configuration
-  template: src=mongodb.conf.j2 dest=/etc/mongodb.conf owner=mongodb group=root mode=0460
+  template: src=mongodb.conf.j2 dest=/etc/mongodb.conf owner=mongodb group=root mode=0440
   notify: restart mongodb
 
 - name: deploy mongodb keyfile
@@ -46,6 +46,9 @@
   run_once: True
   when: mongo_initialized == False
   until: mongo_status.stdout == '1'
+  failed_when: mongo_status.stdout != '1'
+  retries: 10
+  delay: 5
 
 - name: determine the master node
   command: mongo --quiet --eval 'rs.isMaster().ismaster' admin
@@ -55,6 +58,9 @@
 - name: ensure the admin user exists
   mongodb_user: database=admin name=admin password={{ mongodb_admin_password }} roles=userAdminAnyDatabase
   when: mongo_master.stdout == 'true'
+  # Ansible 2.0 mongodb_user fails when the user already exists, it is safe as
+  # the next task uses the admin user created here
+  failed_when: False
 
 - name: ensure the cluster admin user exists
   mongodb_user: database=admin login_user=admin login_password={{ mongodb_admin_password }}
@@ -74,5 +80,6 @@
   register: mongo_status
   until: mongo_status.stdout == '1' or mongo_status.stdout == '2'
   changed_when: False
+  failed_when: mongo_status.stdout not in ['1', '2']
   retries: 10
   delay: 5
