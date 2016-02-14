@@ -5,7 +5,7 @@
   with_items:
     - neutron-server
     - neutron-plugin-linuxbridge-agent
-    - "{{ neutron_vpnaas | ternary('neutron-vpn-agent', 'neutron-l3-agent') }}"
+    - "{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
     - neutron-lbaas-agent
@@ -19,3 +19,6 @@
 
 - name: reload sysctl
   service: name=procps state=started
+
+- name: reload apparmor
+  service: name=apparmor state=reloaded

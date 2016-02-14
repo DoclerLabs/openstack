@@ -17,7 +17,8 @@ nova_project_domain_name: "{{ keystone_service_project_domain_name | default(key
 nova_project_name: "{{ keystone_service_project_name | default('service') }}"
 
 neutron_ha_routers: True
-neutron_vpnaas: True
+#openswan/strongswan, empty: no vpnaas
+neutron_vpnaas_type:
 neutron_vxlan_vni_ranges: "65537:69999"
 neutron_vxlan_group: 239.0.0.0/8
 neutron_dnsmasq_dns_servers:

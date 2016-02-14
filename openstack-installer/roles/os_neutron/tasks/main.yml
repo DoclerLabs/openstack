@@ -57,16 +57,19 @@
 - name: make sure br_netfilter module is loaded at boot
   lineinfile: dest=/etc/modules line='br_netfilter' owner=root group=root mode=0644
 
+- name: install vpn service provider
+  apt: name={{ neutron_vpnaas_type }}
+  when: inventory_hostname in groups['neutron_controller'] and neutron_vpnaas_type != None
+
 - name: install neutron server packages
   apt: name={{ item }}
   with_items:
     - conntrack
     - keepalived
-    - openswan
     - neutron-server
     - neutron-plugin-ml2
     - neutron-plugin-linuxbridge-agent
-    - "{{ neutron_vpnaas | ternary('neutron-vpn-agent', 'neutron-l3-agent') }}"
+    - "{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
     - neutron-lbaas-agent
@@ -74,12 +77,24 @@
     - python-neutronclient
   when: inventory_hostname in groups['neutron_controller']
 
+- name: stop and disable strongswan
+  service: name=strongswan state=stopped enabled=no
+  when: inventory_hostname in groups['neutron_controller'] and neutron_vpnaas_type == 'strongswan'
+
 - name: install neutron compute packages
   apt: name={{ item }}
   with_items:
     - conntrack
     - neutron-plugin-linuxbridge-agent
   when: inventory_hostname in groups['neutron_compute']
+
+- name: disable apparmor strongswan profiles
+  file: path=/etc/apparmor.d/disable/{{ item }} src=/etc/apparmor.d/{{ item }} state=link
+  with_items:
+    - usr.lib.ipsec.charon
+    - usr.lib.ipsec.stroke
+  when: inventory_hostname in groups['neutron_controller'] and neutron_vpnaas_type == 'strongswan'
+  notify: reload apparmor
 
 - name: create neutron database
   mysql_db: name={{ neutron_db }}
@@ -105,6 +120,7 @@
     - metadata_agent.ini
     - fwaas_driver.ini
     - lbaas_agent.ini
+    - vpn_agent.ini
   notify:
     - restart neutron controller services
   when: inventory_hostname in groups['neutron_controller']
@@ -139,7 +155,7 @@
   with_items:
     - neutron-server
     - neutron-plugin-linuxbridge-agent
-    - "{{ neutron_vpnaas | ternary('neutron-vpn-agent', 'neutron-l3-agent') }}"
+    - "{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
     - neutron-lbaas-agent
