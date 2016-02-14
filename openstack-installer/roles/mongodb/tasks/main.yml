@@ -46,6 +46,8 @@
   run_once: True
   when: mongo_initialized == False
   until: mongo_status.stdout == '1'
+  retries: 10
+  delay: 5
 
 - name: determine the master node
   command: mongo --quiet --eval 'rs.isMaster().ismaster' admin
