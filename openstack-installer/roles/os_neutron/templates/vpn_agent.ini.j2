@@ -22,7 +22,7 @@
 # vpn_device_driver=neutron_vpnaas.services.vpn.device_drivers.libreswan_ipsec.LibreSwanDriver
 # vpn_device_driver=another_driver
 {% if neutron_vpn_device_driver is defined %}
-vpn_device_driver={{ neutron_vpn_device_driver }}a
+vpn_device_driver={{ neutron_vpn_device_driver }}
 {% endif %}
 
 [ipsec]
