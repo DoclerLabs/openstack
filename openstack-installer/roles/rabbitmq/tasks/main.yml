@@ -52,9 +52,10 @@
 
 - name: ensure the default vhost contains the HA policy
   rabbitmq_policy:
-    node: "rabbit@{{ groups['rabbitmq'][0] }}"
+    node: "rabbit@{{ inventory_hostname }}"
     name: HA
     pattern: '.*'
     tags:
       "ha-mode": "all"
       "ha-sync-mode": "automatic"
+  run_once: True
