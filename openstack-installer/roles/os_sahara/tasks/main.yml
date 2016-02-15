@@ -1,7 +1,7 @@
 ---
 
 - name: create sahara user in rabbitmq
-  rabbitmq_user: user="{{ sahara_rabbit_user }}" password="{{ sahara_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}" user="{{ sahara_rabbit_user }}" password="{{ sahara_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 
