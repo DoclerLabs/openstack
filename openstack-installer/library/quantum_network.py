@@ -218,6 +218,9 @@ def _create_network(module, neutron):
         network.pop('provider:physical_network', None)
         network.pop('provider:segmentation_id', None)
 
+    if module.params['provider_network_type'] == 'vxlan':
+        network.pop('provider:physical_network', None)
+
     if module.params['provider_network_type'] == 'flat':
         network.pop('provider:segmentation_id', None)
 
@@ -249,7 +252,7 @@ def main():
     argument_spec.update(dict(
             name                            = dict(required=True),
             tenant_name                     = dict(default=None),
-            provider_network_type           = dict(default=None, choices=['local', 'vlan', 'flat', 'gre']),
+            provider_network_type           = dict(default=None, choices=['local', 'vlan', 'vxlan', 'flat', 'gre']),
             provider_physical_network       = dict(default=None),
             provider_segmentation_id        = dict(default=None),
             router_external                 = dict(default=False, type='bool'),
