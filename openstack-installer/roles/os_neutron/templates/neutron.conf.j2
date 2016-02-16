@@ -284,12 +284,17 @@ l3_ha = {{ neutron_ha_routers }}
 # network which not the default one.
 # l3_ha_network_type =
 # Example: l3_ha_network_type = flat
+{% if neutron_ha_network_type %}
 l3_ha_network_type = {{ neutron_ha_network_type }}
+{% endif %}
 #
 # The physical network name with which the HA network can be created.
 # l3_ha_network_physical_name =
 # Example: l3_ha_network_physical_name = physnet1
+{% if neutron_ha_network_physical_name %}
 l3_ha_network_physical_name = {{ neutron_ha_network_physical_name }}
+{% endif %}
+
 # =========== end of items for l3 extension =======
 
 # =========== items for metadata proxy configuration ==============
