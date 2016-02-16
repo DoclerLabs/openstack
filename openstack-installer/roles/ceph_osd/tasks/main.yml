@@ -50,6 +50,9 @@
 - name: fetch the bootstrap-osd key
   command: ceph auth print-key client.bootstrap-osd
   register: bootstrap_osd_key_results
+  until: bootstrap_osd_key_results | success
+  delay: 5
+  retries: 5
   delegate_to: "{{ groups['ceph_monitor'][0] }}"
   run_once: True
 
