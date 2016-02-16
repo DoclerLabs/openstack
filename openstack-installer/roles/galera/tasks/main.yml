@@ -63,6 +63,7 @@
 - name: create shadow CIB database
   command: crm_shadow --create shadowcib -b --force
   changed_when: False
+  run_once: True
 
 - name: install pacemaker galera service
   pacemaker:
