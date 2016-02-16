@@ -1,0 +1,136 @@
+controller:
+  controller1:
+    ip:
+      mgmt: 192.168.168.11
+      vxlan: 192.168.168.11
+    osd:
+      - { disk: "/dev/vdb" }
+    swift:
+      - { device: "/dev/vdc" }
+  controller2:
+    ip:
+      mgmt: 192.168.168.12
+      vxlan: 192.168.168.12
+    osd:
+      - { disk: "/dev/vdb" }
+    swift:
+      - { device: "/dev/vdc" }
+  controller3:
+    ip:
+      mgmt: 192.168.168.13
+      vxlan: 192.168.168.13
+    osd:
+      - { disk: "/dev/vdb" }
+    swift:
+      - { device: "/dev/vdc" }
+
+# -------- infrastructure --------
+pacemaker:
+  inherit: controller
+
+haproxy:
+  inherit: pacemaker
+
+memcached:
+  inherit: controller
+
+rabbitmq:
+  inherit: controller
+
+galera:
+  inherit: pacemaker
+
+mongodb:
+  inherit: controller
+
+syslog:
+  inherit:
+    - compute
+    - controller
+
+# -------- OpenStack ---------
+keystone:
+  inherit: controller
+
+swift_proxy:
+  inherit: controller
+
+swift_storage:
+  inherit: controller
+
+glance:
+  inherit: controller
+
+horizon:
+  inherit: controller
+
+nova_controller:
+  inherit: controller
+
+nova_compute:
+  inherit: compute
+
+neutron_controller:
+  inherit: controller
+
+neutron_compute:
+  inherit: compute
+
+ceilometer_controller:
+  inherit: controller
+
+ceilometer_compute:
+  inherit: compute
+
+heat:
+  inherit: controller
+
+cinder:
+  inherit: controller
+
+cinder_volume:
+  inherit: controller
+
+murano:
+
+sahara:
+
+trove:
+
+barbican:
+
+ironic:
+
+# -------- Tempest ------
+tempest:
+  localhost:
+    ip:
+      mgmt: 127.0.0.1
+    ansible_connection: local
+
+# -------- Ceph ---------
+ceph_monitor:
+  inherit: controller
+
+ceph_osd:
+  inherit: controller
+
+#The radosgw keystone authentication uses the certificates for signature checking,
+#which are local to the keystone instance
+ceph_radosgw:
+#  inherit: keystone
+
+# -------- Compute --------
+compute:
+  compute1:
+    ip:
+      mgmt: 192.168.168.21
+      vxlan: 192.168.168.21
+  compute2:
+    ip:
+      mgmt: 192.168.168.22
+      vxlan: 192.168.168.22
+  compute3:
+    ip:
+      mgmt: 192.168.168.23
+      vxlan: 192.168.168.23
