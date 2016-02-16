@@ -36,6 +36,8 @@ ironic_project_name: "{{ keystone_service_project_name | default('service') }}"
 
 nova_syslog_use: "{{ syslog_use | default(False) }}"
 
+nova_debug: False
+
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 os_proto: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False

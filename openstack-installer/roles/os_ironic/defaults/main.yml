@@ -14,6 +14,8 @@ ironic_deploy_initramfs_path: /etc/openstack_deploy/ironic-deploy.initramfs
 
 ironic_syslog_use: "{{ syslog_use | default(False) }}"
 
+ironic_debug: False
+
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
 SSLCACertificateFileSource:

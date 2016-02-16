@@ -14,6 +14,8 @@ heat_domain_admin: heat_domain_admin
 
 heat_syslog_use: "{{ syslog_use | default(False) }}"
 
+heat_debug: False
+
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
 SSLCACertificateFileSource:

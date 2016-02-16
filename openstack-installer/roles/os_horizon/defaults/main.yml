@@ -8,6 +8,8 @@ horizon_launch_instance_ng_enabled: True
 horizon_openstack_endpoint_type: internalURL
 horizon_cinder_enable_backup: True
 
+horizon_debug: False
+
 neutron_vpnaas: True
 
 murano_repo_url: "http://storage.apps.openstack.org"

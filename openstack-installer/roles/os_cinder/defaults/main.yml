@@ -17,6 +17,8 @@ cinder_backup_ceph_user: cinder-backup
 
 cinder_syslog_use: "{{ syslog_use | default(False) }}"
 
+cinder_debug: False
+
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 os_proto: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
