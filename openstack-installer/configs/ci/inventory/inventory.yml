@@ -92,12 +92,15 @@ cinder_volume:
   inherit: controller
 
 murano:
+  inherit: controller
 
 sahara:
+  inherit: controller
 
 trove:
 
 barbican:
+  inherit: controller
 
 ironic:
 
