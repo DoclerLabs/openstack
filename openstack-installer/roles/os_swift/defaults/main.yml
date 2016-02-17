@@ -36,8 +36,6 @@ swift_pipeline:
  - "{{ (groups['ceilometer_controller'] | count > 0) | ternary('ceilometer', '') }}"
  - proxy-server
 
-ceilometer_rabbit_user: ceilometer
-
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
 SSLCACertificateFileSource:

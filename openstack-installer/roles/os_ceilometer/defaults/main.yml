@@ -18,6 +18,15 @@ ceilometer_syslog_use: "{{ syslog_use | default(False) }}"
 aodh_debug: False
 ceilometer_debug: False
 
+keystone_rabbit_user: keystone
+glance_rabbit_user: glance
+nova_rabbit_user: nova
+neutron_rabbit_user: neutron
+cinder_rabbit_user: cinder
+heat_rabbit_user: heat
+swift_rabbit_user: swift
+trove_rabbit_user: trove
+
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
 SSLCACertificateFileSource:

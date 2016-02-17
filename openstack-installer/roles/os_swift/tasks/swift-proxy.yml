@@ -2,6 +2,11 @@
 
 ## Proxy
 
+- name: create swift user in rabbitmq
+  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}" user="{{ swift_rabbit_user }}" password="{{ swift_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
 - name: disable autostarting of swift-proxy
   copy: content='manual' dest=/etc/init/swift-proxy.override owner=root group=root mode=0644 force=no
   when: inventory_hostname in groups['swift_proxy']
