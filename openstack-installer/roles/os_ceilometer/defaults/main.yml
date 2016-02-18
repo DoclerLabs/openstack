@@ -27,6 +27,10 @@ heat_rabbit_user: heat
 swift_rabbit_user: swift
 trove_rabbit_user: trove
 
+ceilometer_metering_time_to_live: 0
+ceilometer_event_time_to_live: 0
+ceilometer_alarm_history_time_to_live: 0
+
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
 SSLCACertificateFileSource:

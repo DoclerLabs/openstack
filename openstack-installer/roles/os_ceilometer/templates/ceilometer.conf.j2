@@ -280,6 +280,10 @@ connection = mongodb://ceilometer:{{ ceilometer_db_password }}@{% for host in gr
 
 mongodb_replica_set = {{ mongodb_replica_set }}
 
+metering_time_to_live: {{ ceilometer_metering_time_to_live }}
+event_time_to_live: {{ ceilometer_event_time_to_live }}
+alarm_history_time_to_live: {{ ceilometer_alarm_history_time_to_live }}
+
 # The SQLAlchemy connection string to use to connect to the slave
 # database. (string value)
 #slave_connection = <None>

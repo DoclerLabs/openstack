@@ -101,3 +101,11 @@
   with_items:
     - ceilometer-agent-compute
   when: inventory_hostname in groups['ceilometer_compute']
+
+- name: set up ceilometer-expirer cron job
+  cron: name="ceilometer-expirer"
+    minute=12
+    hour="{{ groups['ceilometer_controller'].index(inventory_hostname) }}-23/{{ groups['ceilometer_controller'] | count }}"
+    user=ceilometer
+    job="/usr/bin/ceilometer-expirer"
+  when: inventory_hostname in groups['ceilometer_controller']
