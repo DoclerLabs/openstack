@@ -516,6 +516,9 @@ endpoint_type = internalURL
 #auth_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3
 #insecure = {{ ssl_insecure }}
 
+[clients_heat]
+endpoint_type = publicURL
+
 [ec2authtoken]
 
 auth_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3
