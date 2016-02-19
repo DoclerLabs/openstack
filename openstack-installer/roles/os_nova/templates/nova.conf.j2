@@ -9,6 +9,8 @@ rootwrap_config = /etc/nova/rootwrap.conf
 service_down_time = {{ nova_service_down_time }}
 
 # Compute
+host = {{ inventory_hostname }}
+
 {% if groups['ironic'] | count > 0 %}
 compute_driver = nova.virt.ironic.IronicDriver
 scheduler_host_manager=nova.scheduler.ironic_host_manager.IronicHostManager
