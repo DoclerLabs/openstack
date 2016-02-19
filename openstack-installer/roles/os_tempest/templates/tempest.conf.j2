@@ -371,6 +371,7 @@ min_compute_nodes = {{ groups['nova_compute'] | count }}
 
 # Does the test environment support resizing? (boolean value)
 #resize = false
+resize = true
 
 # Does the test environment support pausing? (boolean value)
 #pause = true
@@ -393,6 +394,7 @@ min_compute_nodes = {{ groups['nova_compute'] | count }}
 # Does the test environment use block devices for live migration
 # (boolean value)
 #block_migration_for_live_migration = false
+block_migration_for_live_migration = {{ nova_ephemeral_backend == 'local' }}
 
 # Does the test environment block migration support cinder iSCSI
 # volumes. Note, libvirt doesn't support this, see
@@ -446,17 +448,20 @@ min_compute_nodes = {{ groups['nova_compute'] | count }}
 # instance? This should be set to True if testing Kilo+ Nova. (boolean
 # value)
 #preserve_ports = false
+preserve_ports = true
 
 # Does the test environment support attaching an encrypted volume to a
 # running server instance? This may depend on the combination of
 # compute_driver in nova and the volume_driver(s) in cinder. (boolean
 # value)
 #attach_encrypted_volume = true
+attach_encrypted_volume = false
 
 # Does the test environment support creating instances with multiple
 # ports on the same network? This is only valid when using Neutron.
 # (boolean value)
 #allow_duplicate_networks = false
+allow_duplicate_networks = true
 
 # Enable special configuration drive with metadata. (boolean value)
 #config_drive = true
@@ -470,7 +475,7 @@ min_compute_nodes = {{ groups['nova_compute'] | count }}
 
 # Where the dashboard can be found (string value)
 #dashboard_url = http://localhost/
-dashboard_url = http://{{ vip_public }}/horizon
+dashboard_url = {{ SSLCertificateKeyFileSource is defined | ternary('https','http') }}://{{ os_public_address }}/horizon
 
 # Login page for the dashboard (string value)
 # This option is deprecated for removal.
