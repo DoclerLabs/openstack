@@ -95,6 +95,7 @@ service_plugins = router,firewall,lbaas{% if neutron_vpnaas_type %},vpnaas{% end
 # The default value is hostname of the machine.
 #
 # host =
+host = {{ inventory_hostname }}
 
 # The strategy to be used for auth.
 # Supported values are 'keystone'(default), 'noauth'.
