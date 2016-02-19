@@ -7,6 +7,7 @@ use_syslog = {{ cinder_syslog_use }}
 
 my_ip = {{ ip.mgmt }}
 osapi_volume_listen = 127.0.0.1
+host = {{ inventory_hostname }}
 
 {% if inventory_hostname in groups['cinder_volume'] %}
 
