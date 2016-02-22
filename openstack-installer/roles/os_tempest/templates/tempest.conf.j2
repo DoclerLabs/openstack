@@ -899,7 +899,7 @@ floating_netwok_name = {{ external_net_name }}
 # extensions are disabled. To get the list of extensions run: 'neutron
 # ext-list' (list value)
 #api_extensions = all
-api_extensions = {{ neutron_api_extensions }}
+api_extensions = {{ ','.join(neutron_api_extensions) }}{{ (neutron_vpnaas_type == None) | ternary('',',vpnaas') }}
 
 # Allow the execution of IPv6 subnet tests that use the extended IPv6
 # attributes ipv6_ra_mode and ipv6_address_mode (boolean value)

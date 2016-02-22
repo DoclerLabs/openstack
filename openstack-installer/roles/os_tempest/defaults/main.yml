@@ -22,9 +22,34 @@ external_subnet_gateway_ip: 10.97.37.126
 external_subnet_allocation_start: 10.97.37.1
 external_subnet_allocation_end: 10.97.37.125
 
-neutron_api_extensions: dns-integration,ext-gw-mode,binding,agent,subnet_allocation,l3_agent_scheduler,external-net,flavors,fwaasrouterinsertion,
-  net-mtu,quotas,l3-ha,provider,multi-provider,lbaas,extraroute,lbaas_agent_scheduler,fwaas,router,extra_dhcp_opt,service-type,security-group,
-  dhcp_agent_scheduler,rbac-policies,port-security,allowed-address-pairs,dvr
+neutron_vpnaas_type:
+neutron_api_extensions:
+  - dns-integration
+  - ext-gw-mode
+  - binding
+  - agent
+  - subnet_allocation
+  - l3_agent_scheduler
+  - external-net
+  - flavors
+  - fwaasrouterinsertion
+  - net-mtu
+  - quotas
+  - l3-ha
+  - provider
+  - multi-provider
+  - lbaas
+  - extraroute
+  - lbaas_agent_scheduler
+  - fwaas
+  - router
+  - extra_dhcp_opt
+  - service-type
+  - security-group
+  - dhcp_agent_scheduler
+  - rbac-policies
+  - port-security
+  - allowed-address-pairs
 
 tenant_network_cidr: 10.100.0.0/16
 
