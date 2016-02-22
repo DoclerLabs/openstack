@@ -42,6 +42,15 @@ use_stderr = False
 
 # publish_errors = False
 
+# (StrOpt) Hostname to be used by the neutron server, agents and services
+# running on this machine. All the agents and services running on this machine
+# must use the same host value.
+# The default value is hostname of the machine.
+#
+# host =
+host = {{ inventory_hostname }}
+
+
 {% if inventory_hostname in groups['neutron_controller'] %}
 
 # Address to bind the API server to
@@ -88,14 +97,6 @@ service_plugins = router,firewall,lbaas{% if neutron_vpnaas_type %},vpnaas{% end
 
 # Paste configuration file
 # api_paste_config = api-paste.ini
-
-# (StrOpt) Hostname to be used by the neutron server, agents and services
-# running on this machine. All the agents and services running on this machine
-# must use the same host value.
-# The default value is hostname of the machine.
-#
-# host =
-host = {{ inventory_hostname }}
 
 # The strategy to be used for auth.
 # Supported values are 'keystone'(default), 'noauth'.
