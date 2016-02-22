@@ -10,6 +10,7 @@
     - python-dev
     - python-subunit
     - python-glanceclient
+    - python-novaclient
     - python-neutronclient
   when: ansible_os_family == 'Debian'
 
@@ -37,6 +38,18 @@
     name=cirros-image
   run_once: True
   register: cirros_image
+
+- name: ensure m1.micro flavor exists
+  command: nova --os-auth-url "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    --os-project-domain-name "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+    --os-project-name admin
+    --os-user-domain-name "{{ keystone_domain_name }}"
+    --os-user-name admin
+    --os-password {{ keystone_admin_password }}
+    flavor-create m1.micro 0 256 1 1
+  register: nova_results
+  failed_when: nova_results | failed and 'already exists' not in nova_results.stderr
+  changed_when: nova_results | success
 
 - name: ensure the heat stack owner project exists in keystone
   keystone_user: >
