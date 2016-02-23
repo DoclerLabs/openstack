@@ -47,6 +47,7 @@
     - apache_frontend
   vars:
     service_name: heat
+    apache_proxy_preserve_host: True
     services:
       - { port: 8004 }
       - { port: 8000 }
@@ -68,7 +69,7 @@
         haproxy_balance_type: http
         haproxy_backend_options:
           - forwardfor
-          - httpchk
+          - httpchk OPTIONS / HTTP/1.1\r\nHost:localhost
           - httplog
 
       - haproxy_service_name: heat_api_cfn
@@ -80,7 +81,7 @@
         haproxy_balance_type: http
         haproxy_backend_options:
           - forwardfor
-          - httpchk
+          - httpchk OPTIONS / HTTP/1.1\r\nHost:localhost
           - httplog
 
       - haproxy_service_name: heat_api_cloudwatch
@@ -92,5 +93,5 @@
         haproxy_balance_type: http
         haproxy_backend_options:
           - forwardfor
-          - httpchk
+          - httpchk OPTIONS / HTTP/1.1\r\nHost:localhost
           - httplog

@@ -2,3 +2,4 @@ SSLCertificateKeyFile: /etc/ssl/private/openstack.key
 SSLCertificateFile: /etc/ssl/certs/openstack.crt
 
 service_ssl: False
+apache_proxy_preserve_host: False

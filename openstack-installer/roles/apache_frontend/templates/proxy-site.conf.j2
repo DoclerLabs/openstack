@@ -18,7 +18,7 @@ Listen {{ ip.mgmt }}:{{ service.port }}
     WSGIApplicationGroup %{GLOBAL}
     WSGIPassAuthorization On
 {% else %}
-    ProxyPreserveHost Off
+    ProxyPreserveHost {{ apache_proxy_preserve_host | ternary('On', 'Off') }}
     ProxyPass / http://127.0.0.1:{{ service.port }}/ retry=10
     ProxyPassReverse / http://127.0.0.1:{{ service.port }}/ retry=10
 {% endif %}
