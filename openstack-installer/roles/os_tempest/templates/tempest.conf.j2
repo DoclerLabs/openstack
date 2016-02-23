@@ -442,9 +442,11 @@ block_migration_for_live_migration = {{ nova_ephemeral_backend == 'local' }}
 # Does the test environment have the nova cert running? (boolean
 # value)
 #nova_cert = true
+nova_cert = false
 
 # Does the test environment support server personality (boolean value)
 #personality = true
+personality = false
 
 # Does Nova preserve preexisting ports from Neutron when deleting an
 # instance? This should be set to True if testing Kilo+ Nova. (boolean
