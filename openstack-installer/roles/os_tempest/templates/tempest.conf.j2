@@ -965,6 +965,7 @@ api_extensions = {{ ','.join(neutron_api_extensions) }}{{ (neutron_vpnaas_type =
 # all, indicates that all of these features are expected to be enabled
 # (list value)
 #discoverable_apis = all
+discoverable_apis = {{ ','.join(swift_api_extensions) }}
 
 # Execute (old style) container-sync tests (boolean value)
 #container_sync = true

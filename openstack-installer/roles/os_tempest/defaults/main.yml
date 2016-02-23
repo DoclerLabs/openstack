@@ -57,6 +57,15 @@ heat_stack_owner_project: demo
 heat_stack_owner_user: demo
 heat_stack_owner_password: demo
 
+swift_api_extensions:
+  - bulk_delete
+  - container_quotas
+  - bulk_upload
+  - ratelimit
+  - slo
+  - account_quotas
+  - swift
+
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
 SSLCACertificateFileSource:
