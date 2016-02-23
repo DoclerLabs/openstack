@@ -258,6 +258,14 @@ Example OSD configuration in the inventory:
       osd:
         - { path: "/mnt/osd" }     # Use an already formatted and mounted FS for the OSD.
 
+Radosgw settings:
+
+::
+
+  radosgw_keystone: True           # Integrate radosgw with keystone authentication, disable if using swift.
+  radosgw_port: 8080               # The default port where radosgw listens, change it if swift is used.
+
+
 Keystone
 --------
 
@@ -292,7 +300,7 @@ Swift proxy is best to put on controllers, and you can decide where to put stora
 Using a separate storage network for replication traffic is recommended, because of the traffic volume, and for security reasons:
 unauthenticated rsync daemons will listen on the management interfaces.
 
-Radosgw and Swift is mutually exclusive in this setup, since they're using the same service ports (8080).
+If you're using radosgw, change its port, and disable keystone integration!
 
 Configuring the storage can be done in the inventory:
 

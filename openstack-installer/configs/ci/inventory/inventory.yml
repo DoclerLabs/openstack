@@ -120,8 +120,9 @@ ceph_osd:
 
 #The radosgw keystone authentication uses the certificates for signature checking,
 #which are local to the keystone instance
+#CI config doesn't use radosgw with keystone
 ceph_radosgw:
-#  inherit: keystone
+  inherit: controller
 
 # -------- Compute --------
 compute:

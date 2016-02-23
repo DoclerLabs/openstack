@@ -33,7 +33,17 @@
       "rgw frontends": "fastcgi socket_port=9000 socket_host=127.0.0.1",
       "log file": "/var/log/ceph/client.radosgw.gateway.log",
       "rgw print continue": "false",
-      "rgw keystone url": "{{ keystone_proto }}://{{ ip.mgmt }}:5000",
+    }
+  notify: restart radosgw
+
+- name: set up /etc/ceph/ceph.conf for radosgw-keystone
+  ini_file: dest=/etc/ceph/ceph.conf
+    section=client.radosgw.gateway
+    option="{{ item.key }}"
+    value="{{ item.value }}"
+    state="{{ radosgw_keystone | ternary('present', 'absent') }}"
+  with_dict:
+    { "rgw keystone url": "{{ keystone_proto }}://{{ ip.mgmt }}:5000",
       "rgw keystone admin token" : "{{ keystone_admin_token }}",
       "rgw keystone accepted roles": "{{ rgw_keystone_accepted_roles }}",
       "rgw keystone token cache size": 500,
@@ -45,12 +55,15 @@
 
 - name: make sure /var/lib/ceph/nss exists
   file: path=/var/lib/ceph/nss state=directory mode=0644 owner=root group=root
+  when: radosgw_keystone
 
 - name: convert keystone CA cert for radosgw use
   shell: 'openssl x509 -in /etc/keystone/ssl/certs/ca.pem -pubkey | certutil -d /var/lib/ceph/nss -A -n ca -t "TCu,Cu,Tuw"'
+  when: radosgw_keystone
 
 - name: convert keystone signing cert for radosgw use
   shell: 'openssl x509 -in /etc/keystone/ssl/certs/signing_cert.pem -pubkey | certutil -A -d /var/lib/ceph/nss -n signing_cert -t "P,P,P"'
+  when: radosgw_keystone
 
 - meta: flush_handlers
 

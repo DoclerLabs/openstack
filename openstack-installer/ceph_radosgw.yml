@@ -3,14 +3,14 @@
 - hosts: ceph_radosgw[0]
   max_fail_percentage: 0
   roles:
-    - os_keystone_service
+    - { role: os_keystone_service, when: radosgw_keystone | default(True) }
   vars:
     keystone_service_name: swift
     keystone_service_type: object-store
     keystone_service_description: "OpenStack Object Storage Service"
-    keystone_public_url: "http://{{ vip_public }}:8080/swift/v1"
-    keystone_internal_url: "http://{{ vip_mgmt }}:8080/swift/v1"
-    keystone_admin_url: "http://{{ vip_mgmt }}:8080/swift/v1"
+    keystone_public_url: "http://{{ vip_public }}:{{ radosgw_port | default(8080) }}/swift/v1"
+    keystone_internal_url: "http://{{ vip_mgmt }}:{{ radosgw_port | default(8080) }}/swift/v1"
+    keystone_admin_url: "http://{{ vip_mgmt }}:{{ radosgw_port | default(8080) }}/swift/v1"
     keystone_region: "{{ keystone_region_name }}"
     keystone_projects: []
 
@@ -43,7 +43,7 @@
         haproxy_bind_hosts:
           - "{{ vip_mgmt }}"
           - "{{ vip_public }}"
-        haproxy_port: 8080
+        haproxy_port: "{{ radosgw_port | default(8080) }}"
         haproxy_balance_type: http
         haproxy_backend_options:
           - forwardfor
