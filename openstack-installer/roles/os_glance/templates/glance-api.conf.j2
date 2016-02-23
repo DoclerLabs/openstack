@@ -26,6 +26,7 @@
 # If Glance is operating behind a proxy, you will want to change this
 # to represent the proxy's URL. (string value)
 #public_endpoint = <None>
+public_endpoint = {{ os_proto }}://{{ os_public_address }}:9292
 
 # Whether to allow users to specify image properties beyond what the
 # image schema provides (boolean value)

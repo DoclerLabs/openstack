@@ -8,9 +8,9 @@ log_dir = /var/log/nova
 rootwrap_config = /etc/nova/rootwrap.conf
 service_down_time = {{ nova_service_down_time }}
 
-# Compute
 host = {{ inventory_hostname }}
 
+# Compute
 {% if groups['ironic'] | count > 0 %}
 compute_driver = nova.virt.ironic.IronicDriver
 scheduler_host_manager=nova.scheduler.ironic_host_manager.IronicHostManager
@@ -29,6 +29,7 @@ instance_name_template = instance-%08x
 api_paste_config = /etc/nova/api-paste.ini
 allow_resize_to_same_host = True
 osapi_compute_listen = 127.0.0.1
+osapi_compute_link_prefix = {{ os_proto }}://{{ os_public_address }}:8774
 enabled_apis = osapi_compute, metadata
 
 # Rpc all
