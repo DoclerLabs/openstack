@@ -18,6 +18,7 @@ keystone_public_address: "{{ vip_public }}"
 
 keystone_region_name: RegionONE
 keystone_domain_name: Default
+keystone_token_provider: fernet
 
 #OpenStack service  addresses should be domain names in case of SSL (when os_ssl: True)
 os_internal_address: "{{ vip_mgmt }}"

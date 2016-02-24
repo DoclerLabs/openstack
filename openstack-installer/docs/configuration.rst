@@ -269,7 +269,7 @@ Radosgw settings:
 Keystone
 --------
 
-Keystone is the central authentication service in OpenStack. Currently UUID tokens are implemented in this installer.
+Keystone is the central authentication service in OpenStack. UUID and Fernet tokens are implemented in this installer.
 
 For a multi-region setup, the installation can be skipped with an empty inventory for the 'keystone' group. In this case,
 the keystone_xxx_address settings (see below) should point to the central keystone instance.
@@ -289,6 +289,7 @@ Settings which most likely have to be changed in a production installation:
                                                # SSLCertificateFileSource and SSLCertificateKeyFileSource.
   ssl_insecure: False                          # It's a global setting for all OpenStack components, where you can disable certificate
                                                # checking (e.g. in case of self-signed certificates). Don't use it in production.
+  keystone_token_provider: uuid                # By default, uuid tokens are used. You can use fernet tokens, too.
 
 There are some other settings in roles/os_keystone/defaults/main.yml, they can be overridden to fine-tune the service.
 

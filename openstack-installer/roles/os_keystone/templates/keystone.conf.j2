@@ -798,7 +798,7 @@ max_retries = -1
 # key. Increasing this value means that additional secondary keys will be kept
 # in the rotation. (integer value)
 #max_active_keys = 3
-
+max_active_keys = {{ keystone_max_active_keys }}
 
 [identity]
 
@@ -1918,12 +1918,13 @@ rabbit_ha_queues = true
 
 # Amount of time a token should remain valid (in seconds). (integer value)
 #expiration = 3600
+expiration = {{ keystone_token_expiration }}
 
 # Controls the token construction, validation, and revocation operations.
 # Entrypoint in the keystone.token.provider namespace. Core providers are
 # [fernet|pkiz|pki|uuid]. (string value)
 #provider = uuid
-provider = uuid
+provider = {{ keystone_token_provider }}
 
 # Entrypoint for the token persistence backend driver in the
 # keystone.token.persistence namespace. Supplied drivers are kvs, memcache,

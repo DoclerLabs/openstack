@@ -10,4 +10,10 @@ keystone_memcache_socket_timeout: 1
 keystone_memcache_pool_maxsize: 1000
 keystone_memcache_pool_unused_timeout: 60
 
+keystone_token_expiration: 3600
+#uuid or fernet
+keystone_token_provider: uuid
+#max. active fernet keys
+keystone_max_active_keys: 3
+
 keystone_syslog_use: "{{ syslog_use | default(False) }}"

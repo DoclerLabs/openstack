@@ -11,6 +11,7 @@
 - name: install keystone
   apt: name={{ item }}
   with_items:
+    - rsync
     - keystone
     - python-openstackclient
     - python-memcache
@@ -55,3 +56,68 @@
   notify: signal apache to reload
 
 - meta: flush_handlers
+
+### Fernet key handling
+
+- name: create ssh key for keystone
+  local_action: command ssh-keygen -f workdir/keystone_id_rsa -b 2048 -P "" creates=workdir/keystone_id_rsa.pub
+  run_once: True
+  sudo: False
+  when: keystone_token_provider == 'fernet'
+
+- name: make sure .ssh directory exists
+  file: path=/var/lib/keystone/.ssh state=directory owner=keystone group=keystone mode=0750
+  when: keystone_token_provider == 'fernet'
+
+- name: install the public key for keystone
+  copy: src=workdir/keystone_id_rsa.pub dest=/var/lib/keystone/.ssh/authorized_keys owner=keystone group=keystone mode=0640
+  when: keystone_token_provider == 'fernet'
+
+- name: install the private key for keystone
+  copy: src=workdir/keystone_id_rsa dest=/var/lib/keystone/.ssh/id_rsa owner=keystone group=keystone mode=0600
+  when: keystone_token_provider == 'fernet'
+
+- name: set the login shell to /bin/sh for keystone
+  user: name=keystone shell=/bin/sh
+  when: keystone_token_provider == 'fernet'
+
+# Cluster repair
+
+- name: check if fernet keys already exists
+  stat: path=/etc/keystone/fernet-keys
+  register: fernet_stat
+
+- name: reclaim existing fernet keys
+  command: su keystone -s /bin/sh -c
+     "rsync -ia -e 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
+      {{ item }}:/etc/keystone/fernet-keys
+      /etc/keystone"
+  register: rsync_results
+  changed_when: rsync_results.stdout_lines | count > 0
+  when: inventory_hostname == groups['keystone'][0] and
+        item != groups['keystone'][0] and
+        hostvars[item].fernet_stat.stat.isdir | default(False)
+        and keystone_token_provider == 'fernet'
+  with_items: groups['keystone']
+
+# Fernet key creation and distribution
+
+- name: initialize fernet keys
+  command: su keystone -s /bin/sh -c "/usr/bin/keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone" creates=/etc/keystone/fernet-keys/0
+  register: keystone_fernet_init
+  run_once: True
+  when: keystone_token_provider == 'fernet'
+
+- name: rotate fernet keys
+  command: su keystone -s /bin/sh -c "/usr/bin/keystone-manage fernet_rotate --keystone-user keystone --keystone-group keystone"
+  when: not keystone_fernet_init | changed
+  run_once: True
+  when: keystone_token_provider == 'fernet'
+
+- name: distribute fernet keys
+  command: su keystone -s /bin/sh -c
+     "rsync --delete -a -e 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
+      /etc/keystone/fernet-keys
+      {{ inventory_hostname }}:/etc/keystone/"
+  delegate_to: "{{ groups['keystone'][0] }}"
+  when: inventory_hostname != groups['keystone'][0] and keystone_token_provider == 'fernet'
