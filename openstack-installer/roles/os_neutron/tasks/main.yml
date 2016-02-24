@@ -13,7 +13,7 @@
   copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
   with_items:
     - neutron-server
-    - neutron-plugin-linuxbridge-agent
+    - neutron-plugin-{{ neutron_physical_interface_driver }}-agent
     - neutron-vpn-agent
     - neutron-l3-agent
     - neutron-dhcp-agent
@@ -24,7 +24,7 @@
 - name: disable autostarting of neutron agent on computes
   copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
   with_items:
-    - neutron-plugin-linuxbridge-agent
+    - neutron-plugin-{{ neutron_physical_interface_driver }}-agent
   when: inventory_hostname in groups['neutron_compute']
 
 - name: turn off rp filtering
@@ -85,7 +85,7 @@
   apt: name={{ item }}
   with_items:
     - conntrack
-    - neutron-plugin-linuxbridge-agent
+    - neutron-plugin-{{ neutron_physical_interface_driver }}-agent
   when: inventory_hostname in groups['neutron_compute']
 
 - name: disable apparmor strongswan profiles
@@ -125,6 +125,14 @@
     - restart neutron controller services
   when: inventory_hostname in groups['neutron_controller']
 
+- name: install neutron force dhcp option config on controllers
+  template: src={{ item }}.j2 dest=/etc/neutron/{{ item }} owner=neutron group=root mode=0460
+  with_items:
+    - dnsmasq-neutron.conf
+  notify:
+    - restart neutron controller services
+  when: inventory_hostname in groups['neutron_controller'] and neutron_dhcp_option_force is defined
+
 - name: install neutron config on computes
   template: src={{ item }}.j2 dest=/etc/neutron/{{ item }} owner=neutron group=root mode=0460
   with_items:
@@ -137,7 +145,7 @@
   template: src={{ item }}.ini.j2 dest=/etc/neutron/plugins/ml2/{{ item }}.ini owner=neutron group=root mode=0460
   with_items:
     - ml2_conf
-    - linuxbridge_agent
+    - "{{ neutron_physical_interface_driver }}_agent"
   notify:
     - restart neutron controller services
     - restart neutron compute services
@@ -154,7 +162,7 @@
   service: name={{ item }} state=started enabled=yes
   with_items:
     - neutron-server
-    - neutron-plugin-linuxbridge-agent
+    - neutron-plugin-{{ neutron_physical_interface_driver }}-agent
     - "{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
@@ -164,5 +172,5 @@
 - name: ensure neutron is started
   service: name={{ item }} state=started enabled=yes
   with_items:
-    - neutron-plugin-linuxbridge-agent
+    - neutron-plugin-{{ neutron_physical_interface_driver }}-agent
   when: inventory_hostname in groups['neutron_compute']
