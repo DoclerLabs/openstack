@@ -66,7 +66,6 @@
   with_items:
     - conntrack
     - keepalived
-    - python-mysqldb
     - neutron-server
     - neutron-plugin-ml2
     - neutron-plugin-linuxbridge-agent
@@ -85,6 +84,7 @@
 - name: install neutron compute packages
   apt: name={{ item }}
   with_items:
+    - python-mysqldb
     - conntrack
     - neutron-plugin-linuxbridge-agent
   when: inventory_hostname in groups['neutron_compute']
