@@ -66,6 +66,7 @@
   with_items:
     - conntrack
     - keepalived
+    - python-mysqldb
     - neutron-server
     - neutron-plugin-ml2
     - neutron-plugin-linuxbridge-agent
