@@ -40,7 +40,7 @@ neutron_physical_interface_mappings: flat:eth0
 neutron_vlan_ranges:
 neutron_ha_network_type:
 neutron_ha_network_physical_name:
-neutron_ha_routers: True
+neutron_ha_routers: False
 
 trove_net_name: trove-net
 trove_net_segmentation_id: 901
