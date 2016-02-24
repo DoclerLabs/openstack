@@ -1,7 +1,7 @@
 ---
 
 - hosts: galera
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - common
@@ -13,7 +13,7 @@
       - { keyserver: "keys.gnupg.net", keyid: "1C4CBDCDCD2EFD2A" }
 
 - hosts: haproxy
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - haproxy_service

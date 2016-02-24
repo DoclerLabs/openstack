@@ -23,14 +23,14 @@
 - hosts:
     - nova_controller
     - nova_compute
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - common
     - os_nova
 
 - hosts: nova_controller
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - apache_frontend
@@ -41,7 +41,7 @@
       - { port: 8774 }
 
 - hosts: nova_compute
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - { role: ceph_client, when: cinder_backend == 'ceph' or nova_ephemeral_backend == 'ceph' }
@@ -63,7 +63,7 @@
     ceph_keyring_owner: nova
 
 - hosts: haproxy
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - haproxy_service

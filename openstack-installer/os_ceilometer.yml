@@ -40,7 +40,7 @@
         keystone_role: admin
 
 - hosts: mongodb
-  sudo: True
+  become: True
   max_fail_percentage: 0
   tasks:
     - name: determine the primary node
@@ -59,14 +59,14 @@
 - hosts:
     - ceilometer_controller
     - ceilometer_compute
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - common
     - os_ceilometer
 
 - hosts: ceilometer_controller
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - apache_frontend
@@ -78,7 +78,7 @@
       - { port: 8042 }
 
 - hosts: haproxy
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - haproxy_service

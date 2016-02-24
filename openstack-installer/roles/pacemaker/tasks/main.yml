@@ -16,7 +16,7 @@
 
 - name: check if there's an existing authkey
   local_action: stat path=workdir/authkey
-  sudo: False
+  become: False
   register: authkey_result
 
 - name: distribute corosync authkey

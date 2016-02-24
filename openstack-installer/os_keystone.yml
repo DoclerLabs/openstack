@@ -1,14 +1,14 @@
 ---
 
 - hosts: keystone
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - common
     - os_keystone
 
 - hosts: keystone
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - apache_frontend
@@ -20,7 +20,7 @@
       - { port: 35357, wsgi_process: "keystone-admin", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/admin" }
 
 - hosts: haproxy
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - haproxy_service

@@ -21,14 +21,14 @@
         keystone_role: admin
 
 - hosts: ironic
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - common
     - os_ironic
 
 - hosts: ironic
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - apache_frontend
@@ -38,7 +38,7 @@
       - { port: 6385 }
 
 - hosts: haproxy
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - haproxy_service
