@@ -36,14 +36,14 @@
 - hosts:
     - cinder
     - cinder_volume
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - common
     - os_cinder
 
 - hosts: cinder
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - apache_frontend
@@ -54,7 +54,7 @@
       - { port: 8776 }
 
 - hosts: cinder
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - { role: ceph_client, when: cinder_backend == 'ceph' }
@@ -64,7 +64,7 @@
     ceph_keyring_owner: cinder
 
 - hosts: cinder
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - { role: ceph_client, when: cinder_backend == 'ceph' }
@@ -74,7 +74,7 @@
     ceph_keyring_owner: cinder
 
 - hosts: haproxy
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - haproxy_service

@@ -15,7 +15,7 @@
     keystone_projects: []
 
 - hosts: ceph_radosgw
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - { role: ceph_client }
@@ -25,14 +25,14 @@
     ceph_keyring_owner: root
 
 - hosts: ceph_radosgw
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - common
     - ceph_radosgw
 
 - hosts: haproxy
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - haproxy_service

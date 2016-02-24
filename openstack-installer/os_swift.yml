@@ -23,7 +23,7 @@
 - hosts:
     - swift_proxy
     - swift_storage
-  sudo: True
+  become: True
   max_fail_percentage: 0
   serial: 1
   tasks:
@@ -40,14 +40,14 @@
 - hosts:
     - swift_proxy
     - swift_storage
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - common
     - os_swift
 
 - hosts: swift_proxy
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - apache_frontend
@@ -58,7 +58,7 @@
       - { port: 8080 }
 
 - hosts: haproxy
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - haproxy_service

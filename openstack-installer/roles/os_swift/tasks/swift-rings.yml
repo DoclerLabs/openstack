@@ -11,7 +11,7 @@
 
 - name: check existing ring files
   local_action: stat path=workdir/{{ item }}
-  sudo: False
+  become: False
   register: ring_result
   with_items:
     - account.builder

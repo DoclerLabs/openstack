@@ -2,7 +2,7 @@
 
 - name: install packages for tempest
   apt: name={{ item }}
-  sudo: True
+  become: True
   with_items:
     - git
     - libffi-dev

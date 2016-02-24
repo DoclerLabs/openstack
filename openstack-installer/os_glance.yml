@@ -21,14 +21,14 @@
         keystone_role: admin
 
 - hosts: glance
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - common
     - os_glance
 
 - hosts: glance
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - apache_frontend
@@ -40,7 +40,7 @@
       - { port: 9191 }
 
 - hosts: glance
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - { role: ceph_client, when: glance_backend == 'ceph' }
@@ -50,7 +50,7 @@
     ceph_keyring_owner: glance
 
 - hosts: haproxy
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - haproxy_service

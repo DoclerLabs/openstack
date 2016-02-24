@@ -1,7 +1,7 @@
 ---
 
 - hosts: pacemaker
-  sudo: True
+  become: True
   serial: 1
   max_fail_percentage: 0
   tasks:
@@ -9,7 +9,7 @@
       fetch: src=/etc/corosync/authkey dest=workdir/authkey fail_on_missing=False flat=True
 
 - hosts: pacemaker
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - common

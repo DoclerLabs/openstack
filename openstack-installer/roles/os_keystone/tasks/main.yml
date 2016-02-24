@@ -62,7 +62,7 @@
 - name: create ssh key for keystone
   local_action: command ssh-keygen -f workdir/keystone_id_rsa -b 2048 -P "" creates=workdir/keystone_id_rsa.pub
   run_once: True
-  sudo: False
+  become: False
   when: keystone_token_provider == 'fernet'
 
 - name: make sure .ssh directory exists
