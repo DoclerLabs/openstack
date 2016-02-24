@@ -68,7 +68,7 @@
     - keepalived
     - neutron-server
     - neutron-plugin-ml2
-    - neutron-plugin-linuxbridge-agent
+    - neutron-plugin-{{ neutron_physical_interface_driver }}-agent
     - "{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
