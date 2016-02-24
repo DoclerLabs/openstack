@@ -110,9 +110,10 @@
 
 - name: rotate fernet keys
   command: su keystone -s /bin/sh -c "/usr/bin/keystone-manage fernet_rotate --keystone-user keystone --keystone-group keystone"
-  when: not keystone_fernet_init | changed
+  when:
+    - keystone_token_provider == 'fernet'
+    - not keystone_fernet_init | changed
   run_once: True
-  when: keystone_token_provider == 'fernet'
 
 - name: distribute fernet keys
   command: su keystone -s /bin/sh -c
