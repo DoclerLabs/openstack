@@ -5,7 +5,7 @@ if [ "$(id -u)" -eq 0 ]; then
   exit 1
 fi
 
-keystone_hosts="{% for host in groups['keystone'] | difference([inventory_hostname]) %}{{ host }} {% endfor %}"
+keystone_hosts="{{ ' '.join(groups['keystone'] | difference([inventory_hostname])) }}"
 
 /usr/bin/keystone-manage fernet_rotate --keystone-user keystone --keystone-group keystone
 
