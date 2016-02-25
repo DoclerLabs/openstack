@@ -125,14 +125,6 @@
     - restart neutron controller services
   when: inventory_hostname in groups['neutron_controller']
 
-- name: install neutron force dhcp option config on controllers
-  template: src={{ item }}.j2 dest=/etc/neutron/{{ item }} owner=neutron group=root mode=0460
-  with_items:
-    - dnsmasq-neutron.conf
-  notify:
-    - restart neutron controller services
-  when: inventory_hostname in groups['neutron_controller'] and neutron_dhcp_option_force is defined
-
 - name: install neutron config on computes
   template: src={{ item }}.j2 dest=/etc/neutron/{{ item }} owner=neutron group=root mode=0460
   with_items:

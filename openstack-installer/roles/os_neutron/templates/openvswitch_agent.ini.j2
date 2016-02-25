@@ -22,7 +22,13 @@
 # empty for the server. Set local-ip to be the local IP address of
 # this hypervisor.
 #
-local_ip = {{ ip.mgmt }}
+
+{% if ip.gre is defined %}
+local_ip = {{ ip.gre }}
+{% elif ip.vxlan is defined %}
+local_ip = {{ ip.vxlan }}
+{% endif %}
+
 
 # (ListOpt) Comma-separated list of <physical_network>:<bridge> tuples
 # mapping physical network names to the agent's node-specific OVS
@@ -109,7 +115,16 @@ enable_tunneling = True
 # Example: tunnel_types = gre
 # Example: tunnel_types = vxlan
 # Example: tunnel_types = vxlan, gre
-tunnel_types = gre
+{% set tunnel_types_types = [] %}
+{% if ip.gre is defined %}
+{% set _ = tunnel_types_types.append('gre') %}
+{% endif %}
+
+{% if ip.vxlan is defined %}
+{% set _ = tunnel_types_types.append('vxlan') %}
+{% endif %}
+
+tunnel_types = {{ ','.join(tunnel_types_types) }}
 
 # (IntOpt) The port number to utilize if tunnel_types includes 'vxlan'. By
 # default, this will make use of the Open vSwitch default value of '4789' if

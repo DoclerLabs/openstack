@@ -14,7 +14,6 @@ neutron_syslog_use: "{{ syslog_use | default(False) }}"
 neutron_debug: False
 
 neutron_physical_interface_driver: linuxbridge
-neutron_tenant_network_types: vxlan
 
 nova_admin_user: nova
 nova_domain_name: "{{ keystone_domain_name }}"

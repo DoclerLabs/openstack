@@ -4,13 +4,7 @@
 #
 # type_drivers = local,flat,vlan,gre,vxlan,geneve
 # Example: type_drivers = flat,vlan,gre,vxlan,geneve
-{% set type_drivers = ['flat', 'vlan'] %}
-{% if neutron_tenant_network_types == 'gre' %}
-{% set _ = type_drivers.append('gre') %}
-{% elif neutron_tenant_network_types == 'vxlan' %}
-{% set _ = type_drivers.append('vxlan') %}
-{% endif %}
-type_drivers = {{ ','.join(type_drivers) }}
+type_drivers = flat, vlan, vxlan, gre
 
 # (ListOpt) Ordered list of network_types to allocate as tenant
 # networks. The default value 'local' is useful for single-box testing
@@ -19,11 +13,14 @@ type_drivers = {{ ','.join(type_drivers) }}
 # tenant_network_types = local
 # Example: tenant_network_types = vlan,gre,vxlan,geneve
 {% set tenant_network_types = ['vlan', 'flat'] %}
-{% if neutron_tenant_network_types == 'gre' %}
+{% if ip.gre is defined %}
 {% set _ = tenant_network_types.append('gre') %}
-{% elif neutron_tenant_network_types == 'vxlan' and ip.vxlan is defined %}
+{% endif %}
+
+{% if ip.vxlan is defined %}
 {% set _ = tenant_network_types.append('vxlan') %}
 {% endif %}
+
 tenant_network_types = {{ ','.join(tenant_network_types) }}
 
 # (ListOpt) Ordered list of networking mechanism driver entrypoints
@@ -97,7 +94,7 @@ network_vlan_ranges = {{ neutron_vlan_ranges }}
 [ml2_type_gre]
 # (ListOpt) Comma-separated list of <tun_min>:<tun_max> tuples enumerating ranges of GRE tunnel IDs that are available for tenant network allocation
 # tunnel_id_ranges =
-{% if neutron_tenant_network_types == 'gre' %}
+{% if ip.gre is defined %}
 tunnel_id_ranges = {{ neutron_gre_vni_ranges }}
 {% endif %}
 
@@ -106,7 +103,7 @@ tunnel_id_ranges = {{ neutron_gre_vni_ranges }}
 # ranges of VXLAN VNI IDs that are available for tenant network allocation.
 #
 # vni_ranges =
-{% if neutron_tenant_network_types == 'vxlan' %}
+{% if ip.vxlan is defined %}
 vni_ranges = {{ neutron_vxlan_vni_ranges }}
 {% endif %}
 
@@ -116,7 +113,7 @@ vni_ranges = {{ neutron_vxlan_vni_ranges }}
 #
 # vxlan_group =
 # Example: vxlan_group = 239.1.1.1
-{% if neutron_tenant_network_types == 'vxlan' %}
+{% if ip.vxlan is defined %}
 vxlan_group = {{ neutron_vxlan_group }}
 {% endif %}
 
