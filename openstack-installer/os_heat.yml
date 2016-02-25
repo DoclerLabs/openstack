@@ -34,14 +34,14 @@
     keystone_region: "{{ keystone_region_name }}"
 
 - hosts: heat
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - common
     - os_heat
 
 - hosts: heat
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - apache_frontend
@@ -54,7 +54,7 @@
       - { port: 8003 }
 
 - hosts: haproxy
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - haproxy_service

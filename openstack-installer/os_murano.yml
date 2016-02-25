@@ -21,14 +21,14 @@
         keystone_role: admin
 
 - hosts: murano
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - common
     - os_murano
 
 - hosts: murano
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - apache_frontend
@@ -39,7 +39,7 @@
       - { port: 8082 }
 
 - hosts: haproxy
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - haproxy_service

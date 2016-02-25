@@ -121,7 +121,7 @@
 - name: create ssh key for nova-compute
   local_action: command ssh-keygen -f workdir/nova_id_rsa -b 2048 -P "" creates=workdir/nova_id_rsa.pub
   run_once: True
-  sudo: False
+  become: False
 
 - name: make sure .ssh directory exists
   file: path=/var/lib/nova/.ssh state=directory owner=nova group=nova mode=0750

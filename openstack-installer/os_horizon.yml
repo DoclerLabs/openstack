@@ -1,14 +1,14 @@
 ---
 
 - hosts: horizon
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - common
     - os_horizon
 
 - hosts: haproxy
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - haproxy_service

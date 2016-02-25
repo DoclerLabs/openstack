@@ -1,14 +1,14 @@
 ---
 
 - hosts: ceph_monitor
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - common
     - ceph_monitor
 
 - hosts: ceph_osd
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - common

@@ -23,14 +23,14 @@
 - hosts:
     - neutron_controller
     - neutron_compute
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - common
     - os_neutron
 
 - hosts: neutron_controller
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - apache_frontend
@@ -41,7 +41,7 @@
       - { port: 9696 }
 
 - hosts: haproxy
-  sudo: True
+  become: True
   max_fail_percentage: 0
   roles:
     - haproxy_service
