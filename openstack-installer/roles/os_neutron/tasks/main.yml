@@ -100,13 +100,13 @@
   mysql_db: name={{ neutron_db }}
     login_host={{ neutron_mysql_server }} login_user=root login_password={{ mysql_root_password }}
     state=present
-  run_once: True
+  when: inventory_hostname == groups['neutron_controller'][0]
 
 - name: create neutron database user
   mysql_user: name={{ neutron_db_user }} password={{ neutron_db_password }} host={{ item }} priv={{ neutron_db }}.*:ALL
     login_host={{ neutron_mysql_server }} login_user=root login_password={{ mysql_root_password }}
     state=present
-  run_once: True
+  when: inventory_hostname == groups['neutron_controller'][0]
   with_items:
     - localhost
     - '%'
@@ -146,7 +146,7 @@
   command: su neutron -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head"
   register: db_sync
   changed_when: '"migrate.versioning.api" in db_sync.stderr'
-  run_once: True
+  when: inventory_hostname == groups['neutron_controller'][0]
 
 - meta: flush_handlers
 
