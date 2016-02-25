@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if [ "$(id -u)" -eq 0 ]; then
+  echo "Please run this script as keystone user"
+  exit 1
+fi
+
+keystone_hosts="{% for host in groups['keystone'] | difference([inventory_hostname]) %}{{ host }} {% endfor %}"
+
+/usr/bin/keystone-manage fernet_rotate --keystone-user keystone --keystone-group keystone
+
+for host in $keystone_hosts; do
+  rsync --delete -a -e 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
+    /etc/keystone/fernet-keys \
+    "$host:/etc/keystone/"
+done

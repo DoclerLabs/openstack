@@ -108,16 +108,23 @@
   run_once: True
   when: keystone_token_provider == 'fernet'
 
-- name: rotate fernet keys
-  command: su keystone -s /bin/sh -c "/usr/bin/keystone-manage fernet_rotate --keystone-user keystone --keystone-group keystone"
-  when: not keystone_fernet_init | changed
-  run_once: True
-  when: keystone_token_provider == 'fernet'
-
 - name: distribute fernet keys
   command: su keystone -s /bin/sh -c
-     "rsync --delete -a -e 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
+     "rsync --delete -ia -e 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
       /etc/keystone/fernet-keys
       {{ inventory_hostname }}:/etc/keystone/"
+  register: rsync_results
+  changed_when: rsync_results.stdout_lines | count > 0
   delegate_to: "{{ groups['keystone'][0] }}"
   when: inventory_hostname != groups['keystone'][0] and keystone_token_provider == 'fernet'
+
+- name: install fernet-rotate script
+  template: src=fernet-rotate.sh.j2 dest=/usr/local/bin/fernet-rotate.sh owner=root group=root mode=0755
+
+- name: set up fernet-rotate cron job
+  cron: name="fernet-rotate"
+    minute=48
+    hour="{{ groups['keystone'].index(inventory_hostname) }}-23/{{ groups['keystone'] | count }}"
+    user=keystone
+    job="/usr/local/bin/fernet-rotate.sh"
+    state={{ (keystone_token_provider == 'fernet') | ternary('present', 'absent') }}
