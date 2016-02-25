@@ -54,13 +54,13 @@
   mysql_db: name={{ nova_db }}
     login_host={{ nova_mysql_server }} login_user=root login_password={{ mysql_root_password }}
     state=present
-  run_once: True
+  when: inventory_hostname == groups['nova_controller'][0]
 
 - name: create nova database user
   mysql_user: name={{ nova_db_user }} password={{ nova_db_password }} host={{ item }} priv={{ nova_db }}.*:ALL
     login_host={{ nova_mysql_server }} login_user=root login_password={{ mysql_root_password }}
     state=present
-  run_once: True
+  when: inventory_hostname == groups['nova_controller'][0]
   with_items:
     - localhost
     - '%'
@@ -96,7 +96,7 @@
   command: su nova -s /bin/sh -c "/usr/bin/nova-manage db sync"
   register: db_sync
   changed_when: '"migrate.versioning.api" in db_sync.stderr'
-  run_once: True
+  when: inventory_hostname == groups['nova_controller'][0]
 
 - meta: flush_handlers
 
