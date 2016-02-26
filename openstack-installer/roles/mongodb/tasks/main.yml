@@ -57,6 +57,8 @@
 - name: ensure the admin user exists
   mongodb_user: database=admin name=admin password={{ mongodb_admin_password }} roles=userAdminAnyDatabase
   when: mongo_master.stdout == 'true'
+  register: mongo_admin
+  failed_when: mongo_admin | failed and "not authorized for query" not in mongo_admin.msg
 
 - name: ensure the cluster admin user exists
   mongodb_user: database=admin login_user=admin login_password={{ mongodb_admin_password }}
