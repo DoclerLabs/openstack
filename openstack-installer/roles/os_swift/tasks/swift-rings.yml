@@ -23,7 +23,7 @@
 
 - name: distribute swift rings
   copy: src=workdir/{{ item.item }} dest=/etc/swift/{{ item.item }} owner=root group=swift mode=0640 backup=yes
-  with_items: ring_result.results
+  with_items: "{{ ring_result.results }}"
   when: item.stat.exists
 
 - name: create ring builder files
@@ -47,7 +47,7 @@
   register: builder_result
   failed_when: builder_result.rc != 0 and ('already uses' not in builder_result.stdout)
   changed_when: builder_result.rc == 0
-  with_items: swift_items | default([])
+  with_items: "{{ swift_items | default([]) }}"
   when: inventory_hostname == groups['swift_proxy'][0]
 
 - name: add storage to the container ring
@@ -62,7 +62,7 @@
   register: builder_result
   failed_when: builder_result.rc != 0 and ('already uses' not in builder_result.stdout)
   changed_when: builder_result.rc == 0
-  with_items: swift_items | default([])
+  with_items: "{{ swift_items | default([]) }}"
   when: inventory_hostname == groups['swift_proxy'][0]
 
 - name: add storage to the object ring
@@ -77,7 +77,7 @@
   register: builder_result
   failed_when: builder_result.rc != 0 and ('already uses' not in builder_result.stdout)
   changed_when: builder_result.rc == 0
-  with_items: swift_items | default([])
+  with_items: "{{ swift_items | default([]) }}"
   when: inventory_hostname == groups['swift_proxy'][0]
 
 - name: rebalance rings
