@@ -32,7 +32,7 @@
 - name: determine if the replica set is already initialized
   set_fact: mongo_initialized=True
   when: hostvars[item].mongo_status.stdout.find('EMPTYCONFIG') == -1
-  with_items: groups['mongodb']
+  with_items: "{{ groups['mongodb'] }}"
   run_once: True
 
 - name: initialize replica set
@@ -71,7 +71,7 @@
   when: mongo_master.stdout == 'true'
   register: mongo_result
   changed_when: mongo_result.stdout == '1'
-  with_items: groups['mongodb']
+  with_items: "{{ groups['mongodb'] }}"
 
 - name: wait until the replica set is initialized
   command: mongo -u clusteradmin -p {{ mongodb_clusteradmin_password }} --quiet --eval 'rs.status().myState;' admin

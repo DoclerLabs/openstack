@@ -34,8 +34,7 @@
     project_description="{{ item.keystone_project_description }}"
     cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
-  with_items: keystone_projects
-  when: keystone_projects is defined
+  with_items: "{{ keystone_projects | default([]) }}"
 
 - name: create the user in keystone
   keystone_user: >
@@ -46,8 +45,7 @@
     password="{{ item.keystone_password }}"
     cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
-  with_items: keystone_users
-  when: keystone_users is defined
+  with_items: "{{ keystone_users | default([]) }}"
 
 - name: assign role to the user in keystone
   keystone_user: >
@@ -60,5 +58,5 @@
     role="{{ item.keystone_role }}"
     cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
-  with_items: keystone_users
-  when: keystone_users is defined and item.keystone_role is defined
+  with_items: "{{ keystone_users | default([]) }}"
+  when: item.keystone_role is defined

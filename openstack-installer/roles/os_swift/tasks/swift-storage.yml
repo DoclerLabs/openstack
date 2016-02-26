@@ -18,7 +18,7 @@
 
 - name: prepare storage for swift
   filesystem: fstype=xfs dev="{{ item.device }}"
-  with_items: swift
+  with_items: "{{ swift }}"
   when: inventory_hostname in groups['swift_storage']
 
 - name: mount storage for swift
@@ -27,14 +27,14 @@
          name="/srv/node/{{ item.device | regex_replace('^.*/','') }}"
          opts="noatime,nodiratime,nobarrier"
          state=mounted
-  with_items: swift
+  with_items: "{{ swift }}"
   when: inventory_hostname in groups['swift_storage']
 
 - name: ensure proper rights for swift storage
   file: dest="/srv/node/{{ item.device | regex_replace('^.*/','') }}"
         state=directory
         owner=swift group=swift mode=0770
-  with_items: swift
+  with_items: "{{ swift }}"
   when: inventory_hostname in groups['swift_storage']
 
 - name: install rsyncd.conf
