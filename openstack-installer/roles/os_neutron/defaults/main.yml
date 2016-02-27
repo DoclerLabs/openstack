@@ -13,6 +13,8 @@ neutron_syslog_use: "{{ syslog_use | default(False) }}"
 
 neutron_debug: False
 
+neutron_physical_interface_driver: linuxbridge
+
 nova_admin_user: nova
 nova_domain_name: "{{ keystone_domain_name }}"
 nova_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
@@ -23,6 +25,7 @@ neutron_ha_routers: True
 neutron_vpnaas_type:
 neutron_vxlan_vni_ranges: "65537:69999"
 neutron_vxlan_group: 239.0.0.0/8
+neutron_gre_vni_ranges: "1:1000"
 neutron_dnsmasq_dns_servers:
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"

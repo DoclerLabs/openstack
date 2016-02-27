@@ -8,8 +8,15 @@
 
 # Example of interface_driver option for OVS based plugins (OVS, Ryu, NEC)
 # that supports L3 agent
-# interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
+#interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
+#interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
+
+{% if neutron_physical_interface_driver == 'openvswitch' %}
+interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
+{% elif neutron_physical_interface_driver == 'linuxbridge' %}
 interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
+{% endif %}
+
 
 # Use veth for an OVS interface or not.
 # Support kernels with limited namespace support

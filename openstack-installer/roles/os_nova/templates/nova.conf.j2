@@ -43,7 +43,12 @@ metadata_listen = {{ ip.mgmt }}
 my_ip = {{ ip.mgmt }}
 network_api_class = nova.network.neutronv2.api.API
 security_group_api = neutron
+
+{% if neutron_physical_interface_driver == 'openvswitch' %}
+linuxnet_interface_driver=nova.network.linux_net.LinuxOVSInterfaceDriver
+{% elif neutron_physical_interface_driver == 'linuxbridge' %}
 linuxnet_interface_driver = nova.network.linux_net.NeutronLinuxBridgeInterfaceDriver
+{% endif %}
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
 default_floating_pool = {{ nova_default_floating_pool }}
 
