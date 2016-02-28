@@ -139,6 +139,9 @@ tunnel_types = {{ ','.join(tunnel_types_types) }}
 # This option has no effect if use_veth_interconnection is False
 # veth_mtu =
 # Example: veth_mtu = 1504
+{% if neutron_mtu > 0 %}
+veth_mtu = {{ neutron_mtu }}
+{% endif %}
 
 # (BoolOpt) Flag to enable l2-population extension. This option should only be
 # used in conjunction with ml2 plugin and l2population mechanism driver. It'll

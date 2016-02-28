@@ -17,6 +17,9 @@ interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
 interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
 {% endif %}
 
+{% if neutron_mtu > 0 %}
+network_device_mtu = {{ neutron_mtu }}
+{% endif %}
 
 # Use veth for an OVS interface or not.
 # Support kernels with limited namespace support

@@ -121,6 +121,7 @@
     - fwaas_driver.ini
     - lbaas_agent.ini
     - vpn_agent.ini
+    - dnsmasq-neutron.conf
   notify:
     - restart neutron controller services
   when: inventory_hostname in groups['neutron_controller']

@@ -27,6 +27,7 @@ neutron_vxlan_vni_ranges: "65537:69999"
 neutron_vxlan_group: 239.0.0.0/8
 neutron_gre_vni_ranges: "1:1000"
 neutron_dnsmasq_dns_servers:
+neutron_mtu: 0
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 os_proto: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
