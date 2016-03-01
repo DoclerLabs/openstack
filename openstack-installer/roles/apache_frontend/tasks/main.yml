@@ -22,10 +22,12 @@
   when: SSLCertificateKeyFileSource is defined
   notify: reload apache
 
-- name: enable proxy_http
+- name: enable apache modules
   file: src=../mods-available/{{ item }}.load dest=/etc/apache2/mods-enabled/{{ item }}.load state=link
   with_items:
+    - rewrite
     - proxy
+    - proxy_fcgi
     - proxy_http
   notify: reload apache
 

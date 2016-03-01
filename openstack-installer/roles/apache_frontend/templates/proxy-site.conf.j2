@@ -11,6 +11,15 @@ Listen {{ ip.mgmt }}:{{ service.port }}
     SSLCertificateKeyFile {{ SSLCertificateKeyFile }}
 {% endif %}
 
+{% if apache_proxy_preserve_http_auth %}
+    RewriteEngine On
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
+{% endif %}
+
+{% if apache_proxy_nokeepalive %}
+    SetEnv proxy-nokeepalive 1
+{% endif %}
+
 {% if service.wsgi_process is defined %}
     WSGIDaemonProcess {{ service.wsgi_process }} processes={{ service.wsgi_process_count | default(ansible_processor_vcpus) }} threads=1 user={{ service.wsgi_user }} display-name=%{GROUP}
     WSGIProcessGroup {{ service.wsgi_process }}
@@ -19,8 +28,8 @@ Listen {{ ip.mgmt }}:{{ service.port }}
     WSGIPassAuthorization On
 {% else %}
     ProxyPreserveHost {{ apache_proxy_preserve_host | ternary('On', 'Off') }}
-    ProxyPass / http://127.0.0.1:{{ service.port }}/ retry=10
-    ProxyPassReverse / http://127.0.0.1:{{ service.port }}/ retry=10
+    ProxyPass / {{ service.dest_proto | default('http') }}://127.0.0.1:{{ service.dest_port | default(service.port) }}/ retry=10
+    ProxyPassReverse / {{ service.dest_proto | default('http') }}://127.0.0.1:{{ service.dest_port | default(service.port) }}/ retry=10
 {% endif %}
 
 </VirtualHost>

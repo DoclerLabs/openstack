@@ -1,25 +1,8 @@
 - name: install radosgw
   apt: name={{ item }}
   with_items:
-    - apache2
     - radosgw
     - libnss3-tools
-
-- name: set up rgw.conf in apache
-  template: src=rgw.conf dest=/etc/apache2/sites-available/rgw.conf owner=root group=root mode=0644
-  notify: restart apache2
-
-- name: enable rgw.conf
-  file: state=link dest=/etc/apache2/sites-enabled/rgw.conf src=../sites-available/rgw.conf
-  notify: restart apache2
-
-- name: enable apache modules
-  file: state=link dest=/etc/apache2/mods-enabled/{{ item }}.load src=../mods-available/{{ item }}.load
-  with_items:
-    - rewrite
-    - proxy
-    - proxy_fcgi
-  notify: restart apache2
 
 - name: set up /etc/ceph/ceph.conf for radosgw
   ini_file: dest=/etc/ceph/ceph.conf
@@ -70,5 +53,4 @@
 - name: make sure services are started
   service: name={{ item }} state=started
   with_items:
-    - apache2
     - radosgw

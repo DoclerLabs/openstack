@@ -8,9 +8,9 @@
     keystone_service_name: swift
     keystone_service_type: object-store
     keystone_service_description: "OpenStack Object Storage Service"
-    keystone_public_url: "http://{{ vip_public }}:{{ radosgw_port | default(8080) }}/swift/v1"
-    keystone_internal_url: "http://{{ vip_mgmt }}:{{ radosgw_port | default(8080) }}/swift/v1"
-    keystone_admin_url: "http://{{ vip_mgmt }}:{{ radosgw_port | default(8080) }}/swift/v1"
+    keystone_public_url: "{{ (radosgw_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:{{ radosgw_port | default(8080) }}/swift/v1"
+    keystone_internal_url: "{{ (radosgw_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:{{ radosgw_port | default(8080) }}/swift/v1"
+    keystone_admin_url: "{{ (radosgw_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:{{ radosgw_port | default(8080) }}/swift/v1"
     keystone_region: "{{ keystone_region_name }}"
     keystone_projects: []
 
@@ -30,6 +30,19 @@
   roles:
     - common
     - ceph_radosgw
+
+- hosts: ceph_radosgw
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - apache_frontend
+  vars:
+    service_name: radosgw
+    service_ssl: "{{ radosgw_ssl | default(False) }}"
+    apache_proxy_preserve_http_auth: True
+    apache_proxy_nokeepalive: True
+    services:
+      - { port: "{{ radosgw_port | default(8080) }}", dest_port: 9000, dest_proto: "fcgi" }
 
 - hosts: haproxy
   become: True
