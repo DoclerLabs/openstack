@@ -42,6 +42,7 @@ neutron_vlan_ranges:
 neutron_ha_network_type:
 neutron_ha_network_physical_name:
 neutron_ha_routers: False
+neutron_mtu: 1400
 
 trove_net_name: trove-net
 trove_net_segmentation_id: 901
