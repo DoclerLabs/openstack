@@ -137,20 +137,20 @@
     name="trove-{{ item.datastore }}-{{ item.version }}-image"
     owner="{{ trove_project_name }}"
   run_once: True
-  with_items: trove_datastores
+  with_items: "{{ trove_datastores }}"
   register: trove_images
 
 - name: update trove datastore
   command: su trove -s /bin/sh -c 'trove-manage datastore_update {{ item.datastore }} ""'
-  with_items: trove_datastores
+  with_items: "{{ trove_datastores }}"
   run_once: True
 
 - name: update trove datastore version
   command: su trove -s /bin/sh -c 'trove-manage datastore_version_update {{ item.item.datastore }} "{{ item.item.version }}" {{ item.item.manager }} "{{ item.id }}" "{{ item.item.packages }}" 1'
-  with_items: trove_images.results
+  with_items: "{{ trove_images.results }}"
   run_once: True
 
 - name: update trove datastore
   command: su trove -s /bin/sh -c 'trove-manage datastore_update {{ item.datastore }} "{{ item.version }}"'
-  with_items: trove_datastores
+  with_items: "{{ trove_datastores }}"
   run_once: True
