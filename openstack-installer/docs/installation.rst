@@ -8,7 +8,7 @@ It does not install the base OS, also doesn't configure the hardware (network in
 2. Pre-requisite
 ================
 
-- A deployment node, which can connect to the provisioned nodes via ssh. Install ansible on it.
+- A deployment node, which can connect to the provisioned nodes via ssh. Install Ansible on it. Version 1.9.4 or >= 2.0.1.0 is tested/recommended.
 - Ubuntu 14.04 LTS for the base OS. Need odd number of controller nodes, and arbitary number of compute nodes.
 - For ceph, it is recommended to have at least 3 monitor nodes, and 3 OSD nodes.
 - Set up the network for the nodes:
@@ -60,7 +60,7 @@ It does not install the base OS, also doesn't configure the hardware (network in
   $ ceph osd pool create backups [pg-num]
   $ ceph osd pool create vms [pg-num]
 
-  The reason behind not creating the pools automatically is that the pg-num parameter. It needs to be determined carefully according to ceph docs.
+The reason behind not creating the pools automatically is that the pg-num parameter. It needs to be determined carefully according to ceph docs.
 
 - Run the OpenStack installation:
 
@@ -82,7 +82,7 @@ It is a good idea to run tempest on the installed cloud. The steps for preparing
 
   $ ansible-playbook -i inventory/inventory.py os_tempest.yml
 
-  The default inventory uses the deployment hosts for running tempest. It'll try to install some packages, so if you don't have sudo rights, then you'll get an error. Install those packages manually with a root user then.
+The default inventory uses the deployment hosts for running tempest. It'll try to install some packages, so if you don't have sudo rights, then you'll get an error. Install those packages manually with a root user then.
 
 - The default installation directory for tempest is ~/tempest, so to run it:
 
