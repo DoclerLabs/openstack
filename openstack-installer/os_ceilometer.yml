@@ -71,9 +71,9 @@
   roles:
     - apache_frontend
   vars:
-    service_name: ceilometer
-    service_ssl: "{{ os_ssl | default(False) }}"
-    services:
+    apache_service_name: ceilometer
+    apache_service_ssl: "{{ os_ssl | default(False) }}"
+    apache_services:
       - { port: 8777 }
       - { port: 8042 }
 

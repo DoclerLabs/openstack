@@ -30,15 +30,10 @@
   roles:
     - common
     - os_trove
-
-- hosts: trove
-  become: True
-  max_fail_percentage: 0
-  roles:
     - apache_frontend
   vars:
-    service_name: trove
-    services:
+    apache_service_name: trove
+    apache_services:
       - { port: 8779 }
 
 - hosts: haproxy

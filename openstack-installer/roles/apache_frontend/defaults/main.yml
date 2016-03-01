@@ -1,7 +1,7 @@
 SSLCertificateKeyFile: /etc/ssl/private/openstack.key
 SSLCertificateFile: /etc/ssl/certs/openstack.crt
 
-service_ssl: False
+apache_service_ssl: False
 apache_proxy_preserve_host: False
 apache_proxy_preserve_http_auth: False
 apache_proxy_nokeepalive: False

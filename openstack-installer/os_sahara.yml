@@ -26,15 +26,10 @@
   roles:
     - common
     - os_sahara
-
-- hosts: sahara
-  become: True
-  max_fail_percentage: 0
-  roles:
     - apache_frontend
   vars:
-    service_name: sahara
-    services:
+    apache_service_name: sahara
+    apache_services:
       - { port: 8386 }
 
 - hosts: haproxy

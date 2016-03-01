@@ -52,9 +52,9 @@
   roles:
     - apache_frontend
   vars:
-    service_name: swift
-    service_ssl: "{{ os_ssl | default(False) }}"
-    services:
+    apache_service_name: swift
+    apache_service_ssl: "{{ os_ssl | default(False) }}"
+    apache_services:
       - { port: 8080 }
 
 - hosts: haproxy

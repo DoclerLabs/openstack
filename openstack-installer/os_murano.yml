@@ -26,16 +26,11 @@
   roles:
     - common
     - os_murano
-
-- hosts: murano
-  become: True
-  max_fail_percentage: 0
-  roles:
     - apache_frontend
   vars:
-    service_name: murano
-    service_ssl: "{{ os_ssl | default(False) }}"
-    services:
+    apache_service_name: murano
+    apache_service_ssl: "{{ os_ssl | default(False) }}"
+    apache_services:
       - { port: 8082 }
 
 - hosts: haproxy

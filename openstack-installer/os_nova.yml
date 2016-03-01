@@ -35,9 +35,9 @@
   roles:
     - apache_frontend
   vars:
-    service_name: nova
-    service_ssl: "{{ os_ssl | default(False) }}"
-    services:
+    apache_service_name: nova
+    apache_service_ssl: "{{ os_ssl | default(False) }}"
+    apache_services:
       - { port: 8774 }
 
 - hosts: nova_compute

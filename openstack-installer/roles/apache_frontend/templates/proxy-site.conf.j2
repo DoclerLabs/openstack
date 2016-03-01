@@ -1,22 +1,22 @@
-{% for service in services %}
+{% for service in apache_services %}
 Listen {{ ip.mgmt }}:{{ service.port }}
 {% endfor %}
 
-{% for service in services %}
+{% for service in apache_services %}
 <VirtualHost *:{{ service.port }}>
 
-{% if service_ssl | bool == True %}
+{% if apache_service_ssl | bool %}
     SSLEngine on
     SSLCertificateFile      {{ SSLCertificateFile }}
     SSLCertificateKeyFile {{ SSLCertificateKeyFile }}
 {% endif %}
 
-{% if apache_proxy_preserve_http_auth %}
+{% if apache_proxy_preserve_http_auth | bool %}
     RewriteEngine On
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
 {% endif %}
 
-{% if apache_proxy_nokeepalive %}
+{% if apache_proxy_nokeepalive | bool %}
     SetEnv proxy-nokeepalive 1
 {% endif %}
 

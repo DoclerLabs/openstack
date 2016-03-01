@@ -30,18 +30,13 @@
   roles:
     - common
     - ceph_radosgw
-
-- hosts: ceph_radosgw
-  become: True
-  max_fail_percentage: 0
-  roles:
     - apache_frontend
   vars:
-    service_name: radosgw
-    service_ssl: "{{ radosgw_ssl | default(False) }}"
+    apache_service_name: radosgw
+    apache_service_ssl: "{{ radosgw_ssl | default(False) }}"
     apache_proxy_preserve_http_auth: True
     apache_proxy_nokeepalive: True
-    services:
+    apache_services:
       - { port: "{{ radosgw_port | default(8080) }}", dest_port: 9000, dest_proto: "fcgi" }
 
 - hosts: haproxy

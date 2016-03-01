@@ -26,15 +26,10 @@
   roles:
     - common
     - os_ironic
-
-- hosts: ironic
-  become: True
-  max_fail_percentage: 0
-  roles:
     - apache_frontend
   vars:
-    service_name: ironic
-    services:
+    apache_service_name: ironic
+    apache_services:
       - { port: 6385 }
 
 - hosts: haproxy

@@ -39,16 +39,11 @@
   roles:
     - common
     - os_heat
-
-- hosts: heat
-  become: True
-  max_fail_percentage: 0
-  roles:
     - apache_frontend
   vars:
-    service_name: heat
+    apache_service_name: heat
     apache_proxy_preserve_host: True
-    services:
+    apache_services:
       - { port: 8004 }
       - { port: 8000 }
       - { port: 8003 }

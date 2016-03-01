@@ -32,11 +32,11 @@
   notify: reload apache
 
 - name: install site.conf
-  template: src=proxy-site.conf.j2 dest=/etc/apache2/sites-available/{{ service_name }}-site.conf owner=root group=root mode=0644
+  template: src=proxy-site.conf.j2 dest=/etc/apache2/sites-available/{{ apache_service_name }}-site.conf owner=root group=root mode=0644
   notify: reload apache
 
 - name: enable site
-  file: src=../sites-available/{{ service_name }}-site.conf dest=/etc/apache2/sites-enabled/{{ service_name }}-site.conf state=link
+  file: src=../sites-available/{{ apache_service_name }}-site.conf dest=/etc/apache2/sites-enabled/{{ apache_service_name }}-site.conf state=link
   notify: reload apache
 
 - name: remove reload signal
