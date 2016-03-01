@@ -311,14 +311,17 @@ Configuring the storage can be done in the inventory:
     swift-storage-0:
       ip:
         mgmt: 192.168.0.1
-        swift: 192.168.1.3                    # IP of the interface used for replication traffic. If you omit this, ip.mgmt will used.
+        swift: 192.168.1.1                    # IP of the interface used for swift traffic. If you omit this, ip.mgmt will used.
+        swift_replication: 192.168.2.1        # IP of the interface used for replication traffic (rsyncd will listen on this address).
+                                              # If you omit this, it will fall back to ip.swift and ip.mgmt
       swift:
         - { device: "/dev/sdb" }              # The devices used for swift storage. They'll be formatted with xfs filesystem, and
         - { device: "/dev/sdc" }              # mounted under /srv/node.
     swift-storage-1:
       ip:
         mgmt: 192.168.0.2
-        swift: 192.168.1.3
+        swift: 192.168.1.2
+        swift_replication: 192.168.2.2
       swift:
         - { device: "/dev/sdb" }
         - { device: "/dev/sdc" }
@@ -326,6 +329,7 @@ Configuring the storage can be done in the inventory:
       ip:
         mgmt: 192.168.0.3
         swift: 192.168.1.3
+        swift_replication: 192.168.2.3
       swift:
         - { device: "/dev/sdb" }
         - { device: "/dev/sdc" }

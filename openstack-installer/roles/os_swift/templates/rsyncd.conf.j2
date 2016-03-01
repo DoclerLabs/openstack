@@ -2,7 +2,7 @@ uid = swift
 gid = swift
 log file = /var/log/rsyncd.log
 pid file = /var/run/rsyncd.pid
-address = {{ ip.swift | default(ip.mgmt) }}
+address = {{ ip.swift_replication | default(ip.swift | default(ip.mgmt)) }}
 
 [account]
 max connections = 2
