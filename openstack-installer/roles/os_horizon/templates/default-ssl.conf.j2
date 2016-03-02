@@ -50,6 +50,9 @@
                 #                Makefile to update the hash symlinks after changes.
                 #SSLCACertificatePath /etc/ssl/certs/
                 #SSLCACertificateFile /etc/apache2/ssl.crt/ca-bundle.crt
+                {% if SSLCACertificateFile != '' %}
+                SSLCACertificateFile {{ SSLCACertificateFile }}
+                {% endif %}
 
                 #   Certificate Revocation Lists (CRL):
                 #   Set the CA revocation path where to find CA CRLs for client
