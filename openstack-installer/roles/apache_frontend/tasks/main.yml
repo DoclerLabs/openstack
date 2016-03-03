@@ -9,6 +9,11 @@
 - name: ensure apache2 is started
   service: name=apache2 state=started enabled=yes
 
+- name: install CA certificate
+  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  when: SSLCACertificateFile != ''
+  notify: reload apache
+
 - name: install certificates
   copy: src={{ item.src }} dest={{ item.dest }} owner=www-data group=root mode={{ item.mode }}
   with_items:

@@ -1,7 +1,10 @@
 SSLCertificateKeyFile: /etc/ssl/private/openstack.key
 SSLCertificateFile: /etc/ssl/certs/openstack.crt
+SSLCACertificateFileSource:
+SSLCACertificateFile: "{{ (SSLCACertificateFileSource is not none and SSLCACertificateFileSource | trim != '') | ternary('/etc/ssl/certs/openstack.ca.crt','') }}"
 
 apache_service_ssl: False
 apache_proxy_preserve_host: False
 apache_proxy_preserve_http_auth: False
 apache_proxy_nokeepalive: False
+apache_configure_certificate_chain: False

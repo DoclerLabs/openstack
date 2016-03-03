@@ -9,6 +9,13 @@ Listen {{ ip.mgmt }}:{{ service.port }}
     SSLEngine on
     SSLCertificateFile      {{ SSLCertificateFile }}
     SSLCertificateKeyFile {{ SSLCertificateKeyFile }}
+    {% if apache_configure_certificate_chain | bool %}
+    # This is obsolete from Apache 2.4.8
+    SSLCertificateChainFile {{ SSLCertificateFile }}
+    {% endif %}
+    {% if SSLCACertificateFile != '' %}
+    SSLCACertificateFile {{ SSLCACertificateFile }}
+    {% endif %}
 {% endif %}
 
 {% if apache_proxy_preserve_http_auth | bool %}
