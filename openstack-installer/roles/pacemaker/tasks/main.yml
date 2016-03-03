@@ -91,3 +91,14 @@
   run_once: True
   when: vip_mgmt != vip_public
 
+- name: colocate public and management VIP
+  pacemaker:
+    action: colocation
+    name: colocate_vip
+    params:
+      score: inf
+      rsc:
+        - mgmt_vip
+        - public_vip
+  when: vip_mgmt != vip_public and pacemaker_colocate_vips
+  run_once: True

@@ -69,7 +69,7 @@ options:
   params:
     description: the various parameters for the resource
 
-notes: Currently only property, primitive and ms resources are tested.
+notes: Currently only property, primitive, colocation and ms resources are tested.
 author: Akira Yoshiyama, Gyorgy Szombathelyi
 '''
 
@@ -98,6 +98,16 @@ EXAMPLES = '''
       meta:
          target-role: Started
          master-max: "3"
+
+# Define a colocation
+- pacemaker:
+    action: colocation
+    name: colocate_vip
+    params:
+      score: inf
+      rsc:
+        - mgmt_vip
+        - public_vip
 '''
 
 
@@ -335,7 +345,7 @@ class ColocationParser(BaseParser):
         ret = dict(
             command=args.pop(0),
             id=args.pop(0),
-            score=args.pop(0),
+            score=args.pop(0).rstrip(':'),
             rsc=args[:],
             )
         return ret
@@ -473,19 +483,84 @@ class CIBParser(object):
                 new_line = ""
         return cibs
 
-def buildcommand(command, params, op=False):
-    for key,value in params.iteritems():
-        if op:
-            command.append('op')
-        if key in ('type', 'rsc'):
-            command.insert(0, value)
-        elif isinstance(value, dict):
-            if key != 'op':
-              command.append(key)
-            buildcommand(command, value, key=='op')
-        else:
-            command.append(key + '="' + str(value) + '"')
-    return command
+class BaseBuilder(object):
+    module = None
+
+    def __init__(self, params, module=None):
+        if module:
+            self.module = module
+
+    def build_command(self, params):
+        return _build_command([], params)
+
+    def _build_command(self, command, params):
+        for key,value in params.iteritems():
+            if key in ('type', 'rsc'):
+                command.insert(0, value)
+            elif isinstance(value, dict):
+                command.append(key)
+                self._build_command(command, value)
+            else:
+                command.append(key + '="' + str(value) + '"')
+        return command
+
+class PrimitiveBuilder(BaseBuilder):
+
+    def build_command(self, params):
+        return self._build_command([], params)
+
+    def _build_command(self, command, params, op=False):
+        for key,value in params.iteritems():
+            if op:
+                command.append('op')
+            if key in ('type', 'rsc'):
+                command.insert(0, value)
+            elif isinstance(value, dict):
+                if key != 'op':
+                    command.append(key)
+                self._build_command(command, value, key=='op')
+            else:
+                command.append(key + '="' + str(value) + '"')
+        return command
+
+class ColocationBuilder(BaseBuilder):
+
+    def build_command(self, params):
+        return self._build_command([], params)
+
+    def _build_command(self, command, params):
+        for key,value in params.iteritems():
+            if key=='score':
+                command.insert(0, str(value) + ':')
+            elif key=='rsc':
+                command.extend(value)
+        return command
+
+class CommandBuilder(object):
+
+    command_builder_class = {
+        'primitive': PrimitiveBuilder,
+        'monitor': BaseBuilder,
+        'group': BaseBuilder,
+        'clone': BaseBuilder,
+        'ms': BaseBuilder,
+        'rsc_template': BaseBuilder,
+        'location': BaseBuilder,
+        'colocation': ColocationBuilder,
+        'order': BaseBuilder,
+        'property': BaseBuilder,
+        'rsc_defaults': BaseBuilder,
+        'fencing_topology': BaseBuilder,
+        }
+
+    def __init__(self, module):
+        self.module = module
+
+    def build_command(self, command, params):
+        if command in self.command_builder_class:
+            builder=self.command_builder_class[command](self.module)
+            return builder.build_command(params)
+        return None
 
 def main():
 
@@ -536,6 +611,7 @@ def main():
         break
 
     need_delete = False
+    need_stop = True
     need_append = False
     if state == 'absent':
         if is_same is None:
@@ -547,26 +623,27 @@ def main():
             module.exit_json(args=params, changed=False)
         elif is_same is False and action not in ('property', 'rsc_defaults', 'fencing_topology'):
             need_delete = True
+        if action in ('colocation'):
+            need_stop = False
         need_append = True
 
     crm_config_commands = []
     if need_delete:
-        if not shadow:
+        if not shadow and need_stop:
             crm_config_commands.append(["resource", "stop", name])
         crm_config_commands.append(["configure", "delete", name])
     if need_append:
         command = ["configure"] + [action]
         if name:
             command.append(name)
-        command+=buildcommand([], params)
+        commandbuilder = CommandBuilder(module)
+        command+=commandbuilder.build_command(action, params)
         crm_config_commands.append(command)
 
     for command in crm_config_commands:
         rc, out, err = module.run_command(["crm", "-F"] + shadowparam + command)
         if rc:
-            module.fail_json(rc=256, msg="crm command failed \n%s\n" %command)
-            #FIXME: Re-enable error messages.
-            #module.fail_json(rc=256, msg="crm command failed \n%s"%err)
+            module.fail_json(rc=256, msg="crm command failed \n%s"%command)
 
     module.exit_json(args=params, changed=True)
 
