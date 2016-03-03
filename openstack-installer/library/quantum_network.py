@@ -58,6 +58,12 @@ options:
         - The keystone url for authentication
      required: false
      default: 'http://127.0.0.1:35357/v2.0/'
+   endpoint_type:
+     description:
+        - The name of the neutron service's endpoint URL type
+     choices: [publicURL, internalURL]
+     required: false
+     default: publicURL
    region_name:
      description:
         - Name of the region
@@ -150,7 +156,7 @@ def _get_ksclient(module, kwargs):
 def _get_endpoint(module, ksclient):
 
     try:
-        endpoint = ksclient.service_catalog.url_for(service_type='network', endpoint_type='publicURL')
+        endpoint = ksclient.service_catalog.url_for(service_type='network', endpoint_type=module.params['endpoint_type'])
     except Exception, e:
         module.fail_json(msg = "Error getting network endpoint: %s " %e.message)
     return endpoint
@@ -259,6 +265,7 @@ def main():
             shared                          = dict(default=False, type='bool'),
             admin_state_up                  = dict(default=True, type='bool'),
             state                           = dict(default='present', choices=['absent', 'present']),
+            endpoint_type                   = dict(default='publicURL', choices=['publicURL', 'internalURL']),
             cacert                          = dict(default=None),
             insecure                        = dict(required=False, default=False, choices=BOOLEANS)
     ))
