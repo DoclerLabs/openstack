@@ -121,6 +121,18 @@ def unquote(str):
     else:
         return str
 
+def _stringify_dict(src):
+    ret = {}
+    for (key, value) in src.iteritems():
+       if isinstance(value, dict):
+           ret[key] = _stringify_dict(value)
+       elif isinstance(value, int):
+           ret[key] = str(value)
+       else:
+           ret[key] = value
+    return ret
+
+
 class BaseParser(object):
     id_name = None
     id = None
@@ -580,7 +592,7 @@ def main():
     shadow = module.params['shadow']
     action = module.params['action']
     name = module.params['name']
-    params = module.params['params']
+    params = _stringify_dict(module.params['params'])
     changed = False
 
     if action == None:
