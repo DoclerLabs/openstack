@@ -491,7 +491,7 @@ class BaseBuilder(object):
             self.module = module
 
     def build_command(self, params):
-        return _build_command([], params)
+        return self._build_command([], params)
 
     def _build_command(self, command, params):
         for key,value in params.iteritems():
