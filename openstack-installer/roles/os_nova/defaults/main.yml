@@ -1,7 +1,9 @@
 ---
 
+nova_api_db_user: nova_api
 nova_db_user: nova
 nova_mysql_server: "{{ vip_mgmt }}"
+nova_api_db: nova_api
 nova_db: nova
 nova_rabbit_user: nova
 nova_admin_user: nova

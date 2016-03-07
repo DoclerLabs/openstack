@@ -50,20 +50,27 @@
     - nova-compute
   when: inventory_hostname in groups['nova_compute']
 
-- name: create nova database
-  mysql_db: name={{ nova_db }}
+- name: create nova databases
+  mysql_db: name={{ item }}
     login_host={{ nova_mysql_server }} login_user=root login_password={{ mysql_root_password }}
     state=present
+  with_items:
+    - "{{ nova_api_db }}"
+    - "{{ nova_db }}"
   when: inventory_hostname == groups['nova_controller'][0]
 
-- name: create nova database user
-  mysql_user: name={{ nova_db_user }} password={{ nova_db_password }} host={{ item }} priv={{ nova_db }}.*:ALL
+- name: create nova database users
+  mysql_user: name={{ item.0.user }} password={{ item.0.password }} host='{{ item.1 }}' priv={{ item.0.db }}.*:ALL
     login_host={{ nova_mysql_server }} login_user=root login_password={{ mysql_root_password }}
     state=present
   when: inventory_hostname == groups['nova_controller'][0]
-  with_items:
-    - localhost
-    - '%'
+  with_nested:
+    -
+      - { db: '{{ nova_api_db }}', user: '{{ nova_api_db_user }}', password: '{{ nova_api_db_password }}' }
+      - { db: '{{ nova_db }}', user: '{{ nova_db_user }}', password: '{{ nova_db_password }}' }
+    -
+      - '%'
+      - 'localhost'
 
 - name: install certificates
   copy: src={{ item.src }} dest={{ item.dest }} owner=nova group=root mode={{ item.mode }}
@@ -93,9 +100,12 @@
     - restart nova compute services
 
 - name: sync nova db
-  command: su nova -s /bin/sh -c "/usr/bin/nova-manage db sync"
+  command: su nova -s /bin/sh -c "/usr/bin/nova-manage {{ item }} sync"
   register: db_sync
   changed_when: '"migrate.versioning.api" in db_sync.stderr'
+  with_items:
+    - api_db
+    - db
   when: inventory_hostname == groups['nova_controller'][0]
 
 - meta: flush_handlers

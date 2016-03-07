@@ -188,6 +188,10 @@ check_revocations_for_cached = False
 
 
 {% if inventory_hostname in groups['nova_controller'] %}
+[api_database]
+connection = mysql+pymysql://{{ nova_api_db_user }}:{{ nova_api_db_password }}@{{ nova_mysql_server }}/{{ nova_api_db }}?charset=utf8
+max_retries = -1
+
 [database]
 connection = mysql+pymysql://{{ nova_db_user }}:{{ nova_db_password }}@{{ nova_mysql_server }}/{{ nova_db }}?charset=utf8
 max_retries = -1
