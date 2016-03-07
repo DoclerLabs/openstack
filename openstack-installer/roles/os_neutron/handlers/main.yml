@@ -4,7 +4,7 @@
   service: name={{ item }} state=restarted
   with_items:
     - neutron-server
-    - neutron-plugin-{{ neutron_physical_interface_driver }}-agent
+    - neutron-{{ neutron_physical_interface_driver }}-agent
     - "{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
@@ -14,7 +14,7 @@
 - name: restart neutron compute services
   service: name={{ item }} state=restarted
   with_items:
-    - neutron-plugin-{{ neutron_physical_interface_driver }}-agent
+    - neutron-{{ neutron_physical_interface_driver }}-agent
   when: inventory_hostname in groups['neutron_compute']
 
 - name: reload sysctl

@@ -1,7 +1,7 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-liberty", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu trusty-updates/liberty main" }
+  - { name: "cloudarchive-mitaka", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu trusty-updates/mitaka main" }
 
 apt_extra_repos: []
 
