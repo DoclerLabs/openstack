@@ -13,7 +13,7 @@
 
 - set_fact: ceph_fsid="{{ hostvars[item].ceph_fsid_result.stdout }}"
   when: hostvars[item].ceph_fsid_result.stdout != ''
-  with_items: play_hosts
+  with_items: "{{ play_hosts }}"
 
 - name: generate a new uuid for the cluster
   command: uuidgen
@@ -76,11 +76,11 @@
 
 - set_fact: admin_key="{{ hostvars[item].ceph_admin_key_results.stdout }}"
   when: "'not found' not in hostvars[item].ceph_admin_key_results.stderr"
-  with_items: play_hosts
+  with_items: "{{ play_hosts }}"
 
 - set_fact: mon_key="{{ hostvars[item].ceph_mon_key_results.stdout }}"
   when: "'not found' not in hostvars[item].ceph_mon_key_results.stderr"
-  with_items: play_hosts
+  with_items: "{{ play_hosts }}"
 
 # Generate new keys if old keys are not found
 - name: generate new admin key
@@ -114,7 +114,7 @@
 
 - name: add the monitor hosts to the monitor map
   command: monmaptool --add {{ item }} {{ hostvars[item].ip.mgmt }} /etc/ceph/monmap
-  with_items: play_hosts
+  with_items: "{{ play_hosts }}"
   register: monmap_result
   failed_when: monmap_result.rc != 0 and 'map already contains' not in monmap_result.stderr
   changed_when: "'writing' in monmap_result.stdout"

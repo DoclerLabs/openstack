@@ -63,29 +63,29 @@
 ### Add path-based OSDs
 - name: make sure OSD directories are exists
   file: path={{ item.path }} state=directory owner=root group=root mode=0600
-  with_items: osd
+  with_items: "{{ osd }}"
   when: item.path is defined
 
 - name: prepare disks
   command: ceph-disk prepare "{{ item.path }}"
-  with_items: osd
+  with_items: "{{ osd }}"
   when: item.path is defined
 
 - name: activate disks
   command: ceph-disk activate "{{ item.path }}"
-  with_items: osd
+  with_items: "{{ osd }}"
   when: item.path is defined
 
 - name: query local OSD IDs
   command: cat "{{ item.path }}/whoami"
-  with_items: osd
+  with_items: "{{ osd }}"
   changed_when: False
   register: osd_ids
   when: item.path is defined
 
 - name: ensure ceph OSD is started
   service: name=ceph-osd state=started enabled=yes args="id={{ item.stdout }} cluster={{ ceph_cluster_name }}"
-  with_items: osd_ids.results
+  with_items: "{{ osd_ids.results }}"
   when: item.skipped is not defined or item.skipped != True
 
 ### Add disk-based OSDs
@@ -94,10 +94,10 @@
   register: ceph_disk_status
   failed_when: ceph_disk_status.rc != 0 and ('Could not create partition 2' not in ceph_disk_status.stderr) and ('Device is mounted' not in ceph_disk_status.stderr)
   changed_when: ceph_disk_status.rc == 0
-  with_items: osd
+  with_items: "{{ osd }}"
   when: item.disk is defined
 
 - name: activate disks
   command: ceph-disk activate "{{ item.disk }}1"
-  with_items: osd
+  with_items: "{{ osd }}"
   when: item.disk is defined
