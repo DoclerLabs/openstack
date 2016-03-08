@@ -1,3 +1,5 @@
+#jinja2: lstrip_blocks: True
+
 {% for service in apache_services %}
 Listen {{ ip.mgmt }}:{{ service.port }}
 {% endfor %}
@@ -8,13 +10,13 @@ Listen {{ ip.mgmt }}:{{ service.port }}
 {% if apache_service_ssl | bool %}
     SSLEngine on
     SSLCertificateFile      {{ SSLCertificateFile }}
-    SSLCertificateKeyFile {{ SSLCertificateKeyFile }}
+    SSLCertificateKeyFile   {{ SSLCertificateKeyFile }}
     {% if apache_configure_certificate_chain | bool %}
     # This is obsolete from Apache 2.4.8
     SSLCertificateChainFile {{ SSLCertificateFile }}
     {% endif %}
     {% if SSLCACertificateFile != '' %}
-    SSLCACertificateFile {{ SSLCACertificateFile }}
+    SSLCACertificateFile    {{ SSLCACertificateFile }}
     {% endif %}
 {% endif %}
 
@@ -28,15 +30,15 @@ Listen {{ ip.mgmt }}:{{ service.port }}
 {% endif %}
 
 {% if service.wsgi_process is defined %}
-    WSGIDaemonProcess {{ service.wsgi_process }} processes={{ service.wsgi_process_count | default(ansible_processor_vcpus) }} threads=1 user={{ service.wsgi_user }} display-name=%{GROUP}
-    WSGIProcessGroup {{ service.wsgi_process }}
-    WSGIScriptAlias / {{ service.wsgi_script }}
-    WSGIApplicationGroup %{GLOBAL}
+    WSGIDaemonProcess       {{ service.wsgi_process }} processes={{ service.wsgi_process_count | default(ansible_processor_vcpus) }} threads=1 user={{ service.wsgi_user }} display-name=%{GROUP}
+    WSGIProcessGroup        {{ service.wsgi_process }}
+    WSGIScriptAlias /       {{ service.wsgi_script }}
+    WSGIApplicationGroup    %{GLOBAL}
     WSGIPassAuthorization On
 {% else %}
-    ProxyPreserveHost {{ apache_proxy_preserve_host | ternary('On', 'Off') }}
-    ProxyPass / {{ service.dest_proto | default('http') }}://127.0.0.1:{{ service.dest_port | default(service.port) }}/ retry=10
-    ProxyPassReverse / {{ service.dest_proto | default('http') }}://127.0.0.1:{{ service.dest_port | default(service.port) }}/ retry=10
+    ProxyPreserveHost       {{ apache_proxy_preserve_host | ternary('On', 'Off') }}
+    ProxyPass /             {{ service.dest_proto | default('http') }}://127.0.0.1:{{ service.dest_port | default(service.port) }}/ retry=10
+    ProxyPassReverse /      {{ service.dest_proto | default('http') }}://127.0.0.1:{{ service.dest_port | default(service.port) }}/ retry=10
 {% endif %}
 
 </VirtualHost>
