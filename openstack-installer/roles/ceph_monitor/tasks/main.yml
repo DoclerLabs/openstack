@@ -108,7 +108,7 @@
   template: src=ceph.client.admin.keyring.j2 dest=/etc/ceph/ceph.client.admin.keyring owner=root group=root mode=0600
 
 - name: generate ceph.mon.keyring
-  template: src=ceph.mon.keyring.j2 dest=/etc/ceph/ceph.mon.keyring owner=root group=root mode=0600
+  template: src=ceph.mon.keyring.j2 dest=/etc/ceph/ceph.mon.keyring owner=ceph group=root mode=0460
 
 # Continue with the monitor setup
 - name: create the monitor map
@@ -125,7 +125,12 @@
   file: dest=/var/lib/ceph/mon/{{ ceph_cluster_name }}-{{ inventory_hostname }} state=directory owner=ceph group=root mode=0755
 
 - name: populate the monitor daemon(s) with the monitor map and keyring
-  command: ceph-mon --cluster {{ ceph_cluster_name }} --mkfs -i {{ inventory_hostname }} --monmap /etc/ceph/monmap --keyring /etc/ceph/ceph.mon.keyring
+  command: ceph-mon --cluster {{ ceph_cluster_name }}
+    --mkfs -i {{ inventory_hostname }}
+    --monmap /etc/ceph/monmap
+    --keyring /etc/ceph/ceph.mon.keyring
+    --setuser ceph
+    --setgroup ceph
 
 - name: mark the config as 'done'
   copy: content='' dest=/var/lib/ceph/mon/{{ ceph_cluster_name }}-{{ inventory_hostname }}/{{ item }} owner=root group=root mode=0644
