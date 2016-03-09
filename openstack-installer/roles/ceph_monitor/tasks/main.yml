@@ -64,11 +64,13 @@
 - name: query the keyring for the client.admin key
   command: /usr/bin/ceph-authtool /etc/ceph/ceph.client.admin.keyring -n client.admin -p
   register: ceph_admin_key_results
+  failed_when: ceph_admin_key_results | failed and 'not found' not in ceph_admin_key_results.stderr
   changed_when: False
 
 - name: query the keyring for the mon. key
   command: /usr/bin/ceph-authtool /etc/ceph/ceph.mon.keyring -n mon. -p
   register: ceph_mon_key_results
+  failed_when: ceph_mon_key_results | failed and 'not found' not in ceph_mon_key_results.stderr
   changed_when: False
 
 - set_fact: admin_key=''
