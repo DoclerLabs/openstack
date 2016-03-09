@@ -46,8 +46,6 @@ allow_availability_zone_fallback = True
 
 auth_strategy = keystone
 
-notification_driver = messagingv2
-
 glance_api_servers = {{ os_proto }}://{{ os_internal_address }}:9292
 glance_api_insecure = {{ ssl_insecure }}
 {% if SSLCACertificateFile != '' %}
@@ -66,7 +64,7 @@ insecure = {{ ssl_insecure }}
 {% if SSLCACertificateFile != '' %}
 cafile = {{ SSLCACertificateFile }}
 {% endif %}
-auth_plugin = password
+auth_type = password
 signing_dir = /var/lib/cinder/cache
 auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
 auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
@@ -84,6 +82,10 @@ memcache_secret_key = {{ memcache_secret_key }}
 
 [oslo_concurrency]
 lock_path = /var/lock/cinder
+
+[oslo_messaging_notifications]
+
+driver = messagingv2
 
 [oslo_messaging_rabbit]
 rabbit_port = 5672

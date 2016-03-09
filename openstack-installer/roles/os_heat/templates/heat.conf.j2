@@ -137,22 +137,8 @@ use_stderr = false
 # Deprecated group/name - [DEFAULT]/rpc_thread_pool_size
 #executor_thread_pool_size = 64
 
-# The Drivers(s) to handle sending notifications. Possible values are
-# messaging, messagingv2, routing, log, test, noop (multi valued)
-#notification_driver =
-notification_driver = messagingv2
-
-# AMQP topic used for OpenStack notifications. (list value)
-# Deprecated group/name - [rpc_notifier2]/topics
-#notification_topics = notifications
-
 # Seconds to wait for a response from a call. (integer value)
 #rpc_response_timeout = 60
-
-# A URL representing the messaging driver to use and its full configuration. If
-# not set, we fall back to the rpc_backend option and driver specific
-# configuration. (string value)
-#transport_url = <None>
 
 # The messaging driver to use, defaults to rabbit. Other drivers include qpid
 # and zmq. (string value)
@@ -487,7 +473,7 @@ username = {{ heat_admin_user }}
 password = {{ heat_admin_password }}
 project_domain_name = {{ heat_project_domain_name }}
 project_name = {{ heat_project_name }}
-auth_plugin = password
+auth_type = password
 
 [trustee]
 {% if SSLCACertificateFile != '' %}
@@ -553,6 +539,9 @@ insecure = {{ ssl_insecure }}
 # Deprecated group/name - [DEFAULT]/matchmaker_ringfile
 #ringfile = /etc/oslo/matchmaker_ring.json
 
+[oslo_messaging_notifications]
+
+driver = messagingv2
 
 [oslo_messaging_amqp]
 

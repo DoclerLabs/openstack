@@ -142,22 +142,8 @@ use_stderr = false
 # Deprecated group/name - [DEFAULT]/rpc_thread_pool_size
 #executor_thread_pool_size = 64
 
-# The Drivers(s) to handle sending notifications. Possible values are
-# messaging, messagingv2, routing, log, test, noop (multi valued)
-#notification_driver =
-notification_driver = messagingv2
-
-# AMQP topic used for OpenStack notifications. (list value)
-# Deprecated group/name - [rpc_notifier2]/topics
-#notification_topics = notifications
-
 # Seconds to wait for a response from a call. (integer value)
 #rpc_response_timeout = 60
-
-# A URL representing the messaging driver to use and its full
-# configuration. If not set, we fall back to the rpc_backend option
-# and driver specific configuration. (string value)
-#transport_url = <None>
 
 # The messaging driver to use, defaults to rabbit. Other drivers
 # include qpid and zmq. (string value)
@@ -548,7 +534,7 @@ identity_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
 # Service tenant name. (string value)
 #admin_tenant_name = admin
 
-auth_plugin = password
+auth_type = password
 auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
 region_name = {{ keystone_region_name }}
 username = {{ ceilometer_admin_user }}
@@ -558,16 +544,19 @@ project_name = {{ ceilometer_project_name }}
 project_domain_name = {{ ceilometer_project_domain_name }}
 
 [service_credentials]
+auth_type = password
 {% if SSLCACertificateFile != '' %}
-os_cacert = {{ SSLCACertificateFile }}
+cafile = {{ SSLCACertificateFile }}
 {% endif %}
 insecure = {{ ssl_insecure }}
-os_auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v2.0
-os_username = {{ ceilometer_admin_user }}
-os_tenant_name = {{ ceilometer_project_name }}
-os_password = {{ ceilometer_admin_password }}
-os_endpoint_type = internalURL
-os_region_name = {{ keystone_region_name }}
+auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
+username = {{ ceilometer_admin_user }}
+user_domain_name = {{ ceilometer_domain_name }}
+password = {{ ceilometer_admin_password }}
+project_name = {{ ceilometer_project_name }}
+project_domain_name = {{ ceilometer_project_domain_name }}
+interface = internalURL
+region_name = {{ keystone_region_name }}
 
 [matchmaker_redis]
 
@@ -613,6 +602,9 @@ os_region_name = {{ keystone_region_name }}
 # Deprecated group/name - [DEFAULT]/lock_path
 #lock_path = <None>
 
+[oslo_messaging_notifications]
+
+driver = messagingv2
 
 [oslo_messaging_amqp]
 

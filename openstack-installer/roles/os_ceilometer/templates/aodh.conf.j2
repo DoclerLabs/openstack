@@ -483,7 +483,7 @@ auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
 # Service tenant name. (string value)
 #admin_tenant_name = admin
 
-auth_plugin = password
+auth_type = password
 username = {{ aodh_admin_user }}
 user_domain_name = {{ aodh_domain_name }}
 password = {{ aodh_admin_password }}
@@ -491,16 +491,19 @@ project_name = {{ aodh_project_name }}
 project_domain_name = {{ aodh_project_domain_name }}
 
 [service_credentials]
+auth_type = password
 {% if SSLCACertificateFile != '' %}
-os_cacert = {{ SSLCACertificateFile }}
+cafile = {{ SSLCACertificateFile }}
 {% endif %}
 insecure = {{ ssl_insecure }}
-os_auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v2.0
-os_username = {{ aodh_admin_user }}
-os_tenant_name = {{ aodh_project_name }}
-os_password = {{ aodh_admin_password }}
-os_endpoint_type = internalURL
-os_region_name = {{ keystone_region_name }}
+auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
+username = {{ ceilometer_admin_user }}
+user_domain_name = {{ ceilometer_domain_name }}
+password = {{ ceilometer_admin_password }}
+project_name = {{ ceilometer_project_name }}
+project_domain_name = {{ ceilometer_project_domain_name }}
+interface = internalURL
+region_name = {{ keystone_region_name }}
 
 [matchmaker_redis]
 
@@ -546,6 +549,9 @@ os_region_name = {{ keystone_region_name }}
 # Deprecated group/name - [DEFAULT]/lock_path
 #lock_path = <None>
 
+[oslo_messaging_notifications]
+
+driver = messagingv2
 
 [oslo_messaging_amqp]
 
