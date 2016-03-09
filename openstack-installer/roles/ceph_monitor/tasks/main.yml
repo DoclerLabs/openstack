@@ -122,7 +122,7 @@
   changed_when: "'writing' in monmap_result.stdout"
 
 - name: create the default data directories
-  file: dest=/var/lib/ceph/mon/{{ ceph_cluster_name }}-{{ inventory_hostname }} state=directory owner=root group=root mode=0644
+  file: dest=/var/lib/ceph/mon/{{ ceph_cluster_name }}-{{ inventory_hostname }} state=directory owner=ceph group=root mode=0755
 
 - name: populate the monitor daemon(s) with the monitor map and keyring
   command: ceph-mon --cluster {{ ceph_cluster_name }} --mkfs -i {{ inventory_hostname }} --monmap /etc/ceph/monmap --keyring /etc/ceph/ceph.mon.keyring
