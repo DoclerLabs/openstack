@@ -1444,7 +1444,7 @@ driver = messagingv2
 # RabbitMQ HA cluster host:port pairs. (list value)
 # Deprecated group/name - [DEFAULT]/rabbit_hosts
 #rabbit_hosts = $rabbit_host:$rabbit_port
-{% set rabbit_hosts=groups['rabbitmq'][(play_hosts.index(inventory_hostname) % groups['rabbitmq'] | count):] + groups['rabbitmq'][:(play_hosts.index(inventory_hostname) % groups['rabbitmq'] | count)] %}
+{% set rabbit_hosts=groups['rabbitmq'][(groups['glance'].index(inventory_hostname) % groups['rabbitmq'] | count):] + groups['rabbitmq'][:(groups['glance'].index(inventory_hostname) % groups['rabbitmq'] | count)] %}
 rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
 
 # Connect over SSL for RabbitMQ. (boolean value)
