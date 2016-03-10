@@ -93,7 +93,7 @@
         haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
         haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
         haproxy_backend_extras:
-          - http-check expect status 401
+          - http-check expect rstatus 200|401
       - haproxy_service_name: aodh_api
         haproxy_backend_nodes: "{{ groups['ceilometer_controller'] }}"
         haproxy_bind_hosts:
@@ -103,4 +103,4 @@
         haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
         haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
         haproxy_backend_extras:
-          - http-check expect status 401
+          - http-check expect rstatus 200|401
