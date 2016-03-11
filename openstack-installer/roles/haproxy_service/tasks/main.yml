@@ -5,6 +5,11 @@
   with_items: "{{ haproxy_services }}"
   when: item.haproxy_backend_nodes | length > 0
 
+- name: clear empty haproxy service config
+  file: dest=/etc/haproxy/conf.d/{{ item.haproxy_service_name }}.cfg state=absent
+  with_items: "{{ haproxy_services }}"
+  when: item.haproxy_backend_nodes | length == 0
+
 - name: assemble haproxy config file
   assemble: src=/etc/haproxy/conf.d dest=/etc/haproxy/haproxy.cfg owner=root group=root mode=0644
     delimiter='\n#--- START FRONTEND ---\n'
