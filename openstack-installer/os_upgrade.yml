@@ -1,0 +1,151 @@
+---
+
+- hosts:
+    - keystone
+    - swift_proxy
+    - swift_storage
+    - glance
+    - horizon
+    - nova_controller
+    - nova_compute
+    - neutron_controller
+    - neutron_compute
+    - ceilometer_controller
+    - ceilometer_compute
+    - heat
+    - trove
+    - cinder
+    - cinder_volume
+    - murano
+    - sahara
+    - barbican
+    - ironic
+    - ceph_radosgw
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - common
+  pre_tasks:
+    - name: check for Ansible version > 2.0.1
+      local_action: assert that="{{ ansible_version.string | version_compare('2.0.1', '>=') }}"
+      run_once: True
+      become: False
+
+- hosts:
+    - keystone[0]
+    - swift_proxy[0]
+    - glance[0]
+    - horizon[0]
+    - nova_controller[0]
+    - neutron_controller[0]
+    - ceilometer_controller[0]
+    - heat[0]
+    - trove[0]
+    - cinder[0]
+    - murano[0]
+    - sahara[0]
+    - barbican[0]
+    - ironic[0]
+    - ceph_radosgw[0]
+  become: True
+  max_fail_percentage: 0
+  serial: 1
+  tasks:
+
+    - block:
+
+      - name: remove current host from haproxy
+        haproxy: host={{ inventory_hostname }} socket=/run/haproxy/admin.sock state=disabled wait=yes
+        delegate_to: "{{ item }}"
+        with_items: "{{ groups['haproxy'] }}"
+
+      - name: upgrade packages
+        apt: upgrade=yes
+
+      - name: upgrade the first hosts
+        local_action: command ansible-playbook {{ item.playbook }} -l "{{ inventory_hostname }}"
+        when: inventory_hostname in item.group
+        with_items:
+          - { playbook: "os_keystone.yml", group: "{{ groups['keystone'] }}" }
+          - { playbook: "os_glance.yml", group: "{{ groups['glance'] }}" }
+          - { playbook: "os_neutron.yml", group: "{{ groups['neutron_controller'] }}" }
+          - { playbook: "os_nova.yml", group: "{{ groups['nova_controller'] }}" }
+          - { playbook: "os_ceilometer.yml", group: "{{ groups['ceilometer_controller'] }}" }
+          - { playbook: "os_heat.yml", group: "{{ groups['heat'] }}" }
+          - { playbook: "os_cinder.yml", group: "{{ groups['cinder'] }}" }
+          - { playbook: "os_trove.yml", group: "{{ groups['trove'] }}" }
+        become: False
+
+      always:
+
+        - name: readd current host to haproxy
+          haproxy: host={{ inventory_hostname }} socket=/run/haproxy/admin.sock state=enabled wait=yes
+          delegate_to: "{{ item }}"
+          with_items: "{{ groups['haproxy'] }}"
+
+- hosts:
+    - keystone[1:]
+    - swift_proxy[1:]
+    - glance[1:]
+    - horizon[1:]
+    - nova_controller[1:]
+    - neutron_controller[1:]
+    - ceilometer_controller[1:]
+    - heat[1:]
+    - trove[1:]
+    - cinder[1:]
+    - murano[1:]
+    - sahara[1:]
+    - barbican[1:]
+    - ironic[1:]
+    - ceph_radosgw[1:]
+  become: True
+  max_fail_percentage: 0
+  tasks:
+
+    - block:
+
+      - name: remove current host from haproxy
+        haproxy: host={{ inventory_hostname }} socket=/run/haproxy/admin.sock state=disabled wait=yes
+        delegate_to: "{{ item }}"
+        with_items: "{{ groups['haproxy'] }}"
+
+      - name: upgrade packages
+        apt: upgrade=yes
+
+      - name: upgrade the other hosts
+        local_action: command ansible-playbook {{ item.playbook }} -l "{{ inventory_hostname }}"
+        when: inventory_hostname in item.group
+        with_items:
+          - { playbook: "os_keystone.yml", group: "{{ groups['keystone'] }}" }
+          - { playbook: "os_glance.yml", group: "{{ groups['glance'] }}" }
+          - { playbook: "os_neutron.yml", group: "{{ groups['neutron_controller'] }}" }
+          - { playbook: "os_nova.yml", group: "{{ groups['nova_controller'] }}" }
+          - { playbook: "os_ceilometer.yml", group: "{{ groups['ceilometer_controller'] }}" }
+          - { playbook: "os_heat.yml", group: "{{ groups['heat'] }}" }
+          - { playbook: "os_cinder.yml", group: "{{ groups['cinder'] }}" }
+          - { playbook: "os_trove.yml", group: "{{ groups['trove'] }}" }
+        become: False
+
+      always:
+
+        - name: readd current host to haproxy
+          haproxy: host={{ inventory_hostname }} socket=/run/haproxy/admin.sock state=enabled wait=yes
+          delegate_to: "{{ item }}"
+          with_items: "{{ groups['haproxy'] }}"
+
+- hosts:
+    - nova_compute
+    - neutron_compute
+    - ceilometer_compute
+    - cinder_volume
+  become: True
+  max_fail_percentage: 0
+  tasks:
+
+    - name: run nova db sync as workaround for launchpad bug #1498344
+      command: /usr/bin/nova-manage db sync
+      when: inventory_hostname in groups['nova_compute'] and inventory_hostname not in groups['nova_controller']
+
+    - name: upgrade packages
+      apt: upgrade=yes
