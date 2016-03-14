@@ -15,7 +15,7 @@ It does not install the base OS, also doesn't configure the hardware (network in
 
   - OpenStack Controller nodes need a management interface, and a separate public interface is recommended.
   - OpenStack Compute nodes need a management interface.
-  - For using Neutron VLAN segmentation, a Linux Bridge where the Neutron plugin can create VLANs. This interface can be shared with the management or the public interface.
+  - For using Neutron VLAN segmentation, a Linux Bridge where the Neutron plugin can create VLANs. This interface can be shared with the management or the public interface. If you're using the OpenVSwitch Neutron plugin, create the OVS bridges (br-int and br-ex) first.
   - For Ceph, it is recommended to have separate management and cluster communication interfaces.
 
 - NTP should be working on all nodes.
