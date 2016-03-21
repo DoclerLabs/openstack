@@ -1,0 +1,7 @@
+---
+
+- hosts: localhost
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - nagios

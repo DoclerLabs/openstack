@@ -1,0 +1,7 @@
+---
+
+host_template: generic-host
+service_template: generic-service
+command_check_nrpe: check_nrpe_1arg
+os_ssl: False
+keystone_ssl: False

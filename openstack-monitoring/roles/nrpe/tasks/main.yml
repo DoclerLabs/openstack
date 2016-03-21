@@ -1,0 +1,24 @@
+---
+
+- name: install nrpe
+  apt: name=nagios-nrpe-server
+
+- name: install ceph health check scripts
+  copy: src={{ item }} dest=/usr/local/bin/{{ item }} owner=root group=root mode=0755
+  with_items:
+    - check_ceph_health
+    - check_ceph_df
+  when: inventory_hostname in groups['ceph_monitor']
+
+- name: install nrpe config
+  template: src=nrpe.cfg.j2 dest=/etc/nagios/nrpe.cfg owner=root group=root mode=0644
+  notify: restart nrpe
+
+- name: install openstack nrpe config
+  template: src=openstack_nrpe.cfg.j2 dest=/etc/nagios/nrpe.d/openstack_nrpe.cfg owner=root group=nagios mode=0640
+  notify: restart nrpe
+
+- meta: flush_handlers
+
+- name: make sure nrpe is enabled and started
+  service: name=nagios-nrpe-server state=started enabled=yes
