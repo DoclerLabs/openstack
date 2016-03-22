@@ -146,6 +146,14 @@ define service{
     use {{ service_template }}
     host_name {{ host }}
     servicegroups Infra
+    service_description LOAD
+    check_command {{ command_check_nrpe }}!check_load
+}
+
+define service{
+    use {{ service_template }}
+    host_name {{ host }}
+    servicegroups Infra
     service_description disk_root
     check_command {{ command_check_nrpe }}!check_disk_root
 }

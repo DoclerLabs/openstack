@@ -13,15 +13,21 @@ command[check_disk_mongodb]={{ nagios_plugin_path }}/check_disk -w 10% -c 5% -p 
 command[check_disk_nova]={{ nagios_plugin_path }}/check_disk -w 10% -c 5% -p /var/lib/nova
 {% endif %}
 
+### Load ###
+command[check_load]={{ nagios_plugin_path }}/check_load -r -w {{ load_average_warning }} -c {{ load_average_critical }}
+
 {% if inventory_hostname in groups['memcached'] %}
+### Memcache ###
 command[check_memcached]={{ nagios_plugin_path }}/check_tcp -H {{ ip.mgmt }} -p 11211
 {% endif %}
 
 {% if inventory_hostname in groups['galera'] %}
+### MySQL ###
 command[check_galera]={{ nagios_plugin_path }}/check_mysql -H localhost -u clustercheck -p{{ galera_clustercheck_password }}
 {% endif %}
 
 {% if inventory_hostname in groups['ceph_monitor'] %}
+### Ceph ###
 command[check_ceph_health]=/usr/local/bin/check_ceph_health --id nagios --keyring /etc/ceph/ceph.client.nagios.keyring
 command[check_ceph_df]=/usr/local/bin/check_ceph_df --id nagios --keyring /etc/ceph/ceph.client.nagios.keyring -W 80 -C 90
 {% endif %}
