@@ -56,7 +56,8 @@ define hostgroup{
 {{ hostgroup('controller', 'controller', 'Cloud Controller hosts') }}
 {{ hostgroup('volume', 'volume', 'OpenStack Volume hosts') }}
 {{ hostgroup('compute', 'compute', 'OpenStack Compute hosts') }}
-{{ hostgroup('ceph_monitor', 'ceph_monitor', 'Ceph monitors', groups['ceph_monitor']) }}
+{{ hostgroup('ceph-monitor', 'ceph-monitor', 'Ceph monitors', groups['ceph_monitor']) }}
+{{ hostgroup('ceph-radosgw', 'ceph-radosgw', 'Ceph Radosgateway', groups['ceph_radosgw']) }}
 {{ hostgroup('pacemaker', 'pacemaker', 'Pacemaker hosts', groups['pacemaker']) }}
 {{ hostgroup('haproxy', 'haproxy', 'HAProxy hosts', groups['haproxy']) }}
 {{ hostgroup('memcached', 'memcached', 'Memcached hosts', groups['memcached']) }}
@@ -64,8 +65,8 @@ define hostgroup{
 {{ hostgroup('galera', 'galera', 'Galera hosts', groups['galera']) }}
 {{ hostgroup('mongodb', 'mongodb', 'MongoDB hosts', groups['mongodb']) }}
 {{ hostgroup('keystone', 'keystone', 'Keystone hosts', groups['keystone']) }}
-{{ hostgroup('swift proxy', 'swift proxy', 'Swift proxy hosts', groups['swift_proxy']) }}
-{{ hostgroup('swift storage', 'swift storage', 'Swift storage hosts', groups['swift_storage']) }}
+{{ hostgroup('swift-proxy', 'swift-proxy', 'Swift proxy hosts', groups['swift_proxy']) }}
+{{ hostgroup('swift-storage', 'swift-storage', 'Swift storage hosts', groups['swift_storage']) }}
 {{ hostgroup('ironic', 'ironic', 'OpenStack Ironic hosts', groups['ironic']) }}
 {{ hostgroup('glance', 'glance', 'OpenStack Glance hosts', groups['glance']) }}
 {{ hostgroup('horizon', 'horizon', 'OpenStack Horizon hosts', groups['horizon']) }}
@@ -175,10 +176,12 @@ define service{
 
 {% endfor %}
 
+### CEPH ###
+
 {% if groups['ceph_monitor'] | count > 0 %}
 define service{
     use {{ service_template }}
-    hostgroup_name ceph_monitor
+    hostgroup_name ceph-monitor
     servicegroups ceph
     service_description ceph_health
     check_command {{ command_check_nrpe }}!check_ceph_health
@@ -186,12 +189,24 @@ define service{
 
 define service{
     use {{ service_template }}
-    hostgroup_name ceph_monitor
+    hostgroup_name ceph-monitor
     servicegroups ceph
     service_description ceph_df
     check_command {{ command_check_nrpe }}!check_ceph_df
 }
 {% endif %}
+
+{% if groups['ceph_radosgw'] | count > 0 %}
+define service{
+    use {{ service_template }}
+    hostgroup_name ceph-radosgw,mgmt-VIP
+    servicegroups ceph
+    service_description radosgw
+    check_command {{ radosgw_ssl | ternary('check_https','check_http') }}!-p {{ radosgw_port }}
+}
+{% endif %}
+
+### INFRA ###
 
 {% if groups['galera'] | count > 0 %}
 define service{
@@ -239,6 +254,18 @@ define service{
     servicegroups Infra
     service_description memcached
     check_command {{ command_check_nrpe }}!check_memcached
+}
+{% endif %}
+
+### OpenStack ###
+
+{% if groups['swift_proxy'] | count > 0 %}
+define service{
+    use {{ service_template }}
+    hostgroup_name swift-proxy,mgmt-VIP
+    servicegroups OpenStack
+    service_description swift-proxy
+    check_command {{ os_ssl | ternary('check_https_url','check_http_url') }}!-p {{ 8080 }}!-u /healthcheck
 }
 {% endif %}
 
