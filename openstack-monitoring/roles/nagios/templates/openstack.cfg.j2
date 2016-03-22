@@ -95,6 +95,11 @@ define servicegroup{
     alias Infra
 }
 
+define servicegroup{
+    servicegroup_name general
+    alias general
+}
+
 define host{
     use {{ host_template }}
     host_name mgmt-VIP
@@ -137,7 +142,7 @@ define host{
 define service{
     use {{ service_template }}
     host_name {{ host }}
-    servicegroups Infra
+    servicegroups general
     service_description PING
     check_command check_ping!100.0,20%!500.0,60%
 }
@@ -145,7 +150,7 @@ define service{
 define service{
     use {{ service_template }}
     host_name {{ host }}
-    servicegroups Infra
+    servicegroups general
     service_description LOAD
     check_command {{ command_check_nrpe }}!check_load
 }
@@ -153,7 +158,7 @@ define service{
 define service{
     use {{ service_template }}
     host_name {{ host }}
-    servicegroups Infra
+    servicegroups general
     service_description disk_root
     check_command {{ command_check_nrpe }}!check_disk_root
 }
@@ -161,7 +166,7 @@ define service{
 define service{
     use {{ service_template }}
     host_name {{ host }}
-    servicegroups Infra
+    servicegroups general
     service_description disk_var
     check_command {{ command_check_nrpe }}!check_disk_var
 }
@@ -169,7 +174,7 @@ define service{
 define service{
     use {{ service_template }}
     host_name {{ host }}
-    servicegroups Infra
+    servicegroups general
     service_description disk_log
     check_command {{ command_check_nrpe }}!check_disk_log
 }
@@ -177,12 +182,22 @@ define service{
 define service{
     use {{ service_template }}
     host_name {{ host }}
-    servicegroups Infra
+    servicegroups general
     service_description SSH
     check_command check_ssh
 }
 
 {% endfor %}
+
+{% if groups['nova_compute'] | count > 0 %}
+define service{
+    use {{ service_template }}
+    hostgroup_name compute
+    servicegroups general
+    service_description disk_nova
+    check_command {{ command_check_nrpe }}!check_disk_nova
+}
+{% endif %}
 
 ### CEPH ###
 
@@ -220,7 +235,7 @@ define service{
 define service{
     use {{ service_template }}
     hostgroup_name galera
-    servicegroups Infra
+    servicegroups general,Infra
     service_description disk_mysql
     check_command {{ command_check_nrpe }}!check_disk_mysql
 }
@@ -239,21 +254,12 @@ define service{
 define service{
     use {{ service_template }}
     hostgroup_name mongodb
-    servicegroups Infra
+    servicegroups general,Infra
     service_description disk_mongodb
     check_command {{ command_check_nrpe }}!check_disk_mongodb
 }
 {% endif %}
 
-{% if groups['nova_compute'] | count > 0 %}
-define service{
-    use {{ service_template }}
-    hostgroup_name compute
-    servicegroups Infra
-    service_description disk_nova
-    check_command {{ command_check_nrpe }}!check_disk_nova
-}
-{% endif %}
 
 {% if groups['memcached'] | count > 0 %}
 define service{
