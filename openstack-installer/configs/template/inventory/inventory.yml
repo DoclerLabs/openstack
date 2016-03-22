@@ -1,13 +1,73 @@
+# ------- Controller(s) -------
 controller:
-  jsm-devops-gyurcostorage-test-0:
+  controller1:
     ip:
       mgmt: 10.97.36.129
-  jsm-devops-gyurcostorage-test-1:
+  controller2:
     ip:
       mgmt: 10.97.36.130
-  jsm-devops-gyurcostorage-test-2:
+  controller3:
     ip:
       mgmt: 10.97.36.131
+
+# -------- Compute --------
+compute:
+  compute1:
+    ip:
+      mgmt: 10.97.36.3
+
+# -------- Ceph ---------
+ceph_monitor:
+  ceph1:
+    ip:
+      mgmt: 10.97.36.132
+  ceph2:
+    ip:
+      mgmt: 10.97.36.133
+  ceph3:
+    ip:
+      mgmt: 10.97.36.135
+
+ceph_osd:
+  ceph-osd1:
+    ip:
+      mgmt: 10.97.36.132
+    osd:
+      - { path: "/var/lib/osd1" }
+      - { path: "/var/lib/osd2" }
+  ceph-osd2:
+    ip:
+      mgmt: 10.97.36.133
+    osd:
+      - { disk: "/dev/sdc" }
+  ceph-osd3:
+    ip:
+      mgmt: 10.97.36.135
+    osd:
+      - { disk: "/dev/sdc", journal: "/dev/nvme0n1p1" }
+  ceph-osd4:
+    ip:
+      mgmt: 10.97.36.134
+    osd:
+      - { path: "/var/lib/osd1" }
+      - { disk: "/dev/sdc" }
+
+#The radosgw keystone authentication uses the certificates for signature checking,
+#which are local to the keystone instance
+ceph_radosgw:
+  inherit: keystone
+
+# ------- Nagios -------
+# Used for the openstack-monitoring project
+nagios:
+  inherit: local
+
+# --- Define localhost ---
+local:
+  localhost:
+    ip:
+      mgmt: 127.0.0.1
+    ansible_connection: local
 
 # -------- infrastructure --------
 pacemaker:
@@ -88,56 +148,4 @@ ironic:
 
 # -------- Tempest ------
 tempest:
-  localhost:
-    ip:
-      mgmt: 127.0.0.1
-    ansible_connection: local
-
-# -------- Ceph ---------
-ceph_monitor:
-  jsm-ceph-osd-lubet-5:
-    ip:
-      mgmt: 10.97.36.132
-  jsm-ceph-osd-lubet-7:
-    ip:
-      mgmt: 10.97.36.133
-  jsm-ceph-osd-lubet-8:
-    ip:
-      mgmt: 10.97.36.135
-
-ceph_osd:
-  jsm-ceph-osd-lubet-5:
-    ip:
-      mgmt: 10.97.36.132
-    osd:
-      - { path: "/var/lib/osd1" }
-      - { path: "/var/lib/osd2" }
-  jsm-ceph-osd-lubet-7:
-    ip:
-      mgmt: 10.97.36.133
-    osd:
-      - { path: "/var/lib/osd1" }
-      - { disk: "/dev/vg00/ceph" }
-  jsm-ceph-osd-lubet-8:
-    ip:
-      mgmt: 10.97.36.135
-    osd:
-      - { path: "/var/lib/osd1" }
-      - { disk: "/dev/vg00/ceph" }
-  jsm-ceph-osd-lubet-9:
-    ip:
-      mgmt: 10.97.36.134
-    osd:
-      - { path: "/var/lib/osd1" }
-      - { disk: "/dev/vg00/ceph" }
-
-#The radosgw keystone authentication uses the certificates for signature checking,
-#which are local to the keystone instance
-ceph_radosgw:
-  inherit: keystone
-
-# -------- Compute --------
-compute:
-  jsm-devops-swify-test-1:
-    ip:
-      mgmt: 10.97.36.3
+  inherit: local

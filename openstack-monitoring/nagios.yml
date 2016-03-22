@@ -1,6 +1,6 @@
 ---
 
-- hosts: localhost
+- hosts: nagios
   become: True
   max_fail_percentage: 0
   roles:
