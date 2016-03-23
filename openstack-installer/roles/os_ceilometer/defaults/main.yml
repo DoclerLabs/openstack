@@ -20,13 +20,21 @@ ceilometer_syslog_use: "{{ syslog_use | default(False) }}"
 aodh_debug: False
 ceilometer_debug: False
 
+keystone_rabbit_vhost: keystone
 keystone_rabbit_user: keystone
+glance_rabbit_vhost: glance
 glance_rabbit_user: glance
+nova_rabbit_vhost: nova
 nova_rabbit_user: nova
+neutron_rabbit_vhost: neutron
 neutron_rabbit_user: neutron
+cinder_rabbit_vhost: cinder
 cinder_rabbit_user: cinder
+heat_rabbit_vhost: heat
 heat_rabbit_user: heat
+swift_rabbit_vhost: swift
 swift_rabbit_user: swift
+trove_rabbit_vhost: trove
 trove_rabbit_user: trove
 
 ceilometer_metering_time_to_live: 0
