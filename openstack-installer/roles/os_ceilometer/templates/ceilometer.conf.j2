@@ -186,54 +186,54 @@ udp_address = {{ ip.mgmt }}
 [notification]
 
 {% for host in groups['rabbitmq'] %}
-messaging_urls = rabbit://{{ ceilometer_rabbit_user }}:{{ ceilometer_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/
+messaging_urls = rabbit://{{ ceilometer_rabbit_user }}:{{ ceilometer_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/{{ ceilometer_rabbit_vhost }}
 {% endfor %}
 
 {% if groups['keystone'] | count > 0 %}
 {% for host in groups['rabbitmq'] %}
-messaging_urls = rabbit://{{ keystone_rabbit_user }}:{{ keystone_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/
+messaging_urls = rabbit://{{ keystone_rabbit_user }}:{{ keystone_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/{{ keystone_rabbit_vhost }}
 {% endfor %}
 {% endif %}
 
 {% if groups['glance'] | count > 0 %}
 {% for host in groups['rabbitmq'] %}
-messaging_urls = rabbit://{{ glance_rabbit_user }}:{{ glance_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/
+messaging_urls = rabbit://{{ glance_rabbit_user }}:{{ glance_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/{{ glance_rabbit_vhost }}
 {% endfor %}
 {% endif %}
 
 {% if groups['nova_controller'] | count > 0 %}
 {% for host in groups['rabbitmq'] %}
-messaging_urls = rabbit://{{ nova_rabbit_user }}:{{ nova_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/
+messaging_urls = rabbit://{{ nova_rabbit_user }}:{{ nova_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/{{ nova_rabbit_vhost }}
 {% endfor %}
 {% endif %}
 
 {% if groups['neutron_controller'] | count > 0 %}
 {% for host in groups['rabbitmq'] %}
-messaging_urls = rabbit://{{ neutron_rabbit_user }}:{{ neutron_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/
+messaging_urls = rabbit://{{ neutron_rabbit_user }}:{{ neutron_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/{{ neutron_rabbit_vhost }}
 {% endfor %}
 {% endif %}
 
 {% if groups['cinder'] | count > 0 %}
 {% for host in groups['rabbitmq'] %}
-messaging_urls = rabbit://{{ cinder_rabbit_user }}:{{ cinder_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/
+messaging_urls = rabbit://{{ cinder_rabbit_user }}:{{ cinder_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/{{ cinder_rabbit_vhost }}
 {% endfor %}
 {% endif %}
 
 {% if groups['heat'] | count > 0 %}
 {% for host in groups['rabbitmq'] %}
-messaging_urls = rabbit://{{ heat_rabbit_user }}:{{ heat_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/
+messaging_urls = rabbit://{{ heat_rabbit_user }}:{{ heat_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/{{ heat_rabbit_vhost }}
 {% endfor %}
 {% endif %}
 
 {% if groups['swift_proxy'] | count > 0 %}
 {% for host in groups['rabbitmq'] %}
-messaging_urls = rabbit://{{ swift_rabbit_user }}:{{ swift_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/
+messaging_urls = rabbit://{{ swift_rabbit_user }}:{{ swift_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/{{ swift_rabbit_vhost }}
 {% endfor %}
 {% endif %}
 
 {% if groups['trove'] | count > 0 %}
 {% for host in groups['rabbitmq'] %}
-messaging_urls = rabbit://{{ trove_rabbit_user }}:{{ trove_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/
+messaging_urls = rabbit://{{ trove_rabbit_user }}:{{ trove_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/{{ trove_rabbit_vhost }}
 {% endfor %}
 {% endif %}
 
