@@ -1,10 +1,12 @@
 ---
 
+ceilometer_rabbit_vhost: ceilometer
 ceilometer_rabbit_user: ceilometer
 ceilometer_admin_user: ceilometer
 ceilometer_domain_name: "{{ keystone_domain_name }}"
 ceilometer_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
 ceilometer_project_name: "{{ keystone_service_project_name | default('service') }}"
+aodh_rabbit_vhost: aodh
 aodh_rabbit_user: aodh
 aodh_admin_user: aodh
 aodh_domain_name: "{{ keystone_domain_name }}"

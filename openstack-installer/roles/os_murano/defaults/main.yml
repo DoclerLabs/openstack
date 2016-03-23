@@ -3,6 +3,7 @@
 murano_db_user: murano
 murano_mysql_server: "{{ vip_mgmt }}"
 murano_db: murano
+murano_rabbit_vhost: murano
 murano_rabbit_user: murano
 murano_admin_user: murano
 murano_domain_name: "{{ keystone_domain_name }}"

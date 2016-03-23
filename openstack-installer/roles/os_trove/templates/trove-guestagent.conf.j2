@@ -95,6 +95,7 @@ log_file = logfile.txt
 
 [oslo_messaging_rabbit]
 rabbit_port = 5672
+rabbit_virtual_host = {{ trove_rabbit_vhost }}
 rabbit_userid = {{ trove_rabbit_user }}
 rabbit_password = {{ trove_rabbit_password }}
 rabbit_ha_queues = true

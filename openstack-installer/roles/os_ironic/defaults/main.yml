@@ -3,6 +3,7 @@
 ironic_db_user: ironic
 ironic_mysql_server: "{{ vip_mgmt }}"
 ironic_db: ironic
+ironic_rabbit_vhost: ironic
 ironic_rabbit_user: ironic
 ironic_admin_user: ironic
 ironic_domain_name: "{{ keystone_domain_name }}"

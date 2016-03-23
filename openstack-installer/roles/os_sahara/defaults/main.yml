@@ -3,6 +3,7 @@
 sahara_db_user: sahara
 sahara_mysql_server: "{{ vip_mgmt }}"
 sahara_db: sahara
+sahara_rabbit_vhost: sahara
 sahara_rabbit_user: sahara
 sahara_admin_user: sahara
 sahara_domain_name: "{{ keystone_domain_name }}"

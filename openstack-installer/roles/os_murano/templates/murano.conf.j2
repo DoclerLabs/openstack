@@ -669,6 +669,7 @@ rabbit_password = {{ murano_rabbit_password }}
 # The RabbitMQ virtual host. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_virtual_host
 #rabbit_virtual_host = /
+rabbit_virtual_host = {{ murano_rabbit_vhost }}
 
 # How frequently to retry connecting with RabbitMQ. (integer value)
 #rabbit_retry_interval = 1

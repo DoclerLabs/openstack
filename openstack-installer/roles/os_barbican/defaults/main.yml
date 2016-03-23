@@ -3,6 +3,7 @@
 barbican_db_user: barbican
 barbican_mysql_server: "{{ vip_mgmt }}"
 barbican_db: barbican
+barbican_rabbit_vhost: barbican
 barbican_rabbit_user: barbican
 barbican_admin_user: barbican
 barbican_domain_name: "{{ keystone_domain_name }}"
