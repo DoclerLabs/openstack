@@ -1,7 +1,27 @@
 ---
 
+- name: create keystone vhost in rabbitmq
+  rabbitmq_vhost: node="rabbit@{{ groups['rabbitmq'][0] }}" name="{{ keystone_rabbit_vhost }}"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
 - name: create keystone user in rabbitmq
-  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}" user="{{ keystone_rabbit_user }}" password="{{ keystone_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}"
+      user="{{ keystone_rabbit_user }}" password="{{ keystone_rabbit_password }}"
+      vhost="{{ keystone_rabbit_vhost }}"
+      configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: ensure the keystone vhost contains the HA policy
+  rabbitmq_policy:
+    node: "rabbit@{{ inventory_hostname }}"
+    vhost: "{{ keystone_rabbit_vhost }}"
+    name: HA
+    pattern: '.*'
+    tags:
+      "ha-mode": "all"
+      "ha-sync-mode": "automatic"
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 

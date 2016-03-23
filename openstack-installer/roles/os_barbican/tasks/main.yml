@@ -1,7 +1,27 @@
 ---
 
+- name: create barbican vhost in rabbitmq
+  rabbitmq_vhost: node="rabbit@{{ groups['rabbitmq'][0] }}" name="{{ barbican_rabbit_vhost }}"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
 - name: create barbican user in rabbitmq
-  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}" user="{{ barbican_rabbit_user }}" password="{{ barbican_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}"
+      user="{{ barbican_rabbit_user }}" password="{{ barbican_rabbit_password }}"
+      vhost="{{ barbican_rabbit_vhost }}"
+      configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: ensure the barbican vhost contains the HA policy
+  rabbitmq_policy:
+    node: "rabbit@{{ inventory_hostname }}"
+    vhost: "{{ barbican_rabbit_vhost }}"
+    name: HA
+    pattern: '.*'
+    tags:
+      "ha-mode": "all"
+      "ha-sync-mode": "automatic"
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 

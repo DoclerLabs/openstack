@@ -1,7 +1,27 @@
 ---
 
+- name: create trove vhost in rabbitmq
+  rabbitmq_vhost: node="rabbit@{{ groups['rabbitmq'][0] }}" name="{{ trove_rabbit_vhost }}"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
 - name: create trove user in rabbitmq
-  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}" user="{{ trove_rabbit_user }}" password="{{ trove_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}"
+      user="{{ trove_rabbit_user }}" password="{{ trove_rabbit_password }}"
+      vhost="{{ trove_rabbit_vhost }}"
+      configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: ensure the trove vhost contains the HA policy
+  rabbitmq_policy:
+    node: "rabbit@{{ inventory_hostname }}"
+    vhost: "{{ trove_rabbit_vhost }}"
+    name: HA
+    pattern: '.*'
+    tags:
+      "ha-mode": "all"
+      "ha-sync-mode": "automatic"
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 

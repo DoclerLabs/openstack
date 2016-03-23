@@ -89,6 +89,7 @@ driver = messagingv2
 
 [oslo_messaging_rabbit]
 rabbit_port = 5672
+rabbit_virtual_host = {{ cinder_rabbit_vhost }}
 rabbit_userid = {{ cinder_rabbit_user }}
 rabbit_password = {{ cinder_rabbit_password }}
 rabbit_ha_queues = true

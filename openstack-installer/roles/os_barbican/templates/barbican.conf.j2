@@ -143,6 +143,7 @@ scrubber_datadir = /var/lib/barbican/scrubber
 # Rabbit and HA configuration:
 ampq_durable_queues = False
 rabbit_port = 5672
+rabbit_virtual_host = {{ barbican_rabbit_vhost }}
 rabbit_userid = {{ barbican_rabbit_user }}
 rabbit_password = {{ barbican_rabbit_password }}
 rabbit_ha_queues = True

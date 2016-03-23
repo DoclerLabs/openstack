@@ -3,6 +3,7 @@
 cinder_db_user: cinder
 cinder_mysql_server: "{{ vip_mgmt }}"
 cinder_db: cinder
+cinder_rabbit_vhost: cinder
 cinder_rabbit_user: cinder
 cinder_admin_user: cinder
 cinder_domain_name: "{{ keystone_domain_name }}"

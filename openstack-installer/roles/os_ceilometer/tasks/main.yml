@@ -1,12 +1,52 @@
 ---
 
+- name: create ceilometer vhost in rabbitmq
+  rabbitmq_vhost: node="rabbit@{{ groups['rabbitmq'][0] }}" name="{{ ceilometer_rabbit_vhost }}"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
 - name: create ceilometer user in rabbitmq
-  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}" user="{{ ceilometer_rabbit_user }}" password="{{ ceilometer_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}"
+      user="{{ ceilometer_rabbit_user }}" password="{{ ceilometer_rabbit_password }}"
+      vhost="{{ ceilometer_rabbit_vhost }}"
+      configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: ensure the ceilometer vhost contains the HA policy
+  rabbitmq_policy:
+    node: "rabbit@{{ inventory_hostname }}"
+    vhost: "{{ ceilometer_rabbit_vhost }}"
+    name: HA
+    pattern: '.*'
+    tags:
+      "ha-mode": "all"
+      "ha-sync-mode": "automatic"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: create aodh vhost in rabbitmq
+  rabbitmq_vhost: node="rabbit@{{ groups['rabbitmq'][0] }}" name="{{ aodh_rabbit_vhost }}"
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 
 - name: create aodh user in rabbitmq
-  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}" user="{{ aodh_rabbit_user }}" password="{{ aodh_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}"
+      user="{{ aodh_rabbit_user }}" password="{{ aodh_rabbit_password }}"
+      vhost="{{ aodh_rabbit_vhost }}"
+      configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: ensure the aodh vhost contains the HA policy
+  rabbitmq_policy:
+    node: "rabbit@{{ inventory_hostname }}"
+    vhost: "{{ aodh_rabbit_vhost }}"
+    name: HA
+    pattern: '.*'
+    tags:
+      "ha-mode": "all"
+      "ha-sync-mode": "automatic"
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 

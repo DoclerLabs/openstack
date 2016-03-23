@@ -1,6 +1,7 @@
 trove_db_user: trove
 trove_mysql_server: "{{ vip_mgmt }}"
 trove_db: trove
+trove_rabbit_vhost: trove
 trove_rabbit_user: trove
 trove_admin_user: trove
 trove_domain_name: "{{ keystone_domain_name }}"

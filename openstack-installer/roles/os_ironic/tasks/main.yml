@@ -1,7 +1,27 @@
 ---
 
+- name: create ironic vhost in rabbitmq
+  rabbitmq_vhost: node="rabbit@{{ groups['rabbitmq'][0] }}" name="{{ ironic_rabbit_vhost }}"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
 - name: create ironic user in rabbitmq
-  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}" user="{{ ironic_rabbit_user }}" password="{{ ironic_rabbit_password }}" configure_priv=".*" read_priv=".*" write_priv=".*"
+  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}"
+      user="{{ ironic_rabbit_user }}" password="{{ ironic_rabbit_password }}"
+      vhost="{{ ironic_rabbit_vhost }}"
+      configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: ensure the ironic vhost contains the HA policy
+  rabbitmq_policy:
+    node: "rabbit@{{ inventory_hostname }}"
+    vhost: "{{ ironic_rabbit_vhost }}"
+    name: HA
+    pattern: '.*'
+    tags:
+      "ha-mode": "all"
+      "ha-sync-mode": "automatic"
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 

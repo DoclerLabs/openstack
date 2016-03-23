@@ -3,6 +3,7 @@
 neutron_db_user: neutron
 neutron_mysql_server: "{{ vip_mgmt }}"
 neutron_db: neutron
+neutron_rabbit_vhost: neutron
 neutron_rabbit_user: neutron
 neutron_admin_user: neutron
 neutron_domain_name: "{{ keystone_domain_name }}"

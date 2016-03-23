@@ -3,6 +3,7 @@
 swift_db_user: swift
 swift_mysql_server: "{{ vip_mgmt }}"
 swift_db: swift
+swift_rabbit_vhost: swift
 swift_rabbit_user: swift
 swift_admin_user: swift
 swift_domain_name: "{{ keystone_domain_name }}"
