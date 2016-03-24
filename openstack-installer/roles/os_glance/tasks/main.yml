@@ -15,7 +15,7 @@
 
 - name: ensure the glance vhost contains the HA policy
   rabbitmq_policy:
-    node: "rabbit@{{ inventory_hostname }}"
+    node: "rabbit@{{ groups['rabbitmq'][0] }}"
     vhost: "{{ glance_rabbit_vhost }}"
     name: HA
     pattern: '.*'

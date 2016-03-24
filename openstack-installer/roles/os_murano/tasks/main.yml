@@ -15,7 +15,7 @@
 
 - name: ensure the murano vhost contains the HA policy
   rabbitmq_policy:
-    node: "rabbit@{{ inventory_hostname }}"
+    node: "rabbit@{{ groups['rabbitmq'][0] }}"
     vhost: "{{ murano_rabbit_vhost }}"
     name: HA
     pattern: '.*'
