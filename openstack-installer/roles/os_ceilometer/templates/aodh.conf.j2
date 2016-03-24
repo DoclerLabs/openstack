@@ -201,9 +201,7 @@ host = 127.0.0.1
 # Deprecated group/name - [DATABASE]/sql_connection
 # Deprecated group/name - [sql]/connection
 #connection = <None>
-connection = mongodb://aodh:{{ aodh_db_password }}@{% for host in groups['mongodb'] %}{{ hostvars[host].ip.mgmt }}:27017{% if not loop.last %},{% endif %}{% endfor %}/aodh
-
-mongodb_replica_set = {{ mongodb_replica_set }}
+connection = mysql+pymysql://{{ aodh_db_user }}:{{ aodh_db_password }}@{{ aodh_mysql_server }}/{{ aodh_db }}?charset=utf8
 
 # The SQLAlchemy connection string to use to connect to the slave
 # database. (string value)
