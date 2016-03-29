@@ -3,6 +3,7 @@
 host_template: generic-host
 service_template: generic-service
 command_check_nrpe: check_nrpe_1arg
+monitor_vip_public: True
 os_ssl: False
 keystone_ssl: False
 radosgw_ssl: False
