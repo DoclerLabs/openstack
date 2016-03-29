@@ -426,3 +426,13 @@ define service{
     check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8082
 }
 {% endif %}
+
+{% if groups['sahara'] | count > 0 %}
+define service{
+    use {{ service_template }}
+    hostgroup_name sahara,mgmt-VIP
+    servicegroups OpenStack
+    service_description sahara-api
+    check_command check_http_url!-p 8386!-e 401
+}
+{% endif %}
