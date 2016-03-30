@@ -15,13 +15,15 @@ E.g. neutron_physical_interface_mappings used in config.yml applies the same log
 assignment on all hosts, but if you have hosts with different network configurations, or different NICs,
 it is also possible to use this setting on a per-host basis in inventory.yml.
 
+Various other artifacts (like certificates) can be put into the files/ directory.
+
 2. Configuration backup/restore
 ===============================
 
 There are two small helper scripts supplied with this installer, scripts/savecfg.sh and
-scripts/restorecfg.sh, which backup and restore the inventory and the global config files into the
-configs/ directory. With these scripts, you can maintain configurations to more than one OpenStack
-environment.
+scripts/restorecfg.sh, which backup and restore the inventory the global config  and the files/
+artifacts into the configs/ directory. With these scripts, you can maintain configurations to more than
+one OpenStack environment.
 
 3. Inventory format
 ===================
@@ -147,6 +149,7 @@ To turn on TLS support in other services, use the following settings:
   keystone_ssl: True              # Turn on TLS in keystone. Default is False (no TLS).
   os_ssl: True                    # Turn on TLS in other OpenStack components.
   nova_novncproxy_ssl: True       # Turn on TLS in nova vnc proxy.
+  radosgw_ssl: True               # Turn on TLS for Ceph RadosGW
 
 With TLS support, it is recommended to set the components address to the domain name, which is in the
 certificate. so the following settings should be set:
@@ -190,6 +193,7 @@ Configuration options:
   vip_public_cidr: 24              # The netmask of the public network.
   vip_public_nic: eth3             # The NIC used by the public network.
 
+  pacemaker_colocate_vips: False   # Put the public and management VIPs on the same host.
 
 Syslog-ng
 ---------
@@ -341,3 +345,78 @@ Global configuration affecting swift:
   swift_part_power: 12                        # The log2 number of partitions (default: 2^12 partitions).
   swift_replicas: 3                           # Number of replicas of the objects.
   swift_min_part_hours: 1                     # Minimum hours must be elapsed before a partitioning change.
+
+Glance
+------
+
+Glance is the image service in OpenStack. Its main purpose is to store VM images. Configuring doesn't require much effort than
+choosing the backend where it stores the images.
+
+The best place for glance settings is the global config.yml file:
+
+::
+
+  glance_backend: ceph                       # The backend to store the images. The settings accepted are: ceph, swift and files.
+                                             # It is true that the 'files' backend doesn't require any other components,
+                                             # but it cannot be HA, so use it only for testing/development purposes.
+  glance_ceph_pool: images                   # The pool name in Ceph when glance_backend is ceph.
+  glance_ceph_user: glance                   # The user name in Ceph when glance_backend is ceph.
+
+Nova
+----
+
+Nova is the compute service in OpenStack. Probably this is the most known service. The inventory groups nova_controller and nova_compute
+are telling where to install Nova services.
+The most important settings for Nova are:
+
+::
+
+  nova_ephemeral_backend: local              # Where to put root and ephemeral disks for the instances. The default 'local' value is the storage
+                                             # in the compute node itself, while 'ceph' allows to use computes without local disc resources.
+  nova_ephemeral_ceph_pool: vms              # If Ceph is used for ephemeral disks, the pool name used for them.
+  nova_cpu_allocation_ratio: 16.0            # The overprovisioning ratio for CPUs.
+  nova_ram_allocation_ratio: 1.5             # The overprovisioning ratio for RAM.
+  nova_virt_type: kvm                        # Can be 'kvm' if KVM hardware acceleration is available on the compute node or 'qemu' if not.
+
+  nova_novncproxy_ssl: False                 # To use TLS for novncproxy.
+  nova_novncproxy_base_url:                  # Override this if the the default URL for the novncproxy is not presented correctly. By default it is
+                                             # http(s)://{{ os_public_address }}:6080/vnc_auto.html
+
+Neutron
+-------
+
+Neutron is the networking component. This installer implements the LinuxBridge and OpenVSwitch drivers, LBaaS, VPNaaS, FWaaS plugins and
+Flat, VLAN, VXLAN and GRE network segmentations.
+The inventory groups neutron uses are neutron_controller and neutron_compute. Most settings don't have default values, so most probably
+Neutron requires the most effort to set up properly.
+Settings affecting neutron:
+
+::
+
+  neutron_physical_interface_driver: linuxbridge  # The mechanism driver to use.
+                                                  # 'linuxbridge' supports Flat, VLAN and VXLAN networks.
+                                                  # 'openvswitch' supports Flat, VLAN, VXLAN and GRE networks.
+                                                  # For GRE and VXLAN networks, one has to specify an IP address to create the overlay network
+                                                  # on that interface. Those can be specified by the ip.vxlan and ip.gre settings in the inventory.
+  neutron_physical_interface_mappings:    # This contains a mapping for the physical network name in Neutron and the name in the host system.
+                                          # For example, if you created a bridge called br-vlan, and you want to assign it to the name 'vlan' in
+                                          # neutron, use neutron_physical_interface_mappings: 'vlan:br-vlan'
+                                          # More mappings can be added by separating them with a comma. E.g.:
+                                          # neutron_physical_interface_mappings: 'flat:eth1, vlan:br-vlan'
+                                          # This setting can be used in the inventory, too, if the nodes have different networking setup.
+  neutron_vlan_ranges:                    # The VLAN IDs used for VLAN networks. Example: vlan:100,200
+  neutron_ha_routers: False               # Set to 'True' if you want to create a Neutron router in HA mode (the router will be created on all
+                                          # controller nodes, and the active is determined by Keepalived).
+  neutron_ha_network_type:                # The network type used for the Keepalived traffic for HA networks. By default it is the default neutron
+                                          # network type.
+  neutron_ha_network_physical_name:       # The physical network name in Neutron for the Keepalived traffic for HA networks. Default is the default
+                                          # neutron network name for the given network type.
+  neutron_flat_networks:                  # The name of the networks that can be used as 'flat' types. '*' can be used if all networks can be flat.
+  neutron_vxlan_vni_ranges: "65537:69999" # The VNI range to use for VXLAN networks.
+  neutron_vxlan_group: 239.0.0.0/8        # The multicast group range for VXLAN networks. The value's host part will be the VNI, so for example the
+                                          # default setting will use 239.0.255.255 for the VNI 65535.
+  neutron_gre_vni_ranges: "1:1000"        # The range for GRE networks (only with OpenVSwitch).
+  neutron_dnsmasq_dns_servers:            # DNS forwarder address(es) used globally.
+  neutron_mtu: 0                          # MTU for the interfaces created for the VMs. Lower it for overlay (GRE, VXLAN) networks, or raise it if your
+                                          # network supports Jumbo frames.
+  neutron_vpnaas_type:                    # The VPNaaS agent used. Can be 'openswan', 'strongswan' or empty (no VPNaaS).
