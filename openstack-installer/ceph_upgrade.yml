@@ -30,7 +30,7 @@
 
     - name: ensure ceph monitor is started
       service: name=ceph-mon state=started enabled=yes args="id={{ inventory_hostname }}"
-    
+
   handlers:
     - name: restart ceph-monitor
       service: name=ceph-mon state=restarted args="id={{ inventory_hostname }}"
@@ -44,17 +44,16 @@
       command: ceph osd set noout
       delegate_to: "{{ groups['ceph_monitor'][0] }}"
 
-    - block:    
+    - block:
       - name: upgrade ceph
         apt: name=ceph state=latest
+
+      - name: ensure ceph OSDs are stopped
+        service: name=ceph-osd-all state=stopped
 
       - name: fix OSD owner
         file: dest=/var/lib/ceph/osd
             owner=ceph group=root recurse=yes follow=yes
-        notify: restart ceph-osd-all
-        #trigger restart here, since ceph could be upgraded with monitor upgrade
-
-      - meta: flush_handlers
 
       - name: ensure ceph OSDs are started
         service: name=ceph-osd-all state=started enabled=yes
@@ -63,7 +62,3 @@
         - name: unset osd noout
           command: ceph osd unset noout
           delegate_to: "{{ groups['ceph_monitor'][0] }}"
-
-  handlers:
-    - name: restart ceph-osd-all
-      service: name=ceph-osd-all state=restarted
