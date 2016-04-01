@@ -1,1 +1,6 @@
 ceph_cluster_name: ceph
+ceph_osd_pool_default_size: 3
+ceph_osd_pool_default_min_size: 0
+ceph_osd_pool_default_pg_num: 64
+ceph_osd_pool_default_pgp_num: 64
+ceph_osd_crush_chooseleaf_type: 1
