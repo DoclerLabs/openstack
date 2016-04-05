@@ -7,6 +7,10 @@ Listen {{ ip.mgmt }}:{{ service.port }}
 {% for service in apache_services %}
 <VirtualHost *:{{ service.port }}>
 
+{% if service.include is defined %}
+    Include {{ service.include }}
+{% endif %}
+
 {% if apache_service_ssl | bool %}
     SSLEngine on
     SSLCertificateFile      {{ SSLCertificateFile }}
