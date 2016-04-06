@@ -1,0 +1,22 @@
+---
+
+- hosts: rabbitmq
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - common
+  pre_tasks:
+    - name: check for Ansible version > 2.0.1
+      local_action: assert that="{{ ansible_version.string | version_compare('2.0.1', '>=') }}"
+      run_once: True
+      become: False
+
+- hosts: rabbitmq
+  become: True
+  max_fail_percentage: 0
+  serial: 1
+  tasks:
+    - name: upgrade rabbitmq-server
+      apt: name={{ item }} state=latest
+      with_items:
+        - rabbitmq-server
