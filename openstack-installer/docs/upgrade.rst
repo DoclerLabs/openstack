@@ -25,11 +25,11 @@ General upgrading instructions are below.
 
   $ ansible-playbook upgrade_ceph.yml
 
-- Apply the latest ceph configs:
+- Check ceph health (on a monitor host):
 
 ::
 
-  $ ansible-playbook ceph.yml
+  $ ceph -s
 
 - Upgrade galera cluster:
 
@@ -43,8 +43,21 @@ General upgrading instructions are below.
 
   $ ansible-playbook rabbitmq_upgrade.yml
 
+- Check RabbitMQ health:
+
+::
+
+  $ rabbimtqctl cluster_status
+
 - Upgrade OpenStack:
 
 ::
 
   $ ansible-playbook os_upgrade.yml
+
+- Apply the latest configs:
+
+  $ ansible-playbook ceph.yml
+  $ ansible-playbook main.yml
+
+- Ready!
