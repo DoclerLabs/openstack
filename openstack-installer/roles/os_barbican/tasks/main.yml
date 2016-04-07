@@ -28,7 +28,6 @@
 - name: disable autostarting of barbican
   copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
   with_items:
-    - barbican-api
     - barbican-worker
 
 - name: mask barbican-api apache config
@@ -40,9 +39,6 @@
     - barbican-api
     - barbican-worker
     - python-barbicanclient
-
-- name: ensure barbican-api is disabled at boot
-  service: name=barbican-api state=stopped enabled=no
 
 - name: create barbican database
   mysql_db: name={{ barbican_db }}
