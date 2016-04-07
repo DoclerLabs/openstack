@@ -1,12 +1,14 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-mitaka", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu trusty-updates/mitaka main" }
+#  - { name: "cloudarchive-mitaka", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu trusty-updates/mitaka main" }
+  - { name: "cloudarchive-mitaka", repo: "http://ppa.launchpad.net/ubuntu-cloud-archive/mitaka-staging/ubuntu trusty main" }
 
 apt_extra_repos: []
 
 apt_keys:
-  - { keyserver: "keyserver.ubuntu.com", keyid: "EC4926EA" }
+#  - { keyserver: "keyserver.ubuntu.com", keyid: "EC4926EA" }
+  - { keyserver: "keyserver.ubuntu.com", keyid: "9F68104E" }
 
 apt_extra_keys: []
 
