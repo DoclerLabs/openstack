@@ -33,7 +33,7 @@
   copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
   with_items:
     - neutron-server
-    - neutron-plugin-{{ neutron_physical_interface_driver }}-agent
+    - neutron-{{ neutron_physical_interface_driver }}-agent
     - neutron-vpn-agent
     - neutron-l3-agent
     - neutron-dhcp-agent
@@ -44,7 +44,7 @@
 - name: disable autostarting of neutron agent on computes
   copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
   with_items:
-    - neutron-plugin-{{ neutron_physical_interface_driver }}-agent
+    - neutron-{{ neutron_physical_interface_driver }}-agent
   when: inventory_hostname in groups['neutron_compute']
 
 - name: turn off rp filtering
@@ -88,7 +88,7 @@
     - keepalived
     - neutron-server
     - neutron-plugin-ml2
-    - neutron-plugin-{{ neutron_physical_interface_driver }}-agent
+    - neutron-{{ neutron_physical_interface_driver }}-agent
     - "{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
@@ -105,7 +105,7 @@
   apt: name={{ item }}
   with_items:
     - conntrack
-    - neutron-plugin-{{ neutron_physical_interface_driver }}-agent
+    - neutron-{{ neutron_physical_interface_driver }}-agent
   when: inventory_hostname in groups['neutron_compute']
 
 - name: disable apparmor strongswan profiles
@@ -175,7 +175,7 @@
   service: name={{ item }} state=started enabled=yes
   with_items:
     - neutron-server
-    - neutron-plugin-{{ neutron_physical_interface_driver }}-agent
+    - neutron-{{ neutron_physical_interface_driver }}-agent
     - "{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
@@ -185,5 +185,5 @@
 - name: ensure neutron is started
   service: name={{ item }} state=started enabled=yes
   with_items:
-    - neutron-plugin-{{ neutron_physical_interface_driver }}-agent
+    - neutron-{{ neutron_physical_interface_driver }}-agent
   when: inventory_hostname in groups['neutron_compute']

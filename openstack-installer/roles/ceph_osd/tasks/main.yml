@@ -60,7 +60,7 @@
 
 ### Add path-based OSDs
 - name: make sure OSD directories are exists
-  file: path={{ item.path }} state=directory owner=root group=root mode=0700
+  file: path={{ item.path }} state=directory owner=ceph group=root mode=0700
   with_items: "{{ osd }}"
   when: item.path is defined
 

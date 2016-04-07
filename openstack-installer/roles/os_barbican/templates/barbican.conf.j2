@@ -150,7 +150,7 @@ rabbit_ha_queues = True
 
 # For HA, specify queue nodes in cluster, comma delimited:
 #   For example: rabbit_hosts=192.168.50.8:5672, 192.168.50.9:5672
-{% set rabbit_hosts=groups['rabbitmq'][(play_hosts.index(inventory_hostname) % groups['rabbitmq'] | count):] + groups['rabbitmq'][:(play_hosts.index(inventory_hostname) % groups['rabbitmq'] | count)] %}
+{% set rabbit_hosts=groups['rabbitmq'][(groups['barbican'].index(inventory_hostname) % groups['rabbitmq'] | count):] + groups['rabbitmq'][:(groups['barbican'].index(inventory_hostname) % groups['rabbitmq'] | count)] %}
 rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
 
 # For HA, specify queue nodes in cluster as 'user@host:5672', comma delimited, ending with '/offset':

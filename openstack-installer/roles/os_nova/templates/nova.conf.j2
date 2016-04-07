@@ -78,7 +78,6 @@ keys_path = /var/lib/nova/keys
 instance_usage_audit = True
 instance_usage_audit_period = hour
 notify_on_state_change = vm_and_task_state
-notification_driver = messagingv2
 
 #vnc
 novncproxy_host = {{ ip.mgmt }}
@@ -204,13 +203,16 @@ max_retries = -1
 [oslo_concurrency]
 lock_path = /var/lock/nova
 
+[oslo_messaging_notifications]
+driver = messagingv2
 
 [oslo_messaging_rabbit]
 rabbit_port = 5672
 rabbit_userid = {{ nova_rabbit_user }}
 rabbit_password = {{ nova_rabbit_password }}
 rabbit_ha_queues = true
-{% set rabbit_hosts=groups['rabbitmq'][(play_hosts.index(inventory_hostname) % groups['rabbitmq'] | count):] + groups['rabbitmq'][:(play_hosts.index(inventory_hostname) % groups['rabbitmq'] | count)] %}
+{% set host_index = groups[(inventory_hostname in groups['nova_controller']) | ternary('nova_controller', 'nova_compute')].index(inventory_hostname) % groups['rabbitmq'] | count %}
+{% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
 rabbit_virtual_host = {{ nova_rabbit_vhost }}
 rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
 

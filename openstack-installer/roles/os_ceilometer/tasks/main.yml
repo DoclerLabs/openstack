@@ -112,6 +112,21 @@
     - restart ceilometer controller services
     - restart ceilometer compute services
 
+- name: create aodh database
+  mysql_db: name={{ aodh_db }}
+    login_host={{ aodh_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  when: inventory_hostname == groups['ceilometer_controller'][0]
+
+- name: create aodh database user
+  mysql_user: name={{ aodh_db_user }} password={{ aodh_db_password }} host={{ item }} priv={{ aodh_db }}.*:ALL
+    login_host={{ aodh_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  when: inventory_hostname == groups['ceilometer_controller'][0]
+  with_items:
+    - localhost
+    - '%'
+
 - name: install aodh configs
   template: src={{ item }}.j2 dest=/etc/aodh/{{ item }} owner=aodh group=root mode=0460
   with_items:
@@ -120,6 +135,10 @@
   notify:
     - restart aodh
   when: inventory_hostname in groups['ceilometer_controller']
+
+- name: sync aodh db
+  command: su aodh -s /bin/sh -c 'aodh-dbsync'
+  when: inventory_hostname == groups['ceilometer_controller'][0]
 
 - meta: flush_handlers
 

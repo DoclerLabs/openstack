@@ -54,21 +54,8 @@ bind_host = 127.0.0.1
 # Deprecated group/name - [DEFAULT]/rpc_thread_pool_size
 #executor_thread_pool_size = 64
 
-# The Drivers(s) to handle sending notifications. Possible values are
-# messaging, messagingv2, routing, log, test, noop (multi valued)
-notification_driver=messagingv2
-
-# AMQP topic used for OpenStack notifications. (list value)
-# Deprecated group/name - [rpc_notifier2]/topics
-#notification_topics = notifications
-
 # Seconds to wait for a response from a call. (integer value)
 #rpc_response_timeout = 60
-
-# A URL representing the messaging driver to use and its full
-# configuration. If not set, we fall back to the rpc_backend option
-# and driver specific configuration. (string value)
-#transport_url = <None>
 
 # The messaging driver to use, defaults to rabbit. Other drivers
 # include qpid and zmq. (string value)
@@ -419,7 +406,7 @@ username = {{ murano_admin_user }}
 password = {{ murano_admin_password }}
 project_domain_name = {{ murano_project_domain_name }}
 project_name = {{ murano_project_name }}
-auth_plugin = password
+auth_type = password
 
 [matchmaker_redis]
 
@@ -447,6 +434,9 @@ auth_plugin = password
 # Deprecated group/name - [DEFAULT]/matchmaker_ringfile
 #ringfile = /etc/oslo/matchmaker_ring.json
 
+[oslo_messaging_notifications]
+
+driver = messagingv2
 
 [oslo_messaging_amqp]
 
@@ -645,7 +635,7 @@ auth_plugin = password
 # RabbitMQ HA cluster host:port pairs. (list value)
 # Deprecated group/name - [DEFAULT]/rabbit_hosts
 #rabbit_hosts = $rabbit_host:$rabbit_port
-{% set rabbit_hosts=groups['rabbitmq'][(play_hosts.index(inventory_hostname) % groups['rabbitmq'] | count):] + groups['rabbitmq'][:(play_hosts.index(inventory_hostname) % groups['rabbitmq'] | count)] %}
+{% set rabbit_hosts=groups['rabbitmq'][(groups['murano'].index(inventory_hostname) % groups['rabbitmq'] | count):] + groups['rabbitmq'][:(groups['murano'].index(inventory_hostname) % groups['rabbitmq'] | count)] %}
 rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
 
 # Connect over SSL for RabbitMQ. (boolean value)

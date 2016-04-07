@@ -116,9 +116,9 @@
   changed_when: rsync_results.stdout_lines | count > 0
   when: inventory_hostname == groups['keystone'][0] and
         item != groups['keystone'][0] and
-        hostvars[item].fernet_stat.stat.isdir | default(False)
-        and keystone_token_provider == 'fernet'
-  with_items: "{{ groups['keystone'] }}"
+        hostvars[item].fernet_stat.stat.isdir | default(False) and
+        keystone_token_provider == 'fernet'
+  with_items: "{{ play_hosts }}"
 
 # Fernet key creation and distribution
 
