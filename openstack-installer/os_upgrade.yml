@@ -31,6 +31,13 @@
       run_once: True
       become: False
 
+- hosts: barbican
+  become: True
+  max_fail_percentage: 0
+  tasks:
+    - name: mask barbican-api apache config
+      copy: content='' dest=/etc/apache2/conf-available/barbican-api.conf owner=root group=root mode=0644
+
 - hosts:
     - keystone[0]
     - swift_proxy[0]
