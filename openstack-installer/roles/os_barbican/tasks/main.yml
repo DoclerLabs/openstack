@@ -69,7 +69,9 @@
     - signal apache to reload
 
 - name: sync barbican db
-  command: su barbican -s /bin/sh -c 'barbican-db-manage upgrade'
+  command: su barbican -s /bin/sh -c 'barbican-manage db upgrade'
+  register: db_sync
+  changed_when: '"Running upgrade" in db_sync.stderr'
   run_once: True
 
 - name: create /var/www/cgi-bin/barbican
