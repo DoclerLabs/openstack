@@ -69,9 +69,6 @@ vif_plugging_is_fatal = False
 # Hypervisor
 default_ephemeral_format = ext4
 
-# Common
-memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
-
 keys_path = /var/lib/nova/keys
 
 # Ceilometer notification configurations
@@ -80,7 +77,6 @@ instance_usage_audit_period = hour
 notify_on_state_change = vm_and_task_state
 
 #vnc
-novncproxy_host = {{ ip.mgmt }}
 {% if nova_novncproxy_ssl %}
 ssl_only=True
 key={{ SSLCertificateKeyFile }}
@@ -90,6 +86,7 @@ cert={{ SSLCertificateFile }}
 [vnc]
 {% if nova_console_type == 'vnc' %}
 enabled = True
+novncproxy_host = {{ ip.mgmt }}
 keymap = {{ nova_console_keymap }}
 novncproxy_base_url = {{ nova_novncproxy_base_url }}
 vncserver_listen = {{ ip.mgmt }}
@@ -122,6 +119,11 @@ html5proxy_host = {{ ip.mgmt }}
 server_listen = {{ ip.mgmt }}
 server_proxyclient_address = {{ ip.mgmt }}
 
+[cache]
+
+enabled = True
+backend = oslo_cache.memcache_pool
+memcache_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
 
 # Glance
 [glance]
@@ -135,7 +137,7 @@ protocol = {{ os_proto }}
 [neutron]
 url = {{ os_proto }}://{{ os_internal_address }}:9696
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
-auth_plugin = password
+auth_type = password
 region_name = {{ keystone_region_name }}
 user_domain_name = {{ neutron_domain_name }}
 username = {{ neutron_admin_user }}
@@ -158,10 +160,9 @@ ca_file = {{ SSLCACertificateFile }}
 [conductor]
 use_local = false
 topic = conductor
-manager = nova.conductor.manager.ConductorManager
 
 [keystone_authtoken]
-auth_plugin = password
+auth_type = password
 signing_dir = /var/lib/nova/cache/api
 auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
 auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
