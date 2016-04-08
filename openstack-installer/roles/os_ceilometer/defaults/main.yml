@@ -39,6 +39,8 @@ swift_rabbit_vhost: swift
 swift_rabbit_user: swift
 trove_rabbit_vhost: trove
 trove_rabbit_user: trove
+sahara_rabbit_vhost: sahara
+sahara_rabbit_user: sahara
 
 ceilometer_metering_time_to_live: 0
 ceilometer_event_time_to_live: 0

@@ -71,6 +71,7 @@ use_namespaces=True
 # Print debugging output (set logging level to DEBUG instead
 # of default WARNING level). (boolean value)
 #debug=false
+debug = {{ sahara_debug }}
 
 # Print more verbose output (set logging level to INFO instead
 # of default WARNING level). (boolean value)
@@ -101,11 +102,13 @@ use_syslog = {{ sahara_syslog_use }}
 # the list when returning it. (list value)
 #plugins=vanilla,hdp,spark,cdh
 
-infrastructure_engine=heat
-
-enable_notifications = true
-notification_driver = messagingv2
 rpc_backend = rabbit
+
+os_region_name = {{ keystone_region_name }}
+
+[oslo_messaging_notifications]
+enable = true
+driver = messagingv2
 
 [oslo_messaging_rabbit]
 rabbit_port = 5672
@@ -131,7 +134,7 @@ max_retries = -1
 cafile = {{ SSLCACertificateFile }}
 {% endif %}
 insecure = {{ ssl_insecure }}
-auth_plugin = password
+auth_type = password
 signing_dir = /var/lib/sahara/cache/api
 auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
 auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
@@ -144,3 +147,39 @@ project_name = {{ sahara_project_name }}
 memcache_security_strategy = ENCRYPT
 memcache_secret_key = {{ memcache_secret_key }}
 memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
+
+[keystone]
+{% if SSLCACertificateFile != '' %}
+ca_file = {{ SSLCACertificateFile }}
+{% endif %}
+api_insecure = {{ ssl_insecure }}
+
+[cinder]
+{% if SSLCACertificateFile != '' %}
+ca_file = {{ SSLCACertificateFile }}
+{% endif %}
+api_insecure = {{ ssl_insecure }}
+
+[neutron]
+{% if SSLCACertificateFile != '' %}
+ca_file = {{ SSLCACertificateFile }}
+{% endif %}
+api_insecure = {{ ssl_insecure }}
+
+[nova]
+{% if SSLCACertificateFile != '' %}
+ca_file = {{ SSLCACertificateFile }}
+{% endif %}
+api_insecure = {{ ssl_insecure }}
+
+[swift]
+{% if SSLCACertificateFile != '' %}
+ca_file = {{ SSLCACertificateFile }}
+{% endif %}
+api_insecure = {{ ssl_insecure }}
+
+[manila]
+{% if SSLCACertificateFile != '' %}
+ca_file = {{ SSLCACertificateFile }}
+{% endif %}
+api_insecure = {{ ssl_insecure }}

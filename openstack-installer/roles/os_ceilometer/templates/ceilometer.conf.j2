@@ -237,6 +237,11 @@ messaging_urls = rabbit://{{ trove_rabbit_user }}:{{ trove_rabbit_password }}@{{
 {% endfor %}
 {% endif %}
 
+{% if groups['sahara'] | count > 0 %}
+{% for host in groups['rabbitmq'] %}
+messaging_urls = rabbit://{{ sahara_rabbit_user }}:{{ sahara_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/{{ sahara_rabbit_vhost }}
+{% endfor %}
+{% endif %}
 
 [database]
 
