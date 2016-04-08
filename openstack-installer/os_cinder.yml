@@ -3,35 +3,30 @@
 - hosts: cinder[0]
   max_fail_percentage: 0
   roles:
-    - os_keystone_service
-  vars:
-    keystone_service_name: cinder
-    keystone_service_type: volume
-    keystone_service_description: "OpenStack Block Storage Service"
-    keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8776/v1/%(tenant_id)s"
-    keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8776/v1/%(tenant_id)s"
-    keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8776/v1/%(tenant_id)s"
-    keystone_region: "{{ keystone_region_name }}"
-    keystone_users:
-      - keystone_user: "{{ cinder_admin_user | default('cinder') }}"
-        keystone_domain_name: "{{ cinder_domain_name | default(keystone_domain_name) }}"
-        keystone_password: "{{ cinder_admin_password }}"
-        keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
-        keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
-        keystone_role: admin
+    - role: os_keystone_service
+      keystone_service_name: cinder
+      keystone_service_type: volume
+      keystone_service_description: "OpenStack Block Storage Service"
+      keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8776/v1/%(tenant_id)s"
+      keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8776/v1/%(tenant_id)s"
+      keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8776/v1/%(tenant_id)s"
+      keystone_region: "{{ keystone_region_name }}"
+      keystone_users:
+        - keystone_user: "{{ cinder_admin_user | default('cinder') }}"
+          keystone_domain_name: "{{ cinder_domain_name | default(keystone_domain_name) }}"
+          keystone_password: "{{ cinder_admin_password }}"
+          keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+          keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+          keystone_role: admin
 
-- hosts: cinder[0]
-  max_fail_percentage: 0
-  roles:
-    - os_keystone_service
-  vars:
-    keystone_service_name: cinderv2
-    keystone_service_type: volumev2
-    keystone_service_description: "OpenStack Block Storage Service"
-    keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8776/v2/%(tenant_id)s"
-    keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8776/v2/%(tenant_id)s"
-    keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8776/v2/%(tenant_id)s"
-    keystone_region: "{{ keystone_region_name }}"
+    - role: os_keystone_service
+      keystone_service_name: cinderv2
+      keystone_service_type: volumev2
+      keystone_service_description: "OpenStack Block Storage Service"
+      keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8776/v2/%(tenant_id)s"
+      keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8776/v2/%(tenant_id)s"
+      keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8776/v2/%(tenant_id)s"
+      keystone_region: "{{ keystone_region_name }}"
 
 - hosts:
     - cinder
@@ -46,45 +41,39 @@
   become: True
   max_fail_percentage: 0
   roles:
-    - apache_frontend
-  vars:
-    apache_service_name: cinder
-    apache_service_ssl: "{{ os_ssl | default(False) }}"
-    apache_services:
-      - { port: 8776 }
+    - role: apache_frontend
+      apache_service_name: cinder
+      apache_service_ssl: "{{ os_ssl | default(False) }}"
+      apache_services:
+        - { port: 8776 }
 
-- hosts: cinder
+- hosts: cinder_volume
   become: True
   max_fail_percentage: 0
   roles:
-    - { role: ceph_client, when: cinder_backend == 'ceph' }
-  vars:
-    ceph_user: "{{ cinder_ceph_user }}"
-    ceph_rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_ceph_pool }}, allow rwx pool={{ nova_ephemeral_ceph_pool }}, allow rx pool={{ glance_ceph_pool }}'"
-    ceph_keyring_owner: cinder
+    - role: ceph_client
+      ceph_user: "{{ cinder_ceph_user }}"
+      ceph_rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_ceph_pool }}, allow rwx pool={{ nova_ephemeral_ceph_pool }}, allow rx pool={{ glance_ceph_pool }}'"
+      ceph_keyring_owner: cinder
+      when: cinder_backend == 'ceph'
 
-- hosts: cinder
-  become: True
-  max_fail_percentage: 0
-  roles:
-    - { role: ceph_client, when: cinder_backend == 'ceph' }
-  vars:
-    ceph_user: "{{ cinder_backup_ceph_user }}"
-    ceph_rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_backup_ceph_pool }}'"
-    ceph_keyring_owner: cinder
+    - role: ceph_client
+      ceph_user: "{{ cinder_backup_ceph_user }}"
+      ceph_rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_backup_ceph_pool }}'"
+      ceph_keyring_owner: cinder
+      when: cinder_backend == 'ceph'
 
 - hosts: haproxy
   become: True
   max_fail_percentage: 0
   roles:
-    - haproxy_service
-  vars:
-    haproxy_services:
-      - haproxy_service_name: cinder_api
-        haproxy_backend_nodes: "{{ groups['cinder'] }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
-        haproxy_port: 8776
-        haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
-        haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
+    - role: haproxy_service
+      haproxy_services:
+        - haproxy_service_name: cinder_api
+          haproxy_backend_nodes: "{{ groups['cinder'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 8776
+          haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
+          haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"

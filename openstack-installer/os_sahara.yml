@@ -3,52 +3,51 @@
 - hosts: sahara[0]
   max_fail_percentage: 0
   roles:
-    - os_keystone_service
-  vars:
-    keystone_service_name: sahara
-    keystone_service_type: data-processing
-    keystone_service_description: "OpenStack Data Processing Service"
-    keystone_public_url: "http://{{ vip_public }}:8386/v1.1/%(tenant_id)s"
-    keystone_internal_url: "http://{{ vip_mgmt }}:8386/v1.1/%(tenant_id)s"
-    keystone_admin_url: "http://{{ vip_mgmt }}:8386/v1.1/%(tenant_id)s"
-    keystone_region: "{{ keystone_region_name }}"
-    keystone_users:
-      - keystone_user: "{{ sahara_admin_user | default('sahara') }}"
-        keystone_domain_name: "{{ sahara_domain_name | default(keystone_domain_name) }}"
-        keystone_password: "{{ sahara_admin_password }}"
-        keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
-        keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
-        keystone_role: admin
+    - role: os_keystone_service
+      keystone_service_name: sahara
+      keystone_service_type: data-processing
+      keystone_service_description: "OpenStack Data Processing Service"
+      keystone_public_url: "http://{{ vip_public }}:8386/v1.1/%(tenant_id)s"
+      keystone_internal_url: "http://{{ vip_mgmt }}:8386/v1.1/%(tenant_id)s"
+      keystone_admin_url: "http://{{ vip_mgmt }}:8386/v1.1/%(tenant_id)s"
+      keystone_region: "{{ keystone_region_name }}"
+      keystone_users:
+        - keystone_user: "{{ sahara_admin_user | default('sahara') }}"
+          keystone_domain_name: "{{ sahara_domain_name | default(keystone_domain_name) }}"
+          keystone_password: "{{ sahara_admin_password }}"
+          keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+          keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+          keystone_role: admin
 
 - hosts: sahara
   become: True
   max_fail_percentage: 0
   roles:
     - common
+
     - os_sahara
-    - apache_frontend
-  vars:
-    apache_service_name: sahara
-    apache_services:
-      - { port: 8386 }
+
+    - role: apache_frontend
+      apache_service_name: sahara
+      apache_services:
+        - { port: 8386 }
 
 - hosts: haproxy
   become: True
   max_fail_percentage: 0
   roles:
-    - haproxy_service
-  vars:
-    haproxy_services:
-      - haproxy_service_name: sahara_api
-        haproxy_backend_nodes: "{{ groups['sahara'] }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
-        haproxy_port: 8386
-        haproxy_balance_type: http
-        haproxy_backend_options:
-          - forwardfor
-          - httpchk GET /
-          - httplog
-        haproxy_backend_extras:
-          - http-check expect status 401
+    - role: haproxy_service
+      haproxy_services:
+        - haproxy_service_name: sahara_api
+          haproxy_backend_nodes: "{{ groups['sahara'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 8386
+          haproxy_balance_type: http
+          haproxy_backend_options:
+            - forwardfor
+            - httpchk GET /
+            - httplog
+          haproxy_backend_extras:
+            - http-check expect status 401

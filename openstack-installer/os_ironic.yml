@@ -3,50 +3,49 @@
 - hosts: ironic[0]
   max_fail_percentage: 0
   roles:
-    - os_keystone_service
-  vars:
-    keystone_service_name: ironic
-    keystone_service_type: baremetal
-    keystone_service_description: "OpenStack bare metal service"
-    keystone_public_url: "http://{{ vip_public }}:6385"
-    keystone_internal_url: "http://{{ vip_mgmt }}:6385"
-    keystone_admin_url: "http://{{ vip_mgmt }}:6385"
-    keystone_region: "{{ keystone_region_name }}"
-    keystone_users:
-      - keystone_user: "{{ ironic_admin_user | default('ironic') }}"
-        keystone_domain_name: "{{ ironic_domain_name | default(keystone_domain_name) }}"
-        keystone_password: "{{ ironic_admin_password }}"
-        keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
-        keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
-        keystone_role: admin
+    - role: os_keystone_service
+      keystone_service_name: ironic
+      keystone_service_type: baremetal
+      keystone_service_description: "OpenStack bare metal service"
+      keystone_public_url: "http://{{ vip_public }}:6385"
+      keystone_internal_url: "http://{{ vip_mgmt }}:6385"
+      keystone_admin_url: "http://{{ vip_mgmt }}:6385"
+      keystone_region: "{{ keystone_region_name }}"
+      keystone_users:
+        - keystone_user: "{{ ironic_admin_user | default('ironic') }}"
+          keystone_domain_name: "{{ ironic_domain_name | default(keystone_domain_name) }}"
+          keystone_password: "{{ ironic_admin_password }}"
+          keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+          keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+          keystone_role: admin
 
 - hosts: ironic
   become: True
   max_fail_percentage: 0
   roles:
     - common
+
     - os_ironic
-    - apache_frontend
-  vars:
-    apache_service_name: ironic
-    apache_services:
-      - { port: 6385 }
+
+    - role: apache_frontend
+      apache_service_name: ironic
+      apache_services:
+        - { port: 6385 }
 
 - hosts: haproxy
   become: True
   max_fail_percentage: 0
   roles:
-    - haproxy_service
-  vars:
-    haproxy_services:
-      - haproxy_service_name: ironic_api
-        haproxy_backend_nodes: "{{ groups['ironic'] }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
-        haproxy_port: 6385
-        haproxy_balance_type: http
-        haproxy_backend_options:
-          - forwardfor
-          - httpchk
-          - httplog
+    - role: haproxy_service
+      haproxy_services:
+        - haproxy_service_name: ironic_api
+          haproxy_backend_nodes: "{{ groups['ironic'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 6385
+          haproxy_balance_type: http
+          haproxy_backend_options:
+            - forwardfor
+            - httpchk
+            - httplog

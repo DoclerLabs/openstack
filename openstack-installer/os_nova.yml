@@ -3,22 +3,21 @@
 - hosts: nova_controller[0]
   max_fail_percentage: 0
   roles:
-    - os_keystone_service
-  vars:
-    keystone_service_name: nova
-    keystone_service_type: compute
-    keystone_service_description: "OpenStack Compute Service"
-    keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8774/v2/%(tenant_id)s"
-    keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8774/v2/%(tenant_id)s"
-    keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8774/v2/%(tenant_id)s"
-    keystone_region: "{{ keystone_region_name }}"
-    keystone_users:
-      - keystone_user: "{{ nova_admin_user | default('nova') }}"
-        keystone_domain_name: "{{ nova_domain_name | default(keystone_domain_name) }}"
-        keystone_password: "{{ nova_admin_password }}"
-        keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
-        keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
-        keystone_role: admin
+    - role: os_keystone_service
+      keystone_service_name: nova
+      keystone_service_type: compute
+      keystone_service_description: "OpenStack Compute Service"
+      keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8774/v2/%(tenant_id)s"
+      keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8774/v2/%(tenant_id)s"
+      keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8774/v2/%(tenant_id)s"
+      keystone_region: "{{ keystone_region_name }}"
+      keystone_users:
+        - keystone_user: "{{ nova_admin_user | default('nova') }}"
+          keystone_domain_name: "{{ nova_domain_name | default(keystone_domain_name) }}"
+          keystone_password: "{{ nova_admin_password }}"
+          keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+          keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+          keystone_role: admin
 
 - hosts:
     - nova_controller
@@ -33,18 +32,21 @@
   become: True
   max_fail_percentage: 0
   roles:
-    - apache_frontend
-  vars:
-    apache_service_name: nova
-    apache_service_ssl: "{{ os_ssl | default(False) }}"
-    apache_services:
-      - { port: 8774 }
+    - role: apache_frontend
+      apache_service_name: nova
+      apache_service_ssl: "{{ os_ssl | default(False) }}"
+      apache_services:
+        - { port: 8774 }
 
 - hosts: nova_compute
   become: True
   max_fail_percentage: 0
   roles:
-    - { role: ceph_client, when: cinder_backend == 'ceph' or nova_ephemeral_backend == 'ceph' }
+    - role: ceph_client
+      ceph_user: "{{ cinder_ceph_user }}"
+      ceph_rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_ceph_pool }}, allow rwx pool={{ nova_ephemeral_ceph_pool }}, allow rx pool={{ glance_ceph_pool }}'"
+      ceph_keyring_owner: nova
+      when: cinder_backend == 'ceph' or nova_ephemeral_backend == 'ceph'
   tasks:
     - name: get cinder key
       command: ceph auth get-key client.{{ cinder_ceph_user }}
@@ -57,53 +59,51 @@
     - name: install cinder secret into virsh
       command: 'virsh secret-set-value --secret {{ cinder_volume_secret_uuid }} --base64 {{ cinder_key.stdout }}'
       when: cinder_backend == 'ceph' or nova_ephemeral_backend == 'ceph'
-  vars:
-    ceph_user: "{{ cinder_ceph_user }}"
-    ceph_rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_ceph_pool }}, allow rwx pool={{ nova_ephemeral_ceph_pool }}, allow rx pool={{ glance_ceph_pool }}'"
-    ceph_keyring_owner: nova
 
 - hosts: haproxy
   become: True
   max_fail_percentage: 0
   roles:
-    - haproxy_service
-  vars:
-    haproxy_services:
-      - haproxy_service_name: nova_api
-        haproxy_backend_nodes: "{{ groups['nova_controller'] }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
-        haproxy_port: 8774
-        haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
-        haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
-      - haproxy_service_name: nova_api_metadata
-        haproxy_backend_nodes: "{{ groups['nova_controller'] }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
-        haproxy_port: 8775
-        haproxy_balance_type: http
-        haproxy_backend_options:
-          - httpchk
-          - httplog
-      - haproxy_service_name: nova_console
-        haproxy_backend_nodes: "{{ groups['nova_controller'] }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
-        haproxy_port: 6082
-        haproxy_balance_type: tcp
-        haproxy_timeout_client: 60m
-        haproxy_timeout_server: 60m
-        haproxy_balance_alg: source
-      - haproxy_service_name: nova_console_novnc
-        haproxy_backend_nodes: "{{ groups['nova_controller'] }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
-        haproxy_port: 6080
-        haproxy_balance_type: tcp
-        haproxy_timeout_client: 60m
-        haproxy_timeout_server: 60m
-        haproxy_balance_alg: source
+    - role: haproxy_service
+      haproxy_services:
+        - haproxy_service_name: nova_api
+          haproxy_backend_nodes: "{{ groups['nova_controller'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 8774
+          haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
+          haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
+
+        - haproxy_service_name: nova_api_metadata
+          haproxy_backend_nodes: "{{ groups['nova_controller'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 8775
+          haproxy_balance_type: http
+          haproxy_backend_options:
+            - httpchk
+            - httplog
+
+        - haproxy_service_name: nova_console
+          haproxy_backend_nodes: "{{ groups['nova_controller'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 6082
+          haproxy_balance_type: tcp
+          haproxy_timeout_client: 60m
+          haproxy_timeout_server: 60m
+          haproxy_balance_alg: source
+
+        - haproxy_service_name: nova_console_novnc
+          haproxy_backend_nodes: "{{ groups['nova_controller'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 6080
+          haproxy_balance_type: tcp
+          haproxy_timeout_client: 60m
+          haproxy_timeout_server: 60m
+          haproxy_balance_alg: source

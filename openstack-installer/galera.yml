@@ -4,31 +4,30 @@
   become: True
   max_fail_percentage: 0
   roles:
-    - common
+    - role: common
+      apt_extra_repos:
+        - { name: "percona", repo: "http://repo.percona.com/apt trusty main" }
+      apt_extra_keys:
+        - { keyserver: "keys.gnupg.net", keyid: "1C4CBDCDCD2EFD2A" }
+
     - galera
-  vars:
-    apt_extra_repos:
-      - { name: "percona", repo: "http://repo.percona.com/apt trusty main" }
-    apt_extra_keys:
-      - { keyserver: "keys.gnupg.net", keyid: "1C4CBDCDCD2EFD2A" }
 
 - hosts: haproxy
   become: True
   max_fail_percentage: 0
   roles:
-    - haproxy_service
-  vars:
-    haproxy_services:
-      - haproxy_service_name: galera
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-        haproxy_backend_nodes: "{{ [groups['galera'][0]] }}"
-        haproxy_backup_nodes: "{{ groups['galera'][1:] }}"
-        haproxy_port: 3306
-        haproxy_check_port: 9200
-        haproxy_balance_type: tcp
-        haproxy_balance_alg: roundrobin
-        haproxy_timeout_client: 5000s
-        haproxy_timeout_server: 5000s
-        haproxy_backend_options:
-          - httpchk
+    - role: haproxy_service
+      haproxy_services:
+        - haproxy_service_name: galera
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+          haproxy_backend_nodes: "{{ [groups['galera'][0]] }}"
+          haproxy_backup_nodes: "{{ groups['galera'][1:] }}"
+          haproxy_port: 3306
+          haproxy_check_port: 9200
+          haproxy_balance_type: tcp
+          haproxy_balance_alg: roundrobin
+          haproxy_timeout_client: 5000s
+          haproxy_timeout_server: 5000s
+          haproxy_backend_options:
+            - httpchk

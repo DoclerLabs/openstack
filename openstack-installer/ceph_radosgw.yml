@@ -3,57 +3,52 @@
 - hosts: ceph_radosgw[0]
   max_fail_percentage: 0
   roles:
-    - { role: os_keystone_service, when: radosgw_keystone | default(True) }
-  vars:
-    keystone_service_name: swift
-    keystone_service_type: object-store
-    keystone_service_description: "OpenStack Object Storage Service"
-    keystone_public_url: "{{ (radosgw_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:{{ radosgw_port | default(8080) }}/swift/v1"
-    keystone_internal_url: "{{ (radosgw_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:{{ radosgw_port | default(8080) }}/swift/v1"
-    keystone_admin_url: "{{ (radosgw_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:{{ radosgw_port | default(8080) }}/swift/v1"
-    keystone_region: "{{ keystone_region_name }}"
-    keystone_projects: []
+    - role: os_keystone_service
+      keystone_service_name: swift
+      keystone_service_type: object-store
+      keystone_service_description: "OpenStack Object Storage Service"
+      keystone_public_url: "{{ (radosgw_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:{{ radosgw_port | default(8080) }}/swift/v1"
+      keystone_internal_url: "{{ (radosgw_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:{{ radosgw_port | default(8080) }}/swift/v1"
+      keystone_admin_url: "{{ (radosgw_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:{{ radosgw_port | default(8080) }}/swift/v1"
+      keystone_region: "{{ keystone_region_name }}"
+      keystone_projects: []
+      when: radosgw_keystone | default(True)
 
 - hosts: ceph_radosgw
   become: True
   max_fail_percentage: 0
   roles:
-    - { role: ceph_client }
-  vars:
-    ceph_user: radosgw.gateway
-    ceph_rights: mon 'allow rwx' osd 'allow rwx'
-    ceph_keyring_owner: root
+    - role: ceph_client
+      ceph_user: radosgw.gateway
+      ceph_rights: mon 'allow rwx' osd 'allow rwx'
+      ceph_keyring_owner: root
 
-- hosts: ceph_radosgw
-  become: True
-  max_fail_percentage: 0
-  roles:
     - common
+
     - ceph_radosgw
-    - apache_frontend
-  vars:
-    apache_service_name: radosgw
-    apache_service_ssl: "{{ radosgw_ssl | default(False) }}"
-    apache_proxy_preserve_http_auth: True
-    apache_proxy_nokeepalive: True
-    apache_services:
-      - { port: "{{ radosgw_port | default(8080) }}", dest_port: 9000, dest_proto: "fcgi" }
+
+    - role: apache_frontend
+      apache_service_name: radosgw
+      apache_service_ssl: "{{ radosgw_ssl | default(False) }}"
+      apache_proxy_preserve_http_auth: True
+      apache_proxy_nokeepalive: True
+      apache_services:
+        - { port: "{{ radosgw_port | default(8080) }}", dest_port: 9000, dest_proto: "fcgi" }
 
 - hosts: haproxy
   become: True
   max_fail_percentage: 0
   roles:
-    - haproxy_service
-  vars:
-    haproxy_services:
-      - haproxy_service_name: ceph_radosgw
-        haproxy_backend_nodes: "{{ groups['ceph_radosgw'] }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
-        haproxy_port: "{{ radosgw_port | default(8080) }}"
-        haproxy_balance_type: http
-        haproxy_backend_options:
-          - forwardfor
-          - httpchk GET /
-          - httplog
+    - role: haproxy_service
+      haproxy_services:
+        - haproxy_service_name: ceph_radosgw
+          haproxy_backend_nodes: "{{ groups['ceph_radosgw'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: "{{ radosgw_port | default(8080) }}"
+          haproxy_balance_type: http
+          haproxy_backend_options:
+            - forwardfor
+            - httpchk GET /
+            - httplog

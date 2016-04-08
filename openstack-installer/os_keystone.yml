@@ -5,39 +5,40 @@
   max_fail_percentage: 0
   roles:
     - common
+
     - os_keystone
-    - apache_frontend
-  vars:
-    apache_service_name: keystone
-    apache_service_ssl: "{{ keystone_ssl | default(False) }}"
-    apache_services:
-      - { port: 5000, wsgi_process: "keystone-public", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/main" }
-      - { port: 35357, wsgi_process: "keystone-admin", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/admin" }
+
+    - role: apache_frontend
+      apache_service_name: keystone
+      apache_service_ssl: "{{ keystone_ssl | default(False) }}"
+      apache_services:
+        - { port: 5000, wsgi_process: "keystone-public", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/main" }
+        - { port: 35357, wsgi_process: "keystone-admin", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/admin" }
 
 - hosts: haproxy
   become: True
   max_fail_percentage: 0
   roles:
-    - haproxy_service
-  vars:
-    haproxy_services:
-      - haproxy_service_name: keystone_admin
-        haproxy_backend_nodes: "{{ groups['keystone'] }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-        haproxy_port: 35357
-        haproxy_balance_type: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
-        haproxy_balance_alg: leastconn
-        haproxy_backend_options: "{{ (keystone_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
-      - haproxy_service_name: keystone_service
-        haproxy_backend_nodes: "{{ groups['keystone'] }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
-        haproxy_port: 5000
-        haproxy_balance_type: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
-        haproxy_balance_alg: leastconn
-        haproxy_backend_options: "{{ (keystone_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
+    - role: haproxy_service
+      haproxy_services:
+        - haproxy_service_name: keystone_admin
+          haproxy_backend_nodes: "{{ groups['keystone'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+          haproxy_port: 35357
+          haproxy_balance_type: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
+          haproxy_balance_alg: leastconn
+          haproxy_backend_options: "{{ (keystone_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
+
+        - haproxy_service_name: keystone_service
+          haproxy_backend_nodes: "{{ groups['keystone'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 5000
+          haproxy_balance_type: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
+          haproxy_balance_alg: leastconn
+          haproxy_backend_options: "{{ (keystone_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
 
 #The play below must run without an installed keystone (e.g. second region),
 #so the controller[0] host is there
@@ -45,26 +46,25 @@
 - hosts: controller[0]
   max_fail_percentage: 0
   roles:
-    - os_keystone_service
-  vars:
-    keystone_service_name: keystone
-    keystone_service_type: identity
-    keystone_service_description: "OpenStack Identity"
-    keystone_public_url: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}://{{ keystone_public_address }}:5000/v3"
-    keystone_internal_url: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}://{{ keystone_internal_address }}:5000/v3"
-    keystone_admin_url: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}://{{ keystone_admin_address }}:35357/v3"
-    keystone_region: "{{ keystone_region_name }}"
-    keystone_projects:
-      - keystone_project_name: admin
-        keystone_project_description: "Admin Project"
-        keystone_project_domain_name: "{{ keystone_domain_name | default('Default') }}"
-      - keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
-        keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
-        keystone_project_description: "Service Project"
-    keystone_users:
-      - keystone_user: admin
-        keystone_domain_name: "{{ keystone_domain_name | default('Default') }}"
-        keystone_password: "{{ keystone_admin_password }}"
-        keystone_project_name: admin
-        keystone_project_domain_name: "{{ keystone_domain_name | default('Default') }}"
-        keystone_role: admin
+    - role: os_keystone_service
+      keystone_service_name: keystone
+      keystone_service_type: identity
+      keystone_service_description: "OpenStack Identity"
+      keystone_public_url: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}://{{ keystone_public_address }}:5000/v3"
+      keystone_internal_url: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}://{{ keystone_internal_address }}:5000/v3"
+      keystone_admin_url: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}://{{ keystone_admin_address }}:35357/v3"
+      keystone_region: "{{ keystone_region_name }}"
+      keystone_projects:
+        - keystone_project_name: admin
+          keystone_project_description: "Admin Project"
+          keystone_project_domain_name: "{{ keystone_domain_name | default('Default') }}"
+        - keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+          keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+          keystone_project_description: "Service Project"
+      keystone_users:
+        - keystone_user: admin
+          keystone_domain_name: "{{ keystone_domain_name | default('Default') }}"
+          keystone_password: "{{ keystone_admin_password }}"
+          keystone_project_name: admin
+          keystone_project_domain_name: "{{ keystone_domain_name | default('Default') }}"
+          keystone_role: admin

@@ -3,22 +3,21 @@
 - hosts: swift_proxy[0]
   max_fail_percentage: 0
   roles:
-    - os_keystone_service
-  vars:
-    keystone_service_name: swift
-    keystone_service_type: object-store
-    keystone_service_description: "OpenStack Object Storage"
-    keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8080/v1/AUTH_%(tenant_id)s"
-    keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8080/v1/AUTH_%(tenant_id)s"
-    keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8080/v1/AUTH_%(tenant_id)s"
-    keystone_region: "{{ keystone_region_name }}"
-    keystone_users:
-      - keystone_user: "{{ swift_admin_user | default('swift') }}"
-        keystone_domain_name: "{{ swift_domain_name | default(keystone_domain_name) }}"
-        keystone_password: "{{ swift_admin_password }}"
-        keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
-        keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
-        keystone_role: admin
+    - role: os_keystone_service
+      keystone_service_name: swift
+      keystone_service_type: object-store
+      keystone_service_description: "OpenStack Object Storage"
+      keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8080/v1/AUTH_%(tenant_id)s"
+      keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8080/v1/AUTH_%(tenant_id)s"
+      keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8080/v1/AUTH_%(tenant_id)s"
+      keystone_region: "{{ keystone_region_name }}"
+      keystone_users:
+        - keystone_user: "{{ swift_admin_user | default('swift') }}"
+          keystone_domain_name: "{{ swift_domain_name | default(keystone_domain_name) }}"
+          keystone_password: "{{ swift_admin_password }}"
+          keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+          keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+          keystone_role: admin
 
 - hosts:
     - swift_proxy
@@ -50,25 +49,23 @@
   become: True
   max_fail_percentage: 0
   roles:
-    - apache_frontend
-  vars:
-    apache_service_name: swift
-    apache_service_ssl: "{{ os_ssl | default(False) }}"
-    apache_services:
-      - { port: 8080 }
+    - role: apache_frontend
+      apache_service_name: swift
+      apache_service_ssl: "{{ os_ssl | default(False) }}"
+      apache_services:
+        - { port: 8080 }
 
 - hosts: haproxy
   become: True
   max_fail_percentage: 0
   roles:
-    - haproxy_service
-  vars:
-    haproxy_services:
-      - haproxy_service_name: swift_proxy
-        haproxy_backend_nodes: "{{ groups['swift_proxy'] }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
-        haproxy_port: 8080
-        haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
-        haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk GET /healthcheck'], ['forwardfor', 'httpchk GET /healthcheck', 'httplog']) }}"
+    - role: haproxy_service
+      haproxy_services:
+        - haproxy_service_name: swift_proxy
+          haproxy_backend_nodes: "{{ groups['swift_proxy'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 8080
+          haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
+          haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk GET /healthcheck'], ['forwardfor', 'httpchk GET /healthcheck', 'httplog']) }}"

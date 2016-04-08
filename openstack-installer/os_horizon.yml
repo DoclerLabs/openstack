@@ -11,26 +11,26 @@
   become: True
   max_fail_percentage: 0
   roles:
-    - haproxy_service
-  vars:
-    haproxy_services:
-      - haproxy_service_name: horizon
-        haproxy_backend_nodes: "{{ groups['horizon'] }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
-        haproxy_port: 80
-        haproxy_balance_type: http
-        haproxy_backend_options:
-          - forwardfor
-          - httpchk
-          - httplog
-      - haproxy_service_name: horizon-ssl
-        haproxy_backend_nodes: "{{ SSLCertificateKeyFileSource is defined | ternary(groups['horizon'], []) }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
-        haproxy_port: 443
-        haproxy_balance_type: https
-        haproxy_backend_options:
-          - httpchk
+    - role: haproxy_service
+      haproxy_services:
+        - haproxy_service_name: horizon
+          haproxy_backend_nodes: "{{ groups['horizon'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 80
+          haproxy_balance_type: http
+          haproxy_backend_options:
+            - forwardfor
+            - httpchk
+            - httplog
+
+        - haproxy_service_name: horizon-ssl
+          haproxy_backend_nodes: "{{ SSLCertificateKeyFileSource is defined | ternary(groups['horizon'], []) }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 443
+          haproxy_balance_type: https
+          haproxy_backend_options:
+            - httpchk

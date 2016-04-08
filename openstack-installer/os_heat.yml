@@ -3,90 +3,85 @@
 - hosts: heat[0]
   max_fail_percentage: 0
   roles:
-    - os_keystone_service
-  vars:
-    keystone_service_name: heat
-    keystone_service_type: orchestration
-    keystone_service_description: "OpenStack Orchestration Service"
-    keystone_public_url: "http://{{ vip_public }}:8004/v1/%(tenant_id)s"
-    keystone_internal_url: "http://{{ vip_mgmt }}:8004/v1/%(tenant_id)s"
-    keystone_admin_url: "http://{{ vip_mgmt }}:8004/v1/%(tenant_id)s"
-    keystone_region: "{{ keystone_region_name }}"
-    keystone_users:
-      - keystone_user: "{{ heat_admin_user | default('heat') }}"
-        keystone_domain_name: "{{ heat_domain_name | default(keystone_domain_name) }}"
-        keystone_password: "{{ heat_admin_password }}"
-        keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
-        keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
-        keystone_role: admin
+    - role: os_keystone_service
+      keystone_service_name: heat
+      keystone_service_type: orchestration
+      keystone_service_description: "OpenStack Orchestration Service"
+      keystone_public_url: "http://{{ vip_public }}:8004/v1/%(tenant_id)s"
+      keystone_internal_url: "http://{{ vip_mgmt }}:8004/v1/%(tenant_id)s"
+      keystone_admin_url: "http://{{ vip_mgmt }}:8004/v1/%(tenant_id)s"
+      keystone_region: "{{ keystone_region_name }}"
+      keystone_users:
+        - keystone_user: "{{ heat_admin_user | default('heat') }}"
+          keystone_domain_name: "{{ heat_domain_name | default(keystone_domain_name) }}"
+          keystone_password: "{{ heat_admin_password }}"
+          keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+          keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+          keystone_role: admin
 
-- hosts: heat[0]
-  max_fail_percentage: 0
-  roles:
-    - os_keystone_service
-  vars:
-    keystone_service_name: heat-cfn
-    keystone_service_type: cloudformation
-    keystone_service_description: "OpenStack Orchestration Service"
-    keystone_public_url: "http://{{ vip_public }}:8000/v1"
-    keystone_internal_url: "http://{{ vip_mgmt }}:8000/v1"
-    keystone_admin_url: "http://{{ vip_mgmt }}:8000/v1"
-    keystone_region: "{{ keystone_region_name }}"
+    - role: os_keystone_service
+      keystone_service_name: heat-cfn
+      keystone_service_type: cloudformation
+      keystone_service_description: "OpenStack Orchestration Service"
+      keystone_public_url: "http://{{ vip_public }}:8000/v1"
+      keystone_internal_url: "http://{{ vip_mgmt }}:8000/v1"
+      keystone_admin_url: "http://{{ vip_mgmt }}:8000/v1"
+      keystone_region: "{{ keystone_region_name }}"
 
 - hosts: heat
   become: True
   max_fail_percentage: 0
   roles:
     - common
+
     - os_heat
-    - apache_frontend
-  vars:
-    apache_service_name: heat
-    apache_proxy_preserve_host: True
-    apache_services:
-      - { port: 8004 }
-      - { port: 8000 }
-      - { port: 8003 }
+
+    - role: apache_frontend
+      apache_service_name: heat
+      apache_proxy_preserve_host: True
+      apache_services:
+        - { port: 8004 }
+        - { port: 8000 }
+        - { port: 8003 }
 
 - hosts: haproxy
   become: True
   max_fail_percentage: 0
   roles:
-    - haproxy_service
-  vars:
-    haproxy_services:
-      - haproxy_service_name: heat_api
-        haproxy_backend_nodes: "{{ groups['heat'] }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
-        haproxy_port: 8004
-        haproxy_balance_type: http
-        haproxy_backend_options:
-          - forwardfor
-          - httpchk OPTIONS / HTTP/1.1\r\nHost:localhost
-          - httplog
+    - role: haproxy_service
+      haproxy_services:
+        - haproxy_service_name: heat_api
+          haproxy_backend_nodes: "{{ groups['heat'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 8004
+          haproxy_balance_type: http
+          haproxy_backend_options:
+            - forwardfor
+            - httpchk OPTIONS / HTTP/1.1\r\nHost:localhost
+            - httplog
 
-      - haproxy_service_name: heat_api_cfn
-        haproxy_backend_nodes: "{{ groups['heat'] }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
-        haproxy_port: 8000
-        haproxy_balance_type: http
-        haproxy_backend_options:
-          - forwardfor
-          - httpchk OPTIONS / HTTP/1.1\r\nHost:localhost
-          - httplog
+        - haproxy_service_name: heat_api_cfn
+          haproxy_backend_nodes: "{{ groups['heat'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 8000
+          haproxy_balance_type: http
+          haproxy_backend_options:
+            - forwardfor
+            - httpchk OPTIONS / HTTP/1.1\r\nHost:localhost
+            - httplog
 
-      - haproxy_service_name: heat_api_cloudwatch
-        haproxy_backend_nodes: "{{ groups['heat'] }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
-        haproxy_port: 8003
-        haproxy_balance_type: http
-        haproxy_backend_options:
-          - forwardfor
-          - httpchk OPTIONS / HTTP/1.1\r\nHost:localhost
-          - httplog
+        - haproxy_service_name: heat_api_cloudwatch
+          haproxy_backend_nodes: "{{ groups['heat'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 8003
+          haproxy_balance_type: http
+          haproxy_backend_options:
+            - forwardfor
+            - httpchk OPTIONS / HTTP/1.1\r\nHost:localhost
+            - httplog

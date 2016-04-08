@@ -3,54 +3,53 @@
 - hosts: trove[0]
   max_fail_percentage: 0
   roles:
-    - os_keystone_service
-  vars:
-    keystone_service_name: trove
-    keystone_service_type: database
-    keystone_service_description: "OpenStack Database Service"
-    keystone_public_url: "http://{{ vip_public }}:8779/v1.0/$(tenant_id)s"
-    keystone_internal_url: "http://{{ vip_mgmt }}:8779/v1.0/$(tenant_id)s"
-    keystone_admin_url: "http://{{ vip_mgmt }}:8779/v1.0/$(tenant_id)s"
-    keystone_region: "{{ keystone_region_name }}"
-    keystone_projects:
-      - keystone_project_name: "{{ trove_project_name | default('trove') }}"
-        keystone_project_domain_name: "{{ trove_domain_name | default(keystone_domain_name) }}"
-        keystone_project_description: "Trove Project"
-    keystone_users:
-      - keystone_user: "{{ trove_admin_user | default('trove') }}"
-        keystone_domain_name: "{{ trove_domain_name | default(keystone_domain_name) }}"
-        keystone_password: "{{ trove_admin_password }}"
-        keystone_project_name: "{{ trove_project_name | default('trove') }}"
-        keystone_project_domain_name: "{{ trove_domain_name | default(keystone_domain_name) }}"
-        keystone_role: admin
+    - role: os_keystone_service
+      keystone_service_name: trove
+      keystone_service_type: database
+      keystone_service_description: "OpenStack Database Service"
+      keystone_public_url: "http://{{ vip_public }}:8779/v1.0/$(tenant_id)s"
+      keystone_internal_url: "http://{{ vip_mgmt }}:8779/v1.0/$(tenant_id)s"
+      keystone_admin_url: "http://{{ vip_mgmt }}:8779/v1.0/$(tenant_id)s"
+      keystone_region: "{{ keystone_region_name }}"
+      keystone_projects:
+        - keystone_project_name: "{{ trove_project_name | default('trove') }}"
+          keystone_project_domain_name: "{{ trove_domain_name | default(keystone_domain_name) }}"
+          keystone_project_description: "Trove Project"
+      keystone_users:
+        - keystone_user: "{{ trove_admin_user | default('trove') }}"
+          keystone_domain_name: "{{ trove_domain_name | default(keystone_domain_name) }}"
+          keystone_password: "{{ trove_admin_password }}"
+          keystone_project_name: "{{ trove_project_name | default('trove') }}"
+          keystone_project_domain_name: "{{ trove_domain_name | default(keystone_domain_name) }}"
+          keystone_role: admin
 
 - hosts: trove
   become: True
   max_fail_percentage: 0
   roles:
     - common
+
     - os_trove
-    - apache_frontend
-  vars:
-    apache_service_name: trove
-    apache_services:
-      - { port: 8779 }
+
+    - role: apache_frontend
+      apache_service_name: trove
+      apache_services:
+        - { port: 8779 }
 
 - hosts: haproxy
   become: True
   max_fail_percentage: 0
   roles:
-    - haproxy_service
-  vars:
-    haproxy_services:
-      - haproxy_service_name: trove_api
-        haproxy_backend_nodes: "{{ groups['trove'] }}"
-        haproxy_bind_hosts:
-          - "{{ vip_mgmt }}"
-          - "{{ vip_public }}"
-        haproxy_port: 8779
-        haproxy_balance_type: http
-        haproxy_backend_options:
-          - forwardfor
-          - httpchk
-          - httplog
+    - role: haproxy_service
+      haproxy_services:
+        - haproxy_service_name: trove_api
+          haproxy_backend_nodes: "{{ groups['trove'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 8779
+          haproxy_balance_type: http
+          haproxy_backend_options:
+            - forwardfor
+            - httpchk
+            - httplog
