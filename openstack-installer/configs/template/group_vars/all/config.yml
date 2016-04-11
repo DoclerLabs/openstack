@@ -27,7 +27,7 @@ os_public_address: "{{ vip_public }}"
 #Cert and key file for (optionally, but strongly recommended) enabling TLS
 #SSLCertificateFileSource:
 #SSLCertificateKeyFileSource:
-#SSLCACertificateKeyFileSource:
+#SSLCACertificateFileSource:
 #Don't check certificates if set to True:
 #ssl_insecure: False
 #Use TLS for keystone, too (without this, only Horizon will secured)
