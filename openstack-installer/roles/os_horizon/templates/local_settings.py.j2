@@ -169,6 +169,14 @@ OPENSTACK_KEYSTONE_DEFAULT_ROLE = "_member_"
 #    ("oidc", _("OpenID Connect")),
 #    ("saml2", _("Security Assertion Markup Language")))
 
+{% if keystone_federation_oidc | bool %}
+WEBSSO_ENABLED = True
+
+WEBSSO_CHOICES = (
+    ("credentials", _("Keystone Credentials")),
+    ("oidc", _("OpenID Connect")))
+{% endif %}
+
 # Disable SSL certificate checks (useful for self-signed certificates):
 #OPENSTACK_SSL_NO_VERIFY = True
 OPENSTACK_SSL_NO_VERIFY = {{ ssl_insecure }}

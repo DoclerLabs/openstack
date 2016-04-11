@@ -763,6 +763,7 @@ max_retries = -1
 # example: trusted_dashboard=http://acme.com trusted_dashboard=http://beta.com
 # (multi valued)
 #trusted_dashboard =
+trusted_dashboard = {{ (SSLCertificateKeyFileSource is defined) | ternary('https', 'http') }}://{{ os_public_address }}
 
 # Location of Single Sign-On callback handler, will return a token to a trusted
 # dashboard host. (string value)

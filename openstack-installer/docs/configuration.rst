@@ -274,6 +274,7 @@ Keystone
 --------
 
 Keystone is the central authentication service in OpenStack. UUID and Fernet tokens are implemented in this installer.
+Experimental support for OpenID-connect federation is also provided.
 
 For a multi-region setup, the installation can be skipped with an empty inventory for the 'keystone' group. In this case,
 the keystone_xxx_address settings (see below) should point to the central keystone instance.
@@ -296,6 +297,26 @@ Settings which most likely have to be changed in a production installation:
   keystone_token_provider: uuid                # By default, uuid tokens are used. You can use fernet tokens, too.
 
 There are some other settings in roles/os_keystone/defaults/main.yml, they can be overridden to fine-tune the service.
+
+To configre OpenID-connect federation, a manual step is required for installing the libapache2-mod-auth-openidc package. Since
+this package is not supplied in Ubuntu Trusty, it has to be downloaded and enabled in Apache manually. After these steps are done,
+the config options for keystone are:
+
+::
+
+  keystone_federation_oidc: False              # Change it to True to enable OpenID-connect federation
+
+  keystone_OIDCProviderMetadataURL:            # Set the Metadata URL or the three options below for the
+  keystone_OIDCProviderIssuer:                 # OIDC provider
+  keystone_OIDCProviderAuthorizationEndpoint:
+  keystone_OIDCProviderJwksUri:
+
+  keystone_OIDCClientID:                       # Client ID expected by the OIDC provider
+  keystone_OIDCClientSecret:                   # Client secret expected by the OIDC provider
+  keystone_OIDCCryptoPassphrase:               # A passphrase
+
+  keystone_OIDCSSLValidateServer: True         # To check the certificat of the OIDC provider
+
 
 Swift
 -----

@@ -5,6 +5,7 @@
   with_items:
     - apache2
     - libapache2-mod-wsgi
+#    - libapache2-mod-auth-openidc   # Enable on Xenial
 
 - name: ensure apache2 is started
   service: name=apache2 state=started enabled=yes
@@ -34,6 +35,7 @@
     - proxy
     - proxy_fcgi
     - proxy_http
+#    - auth_openidc
   notify: reload apache
 
 - name: install site.conf

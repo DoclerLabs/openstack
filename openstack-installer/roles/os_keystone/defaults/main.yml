@@ -17,4 +17,20 @@ keystone_token_provider: uuid
 #max. active fernet keys
 keystone_max_active_keys: 3
 
+#OpenID connect federation
+keystone_federation_oidc: False
+
+keystone_OIDCProviderMetadataURL:
+#If no metadata url given or it is incomplete:
+keystone_OIDCProviderIssuer:
+keystone_OIDCProviderAuthorizationEndpoint:
+keystone_OIDCProviderJwksUri:
+
+keystone_OIDCClientID:
+keystone_OIDCClientSecret:
+keystone_OIDCCryptoPassphrase:
+
+keystone_OIDCSSLValidateServer: True
+
+keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 keystone_syslog_use: "{{ syslog_use | default(False) }}"

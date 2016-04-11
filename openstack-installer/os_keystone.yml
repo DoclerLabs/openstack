@@ -12,7 +12,7 @@
       apache_service_name: keystone
       apache_service_ssl: "{{ keystone_ssl | default(False) }}"
       apache_services:
-        - { port: 5000, wsgi_process: "keystone-public", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/main" }
+        - { port: 5000, wsgi_process: "keystone-public", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/main", include: "/etc/apache2/sites-available/keystone-federation.conf" }
         - { port: 35357, wsgi_process: "keystone-admin", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/admin" }
 
 - hosts: haproxy
