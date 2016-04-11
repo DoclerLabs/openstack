@@ -5,7 +5,6 @@
   become: True
   with_items:
     - git
-    - libffi-dev
     - libssl-dev
     - python-dev
     - python-subunit
@@ -24,11 +23,15 @@
     - "{{ tempest_image_ari_img_file }}"
     - "{{ tempest_image_aki_img_file }}"
 
+- name: install tempest CA file
+  copy: src='{{ SSLCACertificateFileSource }}' dest='{{ tempest_CAFile }}'
+  when: SSLCACertificateFileSource is not none and SSLCACertificateFileSource | trim != ''
+
 - name: ensure cirros image exists in glance
   glance_image:
     auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     endpoint_type=internalURL
-    cacert={{ SSLCACertificateFileSource }}
+    cacert={{ tempest_CAFile }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
     login_project_name=admin
     login_username=admin
@@ -45,7 +48,7 @@
     --os-endpoint-type internalURL
     --os-project-domain-name "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
     {{ ssl_insecure | ternary('--insecure', '') }}
-    {{ SSLCACertificateFileSource | ternary('--os-cacert ' + SSLCACertificateFileSource | string, '') }}
+    {{ SSLCACertificateFileSource | ternary('--os-cacert ' + tempest_CAFile, '') }}
     --os-project-name admin
     --os-user-domain-name "{{ keystone_domain_name }}"
     --os-user-name admin
@@ -59,7 +62,7 @@
   keystone_user: >
     token="{{ keystone_admin_token }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    cacert={{ SSLCACertificateFileSource }}
+    cacert={{ tempest_CAFile }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
     project_domain="Default"
     project="{{ heat_stack_owner_project }}"
@@ -70,7 +73,7 @@
   keystone_user: >
     token="{{ keystone_admin_token }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    cacert={{ SSLCACertificateFileSource }}
+    cacert={{ tempest_CAFile }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
     project="{{ heat_stack_owner_project }}"
     project_domain="Default"
@@ -83,7 +86,7 @@
   keystone_user: >
     token="{{ keystone_admin_token }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    cacert={{ SSLCACertificateFileSource }}
+    cacert={{ tempest_CAFile }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
     project_domain="Default"
     project="{{ heat_stack_owner_project }}"
@@ -99,7 +102,7 @@
     login_password="{{ keystone_admin_password }}"
     auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     endpoint_type=internalURL
-    cacert={{ SSLCACertificateFileSource }}
+    cacert={{ tempest_CAFile }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
     region_name="{{ keystone_region_name }}"
     name="{{ external_net_name }}"
@@ -114,7 +117,7 @@
   quantum_subnet: >
     auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     endpoint_type=internalURL
-    cacert={{ SSLCACertificateFileSource }}
+    cacert={{ tempest_CAFile }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
     login_tenant_name=admin
     login_username=admin
