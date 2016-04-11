@@ -27,14 +27,25 @@
     state="{{ radosgw_keystone | ternary('present', 'absent') }}"
   with_dict:
     { "rgw keystone url": "{{ keystone_proto }}://{{ ip.mgmt }}:5000",
-      "rgw keystone admin token" : "{{ keystone_admin_token }}",
       "rgw keystone accepted roles": "{{ rgw_keystone_accepted_roles }}",
       "rgw keystone token cache size": 500,
       "rgw keystone revocation interval": 500,
       "rgw keystone verify ssl": "false",
       "rgw s3 auth use keystone": "true",
+      "rgw keystone admin user": "{{ radosgw_admin_user }}",
+      "rgw keystone admin password": "{{ radosgw_admin_password }}",
+      "rgw keystone admin project": "{{ radosgw_project_name }}",
+      "rgw keystone admin domain": "{{ radosgw_domain_name }}",
+      "rgw keystone api version": 3,
       "nss db path": "/var/lib/ceph/nss"
     }
+  notify: restart radosgw
+
+- name: remove keystone admin token from /etc/ceph/ceph.conf
+  ini_file: dest=/etc/ceph/ceph.conf
+    section=client.radosgw.gateway
+    option="rgw keystone admin token"
+    state="absent"
   notify: restart radosgw
 
 - name: make sure /var/lib/ceph/nss exists
