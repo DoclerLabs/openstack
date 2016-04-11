@@ -9,6 +9,7 @@ rootwrap_config = /etc/nova/rootwrap.conf
 service_down_time = {{ nova_service_down_time }}
 
 host = {{ inventory_hostname }}
+state_path = /var/lib/nova
 
 # Compute
 {% if groups['ironic'] | count > 0 %}
