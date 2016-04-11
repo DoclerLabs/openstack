@@ -19,6 +19,12 @@ General upgrading instructions are below.
 
   $ git checkout master
 
+- Generate newly added secrets:
+
+::
+
+  $ scripts/generate_secrets.py
+
 - Upgrade Ceph first:
 
 ::
