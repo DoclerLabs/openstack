@@ -60,7 +60,7 @@
   notify: signal apache to reload
 
 - name: install keystone-federation.conf
-  template: src=keystone-federation.conf.j2 dest=/etc/apache2/sites-available/keystone-federation.conf owner=root group=www-data mode=0440
+  template: src=keystone-federation.conf.j2 dest=/etc/keystone-federation.conf owner=root group=www-data mode=0440
   notify: signal apache to reload
 
 - name: sync keystone db
