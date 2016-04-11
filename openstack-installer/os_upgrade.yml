@@ -81,6 +81,10 @@
           - { playbook: "os_heat.yml", group: "{{ groups['heat'] }}" }
           - { playbook: "os_cinder.yml", group: "{{ groups['cinder'] }}" }
           - { playbook: "os_trove.yml", group: "{{ groups['trove'] }}" }
+          - { playbook: "os_horizon.yml", group: "{{ groups['horizon'] }}" }
+          - { playbook: "os_barbican.yml", group: "{{ groups['barbican'] }}" }
+          - { playbook: "os_murano.yml", group: "{{ groups['murano'] }}" }
+          - { playbook: "os_sahara.yml", group: "{{ groups['sahara'] }}" }
         become: False
 
       always:
@@ -134,6 +138,10 @@
           - { playbook: "os_heat.yml", group: "{{ groups['heat'] }}" }
           - { playbook: "os_cinder.yml", group: "{{ groups['cinder'] }}" }
           - { playbook: "os_trove.yml", group: "{{ groups['trove'] }}" }
+          - { playbook: "os_horizon.yml", group: "{{ groups['horizon'] }}" }
+          - { playbook: "os_barbican.yml", group: "{{ groups['barbican'] }}" }
+          - { playbook: "os_murano.yml", group: "{{ groups['murano'] }}" }
+          - { playbook: "os_sahara.yml", group: "{{ groups['sahara'] }}" }
         become: False
 
       always:
