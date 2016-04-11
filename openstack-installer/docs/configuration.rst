@@ -294,7 +294,7 @@ Settings which most likely have to be changed in a production installation:
                                                # SSLCertificateFileSource and SSLCertificateKeyFileSource.
   ssl_insecure: False                          # It's a global setting for all OpenStack components, where you can disable certificate
                                                # checking (e.g. in case of self-signed certificates). Don't use it in production.
-  keystone_token_provider: uuid                # By default, uuid tokens are used. You can use fernet tokens, too.
+  keystone_token_provider: fernet              # By default, Fernet tokens are used. You can use deprecated UUID tokens, too.
 
 There are some other settings in roles/os_keystone/defaults/main.yml, they can be overridden to fine-tune the service.
 

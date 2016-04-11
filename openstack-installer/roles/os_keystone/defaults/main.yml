@@ -13,7 +13,7 @@ keystone_memcache_pool_unused_timeout: 60
 
 keystone_token_expiration: 3600
 #uuid or fernet
-keystone_token_provider: uuid
+keystone_token_provider: fernet
 #max. active fernet keys
 keystone_max_active_keys: 3
 
