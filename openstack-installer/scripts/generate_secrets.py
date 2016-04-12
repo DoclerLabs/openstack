@@ -25,10 +25,10 @@ def generate_secrets(filename, template):
                     password = secretfile[key]
                 else:
                     password = ''.join(random.SystemRandom().
-                                   choice(string.ascii_uppercase +
-                                          string.ascii_lowercase +
-                                          string.digits)
-                                   for _ in range(PASSWORD_LEN))
+                                       choice(string.ascii_uppercase +
+                                              string.ascii_lowercase +
+                                              string.digits)
+                                       for _ in range(PASSWORD_LEN))
                 secrets.append(key + ': ' + password + '\n')
             else:
                 secrets.append(line)
