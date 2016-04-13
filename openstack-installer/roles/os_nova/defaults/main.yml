@@ -29,6 +29,8 @@ nova_virt_type: kvm
 nova_console_type: vnc
 nova_console_keymap: en-us
 
+nova_live_migration_tunelled: False
+
 nova_novncproxy_ssl: False
 nova_novncproxy_base_url: "{{ nova_novncproxy_ssl | ternary('https','http') }}://{{ os_public_address }}:6080/vnc_auto.html"
 

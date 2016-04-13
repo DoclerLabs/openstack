@@ -225,7 +225,8 @@ use_usb_tablet = False
 use_virtio_for_bridges = True
 virt_type = {{ nova_virt_type }}
 live_migration_uri = qemu+ssh://nova@%s/system?keyfile=/var/lib/nova/.ssh/id_rsa&no_tty=1&no_verify=1
-live_migration_flag="VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_PERSIST_DEST,VIR_MIGRATE_TUNNELLED"
+live_migration_flag="VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE"
+live_migration_tunnelled = {{ nova_live_migration_tunelled }}
 
 #ceph
 {% if cinder_backend == 'ceph' or nova_ephemeral_backend == 'ceph' %}
