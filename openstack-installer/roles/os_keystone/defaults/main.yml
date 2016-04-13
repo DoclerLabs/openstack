@@ -24,6 +24,7 @@ keystone_OIDCProviderMetadataURL:
 #If no metadata url given or it is incomplete:
 keystone_OIDCProviderIssuer:
 keystone_OIDCProviderAuthorizationEndpoint:
+keystone_OIDCProviderTokenEndpoint:
 keystone_OIDCProviderJwksUri:
 
 keystone_OIDCClientID:

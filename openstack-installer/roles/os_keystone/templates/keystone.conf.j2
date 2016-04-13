@@ -277,6 +277,7 @@ use_stderr = false
 
 # Allowed authentication methods. (list value)
 #methods = external,password,token,oauth1
+methods = password,token{% if keystone_federation_oidc | bool %},oidc{% endif %}
 
 # Entrypoint for the password auth plugin module in the keystone.auth.password
 # namespace. (string value)
@@ -294,7 +295,9 @@ use_stderr = false
 # Entrypoint for the oAuth1.0 auth plugin module in the keystone.auth.oauth1
 # namespace. (string value)
 #oauth1 = <None>
-
+{% if keystone_federation_oidc | bool %}
+oidc = keystone.auth.plugins.mapped.Mapped
+{% endif %}
 
 [cache]
 
@@ -750,6 +753,7 @@ max_retries = -1
 # environment (e.g. if using the mod_shib plugin this value is `Shib-Identity-
 # Provider`). (string value)
 #remote_id_attribute = <None>
+remote_id_attribute = HTTP_OIDC_ISS
 
 # A domain name that is reserved to allow federated ephemeral users to have a
 # domain concept. Note that an admin will not be able to create a domain with
@@ -763,7 +767,7 @@ max_retries = -1
 # example: trusted_dashboard=http://acme.com trusted_dashboard=http://beta.com
 # (multi valued)
 #trusted_dashboard =
-trusted_dashboard = {{ (SSLCertificateKeyFileSource is defined) | ternary('https', 'http') }}://{{ os_public_address }}
+trusted_dashboard = {{ (SSLCertificateKeyFileSource is defined) | ternary('https', 'http') }}://{{ os_public_address }}/horizon/auth/websso/
 
 # Location of Single Sign-On callback handler, will return a token to a trusted
 # dashboard host. (string value)

@@ -1,9 +1,10 @@
 #jinja2: lstrip_blocks: True
 
 {% if keystone_federation_oidc | bool %}
-    OIDCClaimPrefix "OIDC-"
-    OIDCResponseType "id_token"
-    OIDCScope "openid email profile"
+    OIDCClaimPrefix                   "OIDC-"
+    OIDCResponseType                  "id_token"
+    OIDCProviderTokenEndpointAuth     client_secret_basic
+    OIDCScope                         "openid email profile"
     {% if keystone_OIDCProviderMetadataURL %}
     OIDCProviderMetadataURL           {{ keystone_OIDCProviderMetadataURL }}
     {% endif %}
@@ -13,6 +14,9 @@
     {% if keystone_OIDCProviderAuthorizationEndpoint %}
     OIDCProviderAuthorizationEndpoint {{ keystone_OIDCProviderAuthorizationEndpoint }}
     {% endif %}
+    {% if keystone_OIDCProviderTokenEndpoint %}
+    OIDCProviderTokenEndpoint         {{ keystone_OIDCProviderTokenEndpoint }}
+    {% endif %}
     {% if keystone_OIDCProviderJwksUri %}
     OIDCProviderJwksUri               {{ keystone_OIDCProviderJwksUri }}
     {% endif %}
@@ -20,7 +24,7 @@
     OIDCClientID                      {{ keystone_OIDCClientID }}
     OIDCClientSecret                  {{ keystone_OIDCClientSecret }}
     OIDCCryptoPassphrase              {{ keystone_OIDCCryptoPassphrase }}
-    OIDCRedirectURI                   {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3/auth/OS-FEDERATION/websso/redirect
+    OIDCRedirectURI                   {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3/auth/OS-FEDERATION/websso/oidc/redirect
 
     <LocationMatch /v3/auth/OS-FEDERATION/websso/oidc>
       AuthType openid-connect
@@ -30,6 +34,5 @@
     <LocationMatch /v3/OS-FEDERATION/identity_providers/.*?/protocols/oidc/auth>
       AuthType openid-connect
       Require valid-user
-      LogLevel debug
     </LocationMatch>
 {% endif %}

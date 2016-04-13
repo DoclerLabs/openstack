@@ -35,7 +35,6 @@
     - keystone
     - python-openstackclient
     - python-memcache
-#    - libapache2-mod-auth-openidc   # Enable on Xenial
 
 - name: ensure keystone service is disabled at boot
   service: name=keystone state=stopped enabled=no
@@ -62,6 +61,9 @@
 - name: install keystone-federation.conf
   template: src=keystone-federation.conf.j2 dest=/etc/keystone-federation.conf owner=root group=www-data mode=0440
   notify: signal apache to reload
+
+- name: install sso_callback_template.html
+  copy: src=sso_callback_template.html dest=/etc/keystone/sso_callback_template.html owner=root group=root mode=0644
 
 - name: sync keystone db
   command: su keystone -s /bin/sh -c "/usr/bin/keystone-manage db_sync"
