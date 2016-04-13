@@ -175,6 +175,9 @@ WEBSSO_ENABLED = True
 WEBSSO_CHOICES = (
     ("credentials", _("Keystone Credentials")),
     ("oidc", _("OpenID Connect")))
+
+OPENSTACK_KEYSTONE_FEDERATION_MANAGEMENT = True
+
 {% endif %}
 
 # Disable SSL certificate checks (useful for self-signed certificates):
