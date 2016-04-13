@@ -24,3 +24,4 @@
 - include: os_murano.yml
 - include: os_sahara.yml
 - include: os_trove.yml
+- include: os_mistral.yml
