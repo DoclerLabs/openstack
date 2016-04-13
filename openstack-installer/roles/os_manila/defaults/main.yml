@@ -1,0 +1,20 @@
+---
+
+manila_db_user: manila
+manila_mysql_server: "{{ vip_mgmt }}"
+manila_db: manila
+manila_rabbit_vhost: manila
+manila_rabbit_user: manila
+manila_admin_user: manila
+manila_domain_name: "{{ keystone_domain_name }}"
+manila_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+manila_project_name: "{{ keystone_service_project_name | default('service') }}"
+
+manila_syslog_use: "{{ syslog_use | default(False) }}"
+
+manila_debug: False
+
+keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
+ssl_insecure: False
+SSLCACertificateFileSource:
+SSLCACertificateFile: "{{ (SSLCACertificateFileSource is not none and SSLCACertificateFileSource | trim != '') | ternary('/etc/ssl/certs/openstack.ca.crt','') }}"

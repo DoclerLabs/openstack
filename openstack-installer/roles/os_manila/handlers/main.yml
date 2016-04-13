@@ -1,0 +1,7 @@
+---
+
+- name: restart manila
+  service: name={{ item }} state=restarted
+  with_items:
+    - manila-api
+    - manila-scheduler

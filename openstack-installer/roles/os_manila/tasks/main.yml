@@ -1,0 +1,82 @@
+---
+
+- name: create manila vhost in rabbitmq
+  rabbitmq_vhost: node="rabbit@{{ groups['rabbitmq'][0] }}" name="{{ manila_rabbit_vhost }}"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: create manila user in rabbitmq
+  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}"
+      user="{{ manila_rabbit_user }}" password="{{ manila_rabbit_password }}"
+      vhost="{{ manila_rabbit_vhost }}"
+      configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: ensure the manila vhost contains the HA policy
+  rabbitmq_policy:
+    node: "rabbit@{{ groups['rabbitmq'][0] }}"
+    vhost: "{{ manila_rabbit_vhost }}"
+    name: HA
+    pattern: '.*'
+    tags:
+      "ha-mode": "all"
+      "ha-sync-mode": "automatic"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: install CA certificate
+  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  when: SSLCACertificateFile != ''
+
+- name: disable autostarting of manila
+  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+  with_items:
+    - manila-api
+    - manila-scheduler
+
+- name: install manila
+  apt: name={{ item }}
+  with_items:
+    - manila-api
+    - manila-scheduler
+    - python-manilaclient
+
+- name: create manila database
+  mysql_db: name={{ manila_db }}
+    login_host={{ manila_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create manila database user
+  mysql_user: name={{ manila_db_user }} password={{ manila_db_password }} host={{ item }} priv={{ manila_db }}.*:ALL
+    login_host={{ manila_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - '%'
+
+- name: ensure /var/lib/manila/cache is writeable
+  file: path=/var/lib/manila/cache state=directory owner=manila group=manila mode=0700
+  notify: restart manila
+
+- name: install manila configs
+  template: src={{ item }}.conf.j2 dest=/etc/manila/{{ item }}.conf owner=manila group=root mode=0460
+  with_items:
+    - manila
+  notify: restart manila
+
+- name: sync manila db
+  command: su manila -s /bin/sh -c 'manila-manage db sync'
+  register: db_sync
+  changed_when: '"Running upgrade" in db_sync.stderr'
+  run_once: True
+
+- meta: flush_handlers
+
+- name: ensure manila is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - manila-api
+    - manila-scheduler

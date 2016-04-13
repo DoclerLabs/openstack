@@ -148,6 +148,8 @@ ironic:
 
 mistral:
 
+manila:
+
 # -------- Tempest ------
 tempest:
   inherit: local

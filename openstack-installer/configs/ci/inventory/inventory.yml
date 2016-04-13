@@ -107,6 +107,9 @@ ironic:
 mistral:
   inherit: controller
 
+manila:
+  inherit: controller
+
 # -------- Tempest ------
 tempest:
   localhost:
