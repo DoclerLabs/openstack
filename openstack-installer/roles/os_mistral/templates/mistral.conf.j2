@@ -75,6 +75,7 @@ debug = {{ mistral_debug }}
 # will be changed later to honor RFC5424. This option is ignored if
 # log_config_append is set. (boolean value)
 #use_syslog = false
+use_syslog = {{ mistral_syslog_use }}
 
 # Syslog facility to receive log lines. This option is ignored if
 # log_config_append is set. (string value)
@@ -83,6 +84,7 @@ debug = {{ mistral_debug }}
 # Log output to standard error. This option is ignored if
 # log_config_append is set. (boolean value)
 #use_stderr = true
+use_stderr = False
 
 # Format string to use for log messages with context. (string value)
 #logging_context_format_string = %(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s [%(request_id)s %(user_identity)s] %(instance)s%(message)s
