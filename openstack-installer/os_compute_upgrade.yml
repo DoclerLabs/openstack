@@ -1,0 +1,43 @@
+---
+
+- hosts:
+    - nova_compute
+    - neutron_compute
+    - ceilometer_compute
+    - cinder_volume
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - common
+  pre_tasks:
+    - name: check for Ansible version > 2.0.1
+      local_action: assert that="{{ ansible_version.string | version_compare('2.0.1', '>=') }}"
+      run_once: True
+      become: False
+
+- hosts:
+    - nova_compute
+    - neutron_compute
+    - ceilometer_compute
+    - cinder_volume
+  become: True
+  max_fail_percentage: 0
+  serial: 5
+  tasks:
+
+    - name: run nova db sync as workaround for launchpad bug No. 1498344
+      command: /usr/bin/nova-manage db sync
+      when: inventory_hostname in groups['nova_compute'] and inventory_hostname not in groups['nova_controller']
+
+    - name: upgrade packages
+      apt: upgrade=yes
+
+    - name: run playbooks
+      local_action: command ansible-playbook {{ item.playbook }} -l "{{ inventory_hostname }}"
+      when: inventory_hostname in item.group
+      with_items:
+        - { playbook: "os_neutron.yml", group: "{{ groups['neutron_compute'] }}" }
+        - { playbook: "os_nova.yml", group: "{{ groups['nova_compute'] }}" }
+        - { playbook: "os_ceilometer.yml", group: "{{ groups['ceilometer_compute'] }}" }
+        - { playbook: "os_cinder.yml", group: "{{ groups['cinder_volume'] }}" }
+      become: False
