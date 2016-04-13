@@ -43,9 +43,9 @@ options:
         - Password of login user
      required: true
      default: True
-   login_tenant_name:
+   login_project_name:
      description:
-        - The tenant name of the login user
+        - The project name of the login user
      required: true
      default: True
    auth_url:
@@ -84,9 +84,9 @@ options:
         - The CIDR representation of the subnet that should be assigned to the subnet
      required: true
      default: None
-   tenant_name:
+   project_name:
      description:
-        - The name of the tenant for whom the subnet should be created
+        - The name of the project for whom the subnet should be created
      required: false
      default: None
    ip_version:
@@ -134,24 +134,37 @@ requirements: ["quantumclient", "neutronclient", "keystoneclient"]
 '''
 
 EXAMPLES = '''
-# Create a subnet for a tenant with the specified subnet
+# Create a subnet for a project with the specified subnet
 - quantum_subnet: state=present login_username=admin login_password=admin
-                  login_tenant_name=admin tenant_name=tenant1
+                  login_project_name=admin project_name=tenant1
                   network_name=network1 name=net1subnet cidr=192.168.0.0/24"
 '''
 
 _os_keystone   = None
-_os_tenant_id  = None
+_os_project_id  = None
 _os_network_id = None
 
 def _get_ksclient(module, kwargs):
+    login_project_name=kwargs.get('login_project_name')
     try:
-        kclient = ksclient.Client(username=kwargs.get('login_username'),
+        if login_project_name:
+            kclient = ksclient.Client(username=kwargs.get('login_username'),
                                  password=kwargs.get('login_password'),
-                                 tenant_name=kwargs.get('login_tenant_name'),
+                                 project_name=login_project_name,
+                                 project_domain_name=kwargs.get('login_domain_name'),
+                                 user_domain_name=kwargs.get('login_domain_name'),
                                  auth_url=kwargs.get('auth_url'),
                                  cacert=kwargs.get('cacert'),
                                  insecure=kwargs.get('insecure'))
+        else:
+            kclient = ksclient.Client(username=kwargs.get('login_username'),
+                                 password=kwargs.get('login_password'),
+                                 user_domain_name=kwargs.get('login_domain_name'),
+                                 auth_url=kwargs.get('auth_url'),
+                                 cacert=kwargs.get('cacert'),
+                                 insecure=kwargs.get('insecure'))
+
+
     except Exception, e:
         module.fail_json(msg = "Error authenticating to the keystone: %s" %e.message)
     global _os_keystone
@@ -182,23 +195,23 @@ def _get_neutron_client(module, kwargs):
         module.fail_json(msg = " Error in connecting to neutron: %s" % e.message)
     return neutron
 
-def _set_tenant_id(module):
-    global _os_tenant_id
-    if not module.params['tenant_name']:
-        tenant_name = module.params['login_tenant_name']
+def _set_project_id(module):
+    global _os_project_id
+    if not module.params['project_name']:
+        project_name = module.params['login_project_name']
     else:
-        tenant_name = module.params['tenant_name']
+        project_name = module.params['project_name']
 
-    for tenant in _os_keystone.projects.list():
-        if tenant.name == tenant_name:
-            _os_tenant_id = tenant.id
+    for project in _os_keystone.projects.list():
+        if project.name == project_name:
+            _os_project_id = project.id
             break
-    if not _os_tenant_id:
-            module.fail_json(msg = "The tenant id cannot be found, please check the parameters")
+    if not _os_project_id:
+            module.fail_json(msg = "The project id cannot be found, please check the parameters")
 
 def _get_net_id(neutron, module):
     kwargs = {
-        'tenant_id': _os_tenant_id,
+        'tenant_id': _os_project_id,
         'name': module.params['network_name'],
     }
     try:
@@ -218,7 +231,7 @@ def _get_subnet_id(module, neutron):
         module.fail_json(msg = "network id of network not found.")
     else:
         kwargs = {
-            'tenant_id': _os_tenant_id,
+            'tenant_id': _os_project_id,
             'name': module.params['name'],
         }
         try:
@@ -235,7 +248,7 @@ def _create_subnet(module, neutron):
             'name':            module.params['name'],
             'ip_version':      module.params['ip_version'],
             'enable_dhcp':     module.params['enable_dhcp'],
-            'tenant_id':       _os_tenant_id,
+            'tenant_id':       _os_project_id,
             'gateway_ip':      module.params['gateway_ip'],
             'dns_nameservers': module.params['dns_nameservers'],
             'network_id':      _os_network_id,
@@ -277,7 +290,9 @@ def main():
             name                    = dict(required=True),
             network_name            = dict(required=True),
             cidr                    = dict(required=True),
-            tenant_name             = dict(default=None),
+            project_name            = dict(default=None),
+            login_project_name      = dict(default=None),
+            login_domain_name       = dict(default=None),
             state                   = dict(default='present', choices=['absent', 'present']),
             ip_version              = dict(default='4', choices=['4', '6']),
             enable_dhcp             = dict(default='true', type='bool'),
@@ -291,7 +306,7 @@ def main():
     ))
     module = AnsibleModule(argument_spec=argument_spec)
     neutron = _get_neutron_client(module, module.params)
-    _set_tenant_id(module)
+    _set_project_id(module)
     if module.params['state'] == 'present':
         subnet_id = _get_subnet_id(module, neutron)
         if not subnet_id:

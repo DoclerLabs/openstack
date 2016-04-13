@@ -43,14 +43,14 @@ options:
         - Password of login user
      required: true
      default: 'yes'
-   login_tenant_name:
+   login_project_name:
      description:
-        - The tenant name of the login user
+        - The project name of the login user
      required: true
      default: 'yes'
-   tenant_name:
+   project_name:
      description:
-        - The name of the tenant for whom the network is created
+        - The name of the project for whom the network is created
      required: false
      default: None
    auth_url:
@@ -125,24 +125,35 @@ requirements: ["quantumclient", "neutronclient", "keystoneclient"]
 
 EXAMPLES = '''
 # Create a GRE backed Quantum network with tunnel id 1 for tenant1
-- quantum_network: name=t1network tenant_name=tenant1 state=present
+- quantum_network: name=t1network project_name=tenant1 state=present
                    provider_network_type=gre provider_segmentation_id=1
-                   login_username=admin login_password=admin login_tenant_name=admin
+                   login_username=admin login_password=admin login_project_name=admin
 
 # Create an external network
 - quantum_network: name=external_network state=present
                    provider_network_type=local router_external=yes
-                   login_username=admin login_password=admin login_tenant_name=admin
+                   login_username=admin login_password=admin login_project_name=admin
 '''
 
 _os_keystone = None
-_os_tenant_id = None
+_os_project_id = None
 
 def _get_ksclient(module, kwargs):
+    login_project_name=kwargs.get('login_project_name')
     try:
-        kclient = ksclient.Client(username=kwargs.get('login_username'),
+        if login_project_name:
+            kclient = ksclient.Client(username=kwargs.get('login_username'),
                                  password=kwargs.get('login_password'),
-                                 project_name=kwargs.get('login_tenant_name'),
+                                 project_name=login_project_name,
+                                 project_domain_name=kwargs.get('login_domain_name'),
+                                 user_domain_name=kwargs.get('login_domain_name'),
+                                 auth_url=kwargs.get('auth_url'),
+                                 cacert=kwargs.get('cacert'),
+                                 insecure=kwargs.get('insecure'))
+        else:
+            kclient = ksclient.Client(username=kwargs.get('login_username'),
+                                 password=kwargs.get('login_password'),
+                                 user_domain_name=kwargs.get('login_domain_name'),
                                  auth_url=kwargs.get('auth_url'),
                                  cacert=kwargs.get('cacert'),
                                  insecure=kwargs.get('insecure'))
@@ -177,24 +188,24 @@ def _get_neutron_client(module, kwargs):
         module.fail_json(msg = " Error in connecting to neutron: %s " %e.message)
     return neutron
 
-def _set_tenant_id(module):
-    global _os_tenant_id
-    if not module.params['tenant_name']:
-        tenant_name = module.params['login_tenant_name']
+def _set_project_id(module):
+    global _os_project_id
+    if not module.params['project_name']:
+        project_name = module.params['login_project_name']
     else:
-        tenant_name = module.params['tenant_name']
+        project_name = module.params['project_name']
 
-    for tenant in _os_keystone.projects.list():
-        if tenant.name == tenant_name:
-            _os_tenant_id = tenant.id
+    for project in _os_keystone.projects.list():
+        if project.name == project_name:
+            _os_project_id = project.id
             break
-    if not _os_tenant_id:
-        module.fail_json(msg = "The tenant id cannot be found, please check the parameters")
+    if not _os_project_id:
+        module.fail_json(msg = "The project id cannot be found, please check the parameters")
 
 
 def _get_net_id(neutron, module):
     kwargs = {
-            'tenant_id': _os_tenant_id,
+            'tenant_id': _os_project_id,
             'name': module.params['name'],
     }
     try:
@@ -211,7 +222,7 @@ def _create_network(module, neutron):
 
     network = {
         'name':                      module.params.get('name'),
-        'tenant_id':                 _os_tenant_id,
+        'tenant_id':                 _os_project_id,
         'provider:network_type':     module.params.get('provider_network_type'),
         'provider:physical_network': module.params.get('provider_physical_network'),
         'provider:segmentation_id':  module.params.get('provider_segmentation_id'),
@@ -257,7 +268,9 @@ def main():
     argument_spec = openstack_argument_spec()
     argument_spec.update(dict(
             name                            = dict(required=True),
-            tenant_name                     = dict(default=None),
+            project_name                    = dict(default=None),
+            login_project_name              = dict(default=None),
+            login_domain_name               = dict(default=None),
             provider_network_type           = dict(default=None, choices=['local', 'vlan', 'vxlan', 'flat', 'gre']),
             provider_physical_network       = dict(default=None),
             provider_segmentation_id        = dict(default=None),
@@ -281,7 +294,7 @@ def main():
 
     neutron = _get_neutron_client(module, module.params)
 
-    _set_tenant_id(module)
+    _set_project_id(module)
 
     if module.params['state'] == 'present':
         network_id = _get_net_id(neutron, module)

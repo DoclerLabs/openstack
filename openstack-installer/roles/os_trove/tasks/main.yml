@@ -53,10 +53,11 @@
     endpoint_type=internalURL
     cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
-    login_tenant_name=trove
+    login_project_name=trove
     login_username=trove
+    login_domain_name={{ trove_domain_name }}
     login_password="{{ trove_admin_password }}"
-    tenant_name=trove
+    project_name=trove
     region_name="{{ keystone_region_name }}"
     name="{{ trove_net_name }}"
     provider_network_type={{ trove_net_type }}
@@ -73,10 +74,11 @@
     endpoint_type=internalURL
     cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
-    login_tenant_name=trove
+    login_project_name=trove
     login_username=trove
+    login_domain_name={{ trove_domain_name }}
     login_password="{{ trove_admin_password }}"
-    tenant_name=trove
+    project_name=trove
     region_name="{{ keystone_region_name }}"
     name=trove-subnet
     network_name="{{ trove_net_name }}"

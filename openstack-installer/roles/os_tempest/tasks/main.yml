@@ -97,8 +97,9 @@
 
 - name: ensure external network exists in neutron
   quantum_network: >
-    login_tenant_name=admin
+    login_project_name=admin
     login_username=admin
+    login_domain_name="Default"
     login_password="{{ keystone_admin_password }}"
     auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     endpoint_type=internalURL
@@ -115,13 +116,14 @@
 
 - name: set up external subnet in neutron
   quantum_subnet: >
+    login_project_name=admin
+    login_username=admin
+    login_domain_name="Default"
+    login_password="{{ keystone_admin_password }}"
     auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     endpoint_type=internalURL
     cacert={{ tempest_CAFile }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
-    login_tenant_name=admin
-    login_username=admin
-    login_password="{{ keystone_admin_password }}"
     region_name="{{ keystone_region_name }}"
     name=external-subnet
     network_name="{{ external_net_name }}"
