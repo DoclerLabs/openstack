@@ -1,0 +1,8 @@
+---
+
+- name: restart mistral
+  service: name={{ item }} state=restarted
+  with_items:
+    - mistral-api
+    - mistral-engine
+    - mistral-executor

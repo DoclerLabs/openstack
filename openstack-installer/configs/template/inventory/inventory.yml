@@ -146,6 +146,8 @@ barbican:
 
 ironic:
 
+mistral:
+
 # -------- Tempest ------
 tempest:
   inherit: local

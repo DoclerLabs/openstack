@@ -104,6 +104,9 @@ barbican:
 
 ironic:
 
+mistral:
+  inherit: controller
+
 # -------- Tempest ------
 tempest:
   localhost:

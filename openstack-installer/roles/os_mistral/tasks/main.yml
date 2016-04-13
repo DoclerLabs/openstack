@@ -1,0 +1,83 @@
+---
+
+- name: create mistral vhost in rabbitmq
+  rabbitmq_vhost: node="rabbit@{{ groups['rabbitmq'][0] }}" name="{{ mistral_rabbit_vhost }}"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: create mistral user in rabbitmq
+  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}"
+      user="{{ mistral_rabbit_user }}" password="{{ mistral_rabbit_password }}"
+      vhost="{{ mistral_rabbit_vhost }}"
+      configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: ensure the mistral vhost contains the HA policy
+  rabbitmq_policy:
+    node: "rabbit@{{ groups['rabbitmq'][0] }}"
+    vhost: "{{ mistral_rabbit_vhost }}"
+    name: HA
+    pattern: '.*'
+    tags:
+      "ha-mode": "all"
+      "ha-sync-mode": "automatic"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: install CA certificate
+  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  when: SSLCACertificateFile != ''
+
+- name: disable autostarting of mistral
+  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+  with_items:
+    - mistral-api
+    - mistral-engine
+    - mistral-executor
+
+- name: install mistral
+  apt: name={{ item }}
+  with_items:
+    - mistral-api
+    - mistral-engine
+    - mistral-executor
+    - python-mistralclient
+
+- name: create mistral database
+  mysql_db: name={{ mistral_db }}
+    login_host={{ mistral_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create mistral database user
+  mysql_user: name={{ mistral_db_user }} password={{ mistral_db_password }} host={{ item }} priv={{ mistral_db }}.*:ALL
+    login_host={{ mistral_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - '%'
+
+- name: ensure /var/lib/mistral/cache is writeable
+  file: path=/var/lib/mistral/cache state=directory owner=mistral group=mistral mode=0700
+  notify: restart mistral
+
+- name: install mistral configs
+  template: src={{ item }}.conf.j2 dest=/etc/mistral/{{ item }}.conf owner=mistral group=root mode=0460
+  with_items:
+    - mistral
+  notify: restart mistral
+
+- name: sync mistral db
+  command: su mistral -s /bin/sh -c 'mistral-db-manage --config-file /etc/mistral/mistral.conf upgrade head'
+  run_once: True
+
+- meta: flush_handlers
+
+- name: ensure mistral is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - mistral-api
+    - mistral-engine
+    - mistral-executor
