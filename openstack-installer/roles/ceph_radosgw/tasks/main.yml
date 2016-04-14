@@ -37,6 +37,7 @@
       "rgw keystone admin project": "{{ radosgw_project_name }}",
       "rgw keystone admin domain": "{{ radosgw_domain_name }}",
       "rgw keystone api version": 3,
+      "rgw keystone implicit tenants": "{{ rgw_keystone_implicit_tenants }}",
       "nss db path": "/var/lib/ceph/nss"
     }
   notify: restart radosgw
