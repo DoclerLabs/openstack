@@ -45,7 +45,7 @@ metadata_listen = {{ ip.mgmt }}
 
 # Network
 my_ip = {{ ip.mgmt }}
-network_api_class = nova.network.neutronv2.api.API
+neutron = True
 security_group_api = neutron
 {% if neutron_mtu > 0 %}
 network_device_mtu = {{ neutron_mtu }}
