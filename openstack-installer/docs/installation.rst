@@ -34,6 +34,9 @@ It does not install the base OS, also doesn't configure the hardware (network in
 
   - inventory/inventory.yml contains the inventory. It is possible to enable/disable components, define the hosts used for deployment, and to define host variables.
 
+.. note:: If you update the installer (e.g. git pull or fetch-rebase), it is possible that new componets are added to it. You have to manually add them
+          to your inventory, too (at least an empty group without any hosts).
+
 - Generate the secrets
 
   - Edit group_vars/all/secrets.yml, if you want pre-defined passwords for some items, add it to the file.
@@ -42,6 +45,9 @@ It does not install the base OS, also doesn't configure the hardware (network in
 ::
 
   $ scripts/generate_secrets.py
+
+.. note:: It is a good practice to run scripts/generate_secrets.py after updating the installer (e.g. after git pull or fetch-rebase),
+          because it'll add newly added secrets from the template to secrets.yml.
 
 - Edit group_vars/all/config.yml to further refine the OpenStack configuration.
 - If you plan to use ceph:
