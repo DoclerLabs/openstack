@@ -27,6 +27,22 @@
       run_once: True
       become: False
 
+# Upgrade keystone all at once, since it is not supporting rolling upgrades yet
+- hosts: keystone
+  max_fail_percentage: 0
+  tasks:
+    - name: upgrade keystone
+      apt: name={{ item }} state=latest
+      with_items:
+        - keystone
+        - python-keystoneclient
+      become: True
+
+    - name: run keystone playbook
+      local_action: command ansible-playbook os_keystone.yml
+      become: False
+      run_once: True
+
 - hosts: barbican
   become: True
   max_fail_percentage: 0
@@ -35,7 +51,6 @@
       copy: content='' dest=/etc/apache2/conf-available/barbican-api.conf owner=root group=root mode=0644
 
 - hosts:
-    - keystone[0]
     - swift_proxy[0]
     - glance[0]
     - horizon[0]
@@ -88,7 +103,6 @@
         local_action: command ansible-playbook {{ item.playbook }} -l "{{ inventory_hostname }}"
         when: inventory_hostname in item.group
         with_items:
-          - { playbook: "os_keystone.yml", group: "{{ groups['keystone'] }}" }
           - { playbook: "os_glance.yml", group: "{{ groups['glance'] }}" }
           - { playbook: "os_neutron.yml", group: "{{ groups['neutron_controller'] }}" }
           - { playbook: "os_nova.yml", group: "{{ groups['nova_controller'] }}" }
@@ -113,7 +127,6 @@
           with_items: "{{ groups['haproxy'] }}"
 
 - hosts:
-    - keystone[1:]
     - swift_proxy[1:]
     - glance[1:]
     - horizon[1:]
@@ -165,7 +178,6 @@
         local_action: command ansible-playbook {{ item.playbook }} -l "{{ inventory_hostname }}"
         when: inventory_hostname in item.group
         with_items:
-          - { playbook: "os_keystone.yml", group: "{{ groups['keystone'] }}" }
           - { playbook: "os_glance.yml", group: "{{ groups['glance'] }}" }
           - { playbook: "os_neutron.yml", group: "{{ groups['neutron_controller'] }}" }
           - { playbook: "os_nova.yml", group: "{{ groups['nova_controller'] }}" }
