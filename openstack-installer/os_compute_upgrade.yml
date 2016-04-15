@@ -24,11 +24,6 @@
   max_fail_percentage: 0
   serial: 5
   tasks:
-
-    - name: run nova db sync as workaround for launchpad bug No. 1498344
-      command: /usr/bin/nova-manage db sync
-      when: inventory_hostname in groups['nova_compute'] and inventory_hostname not in groups['nova_controller']
-
     - name: upgrade packages
       apt: upgrade=yes
 
