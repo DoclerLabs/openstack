@@ -149,7 +149,8 @@
   when: inventory_hostname in groups['nova_compute']
 
 - name: create ssh key for nova-compute
-  local_action: command ssh-keygen -f workdir/nova_id_rsa -b 2048 -P "" creates=workdir/nova_id_rsa.pub
+  local_action: command ssh-keygen -f "{{ playbook_dir }}/workdir/nova_id_rsa" -b 2048 -P ""
+                creates="{{ playbook_dir }}/workdir/nova_id_rsa.pub"
   run_once: True
   become: False
 
