@@ -1,0 +1,77 @@
+vip_mgmt: 10.10.0.254
+vip_mgmt_cidr: 24
+vip_mgmt_nic: eth1
+
+vip_public: 10.10.1.254
+vip_public_cidr: 24
+vip_public_nic: eth2
+
+#Openstack services log to syslog
+syslog_use: False
+#Send logs to mongodb
+syslog_use_mongodb: False
+
+#Keystone addresses should be domain names in case of SSL (when keystone_ssl: True)
+keystone_internal_address: "{{ vip_mgmt }}"
+keystone_admin_address: "{{ vip_mgmt }}"
+keystone_public_address: "{{ vip_public }}"
+
+keystone_region_name: RegionONE
+keystone_domain_name: Default
+
+#OpenStack service  addresses should be domain names in case of SSL (when os_ssl: True)
+os_internal_address: "{{ vip_mgmt }}"
+os_admin_address: "{{ vip_mgmt }}"
+os_public_address: "{{ vip_public }}"
+
+#Cert and key file for (optionally, but strongly recommended) enabling TLS
+#SSLCertificateFileSource:
+#SSLCertificateKeyFileSource:
+#SSLCACertificateFileSource:
+#Don't check certificates if set to True:
+#ssl_insecure: False
+#Use TLS for keystone, too (without this, only Horizon will secured)
+#keystone_ssl: False
+#Use TLS for all OS services
+#os_ssl: False
+
+neutron_flat_networks: flat
+neutron_physical_interface_mappings: flat:eth3
+neutron_vlan_ranges:
+neutron_ha_network_type: vlan
+neutron_ha_network_physical_name: vlan
+neutron_ha_routers: False
+
+external_net_name: ext-net
+external_net_type: flat
+external_physical_network: flat
+external_subnet_cidr: 10.10.2.0/24
+external_subnet_gateway_ip: 10.10.2.1
+external_subnet_allocation_start: 10.10.2.100
+external_subnet_allocation_end: 10.10.2.200
+
+#ceph or lvm
+cinder_backend: ceph
+cinder_ceph_pool: volumes
+cinder_ceph_user: cinder
+cinder_backup_ceph_pool: backups
+cinder_backup_ceph_user: cinder-backup
+cinder_volume_secret_uuid: d048aa33-c46c-4573-a0c9-dd014d56e2b4
+
+#ceph, swift or files
+glance_backend: ceph
+glance_ceph_pool: images
+glance_ceph_user: glance
+
+#ceph or local
+nova_ephemeral_backend: ceph
+nova_ephemeral_ceph_pool: vms
+
+#horizon_regions:
+#  - { name: "RegionONE", url: "http://10.97.36.127:5000/v3" }
+#  - { name: "RegionTWO", url: "http://10.97.36.127:5000/v3" }
+
+ceph_public_network: 10.10.0.0/24
+ceph_osd_pool_default_size: 1
+ceph_osd_pool_default_pg_num: 32
+ceph_osd_pool_default_pgp_num: 32

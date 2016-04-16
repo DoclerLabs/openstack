@@ -13,3 +13,19 @@ The design behind this installer is to remain simple, use Ansible's features, bu
 Current OpenStack versions supported:
 - liberty - trusty/liberty branch
 - mitaka  - master branch
+
+Installing an all-in-one (Ceph, controller, compute) VM with Vagrant:
+
+- Install vagrant
+- Clone the repo
+- Setup aio
+
+```
+    $ cd openstack/openstack-installer
+    $ scripts/restorecfg.sh aio
+    $ scripts/generate_secrets.py
+    $ cd vagrant
+    $ vagrant up
+```
+
+- Check out Horizon in a browser: http://10.10.1.254, use Default/admin/admIn credentials

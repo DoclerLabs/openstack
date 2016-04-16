@@ -1,0 +1,25 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "ubuntu/trusty64"
+  config.vm.hostname = "openstack-aio"
+
+  # Networking
+  config.vm.network :private_network, ip: "10.10.0.11"  # management
+  config.vm.network :private_network, ip: "10.10.1.11"  # external
+  config.vm.network :private_network, ip: "10.10.2.11", # Neutron flat network
+                     auto_config: false
+
+  config.vm.provider :virtualbox do |vb|
+    vb.cpus = 4
+    vb.memory = "10240"
+  end
+
+  config.vm.provision :ansible do |ansible|
+    ansible.inventory_path = "../inventory/inventory.py"
+    ansible.limit = "all"
+    ansible.playbook = "../aio-deploy.yml"
+    #ansible.verbose = "vvvv"
+  end
+end

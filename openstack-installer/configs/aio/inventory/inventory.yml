@@ -1,0 +1,127 @@
+# ------- Controller(s) -------
+controller:
+  openstack-aio:
+    ip:
+      mgmt: 10.10.0.11
+      vxlan: 10.10.0.11
+    osd:
+      - { path: "/var/lib/osd1" }
+    nova_virt_type: qemu
+
+# -------- Compute --------
+compute:
+  inherit: controller
+
+# -------- Ceph ---------
+ceph_monitor:
+  inherit: controller
+
+ceph_osd:
+  inherit: controller
+
+#The radosgw keystone authentication uses the certificates for signature checking,
+#which are local to the keystone instance
+ceph_radosgw:
+  inherit: keystone
+
+# ------- Nagios -------
+# Used for the openstack-monitoring project
+nagios:
+  inherit: local
+
+# --- Define localhost ---
+local:
+  localhost:
+    ip:
+      mgmt: 127.0.0.1
+    ansible_connection: local
+
+# -------- infrastructure --------
+pacemaker:
+  inherit: controller
+
+haproxy:
+  inherit: pacemaker
+
+memcached:
+  inherit: controller
+
+rabbitmq:
+  inherit: controller
+
+galera:
+  inherit: pacemaker
+
+mongodb:
+  inherit: controller
+
+syslog:
+  inherit:
+    - compute
+    - controller
+
+# -------- OpenStack ---------
+keystone:
+  inherit: controller
+
+swift_proxy:
+#  inherit: controller
+
+swift_storage:
+#  inherit: controller
+
+glance:
+  inherit: controller
+
+horizon:
+  inherit: controller
+
+nova_controller:
+  inherit: controller
+
+nova_compute:
+  inherit: compute
+
+neutron_controller:
+  inherit: controller
+
+neutron_compute:
+  inherit: compute
+
+ceilometer_controller:
+  inherit: controller
+
+ceilometer_compute:
+  inherit: compute
+
+heat:
+  inherit: controller
+
+cinder:
+  inherit: controller
+
+cinder_volume:
+  inherit: controller
+
+murano:
+  inherit: controller
+
+sahara:
+  inherit: controller
+
+trove:
+
+barbican:
+  inherit: controller
+
+ironic:
+
+mistral:
+  inherit: controller
+
+manila:
+  inherit: controller
+
+# -------- Tempest ------
+tempest:
+  inherit: local

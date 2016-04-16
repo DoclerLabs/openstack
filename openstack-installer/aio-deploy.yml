@@ -1,0 +1,14 @@
+- include: ceph.yml
+
+- hosts: ceph_monitor
+  become: True
+  tasks:
+    - name: create pools
+      command: ceph osd pool create {{ item }} 32
+      with_items:
+        - images
+        - volumes
+        - backups
+        - vms
+
+- include: main.yml
