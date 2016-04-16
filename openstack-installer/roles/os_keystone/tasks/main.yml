@@ -87,7 +87,8 @@
 ### Fernet key handling
 
 - name: create ssh key for keystone
-  local_action: command ssh-keygen -f workdir/keystone_id_rsa -b 2048 -P "" creates=workdir/keystone_id_rsa.pub
+  local_action: command ssh-keygen -f "{{ playbook_dir }}/workdir/keystone_id_rsa" -b 2048 -P ""
+                creates="{{ playbook_dir }}/workdir/keystone_id_rsa.pub"
   run_once: True
   become: False
   when: keystone_token_provider == 'fernet'
