@@ -4,3 +4,13 @@ ceph_osd_pool_default_min_size: 0
 ceph_osd_pool_default_pg_num: 64
 ceph_osd_pool_default_pgp_num: 64
 ceph_osd_crush_chooseleaf_type: 1
+
+#Change these in your config.yml to fine tune these Ceph settings:
+ceph_mon_osd_full_ratio: .95                  # what % full makes an OSD "full"
+ceph_mon_osd_nearfull_ratio: .70              # what % full makes an OSD near full
+ceph_mon_pg_warn_max_object_skew: 10.0        # max skew few average in objects per pg
+ceph_mon_osd_down_out_interval: 300           # seconds
+ceph_mon_osd_downout_subtree_limit: rack      # smallest crush unit/type that we will not automatically mark out
+ceph_mon_osd_min_down_reporters: 2            # number of OSDs from different subtrees who need to report a down OSD for it to count
+ceph_mon_pg_warn_max_per_osd: 300             # max # pgs per (in) osd before we warn the admin
+ceph_mon_osd_max_split_count: 32              # largest number of PGs per "involved" OSD to let split create
