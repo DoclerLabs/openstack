@@ -4,3 +4,18 @@ ceph_filestore_xattr_use_omap: true
 ceph_osd_pool_default_size: 3
 ceph_osd_pool_default_min_size: 0
 ceph_osd_crush_chooseleaf_type: 1
+
+ceph_osd_max_attr_size: 0
+ceph_osd_heartbeat_grace: 10                  # (seconds) how long before we decide a peer has failed
+ceph_osd_heartbeat_interval: 6                # (seconds) how often we ping peers
+ceph_osd_mon_heartbeat_interval: 30           # (seconds) how often to ping monitor if no peers
+ceph_osd_mon_report_interval_max: 600
+ceph_osd_mon_report_interval_min: 5
+ceph_osd_mon_ack_timeout: 30                  # time out a mon if it doesn't ack stats
+ceph_osd_op_threads: 2                        # 0 == no threading
+ceph_osd_client_op_priority: 63
+ceph_osd_recovery_op_priority: 3
+ceph_osd_scrub_load_threshold: 0.5
+ceph_osd_recovery_max_active: 3
+ceph_osd_max_backfills: 1
+ceph_osd_recovery_max_single_start: 1

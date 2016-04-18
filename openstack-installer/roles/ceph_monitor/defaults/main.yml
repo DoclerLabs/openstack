@@ -4,6 +4,8 @@ ceph_osd_pool_default_min_size: 0
 ceph_osd_pool_default_pg_num: 64
 ceph_osd_pool_default_pgp_num: 64
 ceph_osd_crush_chooseleaf_type: 1
+ceph_osd_heartbeat_grace: 10                  # (seconds) how long before we decide a peer has failed
+ceph_osd_max_attr_size: 0
 
 #Change these in your config.yml to fine tune these Ceph settings:
 ceph_mon_osd_full_ratio: .95                  # what % full makes an OSD "full"

@@ -42,6 +42,8 @@
       "osd pool default pg num": "{{ ceph_osd_pool_default_pg_num }}",
       "osd pool default pgp num": "{{ ceph_osd_pool_default_pgp_num }}",
       "osd crush chooseleaf type": "{{ ceph_osd_crush_chooseleaf_type }}",
+      "osd max attr size": "{{ ceph_osd_max_attr_size }}",
+      "osd heartbeat grace": "{{ ceph_osd_heartbeat_grace }}",
       "mon osd full ratio" : "{{ ceph_mon_osd_full_ratio }}",
       "mon osd nearfull ratio" : "{{ ceph_mon_osd_nearfull_ratio }}",
       "mon pg warn max object skew" : "{{ ceph_mon_pg_warn_max_object_skew }}",
