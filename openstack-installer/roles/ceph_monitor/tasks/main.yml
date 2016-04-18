@@ -41,7 +41,15 @@
       "osd pool default min size": "{{ ceph_osd_pool_default_min_size }}",
       "osd pool default pg num": "{{ ceph_osd_pool_default_pg_num }}",
       "osd pool default pgp num": "{{ ceph_osd_pool_default_pgp_num }}",
-      "osd crush chooseleaf type": "{{ ceph_osd_crush_chooseleaf_type }}"
+      "osd crush chooseleaf type": "{{ ceph_osd_crush_chooseleaf_type }}",
+      "mon osd full ratio" : "{{ ceph_mon_osd_full_ratio }}",
+      "mon osd nearfull ratio" : "{{ ceph_mon_osd_nearfull_ratio }}",
+      "mon pg warn max object skew" : "{{ ceph_mon_pg_warn_max_object_skew }}",
+      "mon osd down out interval" : "{{ ceph_mon_osd_down_out_interval }}",
+      "mon osd downout subtree limit" : "{{ ceph_mon_osd_downout_subtree_limit }}",
+      "mon osd min down reporters" : "{{ ceph_mon_osd_min_down_reporters }}",
+      "mon pg warn max per osd" : "{{ ceph_mon_pg_warn_max_per_osd }}",
+      "mon osd max split count" : "{{ ceph_mon_osd_max_split_count }}"
    }
 
 - name: set up ceph public network
