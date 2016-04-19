@@ -71,6 +71,10 @@
   changed_when: '"migrate.versioning.api" in db_sync.stderr'
   run_once: True
 
+- name: bootstrap keystone
+  command: su keystone -s /bin/sh -c "/usr/bin/keystone-manage bootstrap --bootstrap-password {{ keystone_admin_password }}"
+  run_once: True
+
 - name: create /var/www/cgi-bin/keystone
   file: path=/var/www/cgi-bin/keystone state=directory owner=root group=root mode=0755
   notify: signal apache to reload
