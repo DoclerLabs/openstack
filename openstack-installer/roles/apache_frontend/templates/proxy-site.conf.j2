@@ -34,7 +34,7 @@ Listen {{ ip.mgmt }}:{{ service.port }}
 {% endif %}
 
 {% if service.wsgi_process is defined %}
-    WSGIDaemonProcess       {{ service.wsgi_process }} processes={{ service.wsgi_process_count | default(ansible_processor_vcpus) }} threads=1 user={{ service.wsgi_user }} display-name=%{GROUP}
+    WSGIDaemonProcess       {{ service.wsgi_process }} processes={{ service.wsgi_process_count | default((ansible_processor_vcpus + 1) // 2) }} threads=1 user={{ service.wsgi_user }} display-name=%{GROUP}
     WSGIProcessGroup        {{ service.wsgi_process }}
     WSGIScriptAlias /       {{ service.wsgi_script }}
     WSGIApplicationGroup    %{GLOBAL}
