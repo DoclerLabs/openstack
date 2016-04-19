@@ -1,9 +1,9 @@
 [DEFAULT]
 
 debug = {{ cinder_debug }}
-verbose = True
 use_stderr = False
 use_syslog = {{ cinder_syslog_use }}
+log_dir = /var/log/cinder
 
 my_ip = {{ ip.mgmt }}
 osapi_volume_listen = 127.0.0.1

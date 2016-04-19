@@ -45,7 +45,7 @@
       apache_service_name: cinder
       apache_service_ssl: "{{ os_ssl | default(False) }}"
       apache_services:
-        - { port: 8776 }
+        - { port: 8776, wsgi_process: "cinder-api", wsgi_user: "cinder", wsgi_script: "/var/www/cgi-bin/cinder/cinder-api" }
 
 - hosts: cinder_volume
   become: True

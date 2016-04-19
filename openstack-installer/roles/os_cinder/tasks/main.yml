@@ -56,6 +56,10 @@
     - python-cinderclient
   when: inventory_hostname in groups['cinder_volume']
 
+- name: ensure cinder-api service is disabled at boot
+  service: name=cinder-api state=stopped enabled=no
+  when: inventory_hostname in groups['cinder']
+
 - name: create cinder database
   mysql_db: name={{ cinder_db }}
     login_host={{ cinder_mysql_server }} login_user=root login_password={{ mysql_root_password }}
@@ -76,7 +80,8 @@
   with_items:
     - cinder
   notify:
-    - restart cinder
+    - signal apache to reload
+    - restart cinder-scheduler
     - restart cinder-volume
 
 - name: sync cinder db
@@ -85,13 +90,20 @@
   changed_when: '"migrate.versioning.api" in db_sync.stderr'
   run_once: True
 
+- name: create /var/www/cgi-bin/cinder
+  file: path=/var/www/cgi-bin/cinder state=directory owner=root group=root mode=0755
+  when: inventory_hostname in groups['cinder']
+  notify: signal apache to reload
+
+- name: install keystone-wsgi server
+  copy: src=cinder-wsgi dest=/var/www/cgi-bin/cinder/cinder-api owner=root group=root mode=0644
+  when: inventory_hostname in groups['cinder']
+  notify: signal apache to reload
+
 - meta: flush_handlers
 
-- name: ensure cinder is started
-  service: name={{ item }} state=started enabled=yes
-  with_items:
-    - cinder-api
-    - cinder-scheduler
+- name: ensure cinder-scheduler is started
+  service: name=cinder-scheduler state=started enabled=yes
   when: inventory_hostname in groups['cinder']
 
 - name: ensure cinder-volume is started

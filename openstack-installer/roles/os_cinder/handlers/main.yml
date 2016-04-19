@@ -1,10 +1,10 @@
 ---
 
-- name: restart cinder
-  service: name={{ item }} state=restarted
-  with_items:
-    - cinder-api
-    - cinder-scheduler
+- name: signal apache to reload
+  file: dest=/run/apache2.reload state=touch
+
+- name: restart cinder-scheduler
+  service: name=cinder-scheduler state=restarted
   when: inventory_hostname in groups['cinder']
 
 - name: restart cinder-volume
