@@ -1,9 +1,12 @@
 ---
 
+- name: signal apache to reload
+  file: dest=/run/apache2.reload state=touch
+  when: inventory_hostname in groups['nova_controller']
+
 - name: restart nova controller services
   service: name={{ item }} state=restarted
   with_items:
-    - nova-api
     - nova-scheduler
     - nova-conductor
     - nova-consoleauth

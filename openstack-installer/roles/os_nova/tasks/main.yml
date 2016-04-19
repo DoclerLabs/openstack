@@ -70,6 +70,10 @@
     - nova-compute
   when: inventory_hostname in groups['nova_compute']
 
+- name: ensure nova-api service is disabled at boot
+  service: name=nova-api state=stopped enabled=no
+  when: inventory_hostname in groups['nova_controller']
+
 - name: create nova databases
   mysql_db: name={{ item }}
     login_host={{ nova_mysql_server }} login_user=root login_password={{ mysql_root_password }}
@@ -110,6 +114,7 @@
 - name: install nova configs
   template: src=nova.conf.j2 dest=/etc/nova/nova.conf owner=nova group=root mode=0460
   notify:
+    - signal apache to reload
     - restart nova controller services
     - restart nova compute services
 
@@ -128,12 +133,24 @@
     - db
   when: inventory_hostname == groups['nova_controller'][0]
 
+- name: create /var/www/cgi-bin/nova
+  file: path=/var/www/cgi-bin/nova state=directory owner=root group=root mode=0755
+  when: inventory_hostname in groups['nova_controller']
+  notify: signal apache to reload
+
+- name: link nova wsgi servers
+  file: src=/usr/lib/python2.7/dist-packages/nova/wsgi/{{ item }}.py dest=/var/www/cgi-bin/nova/{{ item }} state=link
+  with_items:
+    - nova-api
+    - nova-metadata
+  when: inventory_hostname in groups['nova_controller']
+  notify: signal apache to reload
+
 - meta: flush_handlers
 
 - name: ensure nova controller servies are started
   service: name={{ item }} state=started enabled=yes
   with_items:
-    - nova-api
     - nova-scheduler
     - nova-conductor
     - nova-consoleauth

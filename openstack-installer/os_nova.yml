@@ -36,7 +36,8 @@
       apache_service_name: nova
       apache_service_ssl: "{{ os_ssl | default(False) }}"
       apache_services:
-        - { port: 8774 }
+        - { port: 8774, wsgi_process: "nova-api", wsgi_user: "nova", wsgi_script: "/var/www/cgi-bin/nova/nova-api" }
+        - { port: 8775, wsgi_process: "nova-metadata", wsgi_user: "nova", wsgi_script: "/var/www/cgi-bin/nova/nova-metadata" }
 
 - hosts: nova_compute
   become: True
