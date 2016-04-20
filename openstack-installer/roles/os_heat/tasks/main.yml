@@ -63,7 +63,10 @@
 
 - name: create heat domain admin
   keystone_user: >
-    token="{{ keystone_admin_token }}"
+    login_user=admin
+    login_domain_name="Default"
+    login_project_name="admin"
+    login_password="{{ keystone_admin_password }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
@@ -74,7 +77,10 @@
 
 - name: add the admin role to the heat domain admin
   keystone_user: >
-    token="{{ keystone_admin_token }}"
+    login_user=admin
+    login_domain_name="Default"
+    login_project_name="admin"
+    login_password="{{ keystone_admin_password }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
@@ -85,7 +91,10 @@
 
 - name: create roles for heat
   keystone_user: >
-    token="{{ keystone_admin_token }}"
+    login_user=admin
+    login_domain_name="Default"
+    login_project_name="admin"
+    login_password="{{ keystone_admin_password }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}

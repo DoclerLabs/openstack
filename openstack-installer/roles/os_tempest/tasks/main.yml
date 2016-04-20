@@ -60,7 +60,10 @@
 
 - name: ensure the heat stack owner project exists in keystone
   keystone_user: >
-    token="{{ keystone_admin_token }}"
+    login_project_name=admin
+    login_user=admin
+    login_domain_name="Default"
+    login_password="{{ keystone_admin_password }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     cacert={{ tempest_CAFile }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
@@ -71,7 +74,10 @@
 
 - name: ensure the heat stack owner user exists in keystone
   keystone_user: >
-    token="{{ keystone_admin_token }}"
+    login_project_name=admin
+    login_user=admin
+    login_domain_name="Default"
+    login_password="{{ keystone_admin_password }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     cacert={{ tempest_CAFile }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
@@ -84,7 +90,10 @@
 
 - name: ensure the heat stack owner user has the correct role
   keystone_user: >
-    token="{{ keystone_admin_token }}"
+    login_project_name=admin
+    login_user=admin
+    login_domain_name="Default"
+    login_password="{{ keystone_admin_password }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     cacert={{ tempest_CAFile }}
     insecure={{ ssl_insecure | ternary("true", "false") }}

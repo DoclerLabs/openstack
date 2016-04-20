@@ -87,7 +87,10 @@
 
 - name: determine nova project id
   keystone_user:
-    token="{{ keystone_admin_token }}"
+    login_project_name=admin
+    login_user=admin
+    login_domain_name="Default"
+    login_password="{{ keystone_admin_password }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     project_domain="{{ nova_project_domain_name }}"
     project="{{ nova_project_name }}"
