@@ -29,8 +29,8 @@
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
 
-- name: disable autostarting of nova controller services
-  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+- name: mask autostarting of nova controller services
+  service_mask: name={{ item }} state=masked
   with_items:
     - nova-api
     - nova-scheduler
@@ -41,8 +41,8 @@
     - nova-cert
   when: inventory_hostname in groups['nova_controller']
 
-- name: disable autostarting of nova compute services
-  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+- name: mask autostarting of nova compute services
+  service_mask: name={{ item }} state=masked
   with_items:
     - nova-compute
   when: inventory_hostname in groups['nova_compute']
@@ -145,6 +145,23 @@
     - nova-metadata
   when: inventory_hostname in groups['nova_controller']
   notify: signal apache to reload
+
+- name: unmask autostarting of nova controller services
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - nova-scheduler
+    - nova-conductor
+    - nova-consoleauth
+    - nova-spiceproxy
+    - nova-novncproxy
+    - nova-cert
+  when: inventory_hostname in groups['nova_controller']
+
+- name: unmask autostarting of nova compute services
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - nova-compute
+  when: inventory_hostname in groups['nova_compute']
 
 - meta: flush_handlers
 

@@ -29,8 +29,8 @@
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
 
-- name: disable autostart of trove services
-  copy: content='manual' dest=/etc/init/{{ item }}.override mode=0644 owner=root group=root force=no
+- name: mask autostarting of trove services
+  service_mask: name={{ item }} state=masked
   with_items:
     - trove-api
     - trove-conductor
@@ -135,6 +135,13 @@
 - name: enable foreign key checks
   shell: echo "SET GLOBAL foreign_key_checks=1" | mysql -h {{ trove_mysql_server }} -u root -p{{ mysql_root_password }} -s trove
   run_once: True
+
+- name: unmask autostarting of trove services
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - trove-api
+    - trove-conductor
+    - trove-taskmanager
 
 - meta: flush_handlers
 

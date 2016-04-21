@@ -29,13 +29,19 @@
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
 
-- name: disable autostarting of cinder
-  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+- name: mask autostarting of cinder services
+  service_mask: name={{ item }} state=masked
   with_items:
     - cinder-api
     - cinder-scheduler
+  when: inventory_hostname in groups['cinder']
+
+- name: mask autostarting of cinder volume
+  service_mask: name={{ item }} state=masked
+  with_items:
     - cinder-volume
     - cinder-backup
+  when: inventory_hostname in groups['cinder_volume']
 
 - name: install cinder
   apt: name={{ item }}
@@ -99,6 +105,19 @@
   copy: src=cinder-wsgi dest=/var/www/cgi-bin/cinder/cinder-api owner=root group=root mode=0644
   when: inventory_hostname in groups['cinder']
   notify: signal apache to reload
+
+- name: unmask autostarting of cinder services
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - cinder-scheduler
+  when: inventory_hostname in groups['cinder']
+
+- name: unmask autostarting of cinder volume
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - cinder-volume
+    - cinder-backup
+  when: inventory_hostname in groups['cinder_volume']
 
 - meta: flush_handlers
 

@@ -29,8 +29,8 @@
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
 
-- name: disable autostarting of neutron controller services
-  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+- name: unmask autostarting of neutron controller services
+  service_mask: name={{ item }} state=masked
   with_items:
     - neutron-server
     - neutron-{{ neutron_physical_interface_driver }}-agent
@@ -41,8 +41,8 @@
     - neutron-lbaas-agent
   when: inventory_hostname in groups['neutron_controller']
 
-- name: disable autostarting of neutron agent on computes
-  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+- name: unmask autostarting of neutron agent on computes
+  service_mask: name={{ item }} state=masked
   with_items:
     - neutron-{{ neutron_physical_interface_driver }}-agent
   when: inventory_hostname in groups['neutron_compute']
@@ -168,6 +168,24 @@
   register: db_sync
   changed_when: '"migrate.versioning.api" in db_sync.stderr'
   when: inventory_hostname == groups['neutron_controller'][0]
+
+- name: unmask autostarting of neutron controller services
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - neutron-server
+    - neutron-{{ neutron_physical_interface_driver }}-agent
+    - neutron-vpn-agent
+    - neutron-l3-agent
+    - neutron-dhcp-agent
+    - neutron-metadata-agent
+    - neutron-lbaas-agent
+  when: inventory_hostname in groups['neutron_controller']
+
+- name: unmask autostarting of neutron agent on computes
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - neutron-{{ neutron_physical_interface_driver }}-agent
+  when: inventory_hostname in groups['neutron_compute']
 
 - meta: flush_handlers
 

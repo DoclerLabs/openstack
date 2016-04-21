@@ -29,8 +29,8 @@
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
 
-- name: disable autostarting of manila
-  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+- name: mask autostarting of manila
+  service_mask: name={{ item }} state=masked
   with_items:
     - manila-api
     - manila-scheduler
@@ -72,6 +72,12 @@
   register: db_sync
   changed_when: '"Running upgrade" in db_sync.stderr'
   run_once: True
+
+- name: unmask autostarting of manila
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - manila-api
+    - manila-scheduler
 
 - meta: flush_handlers
 

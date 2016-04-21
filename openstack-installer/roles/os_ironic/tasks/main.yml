@@ -29,8 +29,8 @@
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
 
-- name: disable autostart of ironic services
-  copy: content='manual' dest=/etc/init/{{ item }}.override mode=0644 owner=root group=root force=no
+- name: mask autostarting of ironic services
+  service_mask: name={{ item }} state=masked
   with_items:
     - ironic-api
     - ironic-conductor
@@ -105,6 +105,12 @@
     line='TFTP_OPTIONS="--secure  --map-file /var/lib/tftpboot/map-file"'
     owner=root group=root mode=0644
   notify: restart tftp
+
+- name: unmask autostarting of ironic services
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - ironic-api
+    - ironic-conductor
 
 - meta: flush_handlers
 

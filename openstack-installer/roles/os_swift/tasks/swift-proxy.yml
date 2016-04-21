@@ -27,8 +27,8 @@
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 
-- name: disable autostarting of swift-proxy
-  copy: content='manual' dest=/etc/init/swift-proxy.override owner=root group=root mode=0644 force=no
+- name: mask autostarting of swift-proxy
+  service_mask: name=swift-proxy state=masked
   when: inventory_hostname in groups['swift_proxy']
 
 - name: install swift-proxy
@@ -48,6 +48,10 @@
 - name: install swift.conf
   template: src=swift.conf.j2 dest=/etc/swift/swift.conf owner=root group=swift mode=0640
   notify: restart swift-proxy
+
+- name: unmask autostarting of swift-proxy
+  service_mask: name=swift-proxy state=unmasked
+  when: inventory_hostname in groups['swift_proxy']
 
 - meta: flush_handlers
 

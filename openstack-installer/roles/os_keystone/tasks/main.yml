@@ -25,8 +25,8 @@
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 
-- name: disable autostarting of keystone
-  copy: content='manual' dest=/etc/init/keystone.override owner=root group=root mode=0644
+- name: mask autostarting of keystone
+  service_mask: name=keystone state=masked
 
 - name: install keystone
   apt: name={{ item }}

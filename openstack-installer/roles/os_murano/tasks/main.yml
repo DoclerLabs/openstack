@@ -29,8 +29,8 @@
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
 
-- name: disable autostarting of murano
-  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+- name: mask autostarting of murano
+  service_mask: name={{ item }} state=masked
   with_items:
     - murano-api
     - murano-cfapi
@@ -74,6 +74,13 @@
 - name: sync murano db
   command: su murano -s /bin/sh -c 'murano-db-manage --config-file /etc/murano/murano.conf upgrade'
   run_once: True
+
+- name: unmask autostarting of murano
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - murano-api
+    - murano-cfapi
+    - murano-engine
 
 - meta: flush_handlers
 

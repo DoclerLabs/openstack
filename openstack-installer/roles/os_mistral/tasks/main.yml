@@ -29,8 +29,8 @@
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
 
-- name: disable autostarting of mistral
-  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+- name: mask autostarting of mistral
+  service_mask: name={{ item }} state=masked
   with_items:
     - mistral-api
     - mistral-engine
@@ -72,6 +72,13 @@
 - name: sync mistral db
   command: su mistral -s /bin/sh -c 'mistral-db-manage --config-file /etc/mistral/mistral.conf upgrade head'
   run_once: True
+
+- name: unmask autostarting of mistral
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - mistral-api
+    - mistral-engine
+    - mistral-executor
 
 - meta: flush_handlers
 

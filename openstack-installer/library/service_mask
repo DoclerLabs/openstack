@@ -1,0 +1,155 @@
+#!/usr/bin/python
+
+# (c) 2016, Gyorgy Szombathelyi <gyorgy.szombathelyi@doclerholding.com>
+#
+# This file is part of Doclerlabs/openstack-installer
+#
+# Openstack-installer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Openstack-installer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+# You should have received a copy of the GNU General Public License
+# along with Openstack-installer.  If not, see <http://www.gnu.org/licenses/>.
+
+import os
+from ansible.module_utils.basic import *
+
+DOCUMENTATION = '''
+---
+module: service_mask
+version_added: historical
+short_description: Mask and unmask service start
+description:
+  Mask (disable starting) or unmask (enable starting) of a service.
+  Think about masking and unmasking like a 3rd level service
+  enabling and disabling method.
+options:
+  state:
+    description:
+      The requested action. Allowed actions:
+          - mask
+          - unmask
+    required: true
+  name:
+    description:
+      The name of the service
+    required: true
+
+author: Gyorgy Szombathelyi
+'''
+
+
+SYSTEMD_SERVICE_DIR = '/lib/systemd/system/'
+SYSTEMD_MASK_DIR = '/etc/systemd/system/'
+UPSTART_DIR = '/etc/init/'
+
+
+class SystemdMask:
+
+    def _daemon_reload(self, module):
+        rc, out, err = module.run_command(["/bin/systemctl", "daemon-reload"])
+
+    def mask(self, module, service):
+
+        if os.path.exists(SYSTEMD_SERVICE_DIR + service + '.service'):
+            module.exit_json(changed=False)
+        else:
+            if os.path.exists(SYSTEMD_MASK_DIR + service + '.service'):
+                module.exit_json(changed=False)
+            else:
+                try:
+                    os.symlink('/dev/null',
+                               SYSTEMD_MASK_DIR + service + '.service')
+                except Exception, e:
+                    module.fail_json(msg='%s' % str(e))
+                module.exit_json(changed=True)
+
+    def unmask(self, module, service):
+
+        if os.path.exists(SYSTEMD_MASK_DIR + service + '.service'):
+            try:
+                os.unlink(SYSTEMD_MASK_DIR + service + '.service')
+                self._daemon_reload(module)
+            except Exception, e:
+                module.fail_json(msg='%s' % str(e))
+            module.exit_json(changed=True)
+        else:
+            module.exit_json(changed=False)
+
+
+class UpstartMask:
+
+    def mask(self, module, service):
+
+        if os.path.exists(UPSTART_DIR + service + '.conf'):
+            module.exit_json(changed=False)
+        else:
+            try:
+                with open(UPSTART_DIR + service + '.override', 'r') as f:
+                    if f.readline().strip() == 'manual':
+                        module.exit_json(changed=False)
+            except IOError:
+                    pass
+            except Exception, e:
+                module.fail_json(msg='%s' % str(e))
+
+            try:
+                with open(UPSTART_DIR + service + '.override', 'w') as f:
+                    f.write('manual')
+            except Exception, e:
+                module.fail_json(msg='%s' % str(e))
+
+        module.exit_json(changed=True)
+
+    def unmask(self, module, service):
+
+        try:
+            stat = os.stat(UPSTART_DIR + service + '.override')
+            if stat.st_size == 0:
+                module.exit_json(changed=False)
+        except Exception:
+            module.exit_json(changed=False)
+
+        try:
+            with open(UPSTART_DIR + service + '.override', 'w') as f:
+                pass
+        except Exception, e:
+            module.fail_json(msg='%s' % str(e))
+
+        module.exit_json(changed=True)
+
+
+def main():
+
+    module = AnsibleModule(
+        argument_spec=dict(
+            state=dict(choices=['masked', 'unmasked'], required=True),
+            service=dict(aliases=['name'], required=True)
+        ),
+        supports_check_mode=False
+    )
+
+    params = module.params
+    state = params['state']
+    service = params['service']
+
+    if os.path.exists('/bin/systemctl'):
+        mask_manager = SystemdMask()
+    else:
+        mask_manager = UpstartMask()
+
+    if state == 'masked':
+        mask_manager.mask(module, service)
+    else:
+        mask_manager.unmask(module, service)
+
+
+if __name__ == '__main__':
+    main()

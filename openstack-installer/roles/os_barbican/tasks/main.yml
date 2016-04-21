@@ -25,8 +25,8 @@
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 
-- name: disable autostarting of barbican
-  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+- name: mask autostarting of barbican
+  service_mask: name={{ item }} state=masked
   with_items:
     - barbican-worker
 
@@ -81,6 +81,11 @@
 - name: install barbican-wsgi server
   copy: src=barbican-wsgi dest=/var/www/cgi-bin/barbican/barbican-api owner=root group=root mode=0644
   notify: signal apache to reload
+
+- name: unmask autostarting of barbican
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - barbican-worker
 
 - meta: flush_handlers
 

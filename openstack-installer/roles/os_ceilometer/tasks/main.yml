@@ -70,8 +70,8 @@
     role="ResellerAdmin"
   when: inventory_hostname == groups['ceilometer_controller'][0] and groups['swift_proxy'] | count > 0
 
-- name: disable autostarting of ceilometer
-  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+- name: mask autostarting of ceilometer controller services
+  service_mask: name={{ item }} state=masked
   with_items:
     - ceilometer-api
     - ceilometer-collector
@@ -83,8 +83,8 @@
     - aodh-listner
   when: inventory_hostname in groups['ceilometer_controller']
 
-- name: disable autostarting of ceilometer
-  copy: content='manual' dest=/etc/init/{{ item }}.override owner=root group=root mode=0644 force=no
+- name: mask autostarting of ceilometer compute services
+  service_mask: name={{ item }} state=masked
   with_items:
     - ceilometer-agent-compute
   when: inventory_hostname in groups['ceilometer_compute']
@@ -142,6 +142,25 @@
 - name: sync aodh db
   command: su aodh -s /bin/sh -c 'aodh-dbsync'
   when: inventory_hostname == groups['ceilometer_controller'][0]
+
+- name: unmask autostarting of ceilometer controller services
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - ceilometer-api
+    - ceilometer-collector
+    - ceilometer-agent-central
+    - ceilometer-agent-notification
+    - aodh-api
+    - aodh-evaluator
+    - aodh-notifier
+    - aodh-listner
+  when: inventory_hostname in groups['ceilometer_controller']
+
+- name: unmask autostarting of ceilometer compute services
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - ceilometer-agent-compute
+  when: inventory_hostname in groups['ceilometer_compute']
 
 - meta: flush_handlers
 
