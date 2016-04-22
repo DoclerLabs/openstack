@@ -141,7 +141,7 @@ def main():
         argument_spec=dict(
             state=dict(choices=['masked', 'unmasked'], required=True),
             service=dict(aliases=['name'], required=True),
-            force=dict(default='yes', type='bool')
+            force=dict(default='no', type='bool')
         ),
         supports_check_mode=False
     )
