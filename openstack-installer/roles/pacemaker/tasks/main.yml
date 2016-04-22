@@ -1,5 +1,8 @@
 ---
 
+- name: mask autostarting of corosync
+  service_mask: name=corosync state=masked
+
 - name: install pacemaker
   apt: name={{ item }}
   with_items:
@@ -37,6 +40,9 @@
   copy: src=workdir/authkey dest=/etc/corosync/authkey owner=root group=root mode=0400
   notify: restart pacemaker
   when: inventory_hostname != play_hosts[0]
+
+- name: unmask autostarting of corosync
+  service_mask: name=corosync state=unmasked
 
 - meta: flush_handlers
 
