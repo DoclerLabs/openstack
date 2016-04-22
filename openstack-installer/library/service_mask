@@ -41,6 +41,11 @@ options:
     description:
       The name of the service
     required: true
+  force:
+    description:
+      Force masking even the service already exists
+    required: false
+    default: false
 
 author: Gyorgy Szombathelyi
 '''
@@ -56,9 +61,10 @@ class SystemdMask:
     def _daemon_reload(self, module):
         rc, out, err = module.run_command(["/bin/systemctl", "daemon-reload"])
 
-    def mask(self, module, service):
+    def mask(self, module, service, force):
 
-        if os.path.exists(SYSTEMD_SERVICE_DIR + service + '.service'):
+        if os.path.exists(SYSTEMD_SERVICE_DIR + service + '.service') and \
+          not force:
             module.exit_json(changed=False)
         else:
             if os.path.exists(SYSTEMD_MASK_DIR + service + '.service'):
@@ -86,9 +92,9 @@ class SystemdMask:
 
 class UpstartMask:
 
-    def mask(self, module, service):
+    def mask(self, module, service, force):
 
-        if os.path.exists(UPSTART_DIR + service + '.conf'):
+        if os.path.exists(UPSTART_DIR + service + '.conf') and not force:
             module.exit_json(changed=False)
         else:
             try:
@@ -109,6 +115,9 @@ class UpstartMask:
         module.exit_json(changed=True)
 
     def unmask(self, module, service):
+
+        if not os.path.exists(UPSTART_DIR + service + '.conf'):
+            module.exit_json(changed=False)
 
         try:
             stat = os.stat(UPSTART_DIR + service + '.override')
@@ -131,7 +140,8 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             state=dict(choices=['masked', 'unmasked'], required=True),
-            service=dict(aliases=['name'], required=True)
+            service=dict(aliases=['name'], required=True),
+            force=dict(default='yes', type='bool')
         ),
         supports_check_mode=False
     )
@@ -139,6 +149,7 @@ def main():
     params = module.params
     state = params['state']
     service = params['service']
+    force = params['force']
 
     if os.path.exists('/bin/systemctl'):
         mask_manager = SystemdMask()
@@ -146,7 +157,7 @@ def main():
         mask_manager = UpstartMask()
 
     if state == 'masked':
-        mask_manager.mask(module, service)
+        mask_manager.mask(module, service, force)
     else:
         mask_manager.unmask(module, service)
 
