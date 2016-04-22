@@ -23,8 +23,11 @@
     {{ ssl_insecure | ternary('--insecure', '') }}
     {{ (SSLCACertificateFile != '') | ternary('--os-cacert ' + SSLCACertificateFile, '') }}
     -c id -f value
-  register: os_token_id
   changed_when: False
+  register: os_token_id
+  until: os_token_id | success
+  delay: 5
+  retries: 5
   when: os_token_id is not defined
 
 - name: set admin token
