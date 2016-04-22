@@ -80,7 +80,7 @@
     - aodh-api
     - aodh-evaluator
     - aodh-notifier
-    - aodh-listner
+    - aodh-listener
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: mask autostarting of ceilometer compute services
@@ -153,7 +153,7 @@
     - aodh-api
     - aodh-evaluator
     - aodh-notifier
-    - aodh-listner
+    - aodh-listener
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: unmask autostarting of ceilometer compute services
