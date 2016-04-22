@@ -77,27 +77,8 @@
         delegate_to: "{{ item }}"
         with_items: "{{ groups['haproxy'] }}"
 
-      - name: remove old static assets in horizon
-        file: path=/usr/share/openstack-dashboard/static/{{ item }} state=absent
-        when: inventory_hostname in groups['horizon']
-        with_items:
-          - auth
-          - bootstrap
-          - custom
-          - framework
-          - scss
-          - themes
-
       - name: upgrade packages
         apt: upgrade=yes
-
-      - name: regenerate static assets in horizon
-        command: su horizon -s /bin/sh -c 'python manage.py collectstatic --noinput' chdir=/usr/share/openstack-dashboard
-        when: inventory_hostname in groups['horizon']
-
-      - name: compress static assets in horizon
-        command: su horizon -s /bin/sh -c 'python manage.py compress --force' chdir=/usr/share/openstack-dashboard
-        when: inventory_hostname in groups['horizon']
 
       - name: run playbooks on the first hosts
         local_action: command ansible-playbook {{ item.playbook }} -l "{{ inventory_hostname }}"
