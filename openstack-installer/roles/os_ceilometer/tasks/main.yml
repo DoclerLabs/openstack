@@ -77,7 +77,7 @@
     - aodh-api
     - aodh-evaluator
     - aodh-notifier
-    - aodh-listner
+    - aodh-listener
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: disable autostarting of ceilometer
