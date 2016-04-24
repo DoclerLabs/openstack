@@ -79,6 +79,9 @@ class SystemdMask:
 
     def unmask(self, module, service):
 
+        if not os.path.exists(SYSTEMD_SERVICE_DIR + service + '.service'):
+            module.exit_json(changed=False)
+
         if os.path.exists(SYSTEMD_MASK_DIR + service + '.service'):
             try:
                 os.unlink(SYSTEMD_MASK_DIR + service + '.service')
