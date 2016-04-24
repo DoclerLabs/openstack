@@ -29,7 +29,7 @@
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
 
-- name: unmask autostarting of neutron controller services
+- name: mask autostarting of neutron controller services
   service_mask: name={{ item }} state=masked
   with_items:
     - neutron-server
