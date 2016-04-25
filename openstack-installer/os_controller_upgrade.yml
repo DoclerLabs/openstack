@@ -29,6 +29,7 @@
 
 # Upgrade keystone all at once, since it is not supporting rolling upgrades yet
 - hosts: keystone
+  become: True
   max_fail_percentage: 0
   tasks:
     - name: upgrade keystone
@@ -36,7 +37,20 @@
       with_items:
         - keystone
         - python-keystoneclient
-      become: True
+
+- hosts: memcached
+  become: True
+  max_fail_percentage: 0
+  tasks:
+    - name: restart memcached
+      service: name=memcached state=restarted
+
+- hosts: keystone
+  become: True
+  max_fail_percentage: 0
+  tasks:
+    - name: reload apache2
+      service: name=apache2 state=reloaded
 
     - name: run keystone playbook
       local_action: command ansible-playbook os_keystone.yml
