@@ -29,7 +29,6 @@ keystone_OIDCProviderJwksUri:
 
 keystone_OIDCClientID:
 keystone_OIDCClientSecret:
-keystone_OIDCCryptoPassphrase:
 
 keystone_OIDCSSLValidateServer: True
 
