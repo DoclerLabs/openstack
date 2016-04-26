@@ -399,9 +399,12 @@ The most important settings for Nova are:
   nova_ram_allocation_ratio: 1.5             # The overprovisioning ratio for RAM.
   nova_virt_type: kvm                        # Can be 'kvm' if KVM hardware acceleration is available on the compute node or 'qemu' if not.
 
-  nova_novncproxy_ssl: False                 # To use TLS for novncproxy.
+  nova_console_type: vnc                     # Use 'vnc' or 'spice' for remote console
+  nova_console_ssl: False                    # To use TLS for novncproxy/spiceproxy.
   nova_novncproxy_base_url:                  # Override this if the the default URL for the novncproxy is not presented correctly. By default it is
                                              # http(s)://{{ os_public_address }}:6080/vnc_auto.html
+  nova_spiceproxy_base_url:                  # Override this if the the default URL for the spiceproxy is not presented correctly. By default it is
+                                             # http(s)://{{ os_public_address }}:6082/spice_auto.html
 
 Neutron
 -------

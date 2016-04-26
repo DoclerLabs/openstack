@@ -78,24 +78,25 @@ instance_usage_audit = True
 instance_usage_audit_period = hour
 notify_on_state_change = vm_and_task_state
 
-#vnc
-{% if nova_novncproxy_ssl %}
+#console ssl
+{% if nova_console_ssl | bool %}
 ssl_only=True
 key={{ SSLCertificateKeyFile }}
 cert={{ SSLCertificateFile }}
 {% endif %}
 
+#vnc
 [vnc]
 {% if nova_console_type == 'vnc' %}
 enabled = True
+{% else %}
+enabled = False
+{% endif %}
 novncproxy_host = {{ ip.mgmt }}
 keymap = {{ nova_console_keymap }}
 novncproxy_base_url = {{ nova_novncproxy_base_url }}
 vncserver_listen = {{ ip.mgmt }}
 vncserver_proxyclient_address = {{ ip.mgmt }}
-{% else %}
-enabled = False
-{% endif %}
 
 # Cinder
 [cinder]
@@ -115,8 +116,7 @@ agent_enabled = False
 enabled = False
 {% endif %}
 keymap = {{ nova_console_keymap }}
-# Console Url and binds
-html5proxy_base_url = http://{{ vip_public }}:6082/spice_auto.html
+html5proxy_base_url = {{ nova_spiceproxy_base_url }}
 html5proxy_host = {{ ip.mgmt }}
 server_listen = {{ ip.mgmt }}
 server_proxyclient_address = {{ ip.mgmt }}
