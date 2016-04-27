@@ -26,8 +26,13 @@
 - name: install my.cnf
   template: src=my.cnf.j2 dest=/etc/mysql/my.cnf owner=mysql group=root mode=0460
 
+- name: check if /var/lib/percona-xtradb-cluster exists
+  stat: path=/var/lib/percona-xtradb-cluster
+  register: percona_stat
+
 - name: link /var/lib/mysql to percona-xtradb-cluster
   file: path=/var/lib/mysql src=/var/lib/percona-xtradb-cluster state=link force=no
+  when: percona_stat.stat.exists
 
 - name: ensure mysql is running if not configured yet
   service: name=mysql state=started
