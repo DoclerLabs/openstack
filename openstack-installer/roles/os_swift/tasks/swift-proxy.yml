@@ -50,7 +50,7 @@
   notify: restart swift-proxy
 
 - name: unmask autostarting of swift-proxy
-  service_mask: name=swift-proxy state=unmasked
+  service_mask: name=swift-proxy state=unmasked force=yes
   when: inventory_hostname in groups['swift_proxy']
 
 - meta: flush_handlers

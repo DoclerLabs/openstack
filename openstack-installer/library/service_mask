@@ -77,9 +77,10 @@ class SystemdMask:
                     module.fail_json(msg='%s' % str(e))
                 module.exit_json(changed=True)
 
-    def unmask(self, module, service):
+    def unmask(self, module, service, force):
 
-        if not os.path.exists(SYSTEMD_SERVICE_DIR + service + '.service'):
+        if not os.path.exists(SYSTEMD_SERVICE_DIR + service + '.service') and \
+          not force:
             module.exit_json(changed=False)
 
         if os.path.exists(SYSTEMD_MASK_DIR + service + '.service'):
@@ -117,9 +118,10 @@ class UpstartMask:
 
         module.exit_json(changed=True)
 
-    def unmask(self, module, service):
+    def unmask(self, module, service, force):
 
-        if not os.path.exists(UPSTART_DIR + service + '.conf'):
+        if not os.path.exists(UPSTART_DIR + service + '.conf') and \
+          not force:
             module.exit_json(changed=False)
 
         try:
@@ -162,7 +164,7 @@ def main():
     if state == 'masked':
         mask_manager.mask(module, service, force)
     else:
-        mask_manager.unmask(module, service)
+        mask_manager.unmask(module, service, force)
 
 
 if __name__ == '__main__':
