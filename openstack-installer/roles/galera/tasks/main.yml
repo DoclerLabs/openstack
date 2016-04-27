@@ -5,7 +5,7 @@
   with_items:
     - percona-xtrabackup
     - percona-xtradb-cluster-server-5.6
-    - percona-xtradb-cluster-galera-3
+    - "{{ (ansible_distribution_version | version_compare('16.04', '>=')) | ternary('percona-galera-3','percona-xtradb-cluster-galera-3') }}"
     - socat
     - xinetd
     - python-mysqldb
@@ -25,6 +25,9 @@
 
 - name: install my.cnf
   template: src=my.cnf.j2 dest=/etc/mysql/my.cnf owner=mysql group=root mode=0460
+
+- name: link /var/lib/mysql to percona-xtradb-cluster
+  file: path=/var/lib/mysql src=/var/lib/percona-xtradb-cluster state=link force=no
 
 - name: ensure mysql is running if not configured yet
   service: name=mysql state=started
