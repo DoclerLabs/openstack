@@ -26,10 +26,10 @@ defaults
         log     global
         option dontlognull
         option redispatch
-        retries 3
-        timeout client 50s
-        timeout connect 10s
-        timeout server 50s
+        retries {{ haproxy_retries }}
+        timeout client {{ haproxy_timeout_client }}
+        timeout connect {{ haproxy_timeout_connect }}
+        timeout server {{ haproxy_timeout_server }}
         maxconn 4096
         errorfile 400 /etc/haproxy/errors/400.http
         errorfile 403 /etc/haproxy/errors/403.http
