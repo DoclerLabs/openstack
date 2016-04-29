@@ -46,6 +46,11 @@ ceilometer_metering_time_to_live: 0
 ceilometer_event_time_to_live: 0
 ceilometer_alarm_history_time_to_live: 0
 
+#mongodb and/or gnocchi
+ceilometer_backends:
+ - mongodb
+ceilometer_gnocchi_archive_policy: low
+
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
 SSLCACertificateFileSource:
