@@ -205,9 +205,7 @@ batch_timeout = 5
 {% endif %}
 
 [notification]
-{% if 'database' in ceilometer_backends %}
-store_events = true
-{% endif %}
+store_events = {{ ceilometer_store_events }}
 
 {% for host in groups['rabbitmq'] %}
 messaging_urls = rabbit://{{ ceilometer_rabbit_user }}:{{ ceilometer_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672/{{ ceilometer_rabbit_vhost }}
@@ -292,10 +290,9 @@ messaging_urls = rabbit://{{ sahara_rabbit_user }}:{{ sahara_rabbit_password }}@
 # Deprecated group/name - [sql]/connection
 #connection = <None>
 connection = mongodb://ceilometer:{{ ceilometer_db_password }}@{% for host in groups['mongodb'] %}{{ hostvars[host].ip.mgmt }}:27017{% if not loop.last %},{% endif %}{% endfor %}/ceilometer
+mongodb_replica_set = {{ mongodb_replica_set }}
 {% if 'database' in ceilometer_backends %}
 {% endif %}
-
-mongodb_replica_set = {{ mongodb_replica_set }}
 
 metering_time_to_live: {{ ceilometer_metering_time_to_live }}
 event_time_to_live: {{ ceilometer_event_time_to_live }}
