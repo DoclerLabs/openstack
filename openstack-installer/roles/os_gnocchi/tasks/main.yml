@@ -15,6 +15,7 @@
   with_items:
     - gnocchi-api
     - gnocchi-metricd
+    - patch
 
 - name: create gnocchi database
   mysql_db: name={{ gnocchi_db }}
