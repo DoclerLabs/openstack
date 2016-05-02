@@ -1,0 +1,55 @@
+---
+
+- hosts: gnocchi[0]
+  max_fail_percentage: 0
+  roles:
+    - role: os_keystone_service
+      keystone_service_name: gnocchi
+      keystone_service_type: metric
+      keystone_service_description: "OpenStack Metric Service"
+      keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8041"
+      keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8041"
+      keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8041"
+      keystone_region: "{{ keystone_region_name }}"
+      keystone_users:
+        - keystone_user: "{{ gnocchi_admin_user | default('gnocchi') }}"
+          keystone_domain_name: "{{ gnocchi_domain_name | default(keystone_domain_name) }}"
+          keystone_password: "{{ gnocchi_admin_password }}"
+          keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+          keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+          keystone_role: admin
+
+- hosts: gnocchi
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - common
+
+    - role: ceph_client
+      ceph_user: "{{ gnocchi_ceph_user | default('gnocchi') }}"
+      ceph_rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ gnocchi_ceph_pool | default('gnocchi') }}'"
+      ceph_keyring_owner: gnocchi
+      when: gnocchi_backend | default('ceph') == 'ceph'
+
+    - os_gnocchi
+
+    - role: apache_frontend
+      apache_service_name: gnocchi
+      apache_service_ssl: "{{ os_ssl | default(False) }}"
+      apache_services:
+        - { port: 8041 }
+
+- hosts: haproxy
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - role: haproxy_service
+      haproxy_services:
+        - haproxy_service_name: gnocchi_api
+          haproxy_backend_nodes: "{{ groups['gnocchi'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 8041
+          haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
+          haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"

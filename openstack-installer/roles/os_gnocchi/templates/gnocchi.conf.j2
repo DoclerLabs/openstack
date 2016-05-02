@@ -396,6 +396,7 @@ coordination_url = mysql://{{ gnocchi_db_user }}:{{ gnocchi_db_password }}@{{ gn
 
 # Storage driver to use (string value)
 #driver = file
+driver = {{ gnocchi_backend }}
 
 # How many seconds to wait between new metric measure processing (integer value)
 #metric_processing_delay = 5
@@ -405,12 +406,17 @@ coordination_url = mysql://{{ gnocchi_db_user }}:{{ gnocchi_db_password }}@{{ gn
 
 # Ceph pool name to use. (string value)
 #ceph_pool = gnocchi
+ceph_pool = {{ gnocchi_ceph_pool }}
 
 # Ceph username (ie: admin without "client." prefix). (string value)
 #ceph_username = <None>
+ceph_username = {{ gnocchi_ceph_user }}
 
 # Ceph keyring path. (string value)
 #ceph_keyring = <None>
+{% if gnocchi_backend == 'ceph' %}
+ceph_keyring = /etc/ceph/ceph.client.gnocchi.keyring
+{% endif %}
 
 # Ceph configuration file. (string value)
 #ceph_conffile = /etc/ceph/ceph.conf
