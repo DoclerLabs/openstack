@@ -1,0 +1,13 @@
+# MySQL Configuration
+#
+# Launch gmysql backend
+launch+=gmysql
+
+# gmysql parameters
+gmysql-host={{ powerdns_mysql_server }}
+gmysql-port=3306
+gmysql-dbname={{ powerdns_db }}
+gmysql-user={{ powerdns_db_user }}
+gmysql-password={{ powerdns_db_password }}
+gmysql-dnssec=yes
+# gmysql-socket=

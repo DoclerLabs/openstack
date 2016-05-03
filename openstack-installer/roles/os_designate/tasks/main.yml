@@ -1,0 +1,108 @@
+---
+
+- name: create designate vhost in rabbitmq
+  rabbitmq_vhost: node="rabbit@{{ groups['rabbitmq'][0] }}" name="{{ designate_rabbit_vhost }}"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: create designate user in rabbitmq
+  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}"
+      user="{{ designate_rabbit_user }}" password="{{ designate_rabbit_password }}"
+      vhost="{{ designate_rabbit_vhost }}"
+      configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: ensure the designate vhost contains the HA policy
+  rabbitmq_policy:
+    node: "rabbit@{{ groups['rabbitmq'][0] }}"
+    vhost: "{{ designate_rabbit_vhost }}"
+    name: HA
+    pattern: '.*'
+    tags:
+      "ha-mode": "all"
+      "ha-sync-mode": "automatic"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: install CA certificate
+  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  when: SSLCACertificateFile != ''
+
+- name: mask autostarting of designate
+  service_mask: name={{ item }} state=masked
+  with_items:
+    - designate-api
+    - designate-agent
+    - designate-central
+    - designate-pool-manager
+    - designate-zone-manager
+    - designate-mdns
+    - designate-sink
+
+- name: install designate
+  apt: name={{ item }}
+  with_items:
+    - designate-api
+    - designate-agent
+    - designate-central
+    - designate-pool-manager
+    - designate-zone-manager
+    - designate-mdns
+    - designate-sink
+    - python-designateclient
+
+- name: create designate database
+  mysql_db: name={{ designate_db }}
+    login_host={{ designate_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create designate database user
+  mysql_user: name={{ designate_db_user }} password={{ designate_db_password }} host={{ item }} priv={{ designate_db }}.*:ALL
+    login_host={{ designate_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - '%'
+
+- name: ensure /var/lib/designate/cache is writeable
+  file: path=/var/lib/designate/cache state=directory owner=designate group=designate mode=0700
+  notify: restart designate
+
+- name: install designate configs
+  template: src={{ item }}.conf.j2 dest=/etc/designate/{{ item }}.conf owner=designate group=root mode=0460
+  with_items:
+    - designate
+  notify: restart designate
+
+- name: sync designate db
+  command: su designate -s /bin/sh -c 'designate-manage database sync'
+  register: db_sync
+  changed_when: '"migrate.versioning.api" in db_sync.stderr'
+  run_once: True
+
+- name: unmask autostarting of designate
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - designate-api
+    - designate-agent
+    - designate-central
+    - designate-pool-manager
+    - designate-zone-manager
+    - designate-mdns
+    - designate-sink
+
+- meta: flush_handlers
+
+- name: ensure designate is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - designate-api
+    - designate-agent
+    - designate-central
+    - designate-pool-manager
+    - designate-zone-manager
+    - designate-mdns
+    - designate-sink

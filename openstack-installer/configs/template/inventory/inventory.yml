@@ -154,6 +154,10 @@ mistral:
 
 manila:
 
+powerdns:
+
+designate:
+
 # -------- Tempest ------
 tempest:
   inherit: local

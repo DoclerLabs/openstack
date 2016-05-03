@@ -1,0 +1,4 @@
+---
+
+- name: restart powerdns
+  service: name=pdns state=restarted

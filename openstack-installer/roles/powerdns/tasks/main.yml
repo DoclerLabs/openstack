@@ -1,0 +1,53 @@
+---
+
+- name: create powerdns database
+  mysql_db: name={{ powerdns_db }}
+    login_host={{ powerdns_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create powerdns database user
+  mysql_user: name={{ powerdns_db_user }} password={{ powerdns_db_password }} host={{ item }} priv={{ powerdns_db }}.*:ALL
+    login_host={{ powerdns_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - '%'
+
+- name: copy powerdns initial database
+  copy: src=pdns.sql dest=/root/pdns.sql
+  run_once: True
+
+- name: load powerdns database
+  mysql_db: name={{ powerdns_db }}
+    login_host={{ powerdns_mysql_server }} login_user={{ powerdns_db_user }} login_password={{ powerdns_db_password }}
+    target=/root/pdns.sql state=import
+  register: powerdns_results
+  failed_when: powerdns_results | failed and 'already exists' not in powerdns_results.msg
+  run_once: True
+
+- name: mask autostarting of PowerDNS
+  service_mask: name={{ item }} state=masked
+  with_items:
+    - pdns
+
+- name: Install PowerDNS packages
+  apt: name={{ item }}
+  with_items:
+    - pdns-server
+    - pdns-backend-mysql
+
+- name: deploy PowerDNS configuration
+  template: src=pdns.local.gmysql.conf.j2 dest=/etc/powerdns/pdns.d/pdns.local.gmysql.conf owner=pdns group=root mode=0460
+  notify: restart powerdns
+
+- name: unmask autostarting of PowerDNS
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - pdns
+
+- meta: flush_handlers
+
+- name: ensure PowerDNS is started
+  service: name=pdns state=started enabled=yes

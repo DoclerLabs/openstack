@@ -114,6 +114,12 @@ mistral:
 manila:
   inherit: controller
 
+powerdns:
+  inherit: controller
+
+designate:
+  inherit: controller
+
 # -------- Tempest ------
 tempest:
   localhost:
