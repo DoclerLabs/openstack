@@ -1,0 +1,64 @@
+---
+
+- name: install CA certificate
+  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  when: SSLCACertificateFile != ''
+
+- name: mask autostarting of gnocchi
+  service_mask: name={{ item }} state=masked
+  with_items:
+    - gnocchi-api
+    - gnocchi-metricd
+
+- name: install gnocchi
+  apt: name={{ item }}
+  with_items:
+    - gnocchi-api
+    - gnocchi-metricd
+    - patch
+
+- name: create gnocchi database
+  mysql_db: name={{ gnocchi_db }}
+    login_host={{ gnocchi_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create gnocchi database user
+  mysql_user: name={{ gnocchi_db_user }} password={{ gnocchi_db_password }} host={{ item }} priv={{ gnocchi_db }}.*:ALL
+    login_host={{ gnocchi_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - '%'
+
+- name: ensure /var/lib/gnocchi/cache is writeable
+  file: path=/var/lib/gnocchi/cache state=directory owner=gnocchi group=gnocchi mode=0700
+  notify: restart gnocchi
+
+- name: install gnocchi configs
+  template: src={{ item }}.conf.j2 dest=/etc/gnocchi/{{ item }}.conf owner=gnocchi group=root mode=0460
+  with_items:
+    - gnocchi
+  notify: restart gnocchi
+
+- name: patch gnocchi-upgrade
+  patch: src=default_archive_policy.diff basedir=/usr/lib/python2.7/dist-packages/gnocchi strip=2
+
+- name: sync gnocchi db
+  command: su gnocchi -s /bin/sh -c '/usr/bin/gnocchi-upgrade'
+  run_once: True
+
+- name: unmask autostarting of gnocchi
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - gnocchi-api
+    - gnocchi-metricd
+
+- meta: flush_handlers
+
+- name: ensure gnocchi is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - gnocchi-api
+    - gnocchi-metricd

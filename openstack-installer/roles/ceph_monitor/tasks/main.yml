@@ -153,5 +153,10 @@
     - upstart
     - done
 
-- name: ensure ceph monitor is started
+- name: ensure ceph monitor is started (upstart)
   service: name=ceph-mon state=started enabled=yes args="id={{ inventory_hostname }}"
+  when: ansible_distribution_version | version_compare('15.04', '<=')
+
+- name: ensure ceph monitor is started (systemd)
+  service: name=ceph-mon state=started enabled=yes
+  when: ansible_distribution_version | version_compare('15.10', '>=')

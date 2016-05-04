@@ -76,6 +76,10 @@ neutron_controller:
 neutron_compute:
   inherit: compute
 
+#Gnocchi is available only from Xenial
+gnocchi:
+#  inherit: controller
+
 ceilometer_controller:
   inherit: controller
 
@@ -108,6 +112,12 @@ mistral:
   inherit: controller
 
 manila:
+  inherit: controller
+
+powerdns:
+  inherit: controller
+
+designate:
   inherit: controller
 
 # -------- Tempest ------

@@ -8,6 +8,7 @@
 - include: memcached.yml
 - include: rabbitmq.yml
 - include: galera.yml
+- include: powerdns.yml
 
 - include: os_keystone.yml
 - include: ceph_radosgw.yml
@@ -18,8 +19,10 @@
 - include: os_cinder.yml
 - include: os_neutron.yml
 - include: os_nova.yml
+- include: os_gnocchi.yml
 - include: os_ceilometer.yml
 - include: os_heat.yml
+- include: os_designate.yml
 - include: os_ironic.yml
 - include: os_murano.yml
 - include: os_sahara.yml

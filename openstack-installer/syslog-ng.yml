@@ -19,9 +19,10 @@
   max_fail_percentage: 0
   roles:
     - role: common
+      apt_syslog_repo_dir: "{{ (ansible_distribution_version | version_compare('16.04', '>=')) | ternary('xUbuntu_15.04','xUbuntu_14.04') }}"
       apt_extra_repos:
-        - { name: "syslog-ng", repo: "http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng-3.6/xUbuntu_14.04/ ./" }
+        - { name: "syslog-ng", repo: "http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng-3.6/{{ apt_syslog_repo_dir }}/ ./" }
       apt_extra_keys:
-        - { keyurl: "http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng-3.6/xUbuntu_14.04/Release.key" }
+        - { keyurl: "http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng-3.6/{{ apt_syslog_repo_dir }}/Release.key" }
 
     - role: syslog-ng

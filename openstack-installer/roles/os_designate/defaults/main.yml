@@ -1,0 +1,21 @@
+---
+
+designate_db_user: designate
+designate_mysql_server: "{{ vip_mgmt }}"
+designate_db: designate
+designate_rabbit_vhost: designate
+designate_rabbit_user: designate
+designate_admin_user: designate
+designate_domain_name: "{{ keystone_domain_name }}"
+designate_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+designate_project_name: "{{ keystone_service_project_name | default('service') }}"
+
+designate_syslog_use: "{{ syslog_use | default(False) }}"
+
+designate_debug: False
+
+keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
+os_proto: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
+ssl_insecure: False
+SSLCACertificateFileSource:
+SSLCACertificateFile: "{{ (SSLCACertificateFileSource is not none and SSLCACertificateFileSource | trim != '') | ternary('/etc/ssl/certs/openstack.ca.crt','') }}"

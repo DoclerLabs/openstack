@@ -1,0 +1,7 @@
+---
+
+- name: restart gnocchi
+  service: name={{ item }} state=restarted
+  with_items:
+    - gnocchi-api
+    - gnocchi-metricd

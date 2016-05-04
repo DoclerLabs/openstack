@@ -1,0 +1,5 @@
+---
+
+powerdns_db_user: powerdns
+powerdns_mysql_server: "{{ vip_mgmt }}"
+powerdns_db: powerdns

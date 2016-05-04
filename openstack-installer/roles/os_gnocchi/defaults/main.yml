@@ -1,0 +1,25 @@
+---
+
+gnocchi_db_user: gnocchi
+gnocchi_mysql_server: "{{ vip_mgmt }}"
+gnocchi_db: gnocchi
+gnocchi_rabbit_vhost: gnocchi
+gnocchi_rabbit_user: gnocchi
+gnocchi_admin_user: gnocchi
+gnocchi_domain_name: "{{ keystone_domain_name }}"
+gnocchi_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+gnocchi_project_name: "{{ keystone_service_project_name | default('service') }}"
+
+gnocchi_syslog_use: "{{ syslog_use | default(False) }}"
+
+gnocchi_debug: True
+
+#ceph or files
+gnocchi_backend: ceph
+gnocchi_ceph_user: gnocchi
+gnocchi_ceph_pool: gnocchi
+
+keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
+ssl_insecure: False
+SSLCACertificateFileSource:
+SSLCACertificateFile: "{{ (SSLCACertificateFileSource is not none and SSLCACertificateFileSource | trim != '') | ternary('/etc/ssl/certs/openstack.ca.crt','') }}"

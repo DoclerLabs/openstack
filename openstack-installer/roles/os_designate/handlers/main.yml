@@ -1,0 +1,12 @@
+---
+
+- name: restart designate
+  service: name={{ item }} state=restarted
+  with_items:
+    - designate-api
+    - designate-agent
+    - designate-central
+    - designate-pool-manager
+    - designate-zone-manager
+    - designate-mdns
+    - designate-sink

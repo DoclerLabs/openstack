@@ -111,9 +111,19 @@
 
 - name: install ceilometer configs
   template: src=ceilometer.conf.j2 dest=/etc/ceilometer/ceilometer.conf owner=ceilometer group=root mode=0460
-  notify: 
+  notify:
     - restart ceilometer controller services
     - restart ceilometer compute services
+
+- name: install yaml files
+  copy: src={{ item }}.yaml dest=/etc/ceilometer/{{ item }}.yaml owner=root group=root mode=0644
+  when: inventory_hostname in groups['ceilometer_controller']
+  with_items:
+    - event_pipeline
+    - event_definitions
+    - gnocchi_resources
+  notify:
+    - restart ceilometer controller services
 
 - name: create aodh database
   mysql_db: name={{ aodh_db }}
