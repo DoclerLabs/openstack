@@ -39,6 +39,10 @@
     - pdns-backend-mysql
 
 - name: deploy PowerDNS configuration
+  template: src=pdns.conf.j2 dest=/etc/powerdns/pdns.conf owner=root group=root mode=0660
+  notify: restart powerdns
+
+- name: deploy PowerDNS MySQL configuration
   template: src=pdns.local.gmysql.conf.j2 dest=/etc/powerdns/pdns.d/pdns.local.gmysql.conf owner=pdns group=root mode=0460
   notify: restart powerdns
 
