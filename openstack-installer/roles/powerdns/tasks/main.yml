@@ -43,7 +43,10 @@
   notify: restart powerdns
 
 - name: deploy PowerDNS MySQL configuration
-  template: src=pdns.local.gmysql.conf.j2 dest=/etc/powerdns/pdns.d/pdns.local.gmysql.conf owner=pdns group=root mode=0460
+  template: src={{ item }}.j2 dest=/etc/powerdns/pdns.d/{{ item }} owner=pdns group=root mode=0460
+  with_items:
+    - pdns.local.gmysql.conf
+    - pdns.simplebind.conf
   notify: restart powerdns
 
 - name: unmask autostarting of PowerDNS
