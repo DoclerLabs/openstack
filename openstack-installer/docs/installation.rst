@@ -8,14 +8,17 @@ It does not install the base OS, also doesn't configure the hardware (network in
 2. Pre-requisite
 ================
 
-- A deployment node, which can connect to the provisioned nodes via ssh. Install Ansible on it. Version 1.9.4 or >= 2.0.1.0 is tested/recommended.
-- Ubuntu 14.04 LTS for the base OS. Need odd number of controller nodes, and arbitary number of compute nodes.
+- A deployment node, which can connect to the provisioned nodes via ssh. Install Ansible on it. Version >= 2.0.2.0 is used in the CI system currently,
+  so it is recommended. 1.9.6 should work, too, but not tested constantly.
+- Ubuntu 14.04 LTS (Liberty/Mitaka) or 16.04 LTS (Mitaka) for the base OS. Need odd number of controller nodes, and arbitary number of compute nodes.
 - For ceph, it is recommended to have at least 3 monitor nodes, and 3 OSD nodes.
 - Set up the network for the nodes:
 
   - OpenStack Controller nodes need a management interface, and a separate public interface is recommended.
   - OpenStack Compute nodes need a management interface.
-  - For using Neutron VLAN segmentation, a Linux Bridge where the Neutron plugin can create VLANs. This interface can be shared with the management or the public interface. If you're using the OpenVSwitch Neutron plugin, create the OVS bridges (br-int and br-ex) first.
+  - For using Neutron VLAN segmentation, a Linux Bridge where the Neutron plugin can create VLANs. This interface can be shared with the management or the public interface.
+    If you're using the OpenVSwitch Neutron plugin, create the OVS bridges (br-int and br-ex) first.
+    VXLAN with the LinuxBridge plugin requires only an interface with IP address.
   - For Ceph, it is recommended to have separate management and cluster communication interfaces.
 
 - NTP should be working on all nodes.
@@ -65,6 +68,12 @@ It does not install the base OS, also doesn't configure the hardware (network in
   $ ceph osd pool create volumes [pg-num]
   $ ceph osd pool create backups [pg-num]
   $ ceph osd pool create vms [pg-num]
+
+- If you're using gnocchi with Ceph, create the pool for it:
+
+::
+
+  $ ceph osd pool create gnocchi [pg-num]
 
 The reason behind not creating the pools automatically is that the pg-num parameter. It needs to be determined carefully according to ceph docs.
 
