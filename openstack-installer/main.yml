@@ -4,6 +4,7 @@
 - include: mongodb.yml
 - include: syslog-ng.yml
 - include: pacemaker.yml
+- include: zookeeper.yml
 - include: haproxy.yml
 - include: memcached.yml
 - include: rabbitmq.yml

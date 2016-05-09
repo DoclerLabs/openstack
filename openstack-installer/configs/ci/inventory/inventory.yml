@@ -28,6 +28,9 @@ controller:
 pacemaker:
   inherit: controller
 
+zookeeper:
+  inherit: controller
+
 haproxy:
   inherit: pacemaker
 

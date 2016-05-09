@@ -818,3 +818,8 @@ rabbit_ha_queues = true
 # This option is deprecated for removal.
 # Its value may be silently ignored in the future.
 #policy_dirs = policy.d
+
+{% if groups['zookeeper'] | count > 0 %}
+[coordination]
+backend_url = kazoo://{% for host in groups['zookeeper'] %}{{ hostvars[host].ip.mgmt }}:2181{% if not loop.last %},{% endif %}{% endfor %}
+{% endif %}

@@ -20,13 +20,6 @@ debug = {{ designate_debug }}
 # Log directory
 #logdir = /var/log/designate
 
-# Driver used for issuing notifications
-#notification_driver = messaging
-notification_driver = messagingv2
-
-# Notification Topics
-#notification_topics = notifications
-
 # Use "sudo designate-rootwrap /etc/designate/rootwrap.conf" to use the real
 # root filter facility.
 # Change to "sudo" to skip the filtering and just run the comand directly
@@ -50,6 +43,10 @@ rabbit_ha_queues = true
 {% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
 rabbit_virtual_host = {{ designate_rabbit_vhost }}
 rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
+
+
+[oslo_messaging_notifications]
+driver = messagingv2
 
 ########################
 ## Service Configuration
@@ -244,6 +241,7 @@ memcache_secret_key = {{ memcache_secret_key }}
 # correspond to a [handler:my_driver] section below or else in the config
 # Can be one or more of : nova_fixed, neutron_floatingip
 #enabled_notification_handlers =
+enabled_notification_handlers = nova_fixed, neutron_floatingip
 
 #-----------------------
 # mDNS Service
@@ -527,6 +525,11 @@ max_retries = -1
 [coordination]
 # URL for the coordination backend to use.
 #backend_url = kazoo://127.0.0.1/
+{% if groups['zookeeper'] | count > 0 %}
+[coordination]
+backend_url = kazoo://{% for host in groups['zookeeper'] %}{{ hostvars[host].ip.mgmt }}:2181{% if not loop.last %},{% endif %}{% endfor %}
+{% endif %}
+
 
 ########################
 ## Hook Points

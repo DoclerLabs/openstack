@@ -393,7 +393,11 @@ memcache_secret_key = {{ memcache_secret_key }}
 
 # Coordination driver URL (string value)
 #coordination_url = <None>
+{% if groups['zookeeper'] | count > 0 %}
+coordination_url = kazoo://{% for host in groups['zookeeper'] %}{{ hostvars[host].ip.mgmt }}:2181{% if not loop.last %},{% endif %}{% endfor %}
+{% else %}
 coordination_url = mysql://{{ gnocchi_db_user }}:{{ gnocchi_db_password }}@{{ gnocchi_mysql_server }}/{{ gnocchi_db }}?charset=utf8
+{% endif %}
 
 # Storage driver to use (string value)
 #driver = file

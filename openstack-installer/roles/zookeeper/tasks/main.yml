@@ -1,0 +1,20 @@
+---
+
+- name: Install Zookeeper
+  apt: name={{ item }}
+  with_items:
+    - zookeeper
+    - zookeeperd
+
+- name: deploy Zookeeper configuration
+  template: src=zoo.cfg.j2 dest=/etc/zookeeper/conf/zoo.cfg owner=root group=root mode=0644
+  notify: restart zookeeper
+
+- name: set Zookeeper serverid
+  copy: content={{ groups['zookeeper'].index(inventory_hostname)+1 }} dest=/etc/zookeeper/conf/myid
+        owner=root group=root mode=0644
+
+- meta: flush_handlers
+
+- name: ensure Zookeeper is started
+  service: name=zookeeper state=started enabled=yes

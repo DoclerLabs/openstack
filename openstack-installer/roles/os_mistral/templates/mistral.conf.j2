@@ -241,6 +241,10 @@ allow_action_execution_deletion = true
 
 # The backend URL to be used for coordination (string value)
 #backend_url = <None>
+{% if groups['zookeeper'] | count > 0 %}
+[coordination]
+backend_url = kazoo://{% for host in groups['zookeeper'] %}{{ hostvars[host].ip.mgmt }}:2181{% if not loop.last %},{% endif %}{% endfor %}
+{% endif %}
 
 # Number of seconds between heartbeats for coordination. (floating
 # point value)
