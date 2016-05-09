@@ -1,7 +1,7 @@
 ---
 
 - name: install syslog-ng
-  apt: name={{ item }}
+  apt: update_cache=yes name={{ item }}
   with_items:
     - libmongo-client0
     - syslog-ng-core
