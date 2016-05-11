@@ -1,0 +1,9 @@
+---
+
+- name: restart aodh
+  service: name={{ item }} state=restarted
+  with_items:
+    - aodh-api
+    - aodh-evaluator
+    - aodh-notifier
+    - aodh-listener

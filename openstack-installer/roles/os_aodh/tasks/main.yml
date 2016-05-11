@@ -1,0 +1,91 @@
+---
+
+- name: create aodh vhost in rabbitmq
+  rabbitmq_vhost: node="rabbit@{{ groups['rabbitmq'][0] }}" name="{{ aodh_rabbit_vhost }}"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: create aodh user in rabbitmq
+  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}"
+      user="{{ aodh_rabbit_user }}" password="{{ aodh_rabbit_password }}"
+      vhost="{{ aodh_rabbit_vhost }}"
+      configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: ensure the aodh vhost contains the HA policy
+  rabbitmq_policy:
+    node: "rabbit@{{ groups['rabbitmq'][0] }}"
+    vhost: "{{ aodh_rabbit_vhost }}"
+    name: HA
+    pattern: '.*'
+    tags:
+      "ha-mode": "all"
+      "ha-sync-mode": "automatic"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: install CA certificate
+  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  when: SSLCACertificateFile != ''
+
+- name: mask autostarting of aodh services
+  service_mask: name={{ item }} state=masked
+  with_items:
+    - aodh-api
+    - aodh-evaluator
+    - aodh-notifier
+    - aodh-listener
+
+- name: install aodh
+  apt: name={{ item }}
+  with_items:
+    - aodh-api
+    - aodh-evaluator
+    - aodh-notifier
+    - aodh-listener
+
+- name: create aodh database
+  mysql_db: name={{ aodh_db }}
+    login_host={{ aodh_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create aodh database user
+  mysql_user: name={{ aodh_db_user }} password={{ aodh_db_password }} host={{ item }} priv={{ aodh_db }}.*:ALL
+    login_host={{ aodh_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - '%'
+
+- name: install aodh configs
+  template: src={{ item }}.j2 dest=/etc/aodh/{{ item }} owner=aodh group=root mode=0460
+  with_items:
+    - aodh.conf
+    - api_paste.ini
+  notify:
+    - restart aodh
+
+- name: sync aodh db
+  command: su aodh -s /bin/sh -c '/usr/bin/aodh-dbsync'
+  run_once: True
+
+- name: unmask autostarting of aodh services
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - aodh-api
+    - aodh-evaluator
+    - aodh-notifier
+    - aodh-listener
+
+- meta: flush_handlers
+
+- name: ensure aodh is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - aodh-api
+    - aodh-evaluator
+    - aodh-notifier
+    - aodh-listener

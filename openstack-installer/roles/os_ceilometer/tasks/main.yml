@@ -25,31 +25,6 @@
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 
-- name: create aodh vhost in rabbitmq
-  rabbitmq_vhost: node="rabbit@{{ groups['rabbitmq'][0] }}" name="{{ aodh_rabbit_vhost }}"
-  delegate_to: "{{ groups['rabbitmq'][0] }}"
-  run_once: True
-
-- name: create aodh user in rabbitmq
-  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}"
-      user="{{ aodh_rabbit_user }}" password="{{ aodh_rabbit_password }}"
-      vhost="{{ aodh_rabbit_vhost }}"
-      configure_priv=".*" read_priv=".*" write_priv=".*"
-  delegate_to: "{{ groups['rabbitmq'][0] }}"
-  run_once: True
-
-- name: ensure the aodh vhost contains the HA policy
-  rabbitmq_policy:
-    node: "rabbit@{{ groups['rabbitmq'][0] }}"
-    vhost: "{{ aodh_rabbit_vhost }}"
-    name: HA
-    pattern: '.*'
-    tags:
-      "ha-mode": "all"
-      "ha-sync-mode": "automatic"
-  delegate_to: "{{ groups['rabbitmq'][0] }}"
-  run_once: True
-
 - name: install CA certificate
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
@@ -77,10 +52,6 @@
     - ceilometer-collector
     - ceilometer-agent-central
     - ceilometer-agent-notification
-    - aodh-api
-    - aodh-evaluator
-    - aodh-notifier
-    - aodh-listener
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: mask autostarting of ceilometer compute services
@@ -89,7 +60,7 @@
     - ceilometer-agent-compute
   when: inventory_hostname in groups['ceilometer_compute']
 
-- name: install ceilometer
+- name: install ceilometer controller services
   apt: name={{ item }}
   with_items:
     - ceilometer-api
@@ -97,13 +68,9 @@
     - ceilometer-agent-central
     - ceilometer-agent-notification
     - python-ceilometerclient
-    - aodh-api
-    - aodh-evaluator
-    - aodh-notifier
-    - aodh-listener
   when: inventory_hostname in groups['ceilometer_controller']
 
-- name: install ceilometer
+- name: install ceilometer compute services
   apt: name={{ item }}
   with_items:
     - ceilometer-agent-compute
@@ -125,34 +92,6 @@
   notify:
     - restart ceilometer controller services
 
-- name: create aodh database
-  mysql_db: name={{ aodh_db }}
-    login_host={{ aodh_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
-  when: inventory_hostname == groups['ceilometer_controller'][0]
-
-- name: create aodh database user
-  mysql_user: name={{ aodh_db_user }} password={{ aodh_db_password }} host={{ item }} priv={{ aodh_db }}.*:ALL
-    login_host={{ aodh_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
-  when: inventory_hostname == groups['ceilometer_controller'][0]
-  with_items:
-    - localhost
-    - '%'
-
-- name: install aodh configs
-  template: src={{ item }}.j2 dest=/etc/aodh/{{ item }} owner=aodh group=root mode=0460
-  with_items:
-    - aodh.conf
-    - api_paste.ini
-  notify:
-    - restart aodh
-  when: inventory_hostname in groups['ceilometer_controller']
-
-- name: sync aodh db
-  command: su aodh -s /bin/sh -c 'aodh-dbsync'
-  when: inventory_hostname == groups['ceilometer_controller'][0]
-
 - name: unmask autostarting of ceilometer controller services
   service_mask: name={{ item }} state=unmasked
   with_items:
@@ -160,10 +99,6 @@
     - ceilometer-collector
     - ceilometer-agent-central
     - ceilometer-agent-notification
-    - aodh-api
-    - aodh-evaluator
-    - aodh-notifier
-    - aodh-listener
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: unmask autostarting of ceilometer compute services
@@ -174,17 +109,13 @@
 
 - meta: flush_handlers
 
-- name: ensure ceilometer is started
+- name: ensure ceilometer controller services are started
   service: name={{ item }} state=started enabled=yes
   with_items:
     - ceilometer-api
     - ceilometer-collector
     - ceilometer-agent-central
     - ceilometer-agent-notification
-    - aodh-api
-    - aodh-evaluator
-    - aodh-notifier
-    - aodh-listener
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: ensure ceilometer is started

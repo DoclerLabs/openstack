@@ -46,7 +46,7 @@ verbose = true
 # Use syslog for logging. Existing syslog format is DEPRECATED and
 # will be changed later to honor RFC5424. (boolean value)
 #use_syslog = false
-use_syslog = {{ ceilometer_syslog_use }}
+use_syslog = {{ aodh_syslog_use }}
 
 # (Optional) Enables or disables syslog rfc5424 format for logging. If
 # enabled, prefixes the MSG part of the syslog message with APP-NAME
@@ -481,11 +481,11 @@ cafile = {{ SSLCACertificateFile }}
 {% endif %}
 insecure = {{ ssl_insecure }}
 auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
-username = {{ ceilometer_admin_user }}
-user_domain_name = {{ ceilometer_domain_name }}
-password = {{ ceilometer_admin_password }}
-project_name = {{ ceilometer_project_name }}
-project_domain_name = {{ ceilometer_project_domain_name }}
+username = {{ aodh_admin_user }}
+user_domain_name = {{ aodh_domain_name }}
+password = {{ aodh_admin_password }}
+project_name = {{ aodh_project_name }}
+project_domain_name = {{ aodh_project_domain_name }}
 interface = internalURL
 region_name = {{ keystone_region_name }}
 
@@ -734,7 +734,7 @@ driver = messagingv2
 # RabbitMQ HA cluster host:port pairs. (list value)
 # Deprecated group/name - [DEFAULT]/rabbit_hosts
 #rabbit_hosts = $rabbit_host:$rabbit_port
-{% set rabbit_hosts=groups['rabbitmq'][(groups['ceilometer_controller'].index(inventory_hostname) % groups['rabbitmq'] | count):] + groups['rabbitmq'][:(groups['ceilometer_controller'].index(inventory_hostname) % groups['rabbitmq'] | count)] %}
+{% set rabbit_hosts=groups['rabbitmq'][(groups['aodh'].index(inventory_hostname) % groups['rabbitmq'] | count):] + groups['rabbitmq'][:(groups['aodh'].index(inventory_hostname) % groups['rabbitmq'] | count)] %}
 rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
 
 # Connect over SSL for RabbitMQ. (boolean value)

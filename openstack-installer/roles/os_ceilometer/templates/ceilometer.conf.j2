@@ -196,6 +196,8 @@ archive_policy = {{ ceilometer_gnocchi_archive_policy }}
 
 host = 127.0.0.1
 
+aodh_is_enabled = {{ groups['aodh'] | count > 0 }}
+
 [collector]
 
 udp_address = {{ ip.mgmt }}

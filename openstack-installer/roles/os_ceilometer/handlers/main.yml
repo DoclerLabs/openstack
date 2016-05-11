@@ -14,11 +14,3 @@
   with_items:
     - ceilometer-agent-compute
   when: inventory_hostname in groups['ceilometer_compute']
-
-- name: restart aodh
-  service: name={{ item }} state=restarted
-  with_items:
-    - aodh-api
-    - aodh-evaluator
-    - aodh-notifier
-    - aodh-listener

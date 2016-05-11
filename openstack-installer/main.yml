@@ -22,6 +22,7 @@
 - include: os_nova.yml
 - include: os_gnocchi.yml
 - include: os_ceilometer.yml
+- include: os_aodh.yml
 - include: os_heat.yml
 - include: os_designate.yml
 - include: os_ironic.yml

@@ -6,21 +6,11 @@ ceilometer_admin_user: ceilometer
 ceilometer_domain_name: "{{ keystone_domain_name }}"
 ceilometer_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
 ceilometer_project_name: "{{ keystone_service_project_name | default('service') }}"
-aodh_db_user: aodh
-aodh_mysql_server: "{{ vip_mgmt }}"
-aodh_db: aodh
-aodh_rabbit_vhost: aodh
-aodh_rabbit_user: aodh
-aodh_admin_user: aodh
-aodh_domain_name: "{{ keystone_domain_name }}"
-aodh_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
-aodh_project_name: "{{ keystone_service_project_name | default('service') }}"
 
 mongodb_replica_set: openstack
 
 ceilometer_syslog_use: "{{ syslog_use | default(False) }}"
 
-aodh_debug: False
 ceilometer_debug: False
 
 keystone_rabbit_vhost: keystone

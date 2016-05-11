@@ -83,6 +83,9 @@ neutron_compute:
 gnocchi:
 #  inherit: controller
 
+aodh:
+  inherit: controller
+
 ceilometer_controller:
   inherit: controller
 
