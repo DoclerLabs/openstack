@@ -21,7 +21,7 @@ clientPortAddress={{ ip.mgmt }}
 # The fist port is used by followers to connect to the leader
 # The second one is used for leader election
 {% for node in range(0, groups['zookeeper'] | count) %}
-server.{{ node+1 }}={{ groups['zookeeper'][node] }}:2888:3888
+server.{{ node+1 }}={{ hostvars[groups['zookeeper'][node]].ip.mgmt }}:2888:3888
 {% endfor %}
 
 # To avoid seeks ZooKeeper allocates space in the transaction log file in
