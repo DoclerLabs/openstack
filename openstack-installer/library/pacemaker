@@ -83,6 +83,8 @@ EXAMPLES = '''
     name: vip
     params:
       type: ocf:heartbeat:IPaddr2
+      meta:
+         target-role: Started
       params:
         ip: 192.168.0.250
         cidr_netmask: "24"
@@ -203,6 +205,20 @@ class PrimitiveParser(BaseParser):
                     ret[mode] = {}
                 ret[mode][key] = unquote(value)
         return ret
+
+    def is_same(self, obj):
+        if len(obj) + 2 != len(self.cib) and not self.partial_compare:
+            return False
+        for key, value in obj.iteritems():
+            if key not in self.cib.keys():
+                return False
+            if key == 'type':
+                if str(self.cib.get(key)) not in value:
+                    return False
+            else:
+                if value != self.cib.get(key):
+                    return False
+        return True
 
 
 class MonitorParser(BaseParser):

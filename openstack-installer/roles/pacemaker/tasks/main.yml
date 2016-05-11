@@ -76,6 +76,8 @@
     name: mgmt_vip
     params:
       type: ocf:heartbeat:IPaddr2
+      meta:
+        target-role: Started
       params:
         ip: "{{ vip_mgmt }}"
         cidr_netmask: "{{ vip_mgmt_cidr }}"
@@ -89,6 +91,8 @@
     name: public_vip
     params:
       type: ocf:heartbeat:IPaddr2
+      meta:
+        target-role: Started
       params:
         ip: "{{ vip_public }}"
         cidr_netmask: "{{ vip_public_cidr }}"
