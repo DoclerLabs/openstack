@@ -95,10 +95,17 @@
   register: osd_ids
   when: item.path is defined
 
-- name: ensure ceph OSD is started
+- name: ensure ceph OSD is started (upstart)
   service: name=ceph-osd state=started enabled=yes args="id={{ item.stdout }} cluster={{ ceph_cluster_name }}"
   with_items: "{{ osd_ids.results }}"
-  when: item.skipped is not defined or item.skipped != True
+  when: (item.skipped is not defined or item.skipped != True) and
+        ansible_distribution_version | version_compare('15.04', '<=')
+
+- name: ensure ceph OSD is started (systemd)
+  service: name=ceph-osd@{{ item.stdout }} state=started enabled=yes
+  with_items: "{{ osd_ids.results }}"
+  when: (item.skipped is not defined or item.skipped != True) and
+        ansible_distribution_version | version_compare('15.10', '>=')
 
 ### Add disk-based OSDs
 - name: prepare disks
