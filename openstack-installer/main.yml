@@ -31,3 +31,4 @@
 - include: os_trove.yml
 - include: os_mistral.yml
 - include: os_manila.yml
+- include: os_magnum.yml

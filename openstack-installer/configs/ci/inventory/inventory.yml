@@ -126,6 +126,8 @@ powerdns:
 designate:
   inherit: controller
 
+magnum:
+
 # -------- Tempest ------
 tempest:
   localhost:

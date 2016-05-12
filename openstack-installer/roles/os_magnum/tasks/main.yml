@@ -1,0 +1,117 @@
+---
+
+- name: create magnum vhost in rabbitmq
+  rabbitmq_vhost: node="rabbit@{{ groups['rabbitmq'][0] }}" name="{{ magnum_rabbit_vhost }}"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: create magnum user in rabbitmq
+  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}"
+      user="{{ magnum_rabbit_user }}" password="{{ magnum_rabbit_password }}"
+      vhost="{{ magnum_rabbit_vhost }}"
+      configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: ensure the magnum vhost contains the HA policy
+  rabbitmq_policy:
+    node: "rabbit@{{ groups['rabbitmq'][0] }}"
+    vhost: "{{ magnum_rabbit_vhost }}"
+    name: HA
+    pattern: '.*'
+    tags:
+      "ha-mode": "all"
+      "ha-sync-mode": "automatic"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: install CA certificate
+  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  when: SSLCACertificateFile != ''
+
+- name: mask autostarting of magnum
+  service_mask: name={{ item }} state=masked
+  with_items:
+    - magnum-api
+    - magnum-conductor
+
+- name: install magnum
+  apt: name={{ item }}
+  with_items:
+    - magnum-api
+    - magnum-conductor
+    - python-magnumclient
+
+- name: create magnum database
+  mysql_db: name={{ magnum_db }}
+    login_host={{ magnum_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create magnum database user
+  mysql_user: name={{ magnum_db_user }} password={{ magnum_db_password }} host={{ item }} priv={{ magnum_db }}.*:ALL
+    login_host={{ magnum_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - '%'
+
+- name: create magnum domain admin
+  keystone_user: >
+    login_user=admin
+    login_domain_name="Default"
+    login_project_name="admin"
+    login_password="{{ keystone_admin_password }}"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    cacert="{{ SSLCACertificateFile }}"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
+    user_domain="{{ magnum_domain }}"
+    user="{{ magnum_domain_admin }}"
+    password="{{ magnum_domain_admin_password }}"
+  run_once: True
+  register: magnum_admin
+
+- name: get magnum domain
+  command: openstack
+    --os-identity-api-version=3
+    --os-auth-url "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    --os-user-domain-name Default
+    --os-username admin
+    --os-project-domain-name Default
+    --os-project-name admin
+    --os-password "{{ keystone_admin_password }}"
+    {{ ssl_insecure | ternary('--insecure', '') }}
+    {{ (SSLCACertificateFile != '') | ternary('--os-cacert ' + SSLCACertificateFile, '') }}
+    domain show {{ magnum_domain  }} -c id -f value
+  changed_when: False
+  run_once: True
+  register: magnum_domain
+
+- name: ensure /var/lib/magnum/cache is writeable
+  file: path=/var/lib/magnum/cache state=directory owner=magnum group=magnum mode=0700
+  notify: restart magnum
+
+- name: install magnum configs
+  template: src={{ item }}.conf.j2 dest=/etc/magnum/{{ item }}.conf owner=magnum group=root mode=0460
+  with_items:
+    - magnum
+  notify: restart magnum
+
+- name: sync magnum db
+  command: su magnum -s /bin/sh -c 'magnum-db-manage --config-file /etc/magnum/magnum.conf upgrade head'
+  run_once: True
+
+- name: unmask autostarting of magnum
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - magnum-api
+    - magnum-conductor
+
+- meta: flush_handlers
+
+- name: ensure magnum is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - magnum-api
+    - magnum-conductor

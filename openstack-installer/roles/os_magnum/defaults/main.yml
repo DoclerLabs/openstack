@@ -1,0 +1,23 @@
+---
+
+magnum_db_user: magnum
+magnum_mysql_server: "{{ vip_mgmt }}"
+magnum_db: magnum
+magnum_rabbit_vhost: magnum
+magnum_rabbit_user: magnum
+magnum_admin_user: magnum
+magnum_domain_name: "{{ keystone_domain_name }}"
+magnum_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+magnum_project_name: "{{ keystone_service_project_name | default('service') }}"
+
+magnum_syslog_use: "{{ syslog_use | default(False) }}"
+
+magnum_debug: False
+
+magnum_domain: magnum
+magnum_domain_admin: magnum
+
+keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
+ssl_insecure: False
+SSLCACertificateFileSource:
+SSLCACertificateFile: "{{ (SSLCACertificateFileSource is not none and SSLCACertificateFileSource | trim != '') | ternary('/etc/ssl/certs/openstack.ca.crt','') }}"

@@ -164,6 +164,8 @@ powerdns:
 
 designate:
 
+magnum:
+
 # -------- Tempest ------
 tempest:
   inherit: local
