@@ -12,13 +12,18 @@ type_drivers = flat, vlan, vxlan, gre
 #
 # tenant_network_types = local
 # Example: tenant_network_types = vlan,gre,vxlan,geneve
+
+{% set mechanism_drivers = [neutron_physical_interface_driver] %}
+
 {% set tenant_network_types = ['vlan', 'flat'] %}
 {% if ip.gre is defined %}
 {% set _ = tenant_network_types.append('gre') %}
+{% set _ = mechanism_drivers.append('l2population') %}
 {% endif %}
 
 {% if ip.vxlan is defined %}
 {% set _ = tenant_network_types.append('vxlan') %}
+{% set _ = mechanism_drivers.append('l2population') %}
 {% endif %}
 
 tenant_network_types = {{ ','.join(tenant_network_types) }}
@@ -31,7 +36,7 @@ tenant_network_types = {{ ','.join(tenant_network_types) }}
 # Example: mechanism_drivers = openvswitch,cisco_nexus,logger
 # Example: mechanism_drivers = openvswitch,brocade
 # Example: mechanism_drivers = linuxbridge,brocade
-mechanism_drivers = {{ neutron_physical_interface_driver }}, l2population
+mechanism_drivers = {{ ','.join(mechanism_drivers) }}
 
 # (ListOpt) Ordered list of extension driver entrypoints
 # to be loaded from the neutron.ml2.extension_drivers namespace.
