@@ -41,6 +41,9 @@ paste.filter_factory = keystonemiddleware.auth_token:filter_factory
 #need ability to re-auth a token, thus admin url
 
 insecure = {{ ssl_insecure }}
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
 identity_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:35357/
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357/
 auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/
@@ -62,6 +65,13 @@ region_name = {{ keystone_region_name }}
 # for the user the barbican process is running as.
 signing_dir = /var/lib/barbican/cache
 region_name = {{ keystone_region_name }}
+memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
+
+token_cache_time = 300
+revocation_cache_time = 60
+# if your memcached server is shared, use these settings to avoid cache poisoning
+memcache_security_strategy = ENCRYPT
+memcache_secret_key = {{ memcache_secret_key }}
 
 
 [filter:profile]
