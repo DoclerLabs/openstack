@@ -15,7 +15,7 @@ magnum_syslog_use: "{{ syslog_use | default(False) }}"
 magnum_debug: False
 
 magnum_domain: magnum
-magnum_domain_admin: magnum
+magnum_domain_admin: magnum_trustee
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False

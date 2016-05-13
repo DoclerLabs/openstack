@@ -393,6 +393,11 @@ endpoint_type = internalURL
 
 # Certificate Manager plugin. Defaults to barbican. (string value)
 #cert_manager_type = barbican
+{% if groups['barbican'] | count > 0 %}
+cert_manager_type = barbican
+{% else %}
+cert_manager_type = local
+{% endif %}
 
 # Absolute path of the certificate storage directory. Defaults to
 # /var/lib/magnum/certificates/. (string value)

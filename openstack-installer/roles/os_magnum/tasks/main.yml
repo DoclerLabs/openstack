@@ -72,6 +72,21 @@
   run_once: True
   register: magnum_admin
 
+- name: add admin role for magnum domain to magnum domain admin
+  keystone_user: >
+    login_user=admin
+    login_domain_name="Default"
+    login_project_name="admin"
+    login_password="{{ keystone_admin_password }}"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    cacert="{{ SSLCACertificateFile }}"
+    insecure={{ ssl_insecure | ternary("true", "false") }}
+    user_domain="{{ magnum_domain }}"
+    user="{{ magnum_domain_admin }}"
+    role=admin
+  run_once: True
+  register: magnum_admin
+
 - name: get magnum domain
   command: openstack
     --os-identity-api-version=3
@@ -88,8 +103,11 @@
   run_once: True
   register: magnum_domain
 
-- name: ensure /var/lib/magnum/cache is writeable
-  file: path=/var/lib/magnum/cache state=directory owner=magnum group=magnum mode=0700
+- name: ensure /var/lib/magnum/cache and certificates are writeable
+  file: path=/var/lib/magnum/{{ item }} state=directory owner=magnum group=magnum mode=0700
+  with_items:
+    - cache
+    - certificates
   notify: restart magnum
 
 - name: install magnum configs
