@@ -85,7 +85,6 @@
     user="{{ magnum_domain_admin }}"
     role=admin
   run_once: True
-  register: magnum_admin
 
 - name: get magnum domain
   command: openstack
