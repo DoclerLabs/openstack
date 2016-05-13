@@ -695,11 +695,10 @@ insecure = {{ ssl_insecure }}
 
 [keystone_authtoken]
 
-
 auth_type = password
 signing_dir = /var/lib/magnum/cache/api
 auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v3
-auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357/v3
 region_name = {{ keystone_region_name }}
 user_domain_name = {{ magnum_domain_name }}
 username = {{ magnum_admin_user }}
@@ -710,6 +709,10 @@ project_name = {{ magnum_project_name }}
 cafile = {{ SSLCACertificateFile }}
 {% endif %}
 insecure = {{ ssl_insecure }}
+
+admin_user = {{ magnum_admin_user }}
+admin_password = {{ magnum_admin_password }}
+admin_tenant_name = {{ magnum_project_name }}
 
 memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
 
