@@ -10,9 +10,48 @@ The motivation for creating this deployment tool is that existing solutions are 
 
 The design behind this installer is to remain simple, use Ansible's features, but not over-use them. Don't use bash scripts, which are usually going to an unmaintainable state after some iterations. Use the packages of the underlying OS (currently Ubuntu 14.04 and 16.04 are supported), and don't mess the system with software installed from various sources. The installer also can be used after the deployment to change parameters of an existing cloud, so it supports the full life-cycle of the deployed OpenStack.
 
+The deployed cloud is fully production ready, and the controlling and API components are highly available.
+
 Current OpenStack versions supported:
 - liberty/Ubuntu Trusty        - trusty/liberty branch
 - mitaka/Ubuntu Trusty/Xenial  - master branch
+
+Integrated Infra components:
+- Pacemaker
+- Galera cluster (supervised by Pacemaker)
+- MongoDB
+- RabbitMQ
+- HAProxy
+- Memcached
+- PowerDNS (for designate)
+- Zookeeper
+- Ceph
+
+Integrated OpenStack components:
+- Core components, they should work out-of-box after the installer finishes:
+  - keystone
+  - glance
+  - nova
+  - neutron
+  - cinder
+  - gnocchi (only on Xenial)
+  - ceilometer
+  - aodh
+  - heat
+  - swift
+ 
+- Components, which are working, but maybe need some handwork (like getting guest images):
+  - ironic
+  - trove
+  - murano
+ 
+- Components, which are tagged experimental (maybe work, but there are upstream bugs to be fixed, or not really tested):
+  - barbican
+  - designate
+  - magnum
+  - manila
+  - mistral
+  - sahara
 
 Installing an all-in-one (Ceph, controller, compute) VM with Vagrant:
 
