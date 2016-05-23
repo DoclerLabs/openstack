@@ -38,7 +38,6 @@
     - designate-pool-manager
     - designate-zone-manager
     - designate-mdns
-    - designate-sink
 
 - name: install designate
   apt: name={{ item }}
@@ -49,7 +48,6 @@
     - designate-pool-manager
     - designate-zone-manager
     - designate-mdns
-    - designate-sink
     - python-designateclient
 
 - name: create designate database
@@ -92,7 +90,6 @@
     - designate-pool-manager
     - designate-zone-manager
     - designate-mdns
-    - designate-sink
 
 - meta: flush_handlers
 
@@ -105,4 +102,3 @@
     - designate-pool-manager
     - designate-zone-manager
     - designate-mdns
-    - designate-sink
