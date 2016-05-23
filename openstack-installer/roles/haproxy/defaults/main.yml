@@ -4,3 +4,4 @@ haproxy_retries: 3
 haproxy_timeout_client: 50s
 haproxy_timeout_connect: 10s
 haproxy_timeout_server: 50s
+haproxy_maxconn: 8192

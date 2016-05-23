@@ -8,7 +8,7 @@ global
         group haproxy
         daemon
 
-        maxconn 4096
+        maxconn {{ haproxy_maxconn }}
         tune.bufsize 384000
 
         # Default SSL material locations
@@ -30,7 +30,7 @@ defaults
         timeout client {{ haproxy_timeout_client }}
         timeout connect {{ haproxy_timeout_connect }}
         timeout server {{ haproxy_timeout_server }}
-        maxconn 4096
+        maxconn {{ haproxy_maxconn }}
         errorfile 400 /etc/haproxy/errors/400.http
         errorfile 403 /etc/haproxy/errors/403.http
         errorfile 408 /etc/haproxy/errors/408.http
