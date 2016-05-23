@@ -306,7 +306,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}swift-proxy,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description swift-proxy
-    check_command {{ os_ssl | ternary('check_https_url','check_http_url') }}!-p {{ 8080 }}!-u /healthcheck
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p {{ 8080 }}!-u /healthcheck
 }
 {% endif %}
 
@@ -364,7 +364,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}glance,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description glance-api
-    check_command {{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 9292!-u /healthcheck
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 9292!-u /healthcheck
 }
 
 define service{
@@ -372,7 +372,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}glance,{{ nagios_cloud_prefix }}mgmt-VIP
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description glance-registry
-    check_command {{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 9191!-u /healthcheck
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 9191!-u /healthcheck
 }
 {% endif %}
 
@@ -382,7 +382,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}ceilometer,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description ceilometer-api
-    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8777
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 8777!-e 401
 }
 {% endif %}
 
@@ -392,7 +392,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}ceilometer,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description aodh-api
-    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8042
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 8042!-e 401
 }
 {% endif %}
 
@@ -452,6 +452,6 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}sahara,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description sahara-api
-    check_command check_http_url!-p 8386!-e 401
+    check_command {{ nagios_cloud_prefix }}check_http_url!-p 8386!-e 401
 }
 {% endif %}
