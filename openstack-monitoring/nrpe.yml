@@ -1,15 +1,5 @@
 ---
 
-- hosts: ceph_monitor
-  become: True
-  max_fail_percentage: 0
-  roles:
-    - role: ceph_client
-  vars:
-    ceph_user: nagios
-    ceph_rights: "mon 'allow r'"
-    ceph_keyring_owner: nagios
-
 - hosts:
     - ceph_monitor
     - ceph_osd
@@ -47,3 +37,13 @@
   roles:
     - common
     - nrpe
+
+- hosts: ceph_monitor
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - role: ceph_client
+  vars:
+    ceph_user: nagios
+    ceph_rights: "mon 'allow r'"
+    ceph_keyring_owner: nagios
