@@ -27,7 +27,7 @@
     state="{{ radosgw_keystone | ternary('present', 'absent') }}"
   with_dict:
     { "rgw keystone url": "{{ keystone_proto }}://{{ ip.mgmt }}:5000",
-      "rgw keystone accepted roles": "{{ rgw_keystone_accepted_roles }}",
+      "rgw keystone accepted roles": "{{ radosgw_keystone_accepted_roles }}",
       "rgw keystone token cache size": 500,
       "rgw keystone revocation interval": 500,
       "rgw keystone verify ssl": "false",
@@ -37,7 +37,7 @@
       "rgw keystone admin project": "{{ radosgw_project_name }}",
       "rgw keystone admin domain": "{{ radosgw_domain_name }}",
       "rgw keystone api version": 3,
-      "rgw keystone implicit tenants": "{{ rgw_keystone_implicit_tenants }}",
+      "rgw keystone implicit tenants": "{{ radosgw_keystone_implicit_tenants }}",
       "nss db path": "/var/lib/ceph/nss"
     }
   notify: restart radosgw
