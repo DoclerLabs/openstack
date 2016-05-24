@@ -93,6 +93,8 @@ dnsmasq_config_file = /etc/neutron/dnsmasq-neutron.conf
 dnsmasq_dns_servers = {{ neutron_dnsmasq_dns_servers }}
 {% endif %}
 
+dnsmasq_local_resolv = {{ neutron_dnsmasq_local_resolv }}
+
 # Base log dir for dnsmasq logging. The log contains DHCP and DNS log
 # information and is useful for debugging issues with either DHCP or DNS.
 # If this section is null, disable dnsmasq log.
@@ -124,3 +126,6 @@ dnsmasq_dns_servers = {{ neutron_dnsmasq_dns_servers }}
 [AGENT]
 # Log agent heartbeats from this DHCP agent
 # log_agent_heartbeats = False
+
+# Availability zone of this node (string value)
+availability_zone =
