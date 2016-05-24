@@ -169,7 +169,7 @@ admin_username = admin
 # projects (string value)
 # Deprecated group/name - [identity]/admin_tenant_name
 #admin_tenant_name = <None>
-admin_tenant_name = admin
+admin_project_name = admin
 
 # Password to use for an  administrative user. This is needed for
 # authenticating requests made by tenant isolation to create users and
@@ -833,8 +833,8 @@ http_image = {{ cirros_image_url }}
 #endpoint_type = publicURL
 
 # The cidr block to allocate tenant ipv4 subnets from (string value)
-#tenant_network_cidr = 10.100.0.0/16
-tenant_network_cidr = {{ tenant_network_cidr }}
+#project_network_cidr = 10.100.0.0/16
+project_network_cidr = {{ tenant_network_cidr }}
 
 # The mask bits for tenant ipv4 subnets (integer value)
 #tenant_network_mask_bits = 28
@@ -1126,7 +1126,8 @@ heat = {{ groups['heat'] | count > 0 }}
 # value)
 #ceilometer = true
 ceilometer = {{ groups['ceilometer_controller'] | count > 0 }}
-aodh = {{ groups['ceilometer_controller'] | count > 0 }}
+
+aodh = {{ groups['aodh'] | count > 0 }}
 
 # Whether or not Horizon is expected to be available (boolean value)
 #horizon = true
