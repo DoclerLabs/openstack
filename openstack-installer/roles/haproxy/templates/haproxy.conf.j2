@@ -5,3 +5,6 @@ source s_haproxy_src {
 destination d_haproxy { file("/var/log/haproxy.log"); };
 
 log { source(s_haproxy_src); destination(d_haproxy); };
+{% if syslog_use_mongodb %}
+log { source(s_haproxy_src); destination(d_mongodb); };
+{% endif %}

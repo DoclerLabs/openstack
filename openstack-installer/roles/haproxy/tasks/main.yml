@@ -8,7 +8,7 @@
   apt: name=haproxy
 
 - name: install syslog-ng haproxy.conf
-  copy: src=haproxy.conf dest=/etc/syslog-ng/conf.d/haproxy.conf owner=root group=root mode=0644
+  template: src=haproxy.conf.j2 dest=/etc/syslog-ng/conf.d/haproxy.conf owner=root group=root mode=0644
   notify:
     - restart syslog-ng
     - restart haproxy
