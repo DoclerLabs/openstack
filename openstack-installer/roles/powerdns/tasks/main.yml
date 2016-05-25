@@ -2,7 +2,7 @@
 
 - name: create powerdns database
   mysql_db: name={{ powerdns_db }}
-    login_host={{ powerdns_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    login_host={{ powerdns_mysql_server }} login_user=root login_password={{ mysql_root_password }} encoding=utf8
     state=present
   run_once: True
 

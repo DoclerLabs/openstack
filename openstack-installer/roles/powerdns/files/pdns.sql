@@ -1,5 +1,6 @@
 CREATE TABLE domains (
   id                    INT AUTO_INCREMENT,
+  designate_id          CHAR(32),
   name                  VARCHAR(255) NOT NULL,
   master                VARCHAR(128) DEFAULT NULL,
   last_check            INT DEFAULT NULL,
@@ -14,6 +15,7 @@ CREATE UNIQUE INDEX name_index ON domains(name);
 
 CREATE TABLE records (
   id                    INT AUTO_INCREMENT,
+  inherit_ttl           BOOL,
   domain_id             INT DEFAULT NULL,
   name                  VARCHAR(255) DEFAULT NULL,
   type                  VARCHAR(10) DEFAULT NULL,
@@ -84,6 +86,7 @@ CREATE INDEX domainidindex ON cryptokeys(domain_id);
 
 CREATE TABLE tsigkeys (
   id                    INT AUTO_INCREMENT,
+  designate_id          CHAR(32),
   name                  VARCHAR(255),
   algorithm             VARCHAR(50),
   secret                VARCHAR(255),
