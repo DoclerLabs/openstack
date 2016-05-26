@@ -1,21 +1,27 @@
 ---
 
-- name: restart neutron controller services
-  service: name={{ item }} state=restarted
-  with_items:
-    - neutron-server
-    - neutron-{{ neutron_physical_interface_driver }}-agent
-    - "{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}"
-    - neutron-dhcp-agent
-    - neutron-metadata-agent
-    - neutron-lbaas-agent
+- name: restart neutron-server
+  service: name=neutron-server state=restarted
   when: inventory_hostname in groups['neutron_controller']
 
-- name: restart neutron compute services
-  service: name={{ item }} state=restarted
-  with_items:
-    - neutron-{{ neutron_physical_interface_driver }}-agent
-  when: inventory_hostname in groups['neutron_compute']
+- name: restart neutron-l3-agent
+  service: name="{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}" state=restarted
+  when: inventory_hostname in groups['neutron_controller']
+
+- name: restart neutron-dhcp-agent
+  service: name=neutron-dhcp-agent state=restarted
+  when: inventory_hostname in groups['neutron_controller']
+
+- name: restart neutron-metadate-agent
+  service: name=neutron-metadata-agent state=restarted
+  when: inventory_hostname in groups['neutron_controller']
+
+- name: restart neutron-lbaas-agent
+  service: name=neutron-metadata-agent state=restarted
+  when: inventory_hostname in groups['neutron_controller']
+
+- name: restart neutron-l2-agent
+  service: name="neutron-{{ neutron_physical_interface_driver }}-agent" state=restarted
 
 - name: reload sysctl
   service: name=procps state=started
