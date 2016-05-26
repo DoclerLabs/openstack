@@ -42,7 +42,11 @@ mechanism_drivers = {{ ','.join(mechanism_drivers) }}
 # to be loaded from the neutron.ml2.extension_drivers namespace.
 # extension_drivers =
 # Example: extension_drivers = anewextensiondriver
-extension_drivers = port_security
+{% set extension_drivers = ['port_security'] %}
+{% if neutron_dns_domain != 'openstacklocal' %}
+{% set _ = extension_drivers.append('dns') %}
+{% endif %}
+extension_drivers = {{ ','.join(extension_drivers) }}
 
 # =========== items for MTU selection and advertisement =============
 # (IntOpt) Path MTU.  The maximum permissible size of an unfragmented

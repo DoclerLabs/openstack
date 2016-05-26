@@ -21,6 +21,11 @@ nova_domain_name: "{{ keystone_domain_name }}"
 nova_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
 nova_project_name: "{{ keystone_service_project_name | default('service') }}"
 
+designate_admin_user: designate
+designate_domain_name: "{{ keystone_domain_name }}"
+designate_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+designate_project_name: "{{ keystone_service_project_name | default('service') }}"
+
 neutron_ha_routers: True
 #openswan/strongswan, empty: no vpnaas
 neutron_vpnaas_type:
@@ -30,6 +35,11 @@ neutron_gre_vni_ranges: "1:1000"
 neutron_dnsmasq_dns_servers:
 neutron_dnsmasq_local_resolv: False
 neutron_mtu: 0
+neutron_dns_domain: openstacklocal
+neutron_external_dns_driver: "{{ (groups['designate'] | count > 0) | ternary('designate','') }}"
+neutron_designate_allow_reverse_dns_lookup: True
+neutron_designate_ipv4_ptr_zone_prefix_size: 24
+neutron_designate_ipv6_ptr_zone_prefix_size: 116
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 os_proto: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"

@@ -127,6 +127,7 @@ service_plugins = router,firewall,lbaas{% if neutron_vpnaas_type %},vpnaas{% end
 
 # Domain to use for building the hostnames
 # dns_domain = openstacklocal
+dns_domain = {{ neutron_dns_domain }}
 
 # Allow sending resource operation notification to DHCP agent
 # dhcp_agent_notification = True
@@ -261,6 +262,8 @@ dhcp_agents_per_network = {{ groups['neutron_controller'] | length }}
 # enable_services_on_agents_with_admin_state_down = False
 
 # ===========  end of items for agent scheduler extension =====
+
+external_dns_driver = {{ neutron_external_dns_driver }}
 
 # =========== items for l3 extension ==============
 # Enable high availability for virtual routers.
@@ -599,6 +602,17 @@ nova_api_insecure = {{ ssl_insecure }}
 # transport_url option. (string value)
 # control_exchange=openstack
 
+{% if neutron_external_dns_driver == 'designate' %}
+[designate]
+url = {{ os_proto }}://{{ os_internal_address }}:9001/v2
+admin_auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357/v2.0
+admin_username = {{ designate_admin_user }}
+admin_password = {{ designate_admin_password }}
+admin_tenant_name = {{ designate_project_name }}
+allow_reverse_dns_lookup = {{ neutron_designate_allow_reverse_dns_lookup }}
+ipv4_ptr_zone_prefix_size = {{ neutron_designate_ipv4_ptr_zone_prefix_size }}
+ipv6_ptr_zone_prefix_size = {{ neutron_designate_ipv6_ptr_zone_prefix_size }}
+{% endif %}
 
 [matchmaker_redis]
 
