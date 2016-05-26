@@ -131,10 +131,17 @@
     - localhost
     - '%'
 
-- name: install neutron configs on controllers
+- name: install neutron.conf
   template: src={{ item }}.j2 dest=/etc/neutron/{{ item }} owner=neutron group=root mode=0460
   with_items:
     - neutron.conf
+  notify:
+    - restart neutron controller services
+    - restart neutron compute services
+
+- name: install neutron configs on controllers
+  template: src={{ item }}.j2 dest=/etc/neutron/{{ item }} owner=neutron group=root mode=0460
+  with_items:
     - l3_agent.ini
     - dhcp_agent.ini
     - metadata_agent.ini
@@ -145,14 +152,6 @@
   notify:
     - restart neutron controller services
   when: inventory_hostname in groups['neutron_controller']
-
-- name: install neutron config on computes
-  template: src={{ item }}.j2 dest=/etc/neutron/{{ item }} owner=neutron group=root mode=0460
-  with_items:
-    - neutron.conf
-  notify:
-    - restart neutron compute services
-  when: inventory_hostname in groups['neutron_compute']
 
 - name: install neutron ml2 configs
   template: src={{ item }}.ini.j2 dest=/etc/neutron/plugins/ml2/{{ item }}.ini owner=neutron group=root mode=0460
