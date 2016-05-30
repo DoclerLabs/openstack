@@ -108,6 +108,11 @@ rpc_backend = rabbit
 
 os_region_name = {{ keystone_region_name }}
 
+{% if groups['zookeeper'] | count > 0 %}
+periodic_coordinator_backend_url = kazoo://{% for host in groups['zookeeper'] %}{{ hostvars[host].ip.mgmt }}:2181{% if not loop.last %},{% endif %}{% endfor %}
+{% endif %}
+
+
 [oslo_messaging_notifications]
 enable = true
 driver = messagingv2
