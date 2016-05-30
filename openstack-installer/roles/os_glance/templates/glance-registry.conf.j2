@@ -154,6 +154,7 @@ bind_host = 127.0.0.1
 # requests. The default will be equal to the number of CPUs available.
 # (integer value)
 #workers = 4
+workers = {{ glance_registry_workers }}
 
 # Maximum line size of message headers to be accepted. max_header_line
 # may need to be increased when using large tokens (typically those
