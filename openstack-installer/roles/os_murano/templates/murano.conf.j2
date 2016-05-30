@@ -66,6 +66,9 @@ bind_host = 127.0.0.1
 # option. (string value)
 #control_exchange = openstack
 
+[engine]
+workers = {{ murano_engine_workers }}
+
 [keystone]
 
 {% if SSLCACertificateFile != '' %}
