@@ -10,6 +10,9 @@ heat_domain_name: "{{ keystone_domain_name }}"
 heat_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
 heat_project_name: "{{ keystone_service_project_name | default('service') }}"
 
+heat_api_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
+heat_engine_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
+
 heat_user_domain: heat_user_domain
 heat_domain_admin: heat_domain_admin
 

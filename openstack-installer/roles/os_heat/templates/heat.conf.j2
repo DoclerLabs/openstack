@@ -180,8 +180,11 @@ stack_domain_admin = {{ heat_domain_admin }}
 stack_domain_admin_password = {{ heat_domain_admin_password }}
 stack_user_domain_name = {{ heat_user_domain }}
 
+num_engine_workers = {{ heat_engine_workers }}
+
 [heat_api]
 bind_host = 127.0.0.1
+workers = {{ heat_api_workers }}
 
 [heat_api_cloudwatch]
 bind_host = 127.0.0.1
