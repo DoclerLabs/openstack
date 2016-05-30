@@ -18,6 +18,9 @@ bind_port = 8779
 # Number of workers for the API service. The default will
 # be the number of CPUs available. (integer value)
 #trove_api_workers=None
+trove_api_workers = {{ trove_api_workers }}
+
+trove_conductor_workers = {{ trove_conductor_workers }}
 
 #===================== RPC Configuration =================================
 

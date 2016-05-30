@@ -8,6 +8,9 @@ trove_domain_name: "{{ keystone_domain_name }}"
 trove_project_domain_name: "{{ trove_domain_name }}"
 trove_project_name: trove
 
+trove_api_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
+trove_conductor_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
+
 trove_net_name: trove-net
 trove_net_segmentation_id: 915
 trove_net_type: vlan
