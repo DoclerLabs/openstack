@@ -527,7 +527,6 @@ max_retries = -1
 # URL for the coordination backend to use.
 #backend_url = kazoo://127.0.0.1/
 {% if groups['zookeeper'] | count > 0 %}
-[coordination]
 backend_url = kazoo://{% for host in groups['zookeeper'] %}{{ hostvars[host].ip.mgmt }}:2181{% if not loop.last %},{% endif %}{% endfor %}
 {% endif %}
 
