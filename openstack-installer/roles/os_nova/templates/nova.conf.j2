@@ -162,6 +162,7 @@ ca_file = {{ SSLCACertificateFile }}
 [conductor]
 use_local = false
 topic = conductor
+workers = {{ nova_conductor_workers }}
 
 [keystone_authtoken]
 auth_type = password
