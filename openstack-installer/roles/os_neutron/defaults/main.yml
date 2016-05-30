@@ -10,6 +10,9 @@ neutron_domain_name: "{{ keystone_domain_name }}"
 neutron_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
 neutron_project_name: "{{ keystone_service_project_name | default('service') }}"
 
+neutron_server_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
+neutron_metadata_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
+
 neutron_syslog_use: "{{ syslog_use | default(False) }}"
 
 neutron_debug: False

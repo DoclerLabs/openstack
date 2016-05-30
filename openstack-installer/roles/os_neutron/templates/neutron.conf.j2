@@ -322,6 +322,8 @@ l3_ha_network_physical_name = {{ neutron_ha_network_physical_name }}
 
 # Location of Metadata Proxy UNIX domain socket
 # metadata_proxy_socket = $state_path/metadata_proxy
+
+metadata_workers = {{ neutron_metadata_workers }}
 # =========== end of items for metadata proxy configuration ==============
 
 # ========== items for VLAN trunking networks ==========
@@ -336,6 +338,7 @@ l3_ha_network_physical_name = {{ neutron_ha_network_physical_name }}
 # Number of separate API worker processes to spawn. If not specified or < 1,
 # the default value is equal to the number of CPUs available.
 # api_workers = <number of CPUs>
+api_workers = {{ neutron_server_workers }}
 
 # Number of separate RPC worker processes to spawn. If not specified or < 1,
 # a single RPC worker process is spawned by the parent process.
