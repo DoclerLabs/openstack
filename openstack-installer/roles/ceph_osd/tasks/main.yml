@@ -42,7 +42,8 @@
       "osd scrub load threshold": "{{ ceph_osd_scrub_load_threshold }}",
       "osd recovery max active": "{{ ceph_osd_recovery_max_active }}",
       "osd max backfills": "{{ ceph_osd_max_backfills }}",
-      "osd recovery max single start": "{{ ceph_osd_recovery_max_single_start }}"
+      "osd recovery max single start": "{{ ceph_osd_recovery_max_single_start }}",
+      "osd max object name len": "{{ ceph_osd_max_object_name_len }}"
    }
 
 - name: set up ceph public network
