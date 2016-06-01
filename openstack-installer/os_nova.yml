@@ -44,23 +44,23 @@
   max_fail_percentage: 0
   roles:
     - role: ceph_client
-      ceph_user: "{{ cinder_ceph_user }}"
-      ceph_rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_ceph_pool }}, allow rwx pool={{ nova_ephemeral_ceph_pool }}, allow rx pool={{ glance_ceph_pool | default('images') }}'"
+      ceph_user: "{{ cinder_ceph_user | default('cinder') }}"
+      ceph_rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_ceph_pool | default('volumes') }}, allow rwx pool={{ nova_ephemeral_ceph_pool }}, allow rx pool={{ glance_ceph_pool | default('images') }}'"
       ceph_keyring_owner: nova
       ceph_keyring_group: "{{ (inventory_hostname in groups['cinder_volume']) | ternary('cinder','root') }}"
-      when: cinder_backend == 'ceph' or nova_ephemeral_backend == 'ceph'
+      when: cinder_backend | default('lvm') == 'ceph' or nova_ephemeral_backend == 'ceph'
   tasks:
     - name: get cinder key
-      command: ceph auth get-key client.{{ cinder_ceph_user }}
+      command: ceph auth get-key client.{{ cinder_ceph_user | default('cinder') }}
       register: cinder_key
       changed_when: False
       delegate_to: "{{ groups['ceph_monitor'][0] }}"
-      when: cinder_backend == 'ceph' or nova_ephemeral_backend == 'ceph'
+      when: cinder_backend | default('lvm') == 'ceph' or nova_ephemeral_backend == 'ceph'
       run_once: True
 
     - name: install cinder secret into virsh
       command: 'virsh secret-set-value --secret {{ cinder_volume_secret_uuid }} --base64 {{ cinder_key.stdout }}'
-      when: cinder_backend == 'ceph' or nova_ephemeral_backend == 'ceph'
+      when: cinder_backend | default('lvm') == 'ceph' or nova_ephemeral_backend == 'ceph'
 
 - hosts: haproxy
   become: True
