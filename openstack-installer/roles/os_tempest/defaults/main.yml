@@ -23,6 +23,8 @@ external_subnet_gateway_ip: 10.97.37.126
 external_subnet_allocation_start: 10.97.37.1
 external_subnet_allocation_end: 10.97.37.125
 
+nova_ephemeral_backend: local
+
 neutron_vpnaas_type:
 neutron_api_extensions:
   - dns-integration

@@ -53,7 +53,7 @@
   roles:
     - role: ceph_client
       ceph_user: "{{ cinder_ceph_user | default('cinder') }}"
-      ceph_rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_ceph_pool | default('volumes') }}, allow rwx pool={{ nova_ephemeral_ceph_pool }}, allow rx pool={{ glance_ceph_pool | default('images') }}'"
+      ceph_rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_ceph_pool | default('volumes') }}, allow rwx pool={{ nova_ephemeral_ceph_pool | default('vms') }}, allow rx pool={{ glance_ceph_pool | default('images') }}'"
       ceph_keyring_owner: root
       ceph_keyring_group: cinder
       when: cinder_backend | default('lvm') == 'ceph'

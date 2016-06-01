@@ -15,6 +15,10 @@ nova_project_name: "{{ keystone_service_project_name | default('service') }}"
 cinder_backend: lvm
 cinder_ceph_user: cinder
 
+#ceph or local
+nova_ephemeral_backend: local
+nova_ephemeral_ceph_pool: vms
+
 nova_conductor_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 nova_compute_driver: libvirt.LibvirtDriver
 nova_scheduler_default_filters: "RetryFilter, AvailabilityZoneFilter, RamFilter, DiskFilter, ComputeFilter, ComputeCapabilitiesFilter, ImagePropertiesFilter, ServerGroupAntiAffinityFilter, ServerGroupAffinityFilter, SameHostFilter, DifferentHostFilter"
