@@ -75,3 +75,5 @@ ceph_public_network: 10.10.0.0/24
 ceph_osd_pool_default_size: 1
 ceph_osd_pool_default_pg_num: 32
 ceph_osd_pool_default_pgp_num: 32
+ceph_osd_journal_size: 500
+ceph_osd_max_object_name_len: 256
