@@ -23,5 +23,6 @@
    }
 
 - name: write out ceph keyring
-  copy: content='{{ ceph_auth.stdout }}\n' dest=/etc/ceph/ceph.client.{{ ceph_user}}.keyring owner={{ ceph_keyring_owner }} group=root mode=0440
+  copy: content='{{ ceph_auth.stdout }}\n' dest=/etc/ceph/ceph.client.{{ ceph_user}}.keyring
+        owner={{ ceph_keyring_owner | default('root') }} group={{ ceph_keyring_group | default('root') }} mode=0440
   when: ceph_keyring_owner is defined
