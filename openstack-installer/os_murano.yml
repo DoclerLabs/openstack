@@ -5,7 +5,7 @@
   roles:
     - role: os_keystone_service
       keystone_service_name: murano
-      keystone_service_type: application_catalog
+      keystone_service_type: application-catalog
       keystone_service_description: "OpenStack Application Catalog Service"
       keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8082"
       keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8082"
