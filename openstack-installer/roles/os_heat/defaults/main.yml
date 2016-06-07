@@ -16,6 +16,9 @@ heat_engine_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 heat_user_domain: heat_user_domain
 heat_domain_admin: heat_domain_admin
 
+#trusts or password
+heat_deferred_auth_method: trusts
+
 heat_syslog_use: "{{ syslog_use | default(False) }}"
 
 heat_debug: False
