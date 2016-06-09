@@ -37,8 +37,14 @@ def inventory(hostname):
                            "inventory.yml"), 'r') as f:
         yml = yaml.safe_load(f)
 
+    with open(os.path.join(os.path.dirname(sys.argv[0]),
+                           "inventory.yml.template"), 'r') as f:
+        inv_source = yaml.safe_load(f)
+
+    inv_source.update(yml)
+
     if hostname:
-        for group, data in yml.iteritems():
+        for group, data in inv_source.iteritems():
             if data and hostname in data:
                 hostvars = data[hostname]
                 hostvars['ansible_ssh_host'] = hostvars['ip']['mgmt']
@@ -49,8 +55,8 @@ def inventory(hostname):
             sys.exit(1)
     else:
         inventory = {"_meta": {"hostvars": {}}}
-        for group, data in yml.iteritems():
-            host_group = sorted(expand_group(yml, group, 0))
+        for group, data in inv_source.iteritems():
+            host_group = sorted(expand_group(inv_source, group, 0))
             if data and 'roles' in data:
                 for role in data['roles']:
                     inventory.setdefault(role, []).extend(host_group)

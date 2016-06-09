@@ -1,0 +1,54 @@
+local:
+  localhost:
+    ip:
+      mgmt: 127.0.0.1
+    ansible_connection: local
+
+# ---- Nagios ----
+nagios:
+
+# ---- Ceph ----
+ceph_monitor:
+ceph_osd:
+ceph_radosgw:
+
+# --- Infra ----
+pacemaker:
+zookeeper:
+haproxy:
+memcached:
+rabbitmq:
+galera:
+mongodb:
+powerdns:
+syslog:
+
+# -------- OpenStack ---------
+keystone:
+swift_proxy:
+swift_storage:
+glance:
+horizon:
+nova_controller:
+nova_compute:
+neutron_controller:
+neutron_compute:
+gnocchi:
+aodh:
+ceilometer_controller:
+ceilometer_compute:
+heat:
+cinder:
+cinder_volume:
+murano:
+sahara:
+trove:
+barbican:
+ironic:
+mistral:
+manila:
+designate:
+magnum:
+
+tempest:
+  inherit: local
