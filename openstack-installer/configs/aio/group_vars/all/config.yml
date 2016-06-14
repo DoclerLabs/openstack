@@ -6,6 +6,8 @@ vip_public: 10.10.1.254
 vip_public_cidr: 24
 vip_public_nic: eth2
 
+mysql_innodb_buffer_pool_size: 2G
+
 #Openstack services log to syslog
 syslog_use: False
 #Send logs to mongodb
