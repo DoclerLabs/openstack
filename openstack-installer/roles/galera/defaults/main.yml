@@ -1,6 +1,7 @@
 ---
 
 mysql_max_connections: 2000
+mysql_innodb_buffer_pool_size: 8G
 
 mysql_sock_file: /var/run/mysqld/mysqld.sock
 mysql_pid_file: /var/run/mysqld/mysqld.pid
