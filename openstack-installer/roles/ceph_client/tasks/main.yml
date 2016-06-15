@@ -5,6 +5,7 @@
   register: ceph_auth
   delegate_to: "{{ groups['ceph_monitor'][0] }}"
   run_once: True
+  when: ceph_key == ''
 
 - name: ensure /etc/ceph exists
   file: path=/etc/ceph state=directory owner=root group=root mode=0755
@@ -22,7 +23,13 @@
       "cephx require signatures": "true"
    }
 
-- name: write out ceph keyring
+- name: write out ceph keyring (created key)
   copy: content='{{ ceph_auth.stdout }}\n' dest=/etc/ceph/ceph.client.{{ ceph_user}}.keyring
         owner={{ ceph_keyring_owner | default('root') }} group={{ ceph_keyring_group | default('root') }} mode=0440
-  when: ceph_keyring_owner is defined
+  when: ceph_keyring_owner is defined and ceph_key == ''
+
+- name: write out ceph keyring (predefined key)
+  copy: content="[client.{{ ceph_user }}]\n\tkey = {{ ceph_key }}\n"
+        dest=/etc/ceph/ceph.client.{{ ceph_user}}.keyring
+        owner={{ ceph_keyring_owner | default('root') }} group={{ ceph_keyring_group | default('root') }} mode=0440
+  when: ceph_keyring_owner is defined and ceph_key != ''

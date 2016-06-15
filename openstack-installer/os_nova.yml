@@ -46,15 +46,15 @@
     - role: ceph_client
       ceph_user: "{{ cinder_ceph_user | default('cinder') }}"
       ceph_rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_ceph_pool | default('volumes') }}, allow rwx pool={{ nova_ephemeral_ceph_pool | default('vms') }}, allow rx pool={{ glance_ceph_pool | default('images') }}'"
+      ceph_key: "{{ cinder_ceph_key | default(None) }}"
       ceph_keyring_owner: nova
       ceph_keyring_group: "{{ (inventory_hostname in groups['cinder_volume']) | ternary('cinder','root') }}"
       when: cinder_backend | default('lvm') == 'ceph' or nova_ephemeral_backend | default('local') == 'ceph'
   tasks:
     - name: get cinder key
-      command: ceph auth get-key client.{{ cinder_ceph_user | default('cinder') }}
+      command: ceph-authtool /etc/ceph/ceph.client.{{ cinder_ceph_user | default('cinder') }}.keyring -p -n client.{{ cinder_ceph_user | default('cinder') }}
       register: cinder_key
       changed_when: False
-      delegate_to: "{{ groups['ceph_monitor'][0] }}"
       when: cinder_backend | default('lvm') == 'ceph' or nova_ephemeral_backend | default('local') == 'ceph'
       run_once: True
 
