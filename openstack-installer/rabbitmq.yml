@@ -5,4 +5,7 @@
   max_fail_percentage: 0
   roles:
     - common
-    - rabbitmq
+    - role: rabbitmq
+      rabbitmq_hosts: "{{ groups['rabbitmq'] }}"
+      rabbitmq_cookie: "{{ rabbitmq_erlang_cookie }}"
+      rabbitmq_password: "{{ rabbitmq_admin_password }}"

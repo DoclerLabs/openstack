@@ -5,9 +5,9 @@
     {hipe_compile, true},
     {cluster_partition_handling, autoheal},
     {default_user, <<"admin">>},
-    {default_pass, <<"{{ rabbitmq_admin_password }}">>},
+    {default_pass, <<"{{ rabbitmq_password }}">>},
     {cluster_nodes, {
-      [ {% for host in groups['rabbitmq'] %}'rabbit@{{ host }}'{% if not loop.last %}, {% endif %}{% endfor %}], disc}
+      [ {% for host in rabbitmq_hosts %}'rabbit@{{ host }}'{% if not loop.last %}, {% endif %}{% endfor %}], disc}
     }
   ]},
   {rabbitmq_management, [{listener, [{port, 15672}, {ip, "{{ ip.mgmt }}"}]}]}
