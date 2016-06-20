@@ -40,6 +40,7 @@ ceilometer_compute:
 heat:
 cinder:
 cinder_volume:
+murano_rabbitmq:
 murano:
 sahara:
 trove:

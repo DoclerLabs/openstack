@@ -15,9 +15,10 @@ murano_syslog_use: "{{ syslog_use | default(False) }}"
 
 murano_debug: False
 
-murano_service_rabbit_server: "{{ hostvars[groups['rabbitmq'][(groups['murano'].index(inventory_hostname) % groups['rabbitmq'] | count)]].ip.mgmt }}"
-murano_service_rabbit_user: "{{ murano_rabbit_user }}"
-murano_service_rabbit_password: "{{ murano_rabbit_password }}"
+murano_service_rabbit_servers: "{{ (groups['murano_rabbitmq'] | count > 0) | ternary(groups['murano_rabbitmq'],groups['rabbitmq']) }}"
+murano_service_rabbit_server: "{{ hostvars[murano_service_rabbit_servers[groups['murano'].index(inventory_hostname) % murano_service_rabbit_servers | count]].ip.mgmt }}"
+murano_service_rabbit_vhost: murano
+murano_service_rabbit_user: murano
 
 murano_use_trusts: True
 

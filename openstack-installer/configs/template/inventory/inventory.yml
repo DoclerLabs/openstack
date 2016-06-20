@@ -146,6 +146,8 @@ cinder:
 cinder_volume:
   inherit: controller
 
+murano_rabbitmq:
+
 murano:
 
 sahara:

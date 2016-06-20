@@ -19,6 +19,17 @@
           keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
           keystone_role: admin
 
+- hosts: murano_rabbitmq
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - common
+
+    - role: rabbitmq
+      rabbitmq_hosts: "{{ groups['murano_rabbitmq'] }}"
+      rabbitmq_cookie: "{{ murano_rabbitmq_erlang_cookie }}"
+      rabbitmq_password: "{{ murano_rabbitmq_admin_password }}"
+
 - hosts: murano
   become: True
   max_fail_percentage: 0
