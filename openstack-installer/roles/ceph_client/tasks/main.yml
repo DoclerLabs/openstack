@@ -23,6 +23,13 @@
       "cephx require signatures": "true"
    }
 
+- name: set default rbd features
+  ini_file: dest=/etc/ceph/ceph.conf
+    section=global
+    option="rbd default features"
+    value="{{ ceph_rbd_default_features }}"
+  when: ceph_rbd_default_features
+
 - name: write out ceph keyring (created key)
   copy: content='{{ ceph_auth.stdout }}\n' dest=/etc/ceph/ceph.client.{{ ceph_user}}.keyring
         owner={{ ceph_keyring_owner | default('root') }} group={{ ceph_keyring_group | default('root') }} mode=0440
