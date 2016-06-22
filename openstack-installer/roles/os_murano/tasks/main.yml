@@ -26,32 +26,32 @@
   run_once: True
 
 - name: create murano vhost in rabbitmq for murano engine
-  rabbitmq_vhost: node="rabbit@{{ groups['murano_rabbitmq'][0] }}" name="{{ murano_service_rabbit_vhost }}"
-  delegate_to: "{{ groups['murano_rabbitmq'][0] }}"
+  rabbitmq_vhost: node="rabbit@{{ murano_service_rabbit_servers[0] }}" name="{{ murano_service_rabbit_vhost }}"
+  delegate_to: "{{ murano_service_rabbit_servers[0] }}"
   run_once: True
-  when: groups['murano_rabbitmq'] | count > 0
+  when: murano_service_rabbit_servers | count > 0
 
 - name: create murano user in rabbitmq for murano engine
-  rabbitmq_user: node="rabbit@{{ groups['murano_rabbitmq'][0] }}"
+  rabbitmq_user: node="rabbit@{{ murano_service_rabbit_servers[0] }}"
       user="{{ murano_service_rabbit_user }}" password="{{ murano_service_rabbit_password }}"
       vhost="{{ murano_service_rabbit_vhost }}"
       configure_priv=".*" read_priv=".*" write_priv=".*"
-  delegate_to: "{{ groups['murano_rabbitmq'][0] }}"
+  delegate_to: "{{ murano_service_rabbit_servers[0] }}"
   run_once: True
-  when: groups['murano_rabbitmq'] | count > 0
+  when: murano_service_rabbit_servers | count > 0
 
 - name: ensure the murano vhost contains the HA policy
   rabbitmq_policy:
-    node: "rabbit@{{ groups['murano_rabbitmq'][0] }}"
+    node: "rabbit@{{ murano_service_rabbit_servers[0] }}"
     vhost: "{{ murano_service_rabbit_vhost }}"
     name: HA
     pattern: '.*'
     tags:
       "ha-mode": "all"
       "ha-sync-mode": "automatic"
-  delegate_to: "{{ groups['murano_rabbitmq'][0] }}"
+  delegate_to: "{{ murano_service_rabbit_servers[0] }}"
   run_once: True
-  when: groups['murano_rabbitmq'] | count > 0
+  when: murano_service_rabbit_servers | count > 0
 
 - name: install CA certificate
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644

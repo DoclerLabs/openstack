@@ -17,8 +17,8 @@ murano_debug: False
 
 murano_service_rabbit_servers: "{{ (groups['murano_rabbitmq'] | count > 0) | ternary(groups['murano_rabbitmq'],groups['rabbitmq']) }}"
 murano_service_rabbit_server: "{{ hostvars[murano_service_rabbit_servers[groups['murano'].index(inventory_hostname) % murano_service_rabbit_servers | count]].ip.mgmt }}"
-murano_service_rabbit_vhost: murano
-murano_service_rabbit_user: murano
+murano_service_rabbit_vhost: murano-engine
+murano_service_rabbit_user: murano-engine
 
 murano_use_trusts: True
 
