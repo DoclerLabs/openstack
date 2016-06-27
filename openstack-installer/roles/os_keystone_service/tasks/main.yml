@@ -37,7 +37,7 @@
 - name: create the service in keystone
   keystone_service: >
     token="{{ os_admin_token }}"
-    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v2.0"
+    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     name="{{ keystone_service_name }}"
     type="{{ keystone_service_type }}"
     description="{{ keystone_service_description }}"

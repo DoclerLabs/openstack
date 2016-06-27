@@ -178,9 +178,9 @@ def ensure_present(keystone, name, service_type, description, public_url,
     if endpoints is not None:
         identical = True
         for endpoint in endpoints:
-            if (endpoint.interface == 'admin' and endpoint.links['self'] != admin_url) or \
-               (endpoint.interface == 'internal' and endpoint.links['self'] != internal_url) or \
-               (endpoint.interface == 'public' and endpoint.links['self'] != public_url):
+            if (endpoint.interface == 'admin' and endpoint.url != admin_url) or \
+               (endpoint.interface == 'internal' and endpoint.url != internal_url) or \
+               (endpoint.interface == 'public' and endpoint.url != public_url):
                identical = False
 
         if not identical:
@@ -216,7 +216,7 @@ def ensure_present(keystone, name, service_type, description, public_url,
     # Recreate endpoint, if necessary.
     if endpoints is None:
         if not check_mode:
-            keystone.endpoints.create
+            keystone.endpoints.create(
                 service=service,
                 region=region,
                 interface='internal',
