@@ -127,6 +127,7 @@ designate:
   inherit: controller
 
 magnum:
+  inherit: controller
 
 # -------- Tempest ------
 tempest:
