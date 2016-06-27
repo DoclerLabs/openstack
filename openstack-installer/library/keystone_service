@@ -208,8 +208,7 @@ def ensure_present(keystone, name, service_type, description, public_url,
             service = keystone.services.create(
                 name=name,
                 service_type=service_type,
-                description=description,
-                base_url=internal_url
+                description=description
             )
         changed = True
 
