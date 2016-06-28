@@ -3,6 +3,10 @@
 - name: install nrpe
   apt: name=nagios-nrpe-server
 
+- name: install monitoring-plugins-standard
+  apt: name=monitoring-plugins-standard
+  when: inventory_hostname in groups['galera']
+
 - name: enable sudo for nrpe
   copy: content='nagios ALL=(root) NOPASSWD:ALL' dest=/etc/sudoers.d/nrpe owner=root group=root mode=0600
 
