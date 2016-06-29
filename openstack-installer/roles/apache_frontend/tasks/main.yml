@@ -13,6 +13,25 @@
 - name: ensure apache2 is started
   service: name=apache2 state=started enabled=yes
 
+- name: enable mod_ssl
+  file: src=../mods-available/ssl.load dest=/etc/apache2/mods-enabled/ssl.load state=link
+  when: SSLCertificateKeyFileSource is defined
+  notify: restart apache
+
+- name: enable apache modules
+  file: src=../mods-available/{{ item }}.load dest=/etc/apache2/mods-enabled/{{ item }}.load state=link
+  with_items:
+    - rewrite
+    - proxy
+    - proxy_fcgi
+    - proxy_http
+  notify: restart apache
+
+- name: enable apache auth_openidc module
+  file: src=../mods-available/auth_openidc.load dest=/etc/apache2/mods-enabled/auth_openidc.load state=link
+  when: apache_oidc
+  notify: restart apache
+
 - name: install CA certificate
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
@@ -25,24 +44,6 @@
     - { src: '{{ SSLCertificateFileSource | default("") }}', dest: '{{ SSLCertificateFile }}', mode: '0464' }
   when: item.src != ''
   notify: reload apache
-
-- name: enable mod_ssl
-  file: src=../mods-available/ssl.load dest=/etc/apache2/mods-enabled/ssl.load state=link
-  when: SSLCertificateKeyFileSource is defined
-  notify: reload apache
-
-- name: enable apache modules
-  file: src=../mods-available/{{ item }}.load dest=/etc/apache2/mods-enabled/{{ item }}.load state=link
-  with_items:
-    - rewrite
-    - proxy
-    - proxy_fcgi
-    - proxy_http
-  notify: reload apache
-
-- name: enable apache auth_openidc module
-  file: src=../mods-available/auth_openidc.load dest=/etc/apache2/mods-enabled/auth_openidc.load state=link
-  when: apache_oidc
 
 - name: install site.conf
   template: src=proxy-site.conf.j2 dest=/etc/apache2/sites-available/{{ apache_service_name }}-site.conf owner=root group=root mode=0644
