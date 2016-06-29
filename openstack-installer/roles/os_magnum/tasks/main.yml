@@ -57,35 +57,6 @@
     - localhost
     - '%'
 
-- name: create magnum domain admin
-  keystone_user: >
-    login_user=admin
-    login_domain_name="Default"
-    login_project_name="admin"
-    login_password="{{ keystone_admin_password }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    cacert="{{ SSLCACertificateFile }}"
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    user_domain="{{ magnum_domain }}"
-    user="{{ magnum_domain_admin }}"
-    password="{{ magnum_domain_admin_password }}"
-  run_once: True
-  register: magnum_admin
-
-- name: add admin role for magnum domain to magnum domain admin
-  keystone_user: >
-    login_user=admin
-    login_domain_name="Default"
-    login_project_name="admin"
-    login_password="{{ keystone_admin_password }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    cacert="{{ SSLCACertificateFile }}"
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    user_domain="{{ magnum_domain }}"
-    user="{{ magnum_domain_admin }}"
-    role=admin
-  run_once: True
-
 - name: get magnum domain
   command: openstack
     --os-identity-api-version=3
@@ -97,10 +68,26 @@
     --os-password "{{ keystone_admin_password }}"
     {{ ssl_insecure | ternary('--insecure', '') }}
     {{ (SSLCACertificateFile != '') | ternary('--os-cacert ' + SSLCACertificateFile, '') }}
-    domain show {{ magnum_domain  }} -c id -f value
+    domain show {{ magnum_domain }} -c id -f value
   changed_when: False
   run_once: True
   register: magnum_domain
+
+- name: get magnum domain admin
+  command: openstack
+    --os-identity-api-version=3
+    --os-auth-url "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    --os-user-domain-name Default
+    --os-username admin
+    --os-project-domain-name Default
+    --os-project-name admin
+    --os-password "{{ keystone_admin_password }}"
+    {{ ssl_insecure | ternary('--insecure', '') }}
+    {{ (SSLCACertificateFile != '') | ternary('--os-cacert ' + SSLCACertificateFile, '') }}
+    user show {{ magnum_domain_admin }} -c id -f value
+  changed_when: False
+  run_once: True
+  register: magnum_domain_admin
 
 - name: ensure /var/lib/magnum/cache and certificates are writeable
   file: path=/var/lib/magnum/{{ item }} state=directory owner=magnum group=magnum mode=0700

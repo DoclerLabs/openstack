@@ -18,7 +18,12 @@
           keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
           keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
           keystone_role: admin
-
+        - keystone_user: "{{ magnum_domain_admin | default('magnum_trustee') }}"
+          keystone_domain_name: "{{ magnum_domain | default('magnum') }}"
+          keystone_password: "{{ magnum_domain_admin_password }}"
+          keystone_project_name:
+          keystone_project_domain_name:
+          keystone_role: admin
 - hosts: magnum
   become: True
   max_fail_percentage: 0

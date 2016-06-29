@@ -976,7 +976,7 @@ trustee_domain_id = {{ magnum_domain.stdout }}
 # Id of the admin with roles sufficient to manage users in the
 # trustee_domain (string value)
 #trustee_domain_admin_id = <None>
-trustee_domain_admin_id = {{ magnum_admin.id }}
+trustee_domain_admin_id = {{ magnum_domain_admin.stdout }}
 
 # Password of trustee_domain_admin (string value)
 #trustee_domain_admin_password = <None>
