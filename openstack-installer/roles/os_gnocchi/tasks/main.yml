@@ -46,7 +46,7 @@
   patch: src=default_archive_policy.diff basedir=/usr/lib/python2.7/dist-packages/gnocchi strip=2
 
 - name: sync gnocchi db
-  command: su gnocchi -s /bin/sh -c '/usr/bin/gnocchi-upgrade'
+  command: su gnocchi -s /bin/sh -c '/usr/bin/gnocchi-upgrade --skip-storage'
   run_once: True
 
 - name: unmask autostarting of gnocchi
