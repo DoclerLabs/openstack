@@ -59,3 +59,5 @@
         - keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
           keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name | default('Default')) }}"
           keystone_project_description: "Service Project"
+      keystone_roles:
+        - _member_

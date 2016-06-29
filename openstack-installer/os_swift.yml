@@ -18,6 +18,8 @@
           keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
           keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
           keystone_role: admin
+      keystone_roles:
+        - ResellerAdmin
 
 - hosts:
     - swift_proxy

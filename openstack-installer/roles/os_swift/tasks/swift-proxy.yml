@@ -58,15 +58,3 @@
 - name: ensure swift-proxy is started
   service: name=swift-proxy state=started enabled=yes
   when: inventory_hostname in groups['swift_proxy']
-
-- name: create ResellerAdmin role
-  keystone_user:
-    login_project_name=admin
-    login_user=admin
-    login_domain_name="Default"
-    login_password="{{ keystone_admin_password }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    cacert="{{ SSLCACertificateFile }}"
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    role=ResellerAdmin
-  when: inventory_hostname == groups['swift_proxy'][0]
