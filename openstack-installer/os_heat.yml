@@ -18,6 +18,15 @@
           keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
           keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
           keystone_role: admin
+        - keystone_user: "{{ heat_domain_admin | default('heat_domain_admin') }}"
+          keystone_domain_name: "{{ heat_user_domain | default('heat_user_domain') }}"
+          keystone_password: "{{ heat_domain_admin_password }}"
+          keystone_project_name:
+          keystone_project_domain_name:
+          keystone_role: admin
+      keystone_roles:
+        - heat_stack_owner
+        - heat_stack_user
 
     - role: os_keystone_service
       keystone_service_name: heat-cfn
