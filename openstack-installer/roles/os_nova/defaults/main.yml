@@ -20,7 +20,10 @@ nova_ephemeral_backend: local
 nova_ephemeral_ceph_pool: vms
 
 nova_conductor_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
+#libvirt.LibvirtDriver, nova_lxd.nova.virt.lxd.LXDDriver
 nova_compute_driver: libvirt.LibvirtDriver
+#kvm, lxd
+nova_compute_package: kvm
 nova_scheduler_default_filters: "RetryFilter, AvailabilityZoneFilter, RamFilter, DiskFilter, ComputeFilter, ComputeCapabilitiesFilter, ImagePropertiesFilter, ServerGroupAntiAffinityFilter, ServerGroupAffinityFilter, SameHostFilter, DifferentHostFilter"
 nova_default_floating_pool: ext-net
 

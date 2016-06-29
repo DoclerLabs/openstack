@@ -67,7 +67,7 @@
     - python-rbd
     - python-rados
     - sysfsutils
-    - nova-compute
+    - nova-compute-{{ nova_compute_package }}
   when: inventory_hostname in groups['nova_compute']
 
 - name: ensure nova-api service is disabled at boot
