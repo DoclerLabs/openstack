@@ -1,13 +1,18 @@
+{% set listen_addresses=['127.0.0.1'] %}
+{% set _ = listen_addresses.append(ip.mgmt) %}
+{% if rabbitmq_listen is defined and rabbitmq_listen %}
+{% set _ = listen_addresses.append(rabbitmq_listen) %}
+{% endif %}
 [
   {rabbit, [
     {loopback_users, []},
-    {tcp_listeners, [{"127.0.0.1", 5672}, { "{{ ip.mgmt }}", 5672} ]},
+    {tcp_listeners, [ {% for listen_address in listen_addresses %}{"{{ listen_address }}", 5672}{% if not loop.last %}, {% endif %}{% endfor %} ]},
     {hipe_compile, true},
     {cluster_partition_handling, autoheal},
     {default_user, <<"admin">>},
     {default_pass, <<"{{ rabbitmq_password }}">>},
     {cluster_nodes, {
-      [ {% for host in rabbitmq_hosts %}'rabbit@{{ host }}'{% if not loop.last %}, {% endif %}{% endfor %}], disc}
+      [ {% for host in rabbitmq_hosts %}'rabbit@{{ host }}'{% if not loop.last %}, {% endif %}{% endfor %} ], disc}
     }
   ]},
   {rabbitmq_management, [{listener, [{port, 15672}, {ip, "{{ ip.mgmt }}"}]}]}
