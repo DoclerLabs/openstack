@@ -71,7 +71,7 @@
     domain show {{ magnum_domain }} -c id -f value
   changed_when: False
   run_once: True
-  register: magnum_domain
+  register: magnum_domain_result
 
 - name: get magnum domain admin
   command: openstack
@@ -87,7 +87,7 @@
     user show {{ magnum_domain_admin }} -c id -f value
   changed_when: False
   run_once: True
-  register: magnum_domain_admin
+  register: magnum_domain_admin_result
 
 - name: ensure /var/lib/magnum/cache and certificates are writeable
   file: path=/var/lib/magnum/{{ item }} state=directory owner=magnum group=magnum mode=0700

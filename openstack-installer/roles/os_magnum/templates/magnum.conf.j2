@@ -971,12 +971,12 @@ rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{%
 
 # Id of the domain to create trustee for bays (string value)
 #trustee_domain_id = <None>
-trustee_domain_id = {{ magnum_domain.stdout }}
+trustee_domain_id = {{ magnum_domain_result.stdout }}
 
 # Id of the admin with roles sufficient to manage users in the
 # trustee_domain (string value)
 #trustee_domain_admin_id = <None>
-trustee_domain_admin_id = {{ magnum_domain_admin.stdout }}
+trustee_domain_admin_id = {{ magnum_domain_admin_result.stdout }}
 
 # Password of trustee_domain_admin (string value)
 #trustee_domain_admin_password = <None>

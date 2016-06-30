@@ -24,6 +24,7 @@
           keystone_project_name:
           keystone_project_domain_name:
           keystone_role: admin
+
 - hosts: magnum
   become: True
   max_fail_percentage: 0
