@@ -26,6 +26,9 @@
       local_action: assert that="{{ ansible_version.string | version_compare('2.0.1', '>=') }}"
       run_once: True
       become: False
+  tasks:
+    - name: make sure aptitude is installed
+      apt: name=aptitude
 
 # Upgrade keystone all at once, since it is not supporting rolling upgrades yet
 - hosts: keystone
