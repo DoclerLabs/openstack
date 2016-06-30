@@ -50,15 +50,6 @@ Example inventory entry:
         - { disk: "/dev/sdd" }
         - { disk: "/dev/sde" }
 
-If you want to skip the installation of a component (and it is not a mandatory component), don't delete
-the group from the inventory, but don't assign any hosts to it.
-Example for not installing Trove:
-
-::
-
-  trove:
-         # Leave the host list empty
-
 It is important, that one host (with the same management IP) must be only in one host group. If you
 want to put a host into several roles, use the inherit keyword, or an alternative format: a host group can
 have a "special host", called roles. You can specify a list here, which roles must be applied to the
@@ -89,8 +80,6 @@ machines in the list. Example:
       - heat
       - cinder
       - cinder_volume
-
-With this notation, unused components still have to be given as an empty group.
 
 4. Secrets
 ==========
@@ -126,7 +115,6 @@ The list of services which currently has problems:
 - trove: trove cannot check, nor disable certificate checking to OS components.
 - sahara: sahara has some options to allow to set CA certificate or turn the checking off in nova,
   neutron and cinder, but they're not implemeneted correctly.
-- radosgw: there's no way to specify a custom CA certificate or turn the checking off.
 
 Settings for TLS connections:
 
@@ -148,8 +136,8 @@ To turn on TLS support in other services, use the following settings:
 
   keystone_ssl: True              # Turn on TLS in keystone. Default is False (no TLS).
   os_ssl: True                    # Turn on TLS in other OpenStack components.
-  nova_novncproxy_ssl: True       # Turn on TLS in nova vnc proxy.
-  radosgw_ssl: True               # Turn on TLS for Ceph RadosGW
+  nova_console_ssl: True          # Turn on TLS in nova vnc/spice proxy.
+  radosgw_ssl: True               # Turn on TLS for Ceph RadosGW.
 
 With TLS support, it is recommended to set the components address to the domain name, which is in the
 certificate. so the following settings should be set:
@@ -240,6 +228,9 @@ Important configuration options:
                                      # There is no default value, since it depends on your environment. Not giving any
                                      # value here will use the same network for front-end and replication traffic.
 
+There are several other settings exposed which can be used to fine-tune ceph, see roles/ceph_monitor/defaults/main.yml and
+roles/ceph_osd/defaults/main.yml.
+
 Configuring ceph includes setting up disk space for OSD usage. The recommended way is to give whole disks to Ceph,
 and to use a fast journal device (like fast SSDs, or even NVMes). Since the disk configuration likely different
 on the storage nodes, it is the best to put it as host variables in the inventory. If you're absolutely sure that
@@ -269,12 +260,11 @@ Radosgw settings:
   radosgw_keystone: True           # Integrate radosgw with keystone authentication, disable if using swift.
   radosgw_port: 8080               # The default port where radosgw listens, change it if swift is used.
 
-
 Keystone
 --------
 
 Keystone is the central authentication service in OpenStack. UUID and Fernet tokens are implemented in this installer.
-Experimental support for OpenID-connect federation is also provided.
+Support for OpenID-connect federation is also provided.
 
 For a multi-region setup, the installation can be skipped with an empty inventory for the 'keystone' group. In this case,
 the keystone_xxx_address settings (see below) should point to the central keystone instance.
@@ -298,25 +288,29 @@ Settings which most likely have to be changed in a production installation:
 
 There are some other settings in roles/os_keystone/defaults/main.yml, they can be overridden to fine-tune the service.
 
-To configre OpenID-connect federation, a manual step is required for installing the libapache2-mod-auth-openidc package. Since
-this package is not supplied in Ubuntu Trusty, it has to be downloaded and enabled in Apache manually. After these steps are done,
-the config options for keystone are:
+To configre OpenID-connect federation, a manual step is required for installing the libapache2-mod-auth-openidc package on Ubuntu Trusty.
+This package is included in Ubuntu Xenial.
+
+The config options for keystone to enable OIDC are:
 
 ::
 
-  keystone_federation_oidc: False              # Change it to True to enable OpenID-connect federation
+  keystone_federation_oidc: False              # Change it to True to enable OpenID-connect federation.
 
   keystone_OIDCProviderMetadataURL:            # Set the Metadata URL or the three options below for the
-  keystone_OIDCProviderIssuer:                 # OIDC provider
+  keystone_OIDCProviderIssuer:                 # OIDC provider.
   keystone_OIDCProviderAuthorizationEndpoint:
   keystone_OIDCProviderJwksUri:
 
-  keystone_OIDCClientID:                       # Client ID expected by the OIDC provider
-  keystone_OIDCClientSecret:                   # Client secret expected by the OIDC provider
-  keystone_OIDCCryptoPassphrase:               # A passphrase
+  keystone_OIDCClientID:                       # Client ID expected by the OIDC provider.
+  keystone_OIDCClientSecret:                   # Client secret expected by the OIDC provider.
+  keystone_OIDCCryptoPassphrase:               # A passphrase.
 
-  keystone_OIDCSSLValidateServer: True         # To check the certificat of the OIDC provider
+  keystone_OIDCSSLValidateServer: True         # To check the certificate of the OIDC provider.
 
+
+The final step is to create a JSON file for the identity provider mapping, and upload it to keystone. Horizon has a GUI
+uploading/editing this file. Please see the Keystone docs about the format of the JSON.
 
 Swift
 -----
@@ -382,6 +376,7 @@ The best place for glance settings is the global config.yml file:
                                              # but it cannot be HA, so use it only for testing/development purposes.
   glance_ceph_pool: images                   # The pool name in Ceph when glance_backend is ceph.
   glance_ceph_user: glance                   # The user name in Ceph when glance_backend is ceph.
+  glance_ceph_key:                           # You can give your own Ceph authx key if you don't want to create the user automatically.
 
 Nova
 ----
@@ -397,6 +392,8 @@ The most important settings for Nova are:
   nova_ephemeral_ceph_pool: vms              # If Ceph is used for ephemeral disks, the pool name used for them.
   nova_cpu_allocation_ratio: 16.0            # The overprovisioning ratio for CPUs.
   nova_ram_allocation_ratio: 1.5             # The overprovisioning ratio for RAM.
+  nova_compute_driver: libvirt.LibvirtDriver # The compute driver used. For LXD, use nova_lxd.nova.virt.lxd.LXDDriver.
+  nova_compute_package: kvm                  # The package contains the used nova driver. For LXD, use lxd.
   nova_virt_type: kvm                        # Can be 'kvm' if KVM hardware acceleration is available on the compute node or 'qemu' if not.
 
   nova_console_type: vnc                     # Use 'vnc' or 'spice' for remote console
