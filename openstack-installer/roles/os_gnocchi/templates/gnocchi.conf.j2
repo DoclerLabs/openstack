@@ -106,7 +106,7 @@ host = 127.0.0.1
 # Number of workers for Gnocchi API server. By default the available number of CPU is used. (integer value)
 # Minimum value: 1
 #workers = <None>
-workers = 1
+workers = {{ gnocchi_api_workers }}
 
 # The maximum number of items returned in a single response from a collection resource (integer value)
 #max_limit = 1000
@@ -311,7 +311,7 @@ memcache_secret_key = {{ memcache_secret_key }}
 # Number of workers for Gnocchi metric daemons. By default the available number of CPU is used. (integer value)
 # Minimum value: 1
 #workers = <None>
-
+workers = {{ gnocchi_metricd_workers }}
 
 [oslo_middleware]
 
