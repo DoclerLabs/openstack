@@ -20,6 +20,9 @@ debug = {{ designate_debug }}
 # Log directory
 #logdir = /var/log/designate
 
+use_stderr = False
+use_syslog = {{ designate_syslog_use }}
+
 # Use "sudo designate-rootwrap /etc/designate/rootwrap.conf" to use the real
 # root filter facility.
 # Change to "sudo" to skip the filtering and just run the comand directly
