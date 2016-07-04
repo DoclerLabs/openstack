@@ -7,5 +7,7 @@
     - common
     - role: rabbitmq
       rabbitmq_hosts: "{{ groups['rabbitmq'] }}"
+      rabbitmq_listen_addresses:
+        - "{{ ip.mgmt }}"
       rabbitmq_cookie: "{{ rabbitmq_erlang_cookie }}"
       rabbitmq_password: "{{ rabbitmq_admin_password }}"

@@ -39,7 +39,7 @@
   when: inventory_hostname == rabbitmq_hosts[0]
 
 - name: wait for the first rabbitmq server
-  wait_for: host={{ ip.mgmt }} port=5672
+  wait_for: host={{ rabbitmq_listen_addresses[0] }} port=5672
   when: inventory_hostname == rabbitmq_hosts[0]
 
 - name: ensure all rabbitmq servers are started
@@ -47,7 +47,7 @@
   when: inventory_hostname !=rabbitmq_hosts[0]
 
 - name: wait for the rabbitmq servers
-  wait_for: host={{ ip.mgmt }} port=5672
+  wait_for: host={{ rabbitmq_listen_addresses[0] }} port=5672
   when: inventory_hostname != rabbitmq_hosts[0]
 
 - name: ensure the default vhost contains the HA policy

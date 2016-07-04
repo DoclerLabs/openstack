@@ -1,8 +1,5 @@
 {% set listen_addresses=['127.0.0.1'] %}
-{% set _ = listen_addresses.append(ip.mgmt) %}
-{% if rabbitmq_listen is defined and rabbitmq_listen %}
-{% set _ = listen_addresses.append(rabbitmq_listen) %}
-{% endif %}
+{% set _ = listen_addresses.extend(rabbitmq_listen_addresses) %}
 [
   {rabbit, [
     {loopback_users, []},
@@ -15,5 +12,5 @@
       [ {% for host in rabbitmq_hosts %}'rabbit@{{ host }}'{% if not loop.last %}, {% endif %}{% endfor %} ], disc}
     }
   ]},
-  {rabbitmq_management, [{listener, [{port, 15672}, {ip, "{{ ip.mgmt }}"}]}]}
+  {rabbitmq_management, [{listener, [{port, 15672}, {ip, "{{ rabbitmq_listen_addresses[0] }}"}]}]}
 ].
