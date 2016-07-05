@@ -1,0 +1,121 @@
+#!/bin/bash
+
+# 
+# check_ipmi: Checks temperatures, Voltages and fan speeds
+#
+# WARNING: Nagios has a 10 second timeout on plugins.  On some hosts
+# ipmitool takes longer than that to probe all your hardware.  In this
+# case this plugin us unusable.
+#
+# Donated to the public domain by Nicolai Langfeldt (janl@linpro.no)
+#
+
+ipmitool sensor | awk -F'|' '
+BEGIN { 
+        EXIT=0;
+        MSG[0]="OK: ";
+        MSG[1]="WARNING: ";
+        MSG[2]="CRITICAL: ";
+}
+
+# Remove extraneous spaces to make output prettyer
+{ gsub(/\t/," "); gsub(/ +/," "); gsub(/ +\|/,"|"); gsub(/\| +/,"|") }
+
+# Skip lines with 0x0 in first column
+/^[^|]+\|0x0\|/ { next; };
+
+# Skip lines with na in first column
+/^[^|]+\|na\|/ { next; };
+
+# Parse temperatures
+/degrees C/ {
+        THING=$1;
+        TEMP=$2;
+        OK=$4;
+        if (OK ~ /ok/) {
+            MSG[0] = sprintf("%s %s is %dC, ",MSG[0] , THING,TEMP);
+            next;
+        }
+        WARN=$8;
+        CRIT=$9;
+        if (CRIT !~ /na/ && TEMP>=CRIT) {
+            MSG[2] = sprintf("%s %s is %dC (max %d) ", 
+                MSG[2], THING, TEMP, CRIT);
+            EXIT=2;
+            next;
+        }
+
+        if (WARN !~ /na/ && TEMP>=WARN) {
+            MSG[1] = sprintf("%s %s is %dC (max %dC, critical at %dC) ",
+                MSG[1], THING, TEMP, CRIT);
+            if (EXIT=0) EXIT=1;
+            next;
+        }
+        # Fall through, all we know is that temp is not OK.
+
+        MSG[2] = sprintf("%s %s is %d (%s) ", MSG[2], THING, TEMP, OK);
+        if (EXIT=0) EXIT=1;
+}
+
+/RPM/ { 
+        THING=$1;
+        SPEED=$2;
+        OK=$4;
+
+        if (OK ~ /ok/) {
+            MSG[0] = sprintf("%s %s is at %d RPM, ",MSG[0], THING, SPEED);
+            next;
+        }
+        MIN=$6;
+
+        if (MIN !~ /na/ && SPEED<MIN) {
+            MSG[2] = sprintf("%s %s is %dC (min %d) ", 
+                MSG[2], THING, SPEED, MIN);
+            EXIT=2;
+            next;
+        }
+
+        # Fall through, all we know is that speed is not OK.
+
+        MSG[2] = sprintf("%s %s is %d (%s) ", MSG[2], THING, SPEED, OK);
+        if (EXIT=0) EXIT=1;
+}
+
+/Volts/ { 
+        THING=$1;
+        VOLTS=$2;
+        OK=$4;
+
+        if (OK ~ /ok/) {
+            MSG[0] = sprintf("%s %s is %.2fV, ",MSG[0], THING, VOLTS);
+            next;
+        }
+        MIN=$7;
+        MAX=$8;
+
+        if (MIN !~ /na/ && VOLTS<MIN) {
+            MSG[2] = sprintf("%s %s is %.2fV (min %d) ", 
+                MSG[2], THING, VOLTS, MIN);
+            EXIT=2;
+            next;
+        }
+
+        if (MAX !~ /na/ && VOLTS>MAX) {
+            MSG[2] = sprintf("%s %s is %.2fV (max %d) ", 
+                MSG[2], THING, VOLTS, MAX);
+            EXIT=2;
+            next;
+        }
+
+        # Fall through, all we know is that speed is not OK.
+
+        MSG[2] = sprintf("%s %s is %.2f (%s) ", MSG[2], THING, VOLTS, OK);
+        if (EXIT=0) EXIT=1;
+}
+
+END {
+    gsub(/, *$/,"",MSG[EXIT]);
+    print MSG[EXIT];
+    exit EXIT;
+}
+'

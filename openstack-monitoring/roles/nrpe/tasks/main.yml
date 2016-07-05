@@ -10,6 +10,14 @@
 - name: enable sudo for nrpe
   copy: content='nagios ALL=(root) NOPASSWD:ALL' dest=/etc/sudoers.d/nrpe owner=root group=root mode=0600
 
+- name: install hw check scripts
+  copy: src={{ item.script }} dest=/usr/local/bin/{{ item.script }} owner=root group=root mode=0755
+  when: item.enabled
+  with_items:
+    - { 'script': 'check_linux_bonding.pl', 'enabled': "{{ nagios_bond }}" }
+    - { 'script': 'check_swraid.py', 'enabled': "{{ nagios_mdraid }}" }
+    - { 'script': check_ipmi_sensors, 'enabled': "{{ nagios_ipmi }}" }
+
 - name: install ceph health check scripts
   copy: src={{ item }} dest=/usr/local/bin/{{ item }} owner=root group=root mode=0755
   with_items:

@@ -59,6 +59,8 @@ define hostgroup{
 {{ hostgroup('mgmt-VIP', 'mgmt-VIP', 'VIP on the management network') }}
 {{ hostgroup('public-VIP', 'public-VIP', 'VIP on the public network') }}
 
+{{ hostgroup('physical hosts', 'physical hosts', 'All physical hosts', hosts) }}
+
 {{ hostgroup('ceph', 'ceph', 'Ceph monitors + OSDs + RadosGW') }}
 {{ hostgroup('controller', 'controller', 'Cloud Controller hosts') }}
 {{ hostgroup('volume', 'volume', 'OpenStack Volume hosts') }}
@@ -107,6 +109,11 @@ define servicegroup{
     alias {{ nagios_cloud_prefix }}general
 }
 
+define servicegroup{
+    servicegroup_name {{ nagios_cloud_prefix }}hardware
+    alias {{ nagios_cloud_prefix }}hardware
+}
+
 define host{
     use {{ host_template }}
     host_name {{ nagios_cloud_prefix }}mgmt-VIP
@@ -132,6 +139,7 @@ define service{
     check_command check_ping!100.0,20%!500.0,60%
 }
 
+### General checks for all hosts ###
 {% for host in hosts %}
 
 {% set hostgroups = [] %}
@@ -203,6 +211,36 @@ define service{
     service_description SSH
     check_command check_ssh
 }
+
+{% if hostvars[host].nagios_ipmi | default(nagios_ipmi) %}
+define service{
+    use {{ service_template }}
+    host_name {{ host }}
+    servicegroups {{ nagios_cloud_prefix}}hardware
+    service_description sensors
+    check_command {{ command_check_nrpe }}!check_ipmi
+}
+{% endif %}
+
+{% if hostvars[host].nagios_bond | default(nagios_bond) %}
+define service{
+    use {{ service_template }}
+    host_name {{ host }}
+    servicegroups {{ nagios_cloud_prefix}}hardware
+    service_description bonding
+    check_command {{ command_check_nrpe }}!check_bonding
+}
+{% endif %}
+
+{% if hostvars[host].nagios_mdraid | default(nagios_mdraid) %}
+define service{
+    use {{ service_template }}
+    host_name {{ host }}
+    servicegroups {{ nagios_cloud_prefix}}hardware
+    service_description swraid
+    check_command {{ command_check_nrpe }}!check_swraid
+}
+{% endif %}
 
 {% endfor %}
 

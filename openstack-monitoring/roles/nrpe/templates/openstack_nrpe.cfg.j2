@@ -36,3 +36,15 @@ command[check_ceph_df]=/usr/local/bin/check_ceph_df --id nagios --keyring /etc/c
 ### HAProxy ###
 command[check_haproxy]=sudo /usr/local/bin/check_haproxy_stats.pl -s /run/haproxy/admin.sock
 {% endif %}
+
+{% if nagios_bond %}
+command[check_bonding]=/usr/local/bin/check_linux_bonding.pl
+{% endif %}
+
+{% if nagios_mdraid %}
+command[check_swraid]=/usr/local/bin/check_swraid.py
+{% endif %}
+
+{% if nagios_ipmi %}
+command[check_ipmi]=sudo /usr/local/bin/check_ipmi_sensors
+{% endif %}

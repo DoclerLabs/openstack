@@ -2,6 +2,10 @@
 
 nagios_config_file: /etc/nagios3/conf.d/openstack.cfg
 nagios_cloud_prefix: ''
+nagios_ipmi: False
+nagios_bond: False
+nagios_mdraid: False
+
 host_template: generic-host
 service_template: generic-service
 command_check_nrpe: check_nrpe_1arg
