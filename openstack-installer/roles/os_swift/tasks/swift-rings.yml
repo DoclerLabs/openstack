@@ -41,7 +41,7 @@
     --ip {{ hostvars[item.host].ip.swift | default(hostvars[item.host].ip.mgmt) }}
     --replication-ip {{ hostvars[item.host].ip.swift_replication | default(hostvars[item.host].ip.swift | default(hostvars[item.host].ip.mgmt)) }}
     --port 6002
-    --device {{ item.device | regex_replace('^.*/','') }}
+    --device {{ item.device | regex_replace('^.*/','') | regex_replace(':','') }}
     --weight {{ item.weight }}
     chdir=/etc/swift
   register: builder_result
@@ -57,7 +57,7 @@
     --ip {{ hostvars[item.host].ip.swift | default(hostvars[item.host].ip.mgmt) }}
     --replication-ip {{ hostvars[item.host].ip.swift_replication | default(hostvars[item.host].ip.swift | default(hostvars[item.host].ip.mgmt)) }}
     --port 6001
-    --device {{ item.device | regex_replace('^.*/','') }}
+    --device {{ item.device | regex_replace('^.*/','') | regex_replace(':','') }}
     --weight {{ item.weight }}
     chdir=/etc/swift
   register: builder_result
@@ -73,7 +73,7 @@
     --ip {{ hostvars[item.host].ip.swift | default(hostvars[item.host].ip.mgmt) }}
     --replication-ip {{ hostvars[item.host].ip.swift_replication | default(hostvars[item.host].ip.swift | default(hostvars[item.host].ip.mgmt)) }}
     --port 6000
-    --device {{ item.device | regex_replace('^.*/','') }}
+    --device {{ item.device | regex_replace('^.*/','') | regex_replace(':','') }}
     --weight {{ item.weight }}
     chdir=/etc/swift
   register: builder_result

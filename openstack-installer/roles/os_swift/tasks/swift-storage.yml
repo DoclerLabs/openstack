@@ -24,14 +24,14 @@
 - name: mount storage for swift
   mount: fstype=xfs
          src="{{ item.device }}"
-         name="/srv/node/{{ item.device | regex_replace('^.*/','') }}"
+         name="/srv/node/{{ item.device | regex_replace('^.*/','') | regex_replace(':','') }}"
          opts="noatime,nodiratime,nobarrier"
          state=mounted
   with_items: "{{ swift | default([]) }}"
   when: inventory_hostname in groups['swift_storage']
 
 - name: ensure proper rights for swift storage
-  file: dest="/srv/node/{{ item.device | regex_replace('^.*/','') }}"
+  file: dest="/srv/node/{{ item.device | regex_replace('^.*/','') | regex_replace(':','') }}"
         state=directory
         owner=swift group=swift mode=0770
   with_items: "{{ swift | default([]) }}"
