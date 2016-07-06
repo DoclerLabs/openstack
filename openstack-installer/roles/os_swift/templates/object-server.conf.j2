@@ -1,5 +1,10 @@
 [DEFAULT]
+{% if ip.swift_replication %}
+#The only way to listen on 2 IPs is to listen on all IPs
+bind_ip = 0.0.0.0
+{% else %}
 bind_ip = {{ ip.swift | default(ip.mgmt) }}
+{% endif %}
 bind_port = 6000
 workers = 2
 user = swift
