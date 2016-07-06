@@ -1,5 +1,5 @@
 [DEFAULT]
-{% if ip.swift_replication %}
+{% if ip.swift_replication is defined %}
 #The only way to listen on 2 IPs is to listen on all IPs
 bind_ip = 0.0.0.0
 {% else %}
