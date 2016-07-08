@@ -287,6 +287,12 @@ OPENSTACK_NEUTRON_NETWORK = {
     'supported_vnic_types': ['*']
 }
 
+# The OPENSTACK_HEAT_STACK settings can be used to disable password
+# field required while launching the stack.
+OPENSTACK_HEAT_STACK = {
+    'enable_user_pass': {{ horizon_heat_enable_user_pass }},
+}
+
 # The OPENSTACK_IMAGE_BACKEND settings can be used to customize features
 # in the OpenStack Dashboard related to the Image service, such as the list
 # of supported image formats.
@@ -302,7 +308,7 @@ OPENSTACK_NEUTRON_NETWORK = {
 #        ('qcow2', _('QCOW2 - QEMU Emulator')),
 #        ('raw', _('Raw')),
 #        ('vdi', _('VDI - Virtual Disk Image')),
-#        ('vhd', ('VHD - Virtual Hard Disk')),
+#        ('vhd', _('VHD - Virtual Hard Disk')),
 #        ('vmdk', _('VMDK - Virtual Machine Disk')),
 #    ]
 #}
@@ -428,7 +434,7 @@ LOGGING = {
     'handlers': {
         'null': {
             'level': 'DEBUG',
-            'class': 'django.utils.log.NullHandler',
+            'class': 'logging.NullHandler',
         },
         'console': {
             # Set the level to "DEBUG" for verbose output logging.
@@ -681,7 +687,8 @@ SECURITY_GROUP_RULES = {
 # the enabled panel configuration.
 # You should not add settings to this list for out of tree extensions.
 # See: https://wiki.openstack.org/wiki/Horizon/RESTAPI
-REST_API_REQUIRED_SETTINGS = ['OPENSTACK_HYPERVISOR_FEATURES']
+REST_API_REQUIRED_SETTINGS = ['OPENSTACK_HYPERVISOR_FEATURES',
+                              'LAUNCH_INSTANCE_DEFAULTS']
 
 # Additional settings can be made available to the client side for
 # extensibility by specifying them in REST_API_ADDITIONAL_SETTINGS

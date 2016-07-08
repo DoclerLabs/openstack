@@ -8,7 +8,7 @@ horizon_launch_instance_ng_enabled: False
 horizon_openstack_endpoint_type: internalURL
 horizon_cinder_enable_backup: True
 horizon_install_dashboards: "{{ ansible_distribution_version | version_compare('16.04', '>=') }}"
-
+horizon_heat_enable_user_pass: "{{ (heat_deferred_auth_method | default('trusts')) == 'password' }}"
 horizon_debug: False
 
 neutron_vpnaas: True
