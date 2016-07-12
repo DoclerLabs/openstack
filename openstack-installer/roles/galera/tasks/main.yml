@@ -64,8 +64,8 @@
 - name: install galera.cnf
   template: src=galera.cnf.j2 dest=/etc/mysql/conf.d/galera.cnf owner=mysql group=root mode=0460
 
-- name: install /etc/default/clustercheck
-  template: src=clustercheck.j2 dest=/etc/default/clustercheck owner=root group=nogroup mode=0640
+- name: install /etc/my.cnf
+  template: src=root.my.cnf.j2 dest=/etc/my.cnf owner=root group=root mode=0600
   notify: cleanup galera resource
 
 - name: install galera OCF script
@@ -103,6 +103,7 @@
            interval: "20"
 
       params:
+        check_user: "clustercheck"
         wsrep_cluster_address: "gcomm://{% for host in groups['galera'] %}{{ host }}{% if not loop.last %},{% endif %}{% endfor %}"
         config: "/etc/mysql/my.cnf"
         socket: "{{ mysql_sock_file }}"
@@ -131,6 +132,9 @@
   command: crm_shadow --delete shadowcib --force
   changed_when: False
   run_once: True
+
+- name: make sure /etc/default/clustercheck is not present
+  file: path=/etc/default/clustercheck state=absent
 
 - name: wait for the mysql servers to start
   wait_for: host={{ ip.mgmt }} port=3306
