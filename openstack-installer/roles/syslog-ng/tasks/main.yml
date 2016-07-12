@@ -7,8 +7,11 @@
     - syslog-ng-core
     - syslog-ng-mod-mongodb
 
-- name: install mongodb.conf
-  template: src=mongodb.conf.j2 dest=/etc/syslog-ng/conf.d/mongodb.conf owner=root group=root mode=0640
+- name: install configs
+  template: src={{ item }}.conf.j2 dest=/etc/syslog-ng/conf.d/{{ item }}.conf owner=root group=root mode=0640
+  with_items:
+    - mongodb
+    - syslog-remote
   notify:
     - restart syslog-ng
 

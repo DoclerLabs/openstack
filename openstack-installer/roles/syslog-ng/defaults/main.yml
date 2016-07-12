@@ -1,3 +1,8 @@
 ---
 
 syslog_use_mongodb: False
+
+#Address of remote syslog server
+syslog_remote_syslog:
+syslog_remote_proto: tcp
+syslog_remote_port: 514

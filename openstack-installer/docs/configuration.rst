@@ -194,6 +194,7 @@ The installer configures syslog-ng on the hosts. There are two options to alter 
   syslog_use_mongodb: False       # Enabling this will send the logs to the MongoDB replica set, which can be
                                   # used as a central logging service. The document format sent to Mongo is
                                   # compatible with Adiscon LogAnalyzer.
+  syslog_remote_syslog:           # If a domain name or IP address is given, send logs to a remote syslog.
 
 Ceph
 ----

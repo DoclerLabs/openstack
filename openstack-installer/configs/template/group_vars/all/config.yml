@@ -10,6 +10,8 @@ vip_public_nic: br-vlan
 syslog_use: False
 #Send logs to mongodb
 syslog_use_mongodb: False
+#Send log to a remote syslog, if an IP is given
+#syslog_remote_syslog:
 
 #Keystone addresses should be domain names in case of SSL (when keystone_ssl: True)
 keystone_internal_address: "{{ vip_mgmt }}"
