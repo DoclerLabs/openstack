@@ -162,3 +162,9 @@
 
 - name: ensure xinetd is running
   service: name=xinetd state=started enabled=yes
+
+- name: install syslog-ng galera.conf
+  template: src=galera.conf.j2 dest=/etc/syslog-ng/conf.d/galera.conf owner=root group=root mode=0644
+  when: inventory_hostname in groups['syslog']
+  notify:
+    - restart syslog-ng
