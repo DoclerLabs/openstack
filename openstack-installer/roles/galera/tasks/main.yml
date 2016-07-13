@@ -140,7 +140,7 @@
   wait_for: host={{ ip.mgmt }} port=3306
 
 - name: wait until the replication is finished
-  command: mysql -nNs --user=clustercheck --password={{ galera_clustercheck_password }} -e 'show status like "wsrep_cluster_status"'
+  command: mysql -nNs --user=clustercheck -e 'show status like "wsrep_cluster_status"'
   changed_when: False
   register: mysql_result
   retries: 20
