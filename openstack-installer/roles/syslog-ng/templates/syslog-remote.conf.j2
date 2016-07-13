@@ -1,6 +1,15 @@
+#jinja2: lstrip_blocks: True
+
 {% if syslog_remote_syslog %}
 destination d_syslog_remote {
- {{ syslog_remote_proto }}("{{ syslog_remote_syslog }}" port({{ syslog_remote_port }}));
+  network(
+    "{{ syslog_remote_syslog }}"
+    port({{ syslog_remote_port }})
+    transport("{{ syslog_remote_proto }}")
+    {% if syslog_remote_flags %}
+    flags("{{ syslog_remote_flags }}")
+    {% endif %}
+  );
 };
 log { source(s_src); destination(d_syslog_remote); };
 {% endif %}
