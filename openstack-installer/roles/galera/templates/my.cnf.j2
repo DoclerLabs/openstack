@@ -18,14 +18,14 @@
 # Remember to edit /etc/mysql/debian.cnf when changing the socket location.
 [client]
 port            = 3306
-socket          = /var/run/mysqld/mysqld.sock
+socket          = {{ mysql_sock_file }}
 
 # Here is entries for some specific programs
 # The following values assume you have at least 32M ram
 
 # This was formally known as [safe_mysqld]. Both versions are currently parsed.
 [mysqld_safe]
-socket          = /var/run/mysqld/mysqld.sock
+socket          = {{ mysql_sock_file }}
 nice            = 0
 
 [mysqld]
