@@ -2,6 +2,5 @@
 destination d_syslog_remote {
  {{ syslog_remote_proto }}("{{ syslog_remote_syslog }}" port({{ syslog_remote_port }}));
 };
-
-log { source(s_src); {% if inventory_hostname in groups['haproxy'] %} source(s_haproxy_src); {% endif %} destination(d_syslog_remote); };
+log { source(s_src); destination(d_syslog_remote); };
 {% endif %}

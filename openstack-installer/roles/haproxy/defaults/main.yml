@@ -7,3 +7,4 @@ haproxy_timeout_server: 50s
 haproxy_maxconn: 8192
 
 syslog_use_mongodb: False
+syslog_remote_syslog:
