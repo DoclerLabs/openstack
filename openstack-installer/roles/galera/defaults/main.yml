@@ -8,3 +8,4 @@ mysql_pid_file: /var/run/mysqld/mysqld.pid
 mysql_log_error: /var/log/mysql/error.log
 
 mysql_syslog_use: "{{ syslog_use | default(False) }}"
+syslog_remote_syslog:
