@@ -12,7 +12,7 @@
   service: name=neutron-dhcp-agent state=restarted
   when: inventory_hostname in groups['neutron_controller']
 
-- name: restart neutron-metadate-agent
+- name: restart neutron-metadata-agent
   service: name=neutron-metadata-agent state=restarted
   when: inventory_hostname in groups['neutron_controller']
 
