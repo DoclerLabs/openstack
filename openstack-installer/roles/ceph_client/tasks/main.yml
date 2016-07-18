@@ -3,7 +3,7 @@
 - name: create ceph user
   command: 'ceph auth get-or-create client.{{ ceph_user }} {{ ceph_rights }}'
   register: ceph_auth
-  delegate_to: "{{ groups['ceph_monitor'][0] }}"
+  delegate_to: "{{ ceph_monitors[0] }}"
   run_once: True
   when: ceph_key == ''
 
@@ -16,7 +16,7 @@
     option="{{ item.key }}"
     value="{{ item.value }}"
   with_dict:
-    { "mon host": "{% for host in groups['ceph_monitor'] %}{{ hostvars[host].ip.mgmt }}{% if not loop.last %},{% endif %}{% endfor %}",
+    { "mon host": "{% for host in ceph_monitors %}{% if host in hostvars %}{{ hostvars[host].ip.mgmt }}{% else %}{{ host }}{% endif %}{% if not loop.last %},{% endif %}{% endfor %}",
       "auth cluster required": "cephx",
       "auth service required": "cephx",
       "auth client required": "cephx",
