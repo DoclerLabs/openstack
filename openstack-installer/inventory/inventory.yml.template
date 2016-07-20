@@ -50,6 +50,7 @@ mistral:
 manila:
 designate:
 magnum:
+senlin:
 
 tempest:
   inherit: local

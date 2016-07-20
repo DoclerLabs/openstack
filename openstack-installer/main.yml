@@ -32,3 +32,4 @@
 - include: os_mistral.yml
 - include: os_manila.yml
 - include: os_magnum.yml
+- include: os_senlin.yml

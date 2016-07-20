@@ -168,6 +168,8 @@ designate:
 
 magnum:
 
+senlin:
+
 # -------- Tempest ------
 tempest:
   inherit: local

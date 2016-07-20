@@ -1,0 +1,88 @@
+---
+
+- name: create senlin vhost in rabbitmq
+  rabbitmq_vhost: node="rabbit@{{ groups['rabbitmq'][0] }}" name="{{ senlin_rabbit_vhost }}"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: create senlin user in rabbitmq
+  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}"
+      user="{{ senlin_rabbit_user }}" password="{{ senlin_rabbit_password }}"
+      vhost="{{ senlin_rabbit_vhost }}"
+      configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: ensure the senlin vhost contains the HA policy
+  rabbitmq_policy:
+    node: "rabbit@{{ groups['rabbitmq'][0] }}"
+    vhost: "{{ senlin_rabbit_vhost }}"
+    name: HA
+    pattern: '.*'
+    tags:
+      "ha-mode": "all"
+      "ha-sync-mode": "automatic"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: install CA certificate
+  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  when: SSLCACertificateFile != ''
+
+- name: mask autostarting of senlin
+  service_mask: name={{ item }} state=masked
+  with_items:
+    - senlin-api
+    - senlin-engine
+
+- name: install senlin
+  apt: name={{ item }}
+  with_items:
+    - senlin-api
+    - senlin-engine
+    - python-senlinclient
+
+- name: create senlin database
+  mysql_db: name={{ senlin_db }}
+    login_host={{ senlin_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create senlin database user
+  mysql_user: name={{ senlin_db_user }} password={{ senlin_db_password }} host={{ item }} priv={{ senlin_db }}.*:ALL
+    login_host={{ senlin_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - '%'
+
+- name: ensure /var/lib/senlin/cache is writeable
+  file: path=/var/lib/senlin/cache state=directory owner=senlin group=senlin mode=0700
+  notify: restart senlin
+
+- name: install senlin configs
+  template: src={{ item }}.conf.j2 dest=/etc/senlin/{{ item }}.conf owner=senlin group=root mode=0460
+  with_items:
+    - senlin
+  notify: restart senlin
+
+- name: sync senlin db
+  command: su senlin -s /bin/sh -c 'senlin-manage db_sync'
+  register: db_sync
+  changed_when: '"migrate.versioning.api" in db_sync.stderr'
+  run_once: True
+
+- name: unmask autostarting of senlin
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - senlin-api
+    - senlin-engine
+
+- meta: flush_handlers
+
+- name: ensure senlin is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - senlin-api
+    - senlin-engine

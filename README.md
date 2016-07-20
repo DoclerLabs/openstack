@@ -52,6 +52,7 @@ Integrated OpenStack components:
   - manila
   - mistral
   - sahara
+  - senlin
 
 Installing an all-in-one (Ceph, controller, compute) VM with Vagrant:
 
