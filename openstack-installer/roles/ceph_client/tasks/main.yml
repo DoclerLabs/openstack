@@ -1,7 +1,7 @@
 ---
 
 - name: create ceph user
-  command: 'ceph auth get-or-create client.{{ ceph_user }} {{ ceph_rights }}'
+  command: 'ceph --cluster {{ ceph_cluster_name }} auth get-or-create client.{{ ceph_user }} {{ ceph_rights }}'
   register: ceph_auth
   delegate_to: "{{ ceph_monitors[0] }}"
   run_once: True
@@ -11,7 +11,7 @@
   file: path=/etc/ceph state=directory owner=root group=root mode=0755
 
 - name: generate ceph config file
-  ini_file: dest=/etc/ceph/ceph.conf
+  ini_file: dest=/etc/ceph/{{ ceph_cluster_name }}.conf
     section=global
     option="{{ item.key }}"
     value="{{ item.value }}"
@@ -24,19 +24,19 @@
    }
 
 - name: set default rbd features
-  ini_file: dest=/etc/ceph/ceph.conf
+  ini_file: dest=/etc/ceph/{{ ceph_cluster_name }}.conf
     section=global
     option="rbd default features"
     value="{{ ceph_rbd_default_features }}"
   when: ceph_rbd_default_features
 
 - name: write out ceph keyring (created key)
-  copy: content='{{ ceph_auth.stdout }}\n' dest=/etc/ceph/ceph.client.{{ ceph_user}}.keyring
+  copy: content='{{ ceph_auth.stdout }}\n' dest=/etc/ceph/{{ ceph_cluster_name }}.client.{{ ceph_user}}.keyring
         owner={{ ceph_keyring_owner | default('root') }} group={{ ceph_keyring_group | default('root') }} mode=0440
   when: ceph_keyring_owner is defined and ceph_key == ''
 
 - name: write out ceph keyring (predefined key)
   copy: content="[client.{{ ceph_user }}]\n\tkey = {{ ceph_key }}\n"
-        dest=/etc/ceph/ceph.client.{{ ceph_user}}.keyring
+        dest=/etc/ceph/{{ ceph_cluster_name }}.client.{{ ceph_user}}.keyring
         owner={{ ceph_keyring_owner | default('root') }} group={{ ceph_keyring_group | default('root') }} mode=0440
   when: ceph_keyring_owner is defined and ceph_key != ''

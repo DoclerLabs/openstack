@@ -26,7 +26,8 @@ volume_group = cinder-volumes
 
 volume_driver=cinder.volume.drivers.rbd.RBDDriver
 backup_driver=cinder.backup.drivers.ceph
-rbd_ceph_conf = /etc/ceph/ceph.conf
+rbd_cluster_name = {{ ceph_cluster_name }}
+rbd_ceph_conf = /etc/ceph/{{ ceph_cluster_name }}.conf
 rbd_pool = {{ cinder_ceph_pool }}
 rbd_user = {{ cinder_ceph_user }}
 rbd_secret_uuid = {{ cinder_volume_secret_uuid }}

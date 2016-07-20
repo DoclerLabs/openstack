@@ -13,6 +13,8 @@ glance_project_name: "{{ keystone_service_project_name | default('service') }}"
 glance_api_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 glance_registry_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 
+ceph_cluster_name: ceph
+
 glance_backend: files
 glance_ceph_pool: images
 glance_ceph_user: glance

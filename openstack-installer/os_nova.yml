@@ -57,7 +57,7 @@
       when: cinder_backend | default('lvm') == 'ceph' or nova_ephemeral_backend | default('local') == 'ceph'
   tasks:
     - name: get cinder key
-      command: ceph-authtool /etc/ceph/ceph.client.{{ cinder_ceph_user | default('cinder') }}.keyring -p -n client.{{ cinder_ceph_user | default('cinder') }}
+      command: ceph-authtool /etc/ceph/{{ ceph_cluster_name | default('ceph') }}.client.{{ cinder_ceph_user | default('cinder') }}.keyring -p -n client.{{ cinder_ceph_user | default('cinder') }}
       register: cinder_key
       changed_when: False
       when: cinder_backend | default('lvm') == 'ceph' or nova_ephemeral_backend | default('local') == 'ceph'

@@ -649,7 +649,7 @@ stores = rbd,http
 default_store = rbd
 rbd_store_pool = {{ glance_ceph_pool }}
 rbd_store_user = {{ glance_ceph_user }}
-rbd_store_ceph_conf = /etc/ceph/ceph.conf
+rbd_store_ceph_conf = /etc/ceph/{{ ceph_cluster_name }}.conf
 rbd_store_chunk_size = 8
 
 {% elif glance_backend == 'swift' %}

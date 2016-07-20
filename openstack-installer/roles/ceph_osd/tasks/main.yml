@@ -12,7 +12,7 @@
   run_once: True
 
 - name: generate ceph config file
-  ini_file: dest=/etc/ceph/ceph.conf
+  ini_file: dest=/etc/ceph/{{ ceph_cluster_name }}.conf
     section=global
     option="{{ item.key }}"
     value="{{ item.value }}"
@@ -47,21 +47,21 @@
    }
 
 - name: set up ceph public network
-  ini_file: dest=/etc/ceph/ceph.conf
+  ini_file: dest=/etc/ceph/{{ ceph_cluster_name }}.conf
     section=global
     option="public network"
     value="{{ ceph_public_network }}"
   when: ceph_public_network is defined
 
 - name: set up ceph cluster network
-  ini_file: dest=/etc/ceph/ceph.conf
+  ini_file: dest=/etc/ceph/{{ ceph_cluster_name }}.conf
     section=global
     option="cluster network"
     value="{{ ceph_cluster_network }}"
   when: ceph_cluster_network is defined
 
 - name: fetch the bootstrap-osd key
-  command: ceph auth print-key client.bootstrap-osd
+  command: ceph --cluster {{ ceph_cluster_name }} auth print-key client.bootstrap-osd
   register: bootstrap_osd_key_results
   until: bootstrap_osd_key_results | success
   delay: 5
@@ -71,7 +71,8 @@
 
 - name: distribute the bootstrap-osd keyring
   copy: content="[client.bootstrap-osd]\n\tkey = {{ bootstrap_osd_key_results.stdout }}\n"
-        dest=/var/lib/ceph/bootstrap-osd/ceph.keyring owner=root group=root mode=0600
+        dest=/var/lib/ceph/bootstrap-osd/{{ ceph_cluster_name }}.keyring
+        owner=root group=root mode=0600
 
 ### Add path-based OSDs
 - name: make sure OSD directories are exists
@@ -80,7 +81,7 @@
   when: item.path is defined
 
 - name: prepare disks
-  command: ceph-disk prepare "{{ item.path }}"
+  command: ceph-disk prepare --cluster {{ ceph_cluster_name }} "{{ item.path }}"
   with_items: "{{ osd }}"
   when: item.path is defined
 
@@ -102,6 +103,19 @@
   when: (item.skipped is not defined or item.skipped != True) and
         ansible_distribution_version | version_compare('15.04', '<=')
 
+- name: ensure /etc/systemd/system/ceph-osd@.service.d exists
+  file: dest=/etc/systemd/system/ceph-osd@.service.d state=directory owner=root group=root mode=0755
+  when: ansible_distribution_version | version_compare('15.10', '>=')
+
+- name: install 10-name.conf override
+  copy: content='[Service]\nEnvironment=CLUSTER={{ ceph_cluster_name }}\n'
+        dest=/etc/systemd/system/ceph-osd@.service.d/10-name.conf
+        owner=root group=root mode=0644
+  notify: reload systemd
+  when: ansible_distribution_version | version_compare('15.10', '>=')
+
+- meta: flush_handlers
+
 - name: ensure ceph OSD is started (systemd)
   service: name=ceph-osd@{{ item.stdout }} state=started enabled=yes
   with_items: "{{ osd_ids.results }}"
@@ -110,7 +124,7 @@
 
 ### Add disk-based OSDs
 - name: prepare disks
-  command: ceph-disk prepare "{{ item.disk }}" {{ item.journal | default('') }}
+  command: ceph-disk prepare --cluster {{ ceph_cluster_name }} "{{ item.disk }}" {{ item.journal | default('') }}
   register: ceph_disk_status
   failed_when: ceph_disk_status.rc != 0 and ('Could not create partition 2' not in ceph_disk_status.stderr) and ('Device is mounted' not in ceph_disk_status.stderr)
   changed_when: ceph_disk_status.rc == 0

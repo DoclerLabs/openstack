@@ -238,7 +238,7 @@ rbd_secret_uuid = {{ cinder_volume_secret_uuid }}
 {% if nova_ephemeral_backend == 'ceph' %}
 images_type = rbd
 images_rbd_pool = {{ nova_ephemeral_ceph_pool }}
-images_rbd_ceph_conf = /etc/ceph/ceph.conf
+images_rbd_ceph_conf = /etc/ceph/{{ ceph_cluster_name }}.conf
 hw_disk_discard = unmap
 {% endif %}
 
