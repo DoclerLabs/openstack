@@ -157,14 +157,20 @@
   service: name=ceph-mon state=started enabled=yes args="id={{ inventory_hostname }} cluster={{ ceph_cluster_name }}"
   when: ansible_distribution_version | version_compare('15.04', '<=')
 
-- name: ensure /etc/systemd/system/ceph-mon.service.d exists
-  file: dest=/etc/systemd/system/ceph-mon.service.d state=directory owner=root group=root mode=0755
+- name: ensure /etc/systemd/system/ceph-{mon,create-keys}.service.d exists
+  file: dest=/etc/systemd/system/{{ item }}.service.d state=directory owner=root group=root mode=0755
+  with_items:
+    - ceph-mon
+    - ceph-create-keys
   when: ansible_distribution_version | version_compare('15.10', '>=')
 
 - name: install 10-name.conf override
   copy: content='[Service]\nEnvironment=CLUSTER={{ ceph_cluster_name }}\n'
-        dest=/etc/systemd/system/ceph-mon.service.d/10-name.conf
+        dest=/etc/systemd/system/{{ item }}.service.d/10-name.conf
         owner=root group=root mode=0644
+  with_items:
+    - ceph-mon
+    - ceph-create-keys
   notify: reload systemd
   when: ansible_distribution_version | version_compare('15.10', '>=')
 
