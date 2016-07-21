@@ -1,4 +1,0 @@
-ceph_cluster_name: ceph
-ceph_rbd_default_features:
-ceph_key: ''
-ceph_monitors: "{{ groups['ceph_monitor'] }}"

@@ -35,10 +35,13 @@
         - { port: 9191 }
 
     - role: ceph_client
-      ceph_user: "{{ glance_ceph_user | default('glance') }}"
-      ceph_rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ glance_ceph_pool | default('images') }}'"
-      ceph_key: "{{ glance_ceph_key | default(None) }}"
-      ceph_keyring_owner: glance
+      ceph_users:
+        - cluster_name: "{{ ceph_cluster_name | default('ceph') }}"
+          monitors: "{{ ceph_monitors | default(groups['ceph_monitor']) }}"
+          user: "{{ glance_ceph_user | default('glance') }}"
+          rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ glance_ceph_pool | default('images') }}'"
+          key: "{{ glance_ceph_key | default(None) }}"
+          keyring_owner: glance
       when: glance_backend | default('files') == 'ceph'
 
 - hosts: haproxy
