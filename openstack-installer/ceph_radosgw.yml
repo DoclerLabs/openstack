@@ -25,10 +25,13 @@
   max_fail_percentage: 0
   roles:
     - role: ceph_client
-      ceph_user: radosgw.gateway
-      ceph_key: "{{ radosgw_ceph_key | default(None) }}"
-      ceph_rights: mon 'allow rwx' osd 'allow rwx'
-      ceph_keyring_owner: root
+      ceph_users:
+        - cluster_name: "{{ ceph_cluster_name | default('ceph') }}"
+          monitors: "{{ ceph_monitors | default(groups['ceph_monitor']) }}"
+          user: radosgw.gateway
+          key: "{{ radosgw_ceph_key | default(None) }}"
+          rights: mon 'allow rwx' osd 'allow rwx'
+          keyring_owner: root
 
     - common
 
