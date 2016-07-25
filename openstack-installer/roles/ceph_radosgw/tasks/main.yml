@@ -4,14 +4,14 @@
     - radosgw
     - libnss3-tools
 
-- name: set up /etc/ceph/ceph.conf for radosgw
-  ini_file: dest=/etc/ceph/ceph.conf
+- name: set up ceph.conf for radosgw
+  ini_file: dest=/etc/ceph/{{ ceph_cluster_name }}.conf
     section=client.radosgw.gateway
     option="{{ item.key }}"
     value="{{ item.value }}"
   with_dict:
     { "host" : "{{ inventory_hostname }}",
-      "keyring": "/etc/ceph/ceph.client.radosgw.gateway.keyring",
+      "keyring": "/etc/ceph/{{ ceph_cluster_name }}.client.radosgw.gateway.keyring",
       "rgw socket path": "''",
       "rgw frontends": "fastcgi socket_port=9000 socket_host=127.0.0.1",
       "log file": "/var/log/ceph/client.radosgw.gateway.log",
@@ -19,8 +19,8 @@
     }
   notify: restart radosgw
 
-- name: set up /etc/ceph/ceph.conf for radosgw-keystone
-  ini_file: dest=/etc/ceph/ceph.conf
+- name: set up ceph.conf for radosgw-keystone
+  ini_file: dest=/etc/ceph/{{ ceph_cluster_name }}.conf
     section=client.radosgw.gateway
     option="{{ item.key }}"
     value="{{ item.value }}"
@@ -42,8 +42,8 @@
     }
   notify: restart radosgw
 
-- name: remove keystone admin token from /etc/ceph/ceph.conf
-  ini_file: dest=/etc/ceph/ceph.conf
+- name: remove keystone admin token from ceph.conf
+  ini_file: dest=/etc/ceph/{{ ceph_cluster_name }}.conf
     section=client.radosgw.gateway
     option="rgw keystone admin token"
     state="absent"

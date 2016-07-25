@@ -6,6 +6,8 @@ radosgw_keystone_implicit_tenants: "{{ rgw_keystone_implicit_tenants | default(T
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
 
+ceph_cluster_name: ceph
+
 radosgw_keystone: True
 radosgw_port: 8080
 
