@@ -230,12 +230,10 @@ live_migration_uri = qemu+ssh://nova@%s/system?keyfile=/var/lib/nova/.ssh/id_rsa
 live_migration_flag="VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE"
 live_migration_tunnelled = {{ nova_live_migration_tunelled }}
 
-#ceph
-{% if cinder_backend == 'ceph' or nova_ephemeral_backend == 'ceph' %}
-rbd_user = {{ cinder_ceph_user }}
-rbd_secret_uuid = {{ cinder_volume_secret_uuid }}
-{% endif %}
 {% if nova_ephemeral_backend == 'ceph' %}
+#ceph
+rbd_user = {{ nova_ephemeral_ceph_user }}
+rbd_secret_uuid = {{ nova_ephemeral_volume_secret_uuid }}
 images_type = rbd
 images_rbd_pool = {{ nova_ephemeral_ceph_pool }}
 images_rbd_ceph_conf = /etc/ceph/{{ ceph_cluster_name }}.conf

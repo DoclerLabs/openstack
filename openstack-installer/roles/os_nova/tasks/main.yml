@@ -103,13 +103,23 @@
     - { src: '{{ SSLCertificateFileSource | default("") }}', dest: '{{ SSLCertificateFile }}', mode: '0464' }
   when: inventory_hostname in groups['nova_controller'] and item.src != '' and nova_console_ssl | bool
 
+- name: collect ceph backends
+  set_fact:
+    nova_ceph_backend:
+      - backend: ceph
+        ceph_user: "{{ nova_ephemeral_ceph_user }}"
+        volume_secret_uuid: "{{ nova_ephemeral_volume_secret_uuid }}"
+  when: nova_ephemeral_backend == 'ceph'
+
 - name: install virsh secret.xml
-  template: src=secret.xml.j2 dest=/root/secret.xml owner=root group=root mode=0664
-  when: inventory_hostname in groups['nova_compute'] and cinder_backend=='ceph'
+  template: src=secret.xml.j2 dest=/root/{{ item.volume_secret_uuid }}.xml owner=root group=root mode=0664
+  with_items: "{{ cinder_backends }} + {{ nova_ceph_backend | default([]) }}"
+  when: inventory_hostname in groups['nova_compute'] and item.backend=='ceph'
 
 - name: configure virsh secret.xml
-  command: virsh secret-define --file /root/secret.xml
-  when: inventory_hostname in groups['nova_compute'] and cinder_backend=='ceph'
+  command: virsh secret-define --file /root/{{ item.volume_secret_uuid }}.xml
+  with_items: "{{ cinder_backends }} + {{ nova_ceph_backend | default([]) }}"
+  when: inventory_hostname in groups['nova_compute'] and item.backend=='ceph'
 
 - name: install nova configs
   template: src=nova.conf.j2 dest=/etc/nova/nova.conf owner=nova group=root mode=0460

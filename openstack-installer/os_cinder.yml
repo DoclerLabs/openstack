@@ -50,23 +50,50 @@
 - hosts: cinder_volume
   become: True
   max_fail_percentage: 0
+  vars:
+    users: []
+  pre_tasks:
+    - name: collect cinder backends
+      set_fact:
+        users: "{{ users + [ {
+          'cluster_name': item.ceph_cluster_name,
+          'monitors': item.ceph_monitors | default(groups.ceph_monitor),
+          'user': item.ceph_user,
+          'rights': 'mon \"allow r\" osd \"allow class-read object_prefix rbd_children, allow rwx pool=' + item.ceph_pool + ', allow rwx pool=' + nova_ephemeral_ceph_pool | default('vms') + ', allow rx pool=' + glance_ceph_pool | default('images') + '\"',
+          'key': item.ceph_key | default(None),
+          'keyring_owner': 'root',
+          'keyring_group': 'cinder' } ] + [ {
+          'cluster_name': item.ceph_cluster_name,
+          'monitors': item.ceph_monitors | default(groups.ceph_monitor),
+          'user': item.backup_ceph_user,
+          'rights': 'mon \"allow r\" osd \"allow class-read object_prefix rbd_children, allow rwx pool=' + item.backup_ceph_pool + '\"',
+          'key': item.ceph_key | default(None),
+          'keyring_owner': 'root',
+          'keyring_group': 'cinder' } ] }}"
+      with_items: "{{ cinder_backends | default([]) }}"
+      when: cinder_backends is defined and item.backend == 'ceph'
+
+    - name: collect the only cinder backend
+      set_fact:
+        users:
+          - cluster_name: "{{ ceph_cluster_name | default('ceph') }}"
+            monitors: "{{ ceph_monitors | default(groups['ceph_monitor']) }}"
+            user: "{{ cinder_ceph_user | default('cinder') }}"
+            rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_ceph_pool | default('volumes') }}, allow rwx pool={{ nova_ephemeral_ceph_pool | default('vms') }}, allow rx pool={{ glance_ceph_pool | default('images') }}'"
+            key: "{{ cinder_ceph_key | default(None) }}"
+            keyring_owner: root
+            keyring_group: cinder
+          - cluster_name: "{{ ceph_cluster_name | default('ceph') }}"
+            monitors: "{{ ceph_monitors | default(groups['ceph_monitor']) }}"
+            user: "{{ cinder_backup_ceph_user | default('cinder-backup') }}"
+            rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_backup_ceph_pool | default('backups') }}'"
+            key: "{{ cinder_backup_ceph_key | default(None) }}"
+            keyring_owner: cinder
+      when: cinder_backends is not defined and cinder_backend | default('lvm') == 'ceph'
+
   roles:
     - role: ceph_client
-      ceph_users:
-        - cluster_name: "{{ ceph_cluster_name | default('ceph') }}"
-          monitors: "{{ ceph_monitors | default(groups['ceph_monitor']) }}"
-          user: "{{ cinder_ceph_user | default('cinder') }}"
-          rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_ceph_pool | default('volumes') }}, allow rwx pool={{ nova_ephemeral_ceph_pool | default('vms') }}, allow rx pool={{ glance_ceph_pool | default('images') }}'"
-          key: "{{ cinder_ceph_key | default(None) }}"
-          keyring_owner: root
-          keyring_group: cinder
-        - cluster_name: "{{ ceph_cluster_name | default('ceph') }}"
-          monitors: "{{ ceph_monitors | default(groups['ceph_monitor']) }}"
-          user: "{{ cinder_backup_ceph_user | default('cinder-backup') }}"
-          rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_backup_ceph_pool | default('backups') }}'"
-          key: "{{ cinder_backup_ceph_key | default(None) }}"
-          keyring_owner: cinder
-      when: cinder_backend | default('lvm') == 'ceph'
+      ceph_users: "{{ users }}"
 
 - hosts: haproxy
   become: True

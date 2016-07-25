@@ -47,28 +47,62 @@
 - hosts: nova_compute
   become: True
   max_fail_percentage: 0
+  vars:
+    users: []
+  pre_tasks:
+    - name: collect cinder backends
+      set_fact:
+        users: "{{ users + [ {
+          'cluster_name': item.ceph_cluster_name,
+          'monitors': item.ceph_monitors | default(groups.ceph_monitor),
+          'user': item.ceph_user,
+          'rights': 'mon \"allow r\" osd \"allow class-read object_prefix rbd_children, allow rwx pool=' + item.ceph_pool + ', allow rwx pool=' + nova_ephemeral_ceph_pool | default('vms') + ', allow rx pool=' + glance_ceph_pool | default('images') + '\"',
+          'key': item.ceph_key | default(None),
+          'keyring_owner': 'nova',
+          'keyring_group': (inventory_hostname in groups['cinder_volume']) | ternary('cinder','root'),
+          'volume_secret_uuid': item.volume_secret_uuid } ] }}"
+      with_items: "{{ cinder_backends | default([]) }}"
+      when: cinder_backends is defined and item.backend == 'ceph'
+
+    - name: collect the only cinder backend
+      set_fact:
+        users:
+            monitors: "{{ ceph_monitors | default(groups['ceph_monitor']) }}"
+            user: "{{ cinder_ceph_user | default('cinder') }}"
+            rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_ceph_pool | default('volumes') }}, allow rwx pool={{ nova_ephemeral_ceph_pool | default('vms') }}, allow rx pool={{ glance_ceph_pool | default('images') }}'"
+            key: "{{ cinder_ceph_key | default(None) }}"
+            keyring_owner: nova
+            keyring_group: "{{ (inventory_hostname in groups['cinder_volume']) | ternary('cinder','root') }}"
+            volume_secret_uuid: "{{ cinder_volume_secret_uuid }}"
+      when: cinder_backends is not defined and cinder_backend | default('lvm') == 'ceph'
+
+    - name: collect nova ceph backend
+      set_fact:
+        users: "{{ users + [ {
+          'cluster_name': ceph_cluster_name | default('ceph'),
+          'monitors': groups.ceph_monitor,
+          'user': nova_ephemeral_ceph_user | default(cinder_ceph_user) | default('cinder'),
+          'rights': 'mon \"allow r\" osd \"allow class-read object_prefix rbd_children, allow rwx pool=' + cinder_ceph_pool | default('volumes') + ', allow rwx pool=' + nova_ephemeral_ceph_pool | default('vms') + ', allow rx pool=' + glance_ceph_pool | default('images') + '\"',
+          'key': nova_ephemeral_ceph_key | default(None),
+          'keyring_owner': 'nova',
+          'keyring_group': (inventory_hostname in groups['cinder_volume']) | ternary('cinder','root'),
+          'volume_secret_uuid': nova_ephemeral_volume_secret_uuid | default(cinder_volume_secret_uuid) } ] }}"
+      when: nova_ephemeral_backend | default('local') == 'ceph'
+
   roles:
     - role: ceph_client
-      ceph_users:
-        - cluster_name: "{{ ceph_cluster_name | default('ceph') }}"
-          monitors: "{{ ceph_monitors | default(groups['ceph_monitor']) }}"
-          user: "{{ cinder_ceph_user | default('cinder') }}"
-          rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_ceph_pool | default('volumes') }}, allow rwx pool={{ nova_ephemeral_ceph_pool | default('vms') }}, allow rx pool={{ glance_ceph_pool | default('images') }}'"
-          key: "{{ cinder_ceph_key | default(None) }}"
-          keyring_owner: nova
-          keyring_group: "{{ (inventory_hostname in groups['cinder_volume']) | ternary('cinder','root') }}"
-      when: cinder_backend | default('lvm') == 'ceph' or nova_ephemeral_backend | default('local') == 'ceph'
+      ceph_users: "{{ users }}"
   tasks:
     - name: get cinder key
-      command: ceph-authtool /etc/ceph/{{ ceph_cluster_name | default('ceph') }}.client.{{ cinder_ceph_user | default('cinder') }}.keyring -p -n client.{{ cinder_ceph_user | default('cinder') }}
+      command: ceph-authtool /etc/ceph/{{ item.cluster_name | default('ceph') }}.client.{{ item.user | default('cinder') }}.keyring -p -n client.{{ item.user | default('cinder') }}
       register: cinder_key
       changed_when: False
-      when: cinder_backend | default('lvm') == 'ceph' or nova_ephemeral_backend | default('local') == 'ceph'
+      with_items: "{{ users }}"
       run_once: True
 
     - name: install cinder secret into virsh
-      command: 'virsh secret-set-value --secret {{ cinder_volume_secret_uuid }} --base64 {{ cinder_key.stdout }}'
-      when: cinder_backend | default('lvm') == 'ceph' or nova_ephemeral_backend | default('local') == 'ceph'
+      command: 'virsh secret-set-value --secret {{ item.item.volume_secret_uuid }} --base64 {{ item.stdout }}'
+      with_items: "{{ cinder_key.results }}"
 
 - hosts: haproxy
   become: True

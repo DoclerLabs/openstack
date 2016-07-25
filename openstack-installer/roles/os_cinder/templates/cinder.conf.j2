@@ -11,33 +11,6 @@ osapi_volume_base_URL = {{ os_proto }}://{{ os_public_address }}:8776
 public_endpoint = {{ os_proto }}://{{ os_public_address }}:8776
 host = {{ inventory_hostname }}
 
-{% if inventory_hostname in groups['cinder_volume'] %}
-
-{% if cinder_backend == 'lvm' %}
-
-volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
-volume_group = cinder-volumes
-iscsi_protocol = iscsi
-iscsi_helper = tgtadm
-volume_name_template = volume-%s
-volume_group = cinder-volumes
-
-{% elif cinder_backend == 'ceph' %}
-
-volume_driver=cinder.volume.drivers.rbd.RBDDriver
-backup_driver=cinder.backup.drivers.ceph
-rbd_cluster_name = {{ ceph_cluster_name }}
-rbd_ceph_conf = /etc/ceph/{{ ceph_cluster_name }}.conf
-rbd_pool = {{ cinder_ceph_pool }}
-rbd_user = {{ cinder_ceph_user }}
-rbd_secret_uuid = {{ cinder_volume_secret_uuid }}
-backup_ceph_pool = {{ cinder_backup_ceph_pool }}
-backup_ceph_user = {{ cinder_backup_ceph_user }}
-
-{% endif %}
-
-{% endif %}
-
 rootwrap_config = /etc/cinder/rootwrap.conf
 api_paste_confg = /etc/cinder/api-paste.ini
 state_path = /var/lib/cinder
@@ -51,6 +24,41 @@ glance_api_servers = {{ os_proto }}://{{ os_internal_address }}:9292
 glance_api_insecure = {{ ssl_insecure }}
 {% if SSLCACertificateFile != '' %}
 glance_ca_certificates_file = {{ SSLCACertificateFile }}
+{% endif %}
+
+{% if inventory_hostname in groups['cinder_volume'] %}
+
+enabled_backends = {% for backend in cinder_backends %}{{ backend.name }}{% if not loop.last %},{% endif %}{% endfor %}
+
+{% for backend in cinder_backends %}
+
+[{{ backend.name }}]
+
+{% if backend.backend == 'lvm' %}
+
+volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
+volume_group = cinder-volumes
+iscsi_protocol = iscsi
+iscsi_helper = tgtadm
+volume_name_template = volume-%s
+volume_group = cinder-volumes
+
+{% elif backend.backend == 'ceph' %}
+
+volume_driver=cinder.volume.drivers.rbd.RBDDriver
+backup_driver=cinder.backup.drivers.ceph
+rbd_cluster_name = {{ backend.ceph_cluster_name }}
+rbd_ceph_conf = /etc/ceph/{{ backend.ceph_cluster_name }}.conf
+rbd_pool = {{ backend.ceph_pool }}
+rbd_user = {{ backend.ceph_user }}
+rbd_secret_uuid = {{ backend.volume_secret_uuid }}
+backup_ceph_pool = {{ backend.backup_ceph_pool }}
+backup_ceph_user = {{ backend.backup_ceph_user }}
+
+{% endif %}
+
+{% endfor %}
+
 {% endif %}
 
 [database]

@@ -391,6 +391,10 @@ The most important settings for Nova are:
   nova_ephemeral_backend: local              # Where to put root and ephemeral disks for the instances. The default 'local' value is the storage
                                              # in the compute node itself, while 'ceph' allows to use computes without local disc resources.
   nova_ephemeral_ceph_pool: vms              # If Ceph is used for ephemeral disks, the pool name used for them.
+  nova_ephemeral_ceph_user: nova             # If Ceph is used for ephemeral disks, the user name used for accessing the pool.
+  nova_ephemeral_volume_secret_uuid:         # If Ceph is used for ephemeral disks, a random UUID for the Ceph secret in Libvirt.
+  nova_ephemeral_ceph_key:                   # If a cephx key is given here, use that, instead of creating a user. Useful for external Ceph.
+
   nova_cpu_allocation_ratio: 16.0            # The overprovisioning ratio for CPUs.
   nova_ram_allocation_ratio: 1.5             # The overprovisioning ratio for RAM.
   nova_compute_driver: libvirt.LibvirtDriver # The compute driver used. For LXD, use nova_lxd.nova.virt.lxd.LXDDriver.
@@ -403,6 +407,46 @@ The most important settings for Nova are:
                                              # http(s)://{{ os_public_address }}:6080/vnc_auto.html
   nova_spiceproxy_base_url:                  # Override this if the the default URL for the spiceproxy is not presented correctly. By default it is
                                              # http(s)://{{ os_public_address }}:6082/spice_auto.html
+
+
+Cinder
+------
+
+Cinder is the storage component in OpenStack. This installer supports the LVM and Ceph backends.
+Cinder can be configured with multi-backend support, e.g. more than one Ceph pool (or even Ceph clusters) can be used.
+The configuration options are:
+
+::
+
+  cinder_backend: lvm                        # The default backend for Cinder volumes. Can be 'lvm' or 'ceph'.
+  cinder_ceph_pool: volumes                  # The default Ceph pool for the volumes.
+  cinder_ceph_user: cinder                   # The Ceph user for accessing the Ceph pool.
+  cinder_backup_ceph_pool: backups           # The Ceph pool used for the volume backups.
+  cinder_backup_ceph_user: cinder-backup     # The Ceph user used for the volume backups.
+  cinder_volume_secret_uuid:                 # A random UUID for the Ceph secret in Libvirt.
+  cinder_ceph_key:                           # If a cephx key is given here, use that, instead of creating a user. Useful for external Ceph.
+
+
+Multi-backend support can be activated by using a cinder_backends list instead of the options above. The list structure:
+
+::
+
+  cinder_backends:
+    - backend: ceph
+      name: ceph-1
+      ceph_cluster_name: ceph
+      ceph_monitors: groups['ceph_monitor']
+      ceph_pool: cinder
+      ceph_user: cinder
+      ceph_key:
+      backup_ceph_pool: backups
+      backup_ceph_user: cinder-backup
+      volume_secret_uuid:
+    - backend: ceph
+      name: ceph-2
+      .
+      .
+      .
 
 Neutron
 -------
