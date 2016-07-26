@@ -336,6 +336,16 @@ define service{
 }
 {% endif %}
 
+{% if groups['rabbitmq'] | count > 0 %}
+define service{
+    use {{ service_template }}
+    hostgroup_name {{ nagios_cloud_prefix }}rabbitmq
+    servicegroups {{ nagios_cloud_prefix }}Infra
+    service_description rabbitmq
+    check_command {{ command_check_nrpe }}!check_rabbitmq
+}
+{% endif %}
+
 ### OpenStack ###
 
 {% if groups['swift_proxy'] | count > 0 %}

@@ -29,6 +29,10 @@
   copy: src=check_haproxy_stats.pl dest=/usr/local/bin/check_haproxy_stats.pl owner=root group=root mode=0755
   when: inventory_hostname in groups['haproxy']
 
+- name: install rabbitmq cluster health check scripts
+  copy: src=check_rabbitmq_cluster.py dest=/usr/local/bin/check_rabbitmq_cluster.py owner=root group=root mode=0755
+  when: inventory_hostname in groups['rabbitmq']
+
 - name: install nrpe config
   template: src=nrpe.cfg.j2 dest=/etc/nagios/nrpe.cfg owner=root group=root mode=0644
   notify: restart nrpe
