@@ -68,7 +68,7 @@ def main():
         ret = NAGIOS_UNKNOWN
         msg = str(e)
 
-    print "%d %s %s" % (ret, NAGIOS_STATUS[ret],  msg)
+    print "%s: %s" % (NAGIOS_STATUS[ret],  msg)
     exit(ret)
 
 main()
