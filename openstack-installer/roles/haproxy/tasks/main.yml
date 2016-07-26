@@ -9,6 +9,7 @@
 
 - name: install syslog-ng haproxy.conf
   template: src=haproxy.conf.j2 dest=/etc/syslog-ng/conf.d/haproxy.conf owner=root group=root mode=0644
+  when: inventory_hostname in groups['syslog']
   notify:
     - restart syslog-ng
     - restart haproxy
