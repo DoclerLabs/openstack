@@ -44,6 +44,10 @@
   roles:
     - role: ceph_client
   vars:
-    ceph_user: nagios
-    ceph_rights: "mon 'allow r'"
-    ceph_keyring_owner: nagios
+    ceph_users:
+      - cluster_name: "{{ ceph_cluster_name | default('ceph') }}"
+        monitors: "{{ ceph_monitors | default(groups['ceph_monitor']) }}"
+        user: nagios
+        key:
+        rights: "mon 'allow r'"
+        keyring_owner: nagios
