@@ -50,7 +50,7 @@ define hostgroup{
 }
 {%- endmacro %}
 
-{% if monitor_vip_public %}
+{% if nagios_monitor_vip_public %}
 {% set vips_monitored = nagios_cloud_prefix + 'mgmt-VIP,' + nagios_cloud_prefix + 'public-VIP' %}
 {% else %}
 {% set vips_monitored = '{{ nagios_cloud_prefix }}mgmt-VIP' %}
@@ -115,16 +115,16 @@ define servicegroup{
 }
 
 define host{
-    use {{ host_template }}
+    use {{ nagios_host_template }}
     host_name {{ nagios_cloud_prefix }}mgmt-VIP
     alias {{ nagios_cloud_prefix }}mgmt-VIP
     address {{ vip_mgmt }}
     hostgroups {{ nagios_cloud_prefix }}mgmt-VIP
 }
 
-{% if monitor_vip_public %}
+{% if nagios_monitor_vip_public %}
 define host{
-    use {{ host_template }}
+    use {{ nagios_host_template }}
     host_name {{ nagios_cloud_prefix }}public-VIP
     alias {{ nagios_cloud_prefix }}public-VIP
     address {{ vip_public }}
@@ -133,7 +133,7 @@ define host{
 {% endif %}
 
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     host_name {{ nagios_cloud_prefix }}mgmt-VIP
     service_description PING
     check_command check_ping!100.0,20%!500.0,60%
@@ -157,7 +157,7 @@ define service{
 {% endif %}
 
 define host{
-    use {{ host_template }}
+    use {{ nagios_host_template }}
     host_name {{ host }}
     alias {{ host }}
     address {{ hostvars[host].ip.mgmt }}
@@ -165,7 +165,7 @@ define host{
 }
 
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix }}general
     service_description PING
@@ -173,39 +173,39 @@ define service{
 }
 
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix }}general
     service_description LOAD
-    check_command {{ command_check_nrpe }}!check_load
+    check_command {{ nagios_command_check_nrpe }}!check_load
 }
 
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix }}general
     service_description disk_root
-    check_command {{ command_check_nrpe }}!check_disk_root
+    check_command {{ nagios_command_check_nrpe }}!check_disk_root
 }
 
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix }}general
     service_description disk_var
-    check_command {{ command_check_nrpe }}!check_disk_var
+    check_command {{ nagios_command_check_nrpe }}!check_disk_var
 }
 
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix }}general
     service_description disk_log
-    check_command {{ command_check_nrpe }}!check_disk_log
+    check_command {{ nagios_command_check_nrpe }}!check_disk_log
 }
 
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix }}general
     service_description SSH
@@ -214,31 +214,31 @@ define service{
 
 {% if hostvars[host].nagios_ipmi | default(nagios_ipmi) %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix}}hardware
     service_description sensors
-    check_command {{ command_check_nrpe }}!check_ipmi
+    check_command {{ nagios_command_check_nrpe }}!check_ipmi
 }
 {% endif %}
 
 {% if hostvars[host].nagios_bond | default(nagios_bond) %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix}}hardware
     service_description bonding
-    check_command {{ command_check_nrpe }}!check_bonding
+    check_command {{ nagios_command_check_nrpe }}!check_bonding
 }
 {% endif %}
 
 {% if hostvars[host].nagios_mdraid | default(nagios_mdraid) %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix}}hardware
     service_description swraid
-    check_command {{ command_check_nrpe }}!check_swraid
+    check_command {{ nagios_command_check_nrpe }}!check_swraid
 }
 {% endif %}
 
@@ -246,11 +246,11 @@ define service{
 
 {% if groups['nova_compute'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}compute
     servicegroups {{ nagios_cloud_prefix }}general
     service_description disk_nova
-    check_command {{ command_check_nrpe }}!check_disk_nova
+    check_command {{ nagios_command_check_nrpe }}!check_disk_nova
 }
 {% endif %}
 
@@ -258,25 +258,25 @@ define service{
 
 {% if groups['ceph_monitor'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}ceph-monitor
     servicegroups {{ nagios_cloud_prefix }}ceph
     service_description ceph_health
-    check_command {{ command_check_nrpe }}!check_ceph_health
+    check_command {{ nagios_command_check_nrpe }}!check_ceph_health
 }
 
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}ceph-monitor
     servicegroups {{ nagios_cloud_prefix }}ceph
     service_description ceph_df
-    check_command {{ command_check_nrpe }}!check_ceph_df
+    check_command {{ nagios_command_check_nrpe }}!check_ceph_df
 }
 {% endif %}
 
 {% if groups['ceph_radosgw'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}ceph-radosgw,{{ vips_monitored }}
     servicegroups ceph
     service_description radosgw
@@ -288,61 +288,61 @@ define service{
 
 {% if groups['galera'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix}}galera
     servicegroups {{ nagios_cloud_prefix }}general,{{ nagios_cloud_prefix }}Infra
     service_description disk_mysql
-    check_command {{ command_check_nrpe }}!check_disk_mysql
+    check_command {{ nagios_command_check_nrpe }}!check_disk_mysql
 }
 
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}galera
     servicegroups {{ nagios_cloud_prefix }}Infra
     service_description galera
-    check_command {{ command_check_nrpe }}!check_galera
+    check_command {{ nagios_command_check_nrpe }}!check_galera
 }
 
 {% endif %}
 
 {% if groups['mongodb'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}mongodb
     servicegroups {{ nagios_cloud_prefix }}general,{{ nagios_cloud_prefix }}Infra
     service_description disk_mongodb
-    check_command {{ command_check_nrpe }}!check_disk_mongodb
+    check_command {{ nagios_command_check_nrpe }}!check_disk_mongodb
 }
 {% endif %}
 
 
 {% if groups['memcached'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}memcached
     servicegroups {{ nagios_cloud_prefix }}Infra
     service_description memcached
-    check_command {{ command_check_nrpe }}!check_memcached
+    check_command {{ nagios_command_check_nrpe }}!check_memcached
 }
 {% endif %}
 
 {% if groups['haproxy'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}haproxy
     servicegroups {{ nagios_cloud_prefix }}Infra
     service_description haproxy
-    check_command {{ command_check_nrpe }}!check_haproxy
+    check_command {{ nagios_command_check_nrpe }}!check_haproxy
 }
 {% endif %}
 
 {% if groups['rabbitmq'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}rabbitmq
     servicegroups {{ nagios_cloud_prefix }}Infra
     service_description rabbitmq
-    check_command {{ command_check_nrpe }}!check_rabbitmq
+    check_command {{ nagios_command_check_nrpe }}!check_rabbitmq
 }
 {% endif %}
 
@@ -350,7 +350,7 @@ define service{
 
 {% if groups['swift_proxy'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}swift-proxy,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description swift-proxy
@@ -360,7 +360,7 @@ define service{
 
 {% if groups['keystone'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}keystone,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description keystone-main
@@ -368,7 +368,7 @@ define service{
 }
 
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}keystone,{{ nagios_cloud_prefix }}mgmt-VIP
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description keystone-admin
@@ -378,7 +378,7 @@ define service{
 
 {% if groups['nova_controller'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}nova,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description nova-api
@@ -388,7 +388,7 @@ define service{
 
 {% if groups['neutron_controller'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}neutron,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description neutron-api
@@ -398,7 +398,7 @@ define service{
 
 {% if groups['cinder'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}cinder,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description cinder-api
@@ -408,7 +408,7 @@ define service{
 
 {% if groups['glance'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}glance,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description glance-api
@@ -416,7 +416,7 @@ define service{
 }
 
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}glance,{{ nagios_cloud_prefix }}mgmt-VIP
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description glance-registry
@@ -426,7 +426,7 @@ define service{
 
 {% if groups['ceilometer_controller'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}ceilometer,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description ceilometer-api
@@ -436,7 +436,7 @@ define service{
 
 {% if groups['aodh'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}ceilometer,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description aodh-api
@@ -446,7 +446,7 @@ define service{
 
 {% if groups['heat'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}heat,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description heat-api
@@ -456,7 +456,7 @@ define service{
 
 {% if groups['ironic'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}ironic,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description ironic-api
@@ -466,7 +466,7 @@ define service{
 
 {% if groups['barbican'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}barbican,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description barbican-api
@@ -476,7 +476,7 @@ define service{
 
 {% if groups['trove'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}trove,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description trove-api
@@ -486,7 +486,7 @@ define service{
 
 {% if groups['murano'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}murano,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description murano-api
@@ -496,7 +496,7 @@ define service{
 
 {% if groups['sahara'] | count > 0 %}
 define service{
-    use {{ service_template }}
+    use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}sahara,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description sahara-api
