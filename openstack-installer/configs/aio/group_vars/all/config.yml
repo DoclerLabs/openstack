@@ -68,6 +68,8 @@ glance_ceph_user: glance
 #ceph or local
 nova_ephemeral_backend: ceph
 nova_ephemeral_ceph_pool: vms
+nova_ephemeral_ceph_user: nova
+nova_ephemeral_volume_secret_uuid: d048aa33-c46c-4573-a0c9-dd014d56e2b5
 
 #horizon_regions:
 #  - { name: "RegionONE", url: "http://10.97.36.127:5000/v3" }
