@@ -15,6 +15,10 @@ NAGIOS_STATUS = {
     NAGIOS_UNKNOWN: "Unknown"}
 
 
+class RabbitError(Exception):
+    pass
+
+
 def get_rabbitmq_nodes():
 
     proc = subprocess.Popen(["/usr/sbin/rabbitmqctl", "cluster_status"],
@@ -23,7 +27,7 @@ def get_rabbitmq_nodes():
                             shell=False)
     (out, err) = proc.communicate()
     if proc.returncode != 0:
-        raise Exception(err)
+        raise RabbitError(err)
 
     # remove first line
     status = out[out.find('\n')+1:]
@@ -64,6 +68,9 @@ def main():
         else:
             ret = NAGIOS_OK
             msg = "Disc nodes: %s, RAM nodes: %s" % (disc_nodes, ram_nodes)
+    except RabbitError, e:
+        ret = NAGIOS_CRIT
+        msg = str(e)
     except Exception, e:
         ret = NAGIOS_UNKNOWN
         msg = str(e)
