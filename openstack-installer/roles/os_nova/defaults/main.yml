@@ -42,6 +42,9 @@ nova_service_down_time: 150
 nova_cpu_allocation_ratio: 16.0
 nova_ram_allocation_ratio: 1.5
 
+nova_live_migration_completion_timeout: 800
+nova_live_migration_progress_timeout: 150
+
 #kvm or qemu
 nova_virt_type: kvm
 
