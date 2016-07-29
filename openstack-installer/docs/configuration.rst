@@ -483,6 +483,9 @@ Settings affecting neutron:
                                           # default setting will use 239.0.255.255 for the VNI 65535.
   neutron_gre_vni_ranges: "1:1000"        # The range for GRE networks (only with OpenVSwitch).
   neutron_dnsmasq_dns_servers:            # DNS forwarder address(es) used globally.
-  neutron_mtu: 0                          # MTU for the interfaces created for the VMs. Lower it for overlay (GRE, VXLAN) networks, or raise it if your
-                                          # network supports Jumbo frames.
+  neutron_mtu: 0                          # This setting is deprecated, use neutron_path_mtu, netron_segment_mtu or neutron_physical_network_mtus.
+  neutron_advertise_mtu: True             # Whether to advertise the MTU size via DHCP and IPv6 RA.
+  neutron_path_mtu: 0                     # Maximum packet size for the whole L3 path
+  neutron_segment_mtu: 0                  # Maximum packet size for an L2 network segment
+  neutron_physical_network_mtus:          # It is possble to give the MTU size for each physical network, e.g. flat:1500, vlan:3000
   neutron_vpnaas_type:                    # The VPNaaS agent used. Can be 'openswan', 'strongswan' or empty (no VPNaaS).
