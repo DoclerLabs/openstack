@@ -28,11 +28,15 @@ glance_ca_certificates_file = {{ SSLCACertificateFile }}
 
 {% if inventory_hostname in groups['cinder_volume'] %}
 
+{% if cinder_backends | count > 1 %}
 enabled_backends = {% for backend in cinder_backends %}{{ backend.name }}{% if not loop.last %},{% endif %}{% endfor %}
+{% endif %}
 
 {% for backend in cinder_backends %}
 
+{% if cinder_backends | count > 1 %}
 [{{ backend.name }}]
+{% endif %}
 
 {% if backend.backend == 'lvm' %}
 
