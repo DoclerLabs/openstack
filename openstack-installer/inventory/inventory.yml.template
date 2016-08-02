@@ -33,6 +33,12 @@ nova_controller:
 nova_compute:
 neutron_controller:
 neutron_compute:
+neutron_l3:
+  inherit: neutron_controller
+neutron_l2:
+  inherit:
+    - neutron_l3
+    - neutron_compute
 gnocchi:
 aodh:
 ceilometer_controller:

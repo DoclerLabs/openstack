@@ -453,9 +453,21 @@ Neutron
 
 Neutron is the networking component. This installer implements the LinuxBridge and OpenVSwitch drivers, LBaaS, VPNaaS, FWaaS plugins and
 Flat, VLAN, VXLAN and GRE network segmentations.
-The inventory groups neutron uses are neutron_controller and neutron_compute. Most settings don't have default values, so most probably
-Neutron requires the most effort to set up properly.
-Settings affecting neutron:
+The inventory groups Neutron uses are:
+
+- neutron_controller (for the neutron API server)
+- neutron_l2 (for the Layer 2 interface driver)
+- neutron_l3 (for the Layer 3 agents - router, dhcp, VPN, LBaaS functions)
+
+For backwards compatibility, all of the components are included in the neutron_controller inventory group, and the L2 agent is included in the
+neutron_compute group, so you alternatively can use:
+
+- neutron_controller (for the API server, L2 and L3 agents)
+- neutron_compute (for the L2 agent)
+
+The other Neutron settings needs to be adjusted your phyiscal networking environment, so most settings don't have proper default values.
+Most probably Neutron requires the most effort to set up properly.
+Settings affecting Neutron are:
 
 ::
 
@@ -466,17 +478,17 @@ Settings affecting neutron:
                                                   # on that interface. Those can be specified by the ip.vxlan and ip.gre settings in the inventory.
   neutron_physical_interface_mappings:    # This contains a mapping for the physical network name in Neutron and the name in the host system.
                                           # For example, if you created a bridge called br-vlan, and you want to assign it to the name 'vlan' in
-                                          # neutron, use neutron_physical_interface_mappings: 'vlan:br-vlan'
+                                          # Neutron, use neutron_physical_interface_mappings: 'vlan:br-vlan'
                                           # More mappings can be added by separating them with a comma. E.g.:
                                           # neutron_physical_interface_mappings: 'flat:eth1, vlan:br-vlan'
                                           # This setting can be used in the inventory, too, if the nodes have different networking setup.
   neutron_vlan_ranges:                    # The VLAN IDs used for VLAN networks. Example: vlan:100,200
   neutron_ha_routers: False               # Set to 'True' if you want to create a Neutron router in HA mode (the router will be created on all
-                                          # controller nodes, and the active is determined by Keepalived).
-  neutron_ha_network_type:                # The network type used for the Keepalived traffic for HA networks. By default it is the default neutron
+                                          # l3 nodes, and the active is determined by Keepalived).
+  neutron_ha_network_type:                # The network type used for the Keepalived traffic for HA networks. By default it is the default Neutron
                                           # network type.
   neutron_ha_network_physical_name:       # The physical network name in Neutron for the Keepalived traffic for HA networks. Default is the default
-                                          # neutron network name for the given network type.
+                                          # Neutron network name for the given network type.
   neutron_flat_networks:                  # The name of the networks that can be used as 'flat' types. '*' can be used if all networks can be flat.
   neutron_vxlan_vni_ranges: "65537:69999" # The VNI range to use for VXLAN networks.
   neutron_vxlan_group: 239.0.0.0/8        # The multicast group range for VXLAN networks. The value's host part will be the VNI, so for example the

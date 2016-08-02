@@ -29,21 +29,27 @@
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
 
-- name: mask autostarting of neutron l2 agent
-  service_mask: name={{ item }} state=masked
-  with_items:
-    - neutron-{{ neutron_physical_interface_driver }}-agent
-
-- name: mask autostarting of neutron controller services
+- name: mask autostarting of neutron server
   service_mask: name={{ item }} state=masked
   with_items:
     - neutron-server
+  when: inventory_hostname in groups['neutron_controller']
+
+- name: mask autostarting of neutron L2 agent
+  service_mask: name={{ item }} state=masked
+  with_items:
+    - neutron-{{ neutron_physical_interface_driver }}-agent
+  when: inventory_hostname in groups['neutron_l2']
+
+- name: mask autostarting of neutron L3 services
+  service_mask: name={{ item }} state=masked
+  with_items:
     - neutron-vpn-agent
     - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
     - neutron-lbaas-agent
-  when: inventory_hostname in groups['neutron_controller']
+  when: inventory_hostname in groups['neutron_l3']
 
 - name: turn off rp filtering
   lineinfile: >
@@ -66,7 +72,7 @@
   with_dict:
     { 'net.ipv4.ip_forward' : 1 }
   notify: reload sysctl
-  when: inventory_hostname in groups['neutron_controller']
+  when: inventory_hostname in groups['neutron_l3']
 
 - name: insert br_netfilter module
   modprobe: name=br_netfilter
@@ -77,38 +83,45 @@
 
 - name: install vpn service provider
   apt: name={{ neutron_vpnaas_type }}
-  when: inventory_hostname in groups['neutron_controller'] and neutron_vpnaas_type != None
-
-- name: install neutron l2 agent
-  apt: name={{ item }}
-  with_items:
-    - conntrack
-    - neutron-{{ neutron_physical_interface_driver }}-agent
+  when: inventory_hostname in groups['neutron_l3'] and neutron_vpnaas_type != None
 
 - name: install neutron server packages
   apt: name={{ item }}
   with_items:
-    - keepalived
     - neutron-server
     - neutron-plugin-ml2
+    - python-neutronclient
+  when: inventory_hostname in groups['neutron_controller']
+
+- name: install neutron L2 agent
+  apt: name={{ item }}
+  with_items:
+    - conntrack
+    - neutron-{{ neutron_physical_interface_driver }}-agent
+  when: inventory_hostname in groups['neutron_l2']
+
+- name: install neutron L3 packages
+  apt: name={{ item }}
+  with_items:
+    - keepalived
     - "{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
     - neutron-lbaas-agent
     - python-neutron-vpnaas
     - python-neutronclient
-  when: inventory_hostname in groups['neutron_controller']
+  when: inventory_hostname in groups['neutron_l3']
 
 - name: stop and disable strongswan
   service: name=strongswan state=stopped enabled=no
-  when: inventory_hostname in groups['neutron_controller'] and neutron_vpnaas_type == 'strongswan'
+  when: inventory_hostname in groups['neutron_l3'] and neutron_vpnaas_type == 'strongswan'
 
 - name: disable apparmor strongswan profiles
   file: path=/etc/apparmor.d/disable/{{ item }} src=/etc/apparmor.d/{{ item }} state=link
   with_items:
     - usr.lib.ipsec.charon
     - usr.lib.ipsec.stroke
-  when: inventory_hostname in groups['neutron_controller'] and neutron_vpnaas_type == 'strongswan'
+  when: inventory_hostname in groups['neutron_l3'] and neutron_vpnaas_type == 'strongswan'
   notify: reload apparmor
 
 - name: create neutron database
@@ -144,19 +157,19 @@
   notify:
     - restart neutron-server
 
-- name: install l3 agent configs
+- name: install L3 agent configs
   template: src={{ item }}.j2 dest=/etc/neutron/{{ item }} owner=neutron group=root mode=0460
   with_items:
     - l3_agent.ini
     - fwaas_driver.ini
     - vpn_agent.ini
-  when: inventory_hostname in groups['neutron_controller']
+  when: inventory_hostname in groups['neutron_l3']
   notify:
     - restart neutron-l3-agent
 
 - name: install metadata_agent.ini
   template: src=metadata_agent.ini.j2 dest=/etc/neutron/metadata_agent.ini owner=neutron group=root mode=0460
-  when: inventory_hostname in groups['neutron_controller']
+  when: inventory_hostname in groups['neutron_l3']
   notify:
     - restart neutron-metadata-agent
 
@@ -165,18 +178,19 @@
   with_items:
     - dhcp_agent.ini
     - dnsmasq-neutron.conf
-  when: inventory_hostname in groups['neutron_controller']
+  when: inventory_hostname in groups['neutron_l3']
   notify:
     - restart neutron-dhcp-agent
 
 - name: install lbaas_agent.ini
   template: src=lbaas_agent.ini.j2 dest=/etc/neutron/lbaas_agent.ini owner=neutron group=root mode=0460
-  when: inventory_hostname in groups['neutron_controller']
+  when: inventory_hostname in groups['neutron_l3']
   notify:
     - restart neutron-metadata-agent
 
-- name: install l2 agent config
+- name: install L2 agent config
   template: src="{{ neutron_physical_interface_driver }}_agent.ini.j2" dest="/etc/neutron/plugins/ml2/{{ neutron_physical_interface_driver }}_agent.ini" owner=neutron group=root mode=0460
+  when: inventory_hostname in groups['neutron_l2']
   notify:
     - restart neutron-l2-agent
 
@@ -186,35 +200,47 @@
   changed_when: '"migrate.versioning.api" in db_sync.stderr'
   when: inventory_hostname == groups['neutron_controller'][0]
 
-- name: unmask autostarting of neutron l2 agent
-  service_mask: name={{ item }} state=unmasked
-  with_items:
-    - neutron-{{ neutron_physical_interface_driver }}-agent
-
-- name: unmask autostarting of neutron controller services
+- name: unmask autostarting of neutron server
   service_mask: name={{ item }} state=unmasked
   with_items:
     - neutron-server
+  when: inventory_hostname in groups['neutron_controller']
+
+- name: unmask autostarting of neutron L2 agent
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - neutron-{{ neutron_physical_interface_driver }}-agent
+  when: inventory_hostname in groups['neutron_l2']
+
+- name: unmask autostarting of neutron L3 services
+  service_mask: name={{ item }} state=unmasked
+  with_items:
     - neutron-vpn-agent
     - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
     - neutron-lbaas-agent
-  when: inventory_hostname in groups['neutron_controller']
+  when: inventory_hostname in groups['neutron_l3']
 
 - meta: flush_handlers
 
-- name: ensure neutron controller services are started
+- name: ensure neutron server is started
   service: name={{ item }} state=started enabled=yes
   with_items:
     - neutron-server
+  when: inventory_hostname in groups['neutron_controller']
+
+- name: ensure neutron L2 agent is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - neutron-{{ neutron_physical_interface_driver }}-agent
+  when: inventory_hostname in groups['neutron_l2']
+
+- name: ensure neutron L3 services are started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
     - "{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
     - neutron-lbaas-agent
-  when: inventory_hostname in groups['neutron_controller']
-
-- name: ensure neutron l2 agent is started
-  service: name={{ item }} state=started enabled=yes
-  with_items:
-    - neutron-{{ neutron_physical_interface_driver }}-agent
+  when: inventory_hostname in groups['neutron_l3']

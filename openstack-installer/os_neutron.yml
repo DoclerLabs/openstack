@@ -21,7 +21,8 @@
 
 - hosts:
     - neutron_controller
-    - neutron_compute
+    - neutron_l3
+    - neutron_l2
   become: True
   max_fail_percentage: 0
   roles:

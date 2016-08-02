@@ -252,7 +252,7 @@ advertise_mtu = {{ neutron_advertise_mtu }}
 # assigns multiple DHCP agents for a given tenant network,
 # providing high availability for DHCP service.
 # dhcp_agents_per_network = 1
-dhcp_agents_per_network = {{ groups['neutron_controller'] | length }}
+dhcp_agents_per_network = {{ groups['neutron_l3'] | length }}
 
 # Enable services on agents with admin_state_up False.
 # If this option is False, when admin_state_up of an agent is turned to
@@ -1078,7 +1078,7 @@ driver = messagingv2
 # RabbitMQ HA cluster host:port pairs. (list value)
 # Deprecated group/name - [DEFAULT]/rabbit_hosts
 # rabbit_hosts = $rabbit_host:$rabbit_port
-{% set host_index = groups[(inventory_hostname in groups['neutron_controller']) | ternary('neutron_controller', 'neutron_compute')].index(inventory_hostname) % groups['rabbitmq'] | count %}
+{% set host_index = ((groups['neutron_controller'] + groups['neutron_l2'] + groups['neutron_l3']) | unique).index(inventory_hostname) % groups['rabbitmq'] | count %}
 {% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
 rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
 
