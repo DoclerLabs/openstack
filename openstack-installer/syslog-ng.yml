@@ -8,13 +8,13 @@
       command: mongo --quiet --eval 'rs.isMaster().ismaster'
       register: mongo_master
       changed_when: False
-      when: syslog_use_mongodb
+      when: syslog_use_mongodb | default(False)
 
     - name: create syslog mongo user
       mongodb_user: login_user=admin login_password={{ mongodb_admin_password }} database=syslog name=syslog password={{ syslog_db_password }}
-      when: syslog_use_mongodb and mongo_master.stdout == 'true'
+      when: syslog_use_mongodb | default(False) and mongo_master.stdout == 'true'
 
-- hosts: syslog
+- hosts: syslog-ng
   become: True
   max_fail_percentage: 0
   roles:

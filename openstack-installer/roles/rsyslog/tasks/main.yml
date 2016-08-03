@@ -1,0 +1,32 @@
+---
+
+- name: install rsyslog
+  apt: name=rsyslog
+
+- name: install rsyslog-elasticsearch
+  apt: name=rsyslog-elasticsearch
+  when: syslog_elasticsearch is not none
+
+- name: install configs
+  template: src={{ item }}.conf.j2 dest=/etc/rsyslog.d/{{ item }}.conf owner=root group=root mode=0640
+  with_items:
+    - 01-syslog-remote
+  notify:
+    - restart rsyslog
+
+- meta: flush_handlers
+
+- name: set permissions of log files
+  file: path=/var/log/{{ item }} owner=syslog group=adm
+  with_items:
+    - syslog
+    - debug
+    - messages
+    - auth.log
+    - cron.log
+    - kern.log
+    - daemon.log
+    - user.log
+
+- name: ensure rsyslog is started
+  service: name=rsyslog state=started enabled=yes

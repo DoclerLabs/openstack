@@ -9,3 +9,4 @@ mysql_log_error: /var/log/mysql/error.log
 
 mysql_syslog_use: "{{ syslog_use | default(False) }}"
 syslog_remote_syslog:
+syslog_use_mongodb: False

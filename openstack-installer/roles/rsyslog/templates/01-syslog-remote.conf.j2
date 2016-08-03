@@ -1,0 +1,15 @@
+{% if syslog_remote_syslog %}
+action(type="omfwd" Target="{{ syslog_remote_syslog }}" Port="{{ syslog_remote_port }}" Protocol="{{ syslog_remote_proto }}" )
+{% endif %}
+{% if syslog_elasticsearch %}
+module(load="omelasticsearch")
+action(type="omelasticsearch"
+       server="{{ syslog_elasticsearch }}"
+       serverport="{{ syslog_elasticsearch_port }}"
+       usehttps="{{ syslog_elasticsearch_https | ternary('on','off') }}"
+       bulkmode="on"
+       queue.type="linkedlist"
+       queue.size="5000"
+       queue.dequeuebatchsize="300"
+       action.resumeretrycount="-1")
+{% endif %}

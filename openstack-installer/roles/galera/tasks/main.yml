@@ -165,6 +165,12 @@
 
 - name: install syslog-ng galera.conf
   template: src=galera.conf.j2 dest=/etc/syslog-ng/conf.d/galera.conf owner=root group=root mode=0644
-  when: inventory_hostname in groups['syslog']
+  when: inventory_hostname in groups['syslog-ng']
   notify:
     - restart syslog-ng
+
+- name: install rsyslog galera.conf
+  template: src=40-galera.conf.j2 dest=/etc/rsyslog.d/40-galera.conf owner=root group=root mode=0644
+  when: inventory_hostname in groups['rsyslog']
+  notify:
+    - restart rsyslog
