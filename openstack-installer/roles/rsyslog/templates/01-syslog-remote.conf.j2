@@ -3,11 +3,27 @@ action(type="omfwd" Target="{{ syslog_remote_syslog }}" Port="{{ syslog_remote_p
 {% endif %}
 {% if syslog_elasticsearch %}
 module(load="omelasticsearch")
+
+template(name="elasticTemplate"
+         type="list"
+         option.json="on") {
+           constant(value="{")
+             constant(value="\"timereported\":\""   )   property(name="timereported" dateFormat="rfc3339")
+             constant(value="\",\"timegenerated\":\"")  property(name="timegenerated" dateFormat="rfc3339")
+             constant(value="\",\"message\":\"")        property(name="msg")
+             constant(value="\",\"host\":\"")           property(name="hostname")
+             constant(value="\",\"severity\":\"")       property(name="syslogseverity-text")
+             constant(value="\",\"facility\":\"")       property(name="syslogfacility-text")
+             constant(value="\",\"syslogtag\":\"")      property(name="syslogtag")
+           constant(value="\"}")
+         }
+
 action(type="omelasticsearch"
        server="{{ syslog_elasticsearch }}"
        serverport="{{ syslog_elasticsearch_port }}"
        usehttps="{{ syslog_elasticsearch_https | ternary('on','off') }}"
        bulkmode="on"
+       template="elasticTemplate"
        queue.type="linkedlist"
        queue.size="5000"
        queue.dequeuebatchsize="300"
