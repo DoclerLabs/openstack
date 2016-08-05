@@ -11,6 +11,9 @@ Listen {{ ip.mgmt }}:{{ service.port }}
     Include {{ service.include }}
 {% endif %}
 
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/{{ apache_service_name }}-access.log combined
+
 {% if apache_service_ssl | bool %}
     SSLEngine on
     SSLCertificateFile      {{ SSLCertificateFile }}

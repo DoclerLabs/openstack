@@ -45,6 +45,12 @@
   when: item.src != ''
   notify: reload apache
 
+- name: create the access log for the service
+  copy: content='' dest=/var/log/apache2/{{ apache_service_name }}-access.log owner=root group=adm mode=0640 force=no
+
+- name: set permissions of the access log
+  file: path=/var/log/apache2/{{ apache_service_name }}-access.log owner=root group=adm mode=0640
+
 - name: install site.conf
   template: src=proxy-site.conf.j2 dest=/etc/apache2/sites-available/{{ apache_service_name }}-site.conf owner=root group=root mode=0644
   notify: reload apache
