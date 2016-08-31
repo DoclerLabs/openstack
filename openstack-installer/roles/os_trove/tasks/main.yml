@@ -106,6 +106,13 @@
     - trove-guestagent.conf
   notify: restart trove
 
+- name: link trove configs
+  file: src=trove.conf dest=/etc/trove/{{ item }} state=link force=yes
+  with_items:
+    - trove-conductor.conf
+    - trove-taskmanager.conf
+  notify: restart trove
+
 - name: create trove database
   mysql_db: name={{ trove_db }}
     login_host={{ trove_mysql_server }} login_user=root login_password={{ mysql_root_password }}
