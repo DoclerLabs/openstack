@@ -1,7 +1,7 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-mitaka", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu trusty-updates/mitaka main" }
+  - { name: "cloudarchive-newton", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/newton main" }
 
 apt_extra_repos: []
 

@@ -28,6 +28,12 @@
 - name: mask autostarting of keystone
   service_mask: name=keystone state=masked
 
+- name: make sure /etc/apache2/sites-available exists
+  file: path=/etc/apache2/sites-available owner=root group=root mode=0755 state=directory
+
+- name: mask keystone apache config
+  copy: content='' dest=/etc/apache2/sites-available/keystone.conf owner=root group=root mode=0644
+
 - name: install keystone
   apt: name={{ item }}
   with_items:
@@ -73,10 +79,6 @@
   command: su keystone -s /bin/sh -c "/usr/bin/keystone-manage db_sync"
   register: db_sync
   changed_when: '"migrate.versioning.api" in db_sync.stderr'
-  run_once: True
-
-- name: bootstrap keystone
-  command: su keystone -s /bin/sh -c "/usr/bin/keystone-manage bootstrap --bootstrap-password {{ keystone_admin_password }}"
   run_once: True
 
 - name: create /var/www/cgi-bin/keystone
@@ -164,3 +166,14 @@
     user=keystone
     job="/usr/local/bin/fernet-rotate.sh"
     state={{ (keystone_token_provider == 'fernet') | ternary('present', 'absent') }}
+
+# Bootstrap keystone
+
+- name: bootstrap keystone
+  command: su keystone -s /bin/sh -c "/usr/bin/keystone-manage bootstrap --bootstrap-password {{ keystone_admin_password }}"
+  run_once: True
+
+- name: set up pki in keystone
+  command: su keystone -s /bin/sh -c "/usr/bin/keystone-manage pki_setup"
+  register: keystone_pki_setup
+  changed_when: '"already exists" not in keystone_pki_setup.stdout'

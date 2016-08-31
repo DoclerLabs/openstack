@@ -2,13 +2,13 @@
 # vi: set ft=ruby :
 
 $script = <<SCRIPT
-echo "auto eth3" > /etc/network/interfaces.d/eth3.cfg
-echo "iface eth3 inet manual" >> /etc/network/interfaces.d/eth3.cfg
-ifup eth3
+echo "auto enp0s10" > /etc/network/interfaces.d/enp0s10.cfg
+echo "iface enp0s10 inet manual" >> /etc/network/interfaces.d/enp0s10.cfg
+ifup enp0s10
 SCRIPT
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "bento/ubuntu-16.04"
   config.vm.hostname = "openstack-aio"
 
   # Networking
@@ -16,7 +16,6 @@ Vagrant.configure(2) do |config|
   config.vm.network :private_network, ip: "10.10.1.11"  # external
   config.vm.network :private_network, ip: "10.10.2.11", # Neutron flat network
                      auto_config: false
-
 
   config.vm.provider :virtualbox do |vb|
     vb.cpus = 4
