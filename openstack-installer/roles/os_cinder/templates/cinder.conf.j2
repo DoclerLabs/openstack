@@ -65,6 +65,11 @@ backup_ceph_user = {{ backend.backup_ceph_user }}
 
 {% endif %}
 
+{% if groups['zookeeper'] | count > 0 %}
+[coordination]
+backend_url = kazoo://{% for host in groups['zookeeper'] %}{{ hostvars[host].ip.mgmt }}:2181{% if not loop.last %},{% endif %}{% endfor %}
+{% endif %}
+
 [database]
 connection = mysql+pymysql://{{ cinder_db_user }}:{{ cinder_db_password }}@{{ cinder_mysql_server }}/{{ cinder_db }}?charset=utf8
 max_retries = -1
