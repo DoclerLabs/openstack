@@ -38,7 +38,7 @@ os_public_address: "{{ vip_public }}"
 #os_ssl: False
 
 neutron_flat_networks: flat
-neutron_physical_interface_mappings: flat:eth3
+neutron_physical_interface_mappings: flat:enp0s10
 neutron_vlan_ranges:
 neutron_ha_network_type: vlan
 neutron_ha_network_physical_name: vlan
