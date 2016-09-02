@@ -1,3 +1,5 @@
+{% set host_index = groups['sahara'].index(inventory_hostname) % groups['rabbitmq'] | count %}
+{% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
 [DEFAULT]
 
 # Hostname or IP address that will be used to listen on.
@@ -104,7 +106,7 @@ use_syslog = {{ sahara_syslog_use }}
 # the list when returning it. (list value)
 #plugins=vanilla,hdp,spark,cdh
 
-rpc_backend = rabbit
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ sahara_rabbit_user }}:{{ sahara_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ sahara_rabbit_vhost }}
 
 os_region_name = {{ keystone_region_name }}
 
@@ -114,17 +116,15 @@ periodic_coordinator_backend_url = kazoo://{% for host in groups['zookeeper'] %}
 
 
 [oslo_messaging_notifications]
+
 enable = true
 driver = messagingv2
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ sahara_rabbit_user }}:{{ sahara_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ sahara_rabbit_vhost }}
+
 
 [oslo_messaging_rabbit]
-rabbit_port = 5672
-rabbit_virtual_host = {{ sahara_rabbit_vhost }}
-rabbit_userid = {{ sahara_rabbit_user }}
-rabbit_password = {{ sahara_rabbit_password }}
+
 rabbit_ha_queues = true
-{% set rabbit_hosts=groups['rabbitmq'][(groups['sahara'].index(inventory_hostname) % groups['rabbitmq'] | count):] + groups['rabbitmq'][:(groups['sahara'].index(inventory_hostname) % groups['rabbitmq'] | count)] %}
-rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
 
 
 [database]

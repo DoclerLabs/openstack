@@ -1,3 +1,5 @@
+{% set host_index = groups['manila'].index(inventory_hostname) % groups['rabbitmq'] | count %}
+{% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
 [DEFAULT]
 
 debug = {{ manila_debug }}
@@ -7,94 +9,7 @@ osapi_share_listen = 127.0.0.1
 enable_v1_api = True
 enable_v2_api = True
 
-
-#
-# From oslo.messaging
-#
-
-# Size of RPC connection pool. (integer value)
-# Deprecated group/name - [DEFAULT]/rpc_conn_pool_size
-#rpc_conn_pool_size = 30
-
-# ZeroMQ bind address. Should be a wildcard (*), an ethernet
-# interface, or IP. The "host" option should point or resolve to this
-# address. (string value)
-#rpc_zmq_bind_address = *
-
-# MatchMaker driver. (string value)
-# Allowed values: redis, dummy
-#rpc_zmq_matchmaker = redis
-
-# Type of concurrency used. Either "native" or "eventlet" (string
-# value)
-#rpc_zmq_concurrency = eventlet
-
-# Number of ZeroMQ contexts, defaults to 1. (integer value)
-#rpc_zmq_contexts = 1
-
-# Maximum number of ingress messages to locally buffer per topic.
-# Default is unlimited. (integer value)
-#rpc_zmq_topic_backlog = <None>
-
-# Directory for holding IPC sockets. (string value)
-#rpc_zmq_ipc_dir = /var/run/openstack
-
-# Name of this node. Must be a valid hostname, FQDN, or IP address.
-# Must match "host" option, if running Nova. (string value)
-#rpc_zmq_host = localhost
-
-# Seconds to wait before a cast expires (TTL). The default value of -1
-# specifies an infinite linger period. The value of 0 specifies no
-# linger period. Pending messages shall be discarded immediately when
-# the socket is closed. Only supported by impl_zmq. (integer value)
-#rpc_cast_timeout = -1
-
-# The default number of seconds that poll should wait. Poll raises
-# timeout exception when timeout expired. (integer value)
-#rpc_poll_timeout = 1
-
-# Expiration timeout in seconds of a name service record about
-# existing target ( < 0 means no timeout). (integer value)
-#zmq_target_expire = 120
-
-# Use PUB/SUB pattern for fanout methods. PUB/SUB always uses proxy.
-# (boolean value)
-#use_pub_sub = true
-
-# Minimal port number for random ports range. (port value)
-# Minimum value: 0
-# Maximum value: 65535
-#rpc_zmq_min_port = 49152
-
-# Maximal port number for random ports range. (integer value)
-# Minimum value: 1
-# Maximum value: 65536
-#rpc_zmq_max_port = 65536
-
-# Number of retries to find free port number before fail with
-# ZMQBindError. (integer value)
-#rpc_zmq_bind_port_retries = 100
-
-# Size of executor thread pool. (integer value)
-# Deprecated group/name - [DEFAULT]/rpc_thread_pool_size
-#executor_thread_pool_size = 64
-
-# Seconds to wait for a response from a call. (integer value)
-#rpc_response_timeout = 60
-
-# A URL representing the messaging driver to use and its full
-# configuration. If not set, we fall back to the rpc_backend option
-# and driver specific configuration. (string value)
-#transport_url = <None>
-
-# The messaging driver to use, defaults to rabbit. Other drivers
-# include amqp and zmq. (string value)
-#rpc_backend = rabbit
-
-# The default exchange under which topics are scoped. May be
-# overridden by an exchange name specified in the transport_url
-# option. (string value)
-#control_exchange = openstack
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ manila_rabbit_user }}:{{ manila_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ manila_rabbit_vhost }}
 
 
 [cors]
@@ -426,6 +341,7 @@ driver = messagingv2
 # (string value)
 # Deprecated group/name - [DEFAULT]/notification_transport_url
 #transport_url = <None>
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ manila_rabbit_user }}:{{ manila_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ manila_rabbit_vhost }}
 
 # AMQP topic used for OpenStack notifications. (list value)
 # Deprecated group/name - [rpc_notifier2]/topics
@@ -434,11 +350,5 @@ driver = messagingv2
 
 
 [oslo_messaging_rabbit]
-rabbit_port = 5672
-rabbit_userid = {{ manila_rabbit_user }}
-rabbit_password = {{ manila_rabbit_password }}
+
 rabbit_ha_queues = true
-{% set host_index = groups['manila'].index(inventory_hostname) % groups['rabbitmq'] | count %}
-{% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
-rabbit_virtual_host = {{ manila_rabbit_vhost }}
-rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}

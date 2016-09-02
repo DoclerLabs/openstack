@@ -1,3 +1,5 @@
+{% set host_index = groups[(inventory_hostname in groups['nova_controller']) | ternary('nova_controller', 'nova_compute')].index(inventory_hostname) % groups['rabbitmq'] | count %}
+{% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
 [DEFAULT]
 # Logs / State
 debug = {{ nova_debug }}
@@ -37,7 +39,7 @@ cpu_allocation_ratio = {{ nova_cpu_allocation_ratio }}
 ram_allocation_ratio = {{ nova_ram_allocation_ratio }}
 
 # Rpc all
-rpc_backend = rabbit
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ nova_rabbit_user }}:{{ nova_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ nova_rabbit_vhost }}
 
 # Metadata
 metadata_host = {{ vip_mgmt }}
@@ -207,18 +209,16 @@ max_retries = -1
 [oslo_concurrency]
 lock_path = /var/lock/nova
 
+
 [oslo_messaging_notifications]
 driver = messagingv2
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ nova_rabbit_user }}:{{ nova_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ nova_rabbit_vhost }}
+
 
 [oslo_messaging_rabbit]
-rabbit_port = 5672
-rabbit_userid = {{ nova_rabbit_user }}
-rabbit_password = {{ nova_rabbit_password }}
+
 rabbit_ha_queues = true
-{% set host_index = groups[(inventory_hostname in groups['nova_controller']) | ternary('nova_controller', 'nova_compute')].index(inventory_hostname) % groups['rabbitmq'] | count %}
-{% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
-rabbit_virtual_host = {{ nova_rabbit_vhost }}
-rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
+
 
 {% if inventory_hostname in groups['nova_compute'] %}
 

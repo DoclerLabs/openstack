@@ -1,3 +1,5 @@
+{% set host_index = groups['barbican'].index(inventory_hostname) % groups['rabbitmq'] | count %}
+{% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
 [DEFAULT]
 # Show more verbose log output (sets INFO log level output)
 verbose = True
@@ -138,25 +140,12 @@ scrub_time = 43200
 # Make sure this is also set in glance-scrubber.conf
 scrubber_datadir = /var/lib/barbican/scrubber
 
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ barbican_rabbit_user }}:{{ barbican_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ barbican_rabbit_vhost }}
+
 # ================= Queue Options - oslo.messaging ==========================
 [oslo_messaging_rabbit]
-# Rabbit and HA configuration:
-ampq_durable_queues = False
-rabbit_port = 5672
-rabbit_virtual_host = {{ barbican_rabbit_vhost }}
-rabbit_userid = {{ barbican_rabbit_user }}
-rabbit_password = {{ barbican_rabbit_password }}
+
 rabbit_ha_queues = True
-
-# For HA, specify queue nodes in cluster, comma delimited:
-#   For example: rabbit_hosts=192.168.50.8:5672, 192.168.50.9:5672
-{% set rabbit_hosts=groups['rabbitmq'][(groups['barbican'].index(inventory_hostname) % groups['rabbitmq'] | count):] + groups['rabbitmq'][:(groups['barbican'].index(inventory_hostname) % groups['rabbitmq'] | count)] %}
-rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
-
-# For HA, specify queue nodes in cluster as 'user@host:5672', comma delimited, ending with '/offset':
-#   For example: transport_url = rabbit://guest@192.168.50.8:5672,guest@192.168.50.9:5672/
-#   DO NOT USE THIS, due to '# FIXME(markmc): support multiple hosts' in oslo/messaging/_drivers/amqpdriver.py
-# transport_url = rabbit://guest@localhost:5672/
 
 # ======== OpenStack policy - oslo_policy ===============
 

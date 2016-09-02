@@ -1,3 +1,5 @@
+{% set host_index = groups[(inventory_hostname in groups['cinder']) | ternary('cinder', 'cinder_volume')].index(inventory_hostname) % groups['rabbitmq'] | count %}
+{% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
 [DEFAULT]
 
 debug = {{ cinder_debug }}
@@ -19,6 +21,7 @@ volumes_dir = /var/lib/cinder/volumes
 allow_availability_zone_fallback = True
 
 auth_strategy = keystone
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ cinder_rabbit_user }}:{{ cinder_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ cinder_rabbit_vhost }}
 
 glance_api_servers = {{ os_proto }}://{{ os_internal_address }}:9292
 glance_api_insecure = {{ ssl_insecure }}
@@ -70,12 +73,15 @@ backup_ceph_user = {{ backend.backup_ceph_user }}
 backend_url = kazoo://{% for host in groups['zookeeper'] %}{{ hostvars[host].ip.mgmt }}:2181{% if not loop.last %},{% endif %}{% endfor %}
 {% endif %}
 
+
 [database]
 connection = mysql+pymysql://{{ cinder_db_user }}:{{ cinder_db_password }}@{{ cinder_mysql_server }}/{{ cinder_db }}?charset=utf8
 max_retries = -1
 
+
 [keymgr]
 encryption_auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v3
+
 
 [keystone_authtoken]
 insecure = {{ ssl_insecure }}
@@ -98,18 +104,16 @@ memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mg
 memcache_security_strategy = ENCRYPT
 memcache_secret_key = {{ memcache_secret_key }}
 
+
 [oslo_concurrency]
 lock_path = /var/lock/cinder
+
 
 [oslo_messaging_notifications]
 
 driver = messagingv2
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ cinder_rabbit_user }}:{{ cinder_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ cinder_rabbit_vhost }}
+
 
 [oslo_messaging_rabbit]
-rabbit_port = 5672
-rabbit_virtual_host = {{ cinder_rabbit_vhost }}
-rabbit_userid = {{ cinder_rabbit_user }}
-rabbit_password = {{ cinder_rabbit_password }}
 rabbit_ha_queues = true
-{% set rabbit_hosts=groups['rabbitmq'][(groups['cinder'].index(inventory_hostname) % groups['rabbitmq'] | count):] + groups['rabbitmq'][:(groups['cinder'].index(inventory_hostname) % groups['rabbitmq'] | count)] %}
-rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
