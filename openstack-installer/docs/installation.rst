@@ -10,7 +10,7 @@ It does not install the base OS, also doesn't configure the hardware (network in
 
 - A deployment node, which can connect to the provisioned nodes via ssh. Install Ansible on it. Version = 2.0.2.0 is used in the CI system currently,
   so it is recommended. 1.9.6 should work, too, but not tested constantly. 2.1.0.0 has several bugs, don't use it.
-- Ubuntu 14.04 LTS (Liberty/Mitaka) or 16.04 LTS (Mitaka) for the base OS. Need odd number of controller nodes, and arbitary number of compute nodes.
+- Ubuntu 14.04 LTS (Liberty/Mitaka) or 16.04 LTS (Mitaka/Newton) for the base OS. Need odd number of controller nodes, and arbitary number of compute nodes.
 - For ceph, it is recommended to have at least 3 monitor nodes, and 3 OSD nodes.
 - Set up the network for the nodes:
 
