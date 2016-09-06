@@ -40,6 +40,9 @@
   become: True
   max_fail_percentage: 0
   tasks:
+    - name: mask keystone apache config
+      copy: content='' dest=/etc/apache2/sites-available/keystone.conf owner=root group=root mode=0644
+
     - name: upgrade keystone
       apt: name={{ item }} state=latest
       with_items:
