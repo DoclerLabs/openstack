@@ -59,6 +59,7 @@ rbd_ceph_conf = /etc/ceph/{{ backend.ceph_cluster_name }}.conf
 rbd_pool = {{ backend.ceph_pool }}
 rbd_user = {{ backend.ceph_user }}
 rbd_secret_uuid = {{ backend.volume_secret_uuid }}
+backup_ceph_conf = {{ backend.ceph_cluster_name }}.conf
 backup_ceph_pool = {{ backend.backup_ceph_pool }}
 backup_ceph_user = {{ backend.backup_ceph_user }}
 
