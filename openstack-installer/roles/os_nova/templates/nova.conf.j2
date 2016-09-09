@@ -36,6 +36,7 @@ enabled_apis = osapi_compute, metadata
 
 cpu_allocation_ratio = {{ nova_cpu_allocation_ratio }}
 ram_allocation_ratio = {{ nova_ram_allocation_ratio }}
+disk_allocation_ratio = {{ nova_disk_allocation_ratio }}
 
 # Rpc all
 transport_url = rabbit://{% for host in rabbit_hosts %}{{ nova_rabbit_user }}:{{ nova_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ nova_rabbit_vhost }}
