@@ -186,7 +186,7 @@
   template: src=lbaas_agent.ini.j2 dest=/etc/neutron/lbaas_agent.ini owner=neutron group=root mode=0460
   when: inventory_hostname in groups['neutron_l3']
   notify:
-    - restart neutron-metadata-agent
+    - restart neutron-lbaas-agent
 
 - name: install L2 agent config
   template: src="{{ neutron_physical_interface_driver }}_agent.ini.j2" dest="/etc/neutron/plugins/ml2/{{ neutron_physical_interface_driver }}_agent.ini" owner=neutron group=root mode=0460

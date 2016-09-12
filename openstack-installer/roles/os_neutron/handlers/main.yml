@@ -17,7 +17,7 @@
   when: inventory_hostname in groups['neutron_l3']
 
 - name: restart neutron-lbaas-agent
-  service: name=neutron-metadata-agent state=restarted
+  service: name=neutron-lbaas-agent state=restarted
   when: inventory_hostname in groups['neutron_l3']
 
 - name: restart neutron-l2-agent
