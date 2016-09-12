@@ -48,7 +48,7 @@
     - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
-    - neutron-lbaas-agent
+    - neutron-{{ neutron_lbaas_agent }}-agent
   when: inventory_hostname in groups['neutron_l3']
 
 - name: turn off rp filtering
@@ -107,7 +107,7 @@
     - "{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
-    - neutron-lbaas-agent
+    - neutron-{{ neutron_lbaas_agent }}-agent
     - python-neutron-vpnaas
     - python-neutronclient
   when: inventory_hostname in groups['neutron_l3']
@@ -219,7 +219,7 @@
     - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
-    - neutron-lbaas-agent
+    - neutron-{{ neutron_lbaas_agent }}-agent
   when: inventory_hostname in groups['neutron_l3']
 
 - meta: flush_handlers
@@ -242,5 +242,5 @@
     - "{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
-    - neutron-lbaas-agent
+    - neutron-{{ neutron_lbaas_agent }}-agent
   when: inventory_hostname in groups['neutron_l3']

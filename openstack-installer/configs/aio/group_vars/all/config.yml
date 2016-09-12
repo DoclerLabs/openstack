@@ -43,6 +43,7 @@ neutron_vlan_ranges:
 neutron_ha_network_type: vlan
 neutron_ha_network_physical_name: vlan
 neutron_ha_routers: False
+neutron_lbaas_agent: lbaasv2
 
 external_net_name: ext-net
 external_net_type: flat

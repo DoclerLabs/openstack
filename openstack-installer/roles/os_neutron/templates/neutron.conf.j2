@@ -96,7 +96,7 @@ core_plugin = ml2
 # service_plugins =
 # Example: service_plugins = router,firewall,lbaas,vpnaas,metering,qos
 #service_plugins = router,firewall,neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2
-service_plugins = router,firewall,lbaas{% if neutron_vpnaas_type %},vpnaas{% endif %}
+service_plugins = router,firewall,{{ (neutron_lbaas_agent == 'lbaas') | ternary('lbaas','neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2') }}{% if neutron_vpnaas_type %},vpnaas{% endif %}
 
 # Paste configuration file
 # api_paste_config = api-paste.ini
@@ -668,8 +668,11 @@ project_name = {{ nova_project_name }}
 
 [service_providers]
 
+{% if neutron_lbaas_agent == 'lbaas' %}
 service_provider=LOADBALANCER:Haproxy:neutron_lbaas.services.loadbalancer.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default
-#service_provider=LOADBALANCERV2:Haproxy:neutron_lbaas.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default
+{% else %}
+service_provider=LOADBALANCERV2:Haproxy:neutron_lbaas.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default
+{% endif %}
 {% if neutron_vpnaas_type %}
 service_provider=VPN:strongswan:neutron_vpnaas.services.vpn.service_drivers.ipsec.IPsecVPNDriver:default
 {% endif %}

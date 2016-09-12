@@ -30,7 +30,11 @@ interface_driver=neutron.agent.linux.interface.BridgeInterfaceDriver
 # device_driver = path.to.provider2.driver.Driver
 # Default is:
 # device_driver = neutron.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver
+{% if neutron_lbaas_agent == 'lbaas' %}
 device_driver = neutron_lbaas.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver
+{% else %}
+device_driver = neutron_lbaas.drivers.haproxy.namespace_driver.HaproxyNSDriver
+{% endif %}
 
 [haproxy]
 # Location to store config and state files

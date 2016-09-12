@@ -36,6 +36,8 @@ neutron_path_mtu: 0
 neutron_segment_mtu: 0
 neutron_physical_network_mtus:
 
+#lbaas or lbaasv2
+neutron_lbaas_agent: lbaas
 neutron_ha_routers: True
 #openswan/strongswan, empty: no vpnaas
 neutron_vpnaas_type:
