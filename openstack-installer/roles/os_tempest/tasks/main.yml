@@ -11,6 +11,7 @@
     - python-glanceclient
     - python-novaclient
     - python-neutronclient
+    - python-openstackclient
   when: ansible_os_family == 'Debian'
 
 - name: make sure the images directory exists
@@ -44,16 +45,21 @@
   register: cirros_image
 
 - name: ensure m1.micro flavor exists
-  command: nova --os-auth-url "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    --os-endpoint-type internalURL
+  command: openstack flavor create
+    --os-auth-url "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    --os-interface internal
     --os-project-domain-name "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
     {{ ssl_insecure | ternary('--insecure', '') }}
     {{ SSLCACertificateFileSource | ternary('--os-cacert ' + tempest_CAFile, '') }}
     --os-project-name admin
     --os-user-domain-name "{{ keystone_domain_name }}"
-    --os-user-name admin
+    --os-username admin
     --os-password {{ keystone_admin_password }}
-    flavor-create m1.micro 0 256 1 1
+    --disk 1
+    --ephemeral 0
+    --ram 256
+    --vcpus 1
+    m1.micro
   register: nova_results
   failed_when: nova_results | failed and 'already exists' not in nova_results.stderr
   changed_when: nova_results | success
