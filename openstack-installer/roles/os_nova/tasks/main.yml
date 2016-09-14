@@ -143,6 +143,12 @@
     - db
   when: inventory_hostname == groups['nova_controller'][0]
 
+- name: do online migrations
+  command: su nova -s /bin/sh -c "/usr/bin/nova-manage db online_data_migrations"
+  register: db_sync
+  changed_when: '"migrated" in db_sync.stderr'
+  when: inventory_hostname == groups['nova_controller'][0]
+
 - name: create /var/www/cgi-bin/nova
   file: path=/var/www/cgi-bin/nova state=directory owner=root group=root mode=0755
   when: inventory_hostname in groups['nova_controller']
