@@ -64,6 +64,9 @@ backup_ceph_pool = {{ backend.backup_ceph_pool }}
 backup_ceph_user = {{ backend.backup_ceph_user }}
 
 {% endif %}
+{% if cinder_backends | count > 1 %}
+volume_backend_name = {{ backend.name }}
+{% endif %}
 
 {% endfor %}
 
