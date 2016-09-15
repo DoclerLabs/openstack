@@ -7,3 +7,5 @@ load_average_critical: 8,5,3
 nagios_ipmi: False
 nagios_bond: False
 nagios_mdraid: False
+
+ceph_cluster_name: ceph
