@@ -1,0 +1,14 @@
+---
+
+# To send metrics to graphite/carbon
+collectd_graphite_address:
+collectd_graphite_protocol: tcp
+
+# To send metrics to another collectd
+collectd_network_address:
+
+nagios_cloud_prefix: ''
+nagios_ipmi: False
+nagios_mdraid: False
+
+ceph_cluster_name: ceph

@@ -1,0 +1,12 @@
+{% if inventory_hostname in groups['ceph_monitor'] %}
+LoadPlugin python
+<Plugin "python">
+    ModulePath "/usr/local/lib/python2.7/site-packages"
+    LogTraces true
+    Interactive false
+    Import "ceph_pool_plugin"
+    <Module "ceph_pool_plugin">
+      Cluster "{{ ceph_cluster_name }}"
+    </Module>
+</Plugin>
+{% endif %}

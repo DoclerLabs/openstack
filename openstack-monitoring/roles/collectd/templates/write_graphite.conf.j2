@@ -1,0 +1,16 @@
+{% if collectd_graphite_address %}
+LoadPlugin write_graphite
+<Plugin write_graphite>
+       <Node "{{ nagios_cloud_prefix }}">
+               Host "{{ collectd_graphite_address }}"
+               Port "2003"
+               Protocol "{{ collectd_graphite_protocol }}"
+               LogSendErrors true
+               Prefix ""
+               Postfix ""
+               StoreRates true
+               AlwaysAppendDS false
+               EscapeCharacter "_"
+       </Node>
+</Plugin>
+{% endif %}

@@ -4,7 +4,7 @@ This repository contains OpenStack Cloud Control related projects.
 
 There are two sub-projects in this repository:
 - openstack-installer, which is an Ansible based deployment tool to provision clouds as fast, and as easy as possible.
-- openstack-monitoring, which is also an Ansible based deployment tool to set up Nagios monitoring for the Cloud.
+- openstack-monitoring, which is also an Ansible based deployment tool to set up Nagios monitoring and Collectd metrics collecting for the Cloud.
 
 The motivation for creating this deployment tool is that existing solutions are too complex, over-engineered, and not reliable.
 

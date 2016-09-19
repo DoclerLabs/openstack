@@ -1,0 +1,29 @@
+---
+
+- name: install collectd
+  apt: name=collectd
+
+- name: install collectd config
+  template: src=collectd.conf.j2 dest=/etc/collectd/collectd.conf owner=root group=root mode=0644
+  notify: restart collectd
+
+- name: install collectd ceph plugin
+  copy: src=ceph_pool_plugin.py dest=/usr/local/lib/python2.7/site-packages/ceph_pool_plugin.py owner=root group=root mode=0644
+  when: inventory_hostname in groups['ceph_monitor']
+  notify: restart collectd
+
+- name: install collectd plugin configs
+  template: src={{ item }}.conf.j2 dest=/etc/collectd/collectd.conf.d/{{ item }}.conf owner=root group=root mode=0644
+  with_items:
+    - network
+    - write_graphite
+    - mysql
+    - memcached
+    - ipmi
+    - ceph
+  notify: restart collectd
+
+- meta: flush_handlers
+
+- name: make sure collectd is enabled and started
+  service: name=collectd state=started enabled=yes

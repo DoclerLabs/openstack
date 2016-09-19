@@ -1,0 +1,12 @@
+{% if inventory_hostname in groups['galera'] %}
+LoadPlugin mysql
+<Plugin "mysql">
+  <Database "mysql">
+    Host "localhost"
+    User "clustercheck"
+    Password "{{ galera_clustercheck_password }}"
+    Port 3306
+    MasterStats false
+  </Database>
+</Plugin>
+{% endif %}

@@ -1,0 +1,39 @@
+---
+
+- hosts:
+    - ceph_monitor
+    - ceph_osd
+    - ceph_radosgw
+    - pacemaker
+    - haproxy
+    - memcached
+    - rabbitmq
+    - galera
+    - mongodb
+    - keystone
+    - swift_proxy
+    - swift_storage
+    - glance
+    - horizon
+    - nova_controller
+    - nova_compute
+    - neutron_controller
+    - neutron_compute
+    - ceilometer_controller
+    - ceilometer_compute
+    - heat
+    - trove
+    - cinder
+    - murano
+    - sahara
+    - barbican
+    - ironic
+    - nova_compute
+    - neutron_compute
+    - ceilometer_compute
+    - cinder_volume
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - common
+    - collectd

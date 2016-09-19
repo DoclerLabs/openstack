@@ -1,0 +1,7 @@
+{% if inventory_hostname in groups['memcached'] %}
+LoadPlugin memcached
+<Plugin "memcached">
+  Host "{{ ip.mgmt }}"
+  Port "11211"
+</Plugin>
+{% endif %}
