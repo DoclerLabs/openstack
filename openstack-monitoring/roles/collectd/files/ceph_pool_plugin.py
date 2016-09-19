@@ -173,7 +173,7 @@ class CephPoolPlugin(Base):
             pool_key = "pool-%s" % pool['pool_name']
             data[ceph_cluster][pool_key] = {}
             pool_data = data[ceph_cluster][pool_key] 
-            for stat in ('read_bytes_sec', 'write_bytes_sec', 'op_per_sec'):
+            for stat in ('read_bytes_sec', 'write_bytes_sec', 'read_op_per_sec','write_op_per_sec'):
                 pool_data[stat] = pool['client_io_rate'][stat] if pool['client_io_rate'].has_key(stat) else 0
 
         # push df results
