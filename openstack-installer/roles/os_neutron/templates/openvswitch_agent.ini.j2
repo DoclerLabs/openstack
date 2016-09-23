@@ -149,7 +149,7 @@ veth_mtu = {{ neutron_mtu }}
 # RPC calbbacks instead of tunnel_sync/update) on OVS agents in order to
 # optimize tunnel management.
 #
-l2_population = True
+l2_population = {{ neutron_l2_population }}
 
 # Enable local ARP responder. Requires OVS 2.1. This is only used by the l2
 # population ML2 MechanismDriver.

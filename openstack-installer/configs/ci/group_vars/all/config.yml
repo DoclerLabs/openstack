@@ -44,6 +44,7 @@ neutron_ha_network_physical_name:
 neutron_ha_routers: False
 neutron_mtu: 1400
 neutron_lbaas_agent: lbaasv2
+neutron_l2_population: False
 
 trove_net_name: trove-net
 trove_net_segmentation_id: 901
