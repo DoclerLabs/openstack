@@ -43,6 +43,7 @@ neutron_ha_routers: True
 neutron_vpnaas_type:
 neutron_vxlan_vni_ranges: "65537:69999"
 neutron_vxlan_group: 239.0.0.0/8
+neutron_l2_population: True
 neutron_gre_vni_ranges: "1:1000"
 neutron_dnsmasq_dns_servers:
 neutron_dnsmasq_local_resolv: False
