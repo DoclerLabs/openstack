@@ -45,6 +45,9 @@
     - aodh-notifier
     - aodh-listener
 
+- name: ensure aodh-api service is disabled at boot
+  service: name=aodh-api state=stopped enabled=no
+
 - name: create aodh database
   mysql_db: name={{ aodh_db }}
     login_host={{ aodh_mysql_server }} login_user=root login_password={{ mysql_root_password }}
@@ -66,16 +69,24 @@
     - aodh.conf
     - api_paste.ini
   notify:
+    - signal apache to reload
     - restart aodh
 
 - name: sync aodh db
   command: su aodh -s /bin/sh -c '/usr/bin/aodh-dbsync'
   run_once: True
 
+- name: create /var/www/cgi-bin/aodh
+  file: path=/var/www/cgi-bin/aodh state=directory owner=root group=root mode=0755
+  notify: signal apache to reload
+
+- name: link aodh wsgi servers
+  file: src=/usr/lib/python2.7/dist-packages/aodh/api/app.wsgi dest=/var/www/cgi-bin/aodh/app.wsgi state=link
+  notify: signal apache to reload
+
 - name: unmask autostarting of aodh services
   service_mask: name={{ item }} state=unmasked
   with_items:
-    - aodh-api
     - aodh-evaluator
     - aodh-notifier
     - aodh-listener
@@ -85,7 +96,6 @@
 - name: ensure aodh is started
   service: name={{ item }} state=started enabled=yes
   with_items:
-    - aodh-api
     - aodh-evaluator
     - aodh-notifier
     - aodh-listener
