@@ -55,6 +55,7 @@
     --os-user-domain-name "{{ keystone_domain_name }}"
     --os-username admin
     --os-password {{ keystone_admin_password }}
+    --id 0
     --disk 1
     --ephemeral 0
     --ram 256
