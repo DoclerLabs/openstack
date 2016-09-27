@@ -41,7 +41,7 @@
   serial: 1
   tasks:
     - name: set osd noout
-      command: ceph --cluster {{ ceph_cluster_name }} osd set noout
+      command: ceph --cluster {{ ceph_cluster_name | default('ceph') }} osd set noout
       delegate_to: "{{ groups['ceph_monitor'][0] }}"
 
     - block:
@@ -60,5 +60,5 @@
 #TODO: wait for OSDs are back
       always:
         - name: unset osd noout
-          command: ceph --cluster {{ ceph_cluster_name }} osd unset noout
+          command: ceph --cluster {{ ceph_cluster_name | default('ceph') }} osd unset noout
           delegate_to: "{{ groups['ceph_monitor'][0] }}"
