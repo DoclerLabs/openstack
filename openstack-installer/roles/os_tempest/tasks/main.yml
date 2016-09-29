@@ -65,6 +65,27 @@
   failed_when: nova_results | failed and 'already exists' not in nova_results.stderr
   changed_when: nova_results | success
 
+- name: ensure m1.tiny flavor exists
+  command: openstack flavor create
+    --os-auth-url "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    --os-interface internal
+    --os-project-domain-name "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+    {{ ssl_insecure | ternary('--insecure', '') }}
+    {{ SSLCACertificateFileSource | ternary('--os-cacert ' + tempest_CAFile, '') }}
+    --os-project-name admin
+    --os-user-domain-name "{{ keystone_domain_name }}"
+    --os-username admin
+    --os-password {{ keystone_admin_password }}
+    --id 1
+    --disk 1
+    --ephemeral 0
+    --ram 512
+    --vcpus 1
+    m1.tiny
+  register: nova_results
+  failed_when: nova_results | failed and 'already exists' not in nova_results.stderr
+  changed_when: nova_results | success
+
 - name: ensure the heat stack owner project exists in keystone
   keystone_user: >
     login_project_name=admin
