@@ -37,6 +37,12 @@ General upgrading instructions are below.
 
   $ ceph -s
 
+- Upgrade pacemaker:
+
+::
+
+  $ ansible-playbook pacemaker_upgrade.yml
+
 - Upgrade galera cluster:
 
 ::
