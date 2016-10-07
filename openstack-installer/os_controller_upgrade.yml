@@ -156,7 +156,7 @@
           - { playbook: "os_designate.yml", group: "{{ groups['designate'] }}" }
           - { playbook: "os_magnum.yml", group: "{{ groups['magnum'] }}" }
           - { playbook: "os_manila.yml", group: "{{ groups['manila'] }}" }
-          - { playbook: "os_mistral.yml", group: "{{ groups['mistral'] }}" }
+#          - { playbook: "os_mistral.yml", group: "{{ groups['mistral'] }}" }
           - { playbook: "os_senlin.yml", group: "{{ groups['senlin'] }}" }
           - { playbook: "ceph_radosgw.yml", group: "{{ groups['ceph_radosgw'] }}" }
         become: False
@@ -222,7 +222,7 @@
           - { playbook: "os_designate.yml", group: "{{ groups['designate'] }}" }
           - { playbook: "os_magnum.yml", group: "{{ groups['magnum'] }}" }
           - { playbook: "os_manila.yml", group: "{{ groups['manila'] }}" }
-          - { playbook: "os_mistral.yml", group: "{{ groups['mistral'] }}" }
+#          - { playbook: "os_mistral.yml", group: "{{ groups['mistral'] }}" }
           - { playbook: "os_senlin.yml", group: "{{ groups['senlin'] }}" }
           - { playbook: "ceph_radosgw.yml", group: "{{ groups['ceph_radosgw'] }}" }
         become: False
