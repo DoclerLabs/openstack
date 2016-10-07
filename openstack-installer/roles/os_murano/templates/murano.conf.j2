@@ -11,9 +11,9 @@ bind_host = 127.0.0.1
 
 transport_url = rabbit://{% for host in rabbit_hosts %}{{ murano_rabbit_user }}:{{ murano_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ murano_rabbit_vhost }}
 
-
 [engine]
-workers = {{ murano_engine_workers }}
+
+engine_workers = {{ murano_engine_workers }}
 use_trusts = {{ murano_use_trusts }}
 
 [keystone]
@@ -51,6 +51,7 @@ insecure = {{ ssl_insecure }}
 
 region_name_for_services = {{ keystone_region_name }}
 insecure = True
+api_workers = {{ murano_api_workers }}
 
 [rabbitmq]
 
