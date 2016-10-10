@@ -5,6 +5,7 @@
   with_items:
     - python-keystoneclient
     - python-openstackclient
+    - python-shade
   become: True
 
 - name: install CA certificate
@@ -14,7 +15,6 @@
 
 - name: get an admin token
   command: openstack token issue
-    --os-identity-api-version=3
     --os-auth-url "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     --os-user-domain-name Default
     --os-username admin
@@ -52,15 +52,34 @@
   when: keystone_service_name is defined
 
 - name: create the project in keystone
-  keystone_user: >
-    token="{{ os_admin_token }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    project_domain="{{ item.keystone_project_domain_name | default('Default') }}"
-    project="{{ item.keystone_project_name }}"
-    project_description="{{ item.keystone_project_description }}"
-    cacert="{{ SSLCACertificateFile }}"
-    insecure={{ ssl_insecure | ternary("true", "false") }}
+  os_project:
+    auth:
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      user_domain_name: Default
+      username: admin
+      password: "{{ keystone_admin_password }}"
+      project_domain_name: Default
+      project_name: admin
+    cacert: "{{ SSLCACertificateFile }}"
+    validate_certs: "{{ ssl_insecure | ternary('false', 'true') }}"
+    region_name: "{{ keystone_region }}"
+    endpoint_type: internal
+    name: "{{ item.keystone_project_name }}"
+    description: "{{ item.keystone_project_description }}"
+    domain: "{{ item.keystone_project_domain_name | default('Default') }}"
   with_items: "{{ keystone_projects | default([]) }}"
+
+
+#- name: create the project in keystone
+#  keystone_user: >
+#    token="{{ os_admin_token }}"
+#    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+#    project_domain="{{ item.keystone_project_domain_name | default('Default') }}"
+#    project="{{ item.keystone_project_name }}"
+#    project_description="{{ item.keystone_project_description }}"
+#    cacert="{{ SSLCACertificateFile }}"
+#    insecure={{ ssl_insecure | ternary("true", "false") }}
+#  with_items: "{{ keystone_projects | default([]) }}"
 
 - name: create roles in keystone
   keystone_user: >

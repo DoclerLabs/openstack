@@ -1,3 +1,5 @@
+{% set host_index = groups['designate'].index(inventory_hostname) % groups['rabbitmq'] | count %}
+{% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
 [DEFAULT]
 # Where an option is commented out, but filled in this shows the default
 # value of that option
@@ -38,18 +40,12 @@ use_syslog = {{ designate_syslog_use }}
 # RabbitMQ Config
 #-----------------------
 [oslo_messaging_rabbit]
-rabbit_port = 5672
-rabbit_userid = {{ designate_rabbit_user }}
-rabbit_password = {{ designate_rabbit_password }}
 rabbit_ha_queues = true
-{% set host_index = groups['designate'].index(inventory_hostname) % groups['rabbitmq'] | count %}
-{% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
-rabbit_virtual_host = {{ designate_rabbit_vhost }}
-rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
-
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ designate_rabbit_user }}:{{ designate_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ designate_rabbit_vhost }}
 
 [oslo_messaging_notifications]
 driver = messagingv2
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ designate_rabbit_user }}:{{ designate_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ designate_rabbit_vhost }}
 
 ########################
 ## Service Configuration

@@ -31,7 +31,7 @@
       apt: upgrade=yes
 
     - name: run playbooks
-      local_action: command ansible-playbook {{ item.playbook }} -l "{{ inventory_hostname }}"
+      local_action: command ansible-playbook {{ playbook_dir }}/{{ item.playbook }} -i "{{ inventory_file }}" -l "{{ inventory_hostname }}"
       when: inventory_hostname in item.group
       with_items:
         - { playbook: "os_neutron.yml", group: "{{ groups['neutron_compute'] }}" }

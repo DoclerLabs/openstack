@@ -49,7 +49,7 @@
       apache_service_name: ceilometer
       apache_service_ssl: "{{ os_ssl | default(False) }}"
       apache_services:
-        - { port: 8777 }
+        - { port: 8777, wsgi_process: "ceilometer-api", wsgi_user: "ceilometer", wsgi_script: "/var/www/cgi-bin/ceilometer/app.wsgi" }
 
 - hosts: haproxy
   become: True

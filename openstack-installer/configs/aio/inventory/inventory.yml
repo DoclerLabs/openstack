@@ -58,7 +58,7 @@ galera:
 mongodb:
   inherit: controller
 
-syslog:
+rsyslog:
   inherit:
     - compute
     - controller
@@ -91,9 +91,8 @@ neutron_controller:
 neutron_compute:
   inherit: compute
 
-#Gnocchi is available only from Xenial
 gnocchi:
-#  inherit: controller
+  inherit: controller
 
 aodh:
   inherit: controller

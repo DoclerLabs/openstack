@@ -1,3 +1,5 @@
+{% set host_index = groups['trove'].index(inventory_hostname) % groups['rabbitmq'] | count %}
+{% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
 [DEFAULT]
 # Show more verbose log output (sets INFO log level output)
 verbose = True
@@ -28,6 +30,7 @@ trove_conductor_workers = {{ trove_conductor_workers }}
 # If not set, we fall back to the 'rpc_backend' option and driver specific
 # configuration.
 #transport_url=<None>
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ trove_rabbit_user }}:{{ trove_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ trove_rabbit_vhost }}
 
 # The messaging driver to use. Options include rabbit, qpid and zmq.
 # Default is rabbit. (string value)
@@ -182,16 +185,6 @@ api_paste_config = api-paste.ini
 # The manager class to use for conductor. (string value)
 conductor_manager = trove.conductor.manager.Manager
 
-# ============ Notification System configuration ===========================
-
-# Sets the notification driver used by oslo.messaging. Options include
-# messaging, messagingv2, log and routing. Default is 'noop'
-# notification_driver=noop
-notification_driver = messagingv2
-
-# Topics used for OpenStack notifications, list value. Default is 'notifications'.
-# notification_topics=['notifications', ]
-
 # ============ Logging information =============================
 #log_dir = /integration/report
 #log_file = trove-api.log
@@ -236,14 +229,16 @@ revocation_cache_time = 60
 memcache_security_strategy = ENCRYPT
 memcache_secret_key = {{ memcache_secret_key }}
 
+
+[oslo_messaging_notifications]
+
+driver = messagingv2
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ trove_rabbit_user }}:{{ trove_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ trove_rabbit_vhost }}
+
+
 [oslo_messaging_rabbit]
-rabbit_port = 5672
-rabbit_virtual_host = {{ trove_rabbit_vhost }}
-rabbit_userid = {{ trove_rabbit_user }}
-rabbit_password = {{ trove_rabbit_password }}
+
 rabbit_ha_queues = true
-{% set rabbit_hosts=groups['rabbitmq'][(groups['trove'].index(inventory_hostname) % groups['rabbitmq'] | count):] + groups['rabbitmq'][:(groups['trove'].index(inventory_hostname) % groups['rabbitmq'] | count)] %}
-rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
 
 
 # ============ SSL configuration (and enablement) =============================

@@ -70,6 +70,20 @@
     - python-ceilometerclient
   when: inventory_hostname in groups['ceilometer_controller']
 
+- name: ensure ceilometer-api service is disabled at boot
+  service: name=ceilometer-api state=stopped enabled=no
+  when: inventory_hostname in groups['ceilometer_controller']
+
+- name: create /var/www/cgi-bin/ceilometer
+  file: path=/var/www/cgi-bin/ceilometer state=directory owner=root group=root mode=0755
+  notify: signal apache to reload
+  when: inventory_hostname in groups['ceilometer_controller']
+
+- name: link ceilometer wsgi server
+  file: src=/usr/lib/python2.7/dist-packages/ceilometer/api/app.wsgi dest=/var/www/cgi-bin/ceilometer/app.wsgi state=link
+  notify: signal apache to reload
+  when: inventory_hostname in groups['ceilometer_controller']
+
 - name: install ceilometer compute services
   apt: name={{ item }}
   with_items:
@@ -79,6 +93,7 @@
 - name: install ceilometer configs
   template: src=ceilometer.conf.j2 dest=/etc/ceilometer/ceilometer.conf owner=ceilometer group=root mode=0460
   notify:
+    - signal apache to reload
     - restart ceilometer controller services
     - restart ceilometer compute services
 
@@ -90,12 +105,12 @@
     - event_definitions
     - gnocchi_resources
   notify:
+    - signal apache to reload
     - restart ceilometer controller services
 
 - name: unmask autostarting of ceilometer controller services
   service_mask: name={{ item }} state=unmasked
   with_items:
-    - ceilometer-api
     - ceilometer-collector
     - ceilometer-agent-central
     - ceilometer-agent-notification
@@ -112,13 +127,12 @@
 - name: ensure ceilometer controller services are started
   service: name={{ item }} state=started enabled=yes
   with_items:
-    - ceilometer-api
     - ceilometer-collector
     - ceilometer-agent-central
     - ceilometer-agent-notification
   when: inventory_hostname in groups['ceilometer_controller']
 
-- name: ensure ceilometer is started
+- name: ensure ceilometer-agent-compute is started
   service: name={{ item }} state=started enabled=yes
   with_items:
     - ceilometer-agent-compute

@@ -1,9 +1,11 @@
 ---
 
+- name: signal apache to reload
+  file: dest=/run/apache2.reload state=touch
+
 - name: restart aodh
   service: name={{ item }} state=restarted
   with_items:
-    - aodh-api
     - aodh-evaluator
     - aodh-notifier
     - aodh-listener

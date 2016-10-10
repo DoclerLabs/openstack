@@ -1,10 +1,10 @@
 vip_mgmt: 10.10.0.254
 vip_mgmt_cidr: 24
-vip_mgmt_nic: eth1
+vip_mgmt_nic: enp0s8
 
 vip_public: 10.10.1.254
 vip_public_cidr: 24
-vip_public_nic: eth2
+vip_public_nic: enp0s9
 
 mysql_innodb_buffer_pool_size: 2G
 
@@ -38,11 +38,12 @@ os_public_address: "{{ vip_public }}"
 #os_ssl: False
 
 neutron_flat_networks: flat
-neutron_physical_interface_mappings: flat:eth3
+neutron_physical_interface_mappings: flat:enp0s10
 neutron_vlan_ranges:
 neutron_ha_network_type: vlan
 neutron_ha_network_physical_name: vlan
 neutron_ha_routers: False
+neutron_lbaas_agent: lbaasv2
 
 external_net_name: ext-net
 external_net_type: flat
@@ -81,3 +82,7 @@ ceph_osd_pool_default_pg_num: 32
 ceph_osd_pool_default_pgp_num: 32
 ceph_osd_journal_size: 500
 ceph_osd_max_object_name_len: 256
+
+ceilometer_backends:
+  - database
+  - gnocchi

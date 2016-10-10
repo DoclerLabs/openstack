@@ -8,6 +8,7 @@
     - horizon
     - nova_controller
     - neutron_controller
+    - neutron_l3
     - ceilometer_controller
     - heat
     - trove
@@ -16,6 +17,11 @@
     - sahara
     - barbican
     - ironic
+    - designate
+    - magnum
+    - manila
+    - mistral
+    - senlin
     - ceph_radosgw
   become: True
   max_fail_percentage: 0
@@ -35,11 +41,15 @@
   become: True
   max_fail_percentage: 0
   tasks:
+    - name: mask keystone apache config
+      copy: content='' dest=/etc/apache2/sites-available/keystone.conf owner=root group=root mode=0644
+
     - name: upgrade keystone
       apt: name={{ item }} state=latest
       with_items:
         - keystone
         - python-keystoneclient
+        - python-oslo.log
 
 - hosts: memcached
   become: True
@@ -56,7 +66,7 @@
       service: name=apache2 state=reloaded
 
     - name: run keystone playbook
-      local_action: command ansible-playbook os_keystone.yml
+      local_action: command ansible-playbook {{ playbook_dir }}/os_keystone.yml -i "{{ inventory_file }}"
       become: False
       run_once: True
 
@@ -67,12 +77,38 @@
     - name: mask barbican-api apache config
       copy: content='' dest=/etc/apache2/conf-available/barbican-api.conf owner=root group=root mode=0644
 
+# Neutron server upgrade
+- hosts:
+    - neutron_controller
+  become: True
+  max_fail_percentage: 0
+  tasks:
+    - name: upgrade neutron server
+      apt: name={{ item }} state=latest
+      with_items:
+        - neutron-server
+        - python-neutron
+        - python-neutron-fwaas
+        - python-neutron-vpnaas
+        - python-neutron-lbaas
+        - python-pecan
+      notify: restart neutron-server
+
+    - name: run neutron playbook
+      local_action: command ansible-playbook {{ playbook_dir }}/os_neutron.yml -i "{{ inventory_file }}" -l "{{ ','.join(groups['neutron_controller']) }}"
+      become: False
+      run_once: True
+
+  handlers:
+    - name: restart neutron-server
+      service: name=neutron-server state=restarted
+
 - hosts:
     - swift_proxy[0]
     - glance[0]
     - horizon[0]
     - nova_controller[0]
-    - neutron_controller[0]
+    - neutron_l3[0]
     - ceilometer_controller[0]
     - heat[0]
     - trove[0]
@@ -81,6 +117,11 @@
     - sahara[0]
     - barbican[0]
     - ironic[0]
+    - designate[0]
+    - magnum[0]
+    - manila[0]
+    - mistral[0]
+    - senlin[0]
     - ceph_radosgw[0]
   become: True
   max_fail_percentage: 0
@@ -98,11 +139,11 @@
         apt: upgrade=yes
 
       - name: run playbooks on the first hosts
-        local_action: command ansible-playbook {{ item.playbook }} -l "{{ inventory_hostname }}"
+        local_action: command ansible-playbook {{ playbook_dir }}/{{ item.playbook }} -i "{{ inventory_file }}" -l "{{ inventory_hostname }}"
         when: inventory_hostname in item.group
         with_items:
           - { playbook: "os_glance.yml", group: "{{ groups['glance'] }}" }
-          - { playbook: "os_neutron.yml", group: "{{ groups['neutron_controller'] }}" }
+          - { playbook: "os_neutron.yml", group: "{{ groups['neutron_l3'] }}" }
           - { playbook: "os_nova.yml", group: "{{ groups['nova_controller'] }}" }
           - { playbook: "os_ceilometer.yml", group: "{{ groups['ceilometer_controller'] }}" }
           - { playbook: "os_heat.yml", group: "{{ groups['heat'] }}" }
@@ -112,6 +153,11 @@
           - { playbook: "os_barbican.yml", group: "{{ groups['barbican'] }}" }
           - { playbook: "os_murano.yml", group: "{{ groups['murano'] }}" }
           - { playbook: "os_sahara.yml", group: "{{ groups['sahara'] }}" }
+          - { playbook: "os_designate.yml", group: "{{ groups['designate'] }}" }
+          - { playbook: "os_magnum.yml", group: "{{ groups['magnum'] }}" }
+          - { playbook: "os_manila.yml", group: "{{ groups['manila'] }}" }
+#          - { playbook: "os_mistral.yml", group: "{{ groups['mistral'] }}" }
+          - { playbook: "os_senlin.yml", group: "{{ groups['senlin'] }}" }
           - { playbook: "ceph_radosgw.yml", group: "{{ groups['ceph_radosgw'] }}" }
         become: False
 
@@ -138,6 +184,11 @@
     - sahara[1:]
     - barbican[1:]
     - ironic[1:]
+    - designate[1:]
+    - magnum[1:]
+    - manila[1:]
+    - mistral[1:]
+    - senlin[1:]
     - ceph_radosgw[1:]
   become: True
   max_fail_percentage: 0
@@ -154,7 +205,7 @@
         apt: upgrade=yes
 
       - name: run playbooks on the other hosts
-        local_action: command ansible-playbook {{ item.playbook }} -l "{{ inventory_hostname }}"
+        local_action: command ansible-playbook {{ playbook_dir }}/{{ item.playbook }} -i "{{ inventory_file }}" -l "{{ inventory_hostname }}"
         when: inventory_hostname in item.group
         with_items:
           - { playbook: "os_glance.yml", group: "{{ groups['glance'] }}" }
@@ -168,6 +219,11 @@
           - { playbook: "os_barbican.yml", group: "{{ groups['barbican'] }}" }
           - { playbook: "os_murano.yml", group: "{{ groups['murano'] }}" }
           - { playbook: "os_sahara.yml", group: "{{ groups['sahara'] }}" }
+          - { playbook: "os_designate.yml", group: "{{ groups['designate'] }}" }
+          - { playbook: "os_magnum.yml", group: "{{ groups['magnum'] }}" }
+          - { playbook: "os_manila.yml", group: "{{ groups['manila'] }}" }
+#          - { playbook: "os_mistral.yml", group: "{{ groups['mistral'] }}" }
+          - { playbook: "os_senlin.yml", group: "{{ groups['senlin'] }}" }
           - { playbook: "ceph_radosgw.yml", group: "{{ groups['ceph_radosgw'] }}" }
         become: False
 

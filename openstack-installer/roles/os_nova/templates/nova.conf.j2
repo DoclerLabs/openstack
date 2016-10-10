@@ -1,3 +1,5 @@
+{% set host_index = groups[(inventory_hostname in groups['nova_controller']) | ternary('nova_controller', 'nova_compute')].index(inventory_hostname) % groups['rabbitmq'] | count %}
+{% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
 [DEFAULT]
 # Logs / State
 debug = {{ nova_debug }}
@@ -27,7 +29,6 @@ scheduler_default_filters = {{ nova_scheduler_default_filters }}
 
 instances_path = /var/lib/nova/instances
 instance_name_template = instance-%08x
-api_paste_config = /etc/nova/api-paste.ini
 allow_resize_to_same_host = True
 osapi_compute_listen = 127.0.0.1
 osapi_compute_link_prefix = {{ os_proto }}://{{ os_public_address }}:8774
@@ -38,7 +39,7 @@ ram_allocation_ratio = {{ nova_ram_allocation_ratio }}
 disk_allocation_ratio = {{ nova_disk_allocation_ratio }}
 
 # Rpc all
-rpc_backend = rabbit
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ nova_rabbit_user }}:{{ nova_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ nova_rabbit_vhost }}
 
 # Metadata
 metadata_host = {{ vip_mgmt }}
@@ -47,7 +48,6 @@ metadata_listen = {{ ip.mgmt }}
 # Network
 my_ip = {{ ip.mgmt }}
 use_neutron = True
-network_api_class = nova.network.neutronv2.api.API
 security_group_api = neutron
 {% if neutron_mtu > 0 %}
 network_device_mtu = {{ neutron_mtu }}
@@ -72,7 +72,6 @@ vif_plugging_is_fatal = False
 # Hypervisor
 default_ephemeral_format = ext4
 
-keys_path = /var/lib/nova/keys
 
 # Ceilometer notification configurations
 instance_usage_audit = True
@@ -85,6 +84,17 @@ ssl_only=True
 key={{ SSLCertificateKeyFile }}
 cert={{ SSLCertificateFile }}
 {% endif %}
+
+
+[wsgi]
+
+api_paste_config = /etc/nova/api-paste.ini
+
+
+[crypto]
+
+keys_path = /var/lib/nova/keys
+
 
 #vnc
 [vnc]
@@ -99,6 +109,7 @@ novncproxy_base_url = {{ nova_novncproxy_base_url }}
 vncserver_listen = {{ ip.mgmt }}
 vncserver_proxyclient_address = {{ ip.mgmt }}
 
+
 # Cinder
 [cinder]
 catalog_info = volumev2:cinderv2:internalURL
@@ -107,6 +118,7 @@ os_region_name = {{ keystone_region_name }}
 cafile = {{ SSLCACertificateFile }}
 {% endif %}
 insecure = {{ ssl_insecure }}
+
 
 [spice]
 {% if nova_console_type == 'spice' %}
@@ -122,11 +134,13 @@ html5proxy_host = {{ ip.mgmt }}
 server_listen = {{ ip.mgmt }}
 server_proxyclient_address = {{ ip.mgmt }}
 
+
 [cache]
 
 enabled = True
 backend = oslo_cache.memcache_pool
 memcache_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
+
 
 # Glance
 [glance]
@@ -135,6 +149,7 @@ host = {{ os_internal_address }}
 port = 9292
 api_insecure = {{ ssl_insecure }}
 protocol = {{ os_proto }}
+
 
 # Neutron
 [neutron]
@@ -155,17 +170,20 @@ insecure = {{ ssl_insecure }}
 service_metadata_proxy = True
 metadata_proxy_shared_secret = {{ metadata_proxy_shared_secret }}
 
+
 [ssl]
 {% if SSLCACertificateFile != '' %}
 ca_file = {{ SSLCACertificateFile }}
 {% endif %}
 
+
 [conductor]
-use_local = false
 topic = conductor
 workers = {{ nova_conductor_workers }}
 
+
 [keystone_authtoken]
+
 auth_type = password
 signing_dir = /var/lib/nova/cache/api
 auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
@@ -199,6 +217,7 @@ check_revocations_for_cached = False
 connection = mysql+pymysql://{{ nova_api_db_user }}:{{ nova_api_db_password }}@{{ nova_mysql_server }}/{{ nova_api_db }}?charset=utf8
 max_retries = -1
 
+
 [database]
 connection = mysql+pymysql://{{ nova_db_user }}:{{ nova_db_password }}@{{ nova_mysql_server }}/{{ nova_db }}?charset=utf8
 max_retries = -1
@@ -208,27 +227,24 @@ max_retries = -1
 [oslo_concurrency]
 lock_path = /var/lock/nova
 
+
 [oslo_messaging_notifications]
 driver = messagingv2
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ nova_rabbit_user }}:{{ nova_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ nova_rabbit_vhost }}
+
 
 [oslo_messaging_rabbit]
-rabbit_port = 5672
-rabbit_userid = {{ nova_rabbit_user }}
-rabbit_password = {{ nova_rabbit_password }}
+
 rabbit_ha_queues = true
-{% set host_index = groups[(inventory_hostname in groups['nova_controller']) | ternary('nova_controller', 'nova_compute')].index(inventory_hostname) % groups['rabbitmq'] | count %}
-{% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
-rabbit_virtual_host = {{ nova_rabbit_vhost }}
-rabbit_hosts = {% for host in rabbit_hosts %}{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}
+
 
 {% if inventory_hostname in groups['nova_compute'] %}
-
 [libvirt]
+
 use_usb_tablet = False
 use_virtio_for_bridges = True
 virt_type = {{ nova_virt_type }}
 live_migration_uri = qemu+ssh://nova@%s/system?keyfile=/var/lib/nova/.ssh/id_rsa&no_tty=1&no_verify=1
-live_migration_flag="VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE"
 live_migration_tunnelled = {{ nova_live_migration_tunelled }}
 live_migration_completion_timeout = {{ nova_live_migration_completion_timeout }}
 live_migration_progress_timeout = {{ nova_live_migration_progress_timeout }}
