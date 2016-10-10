@@ -36,12 +36,13 @@ use_syslog = {{ designate_syslog_use }}
 # Supported record types
 #supported_record_type = A, AAAA, CNAME, MX, SRV, TXT, SPF, NS, PTR, SSHFP, SOA
 
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ designate_rabbit_user }}:{{ designate_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ designate_rabbit_vhost }}
+
 #-----------------------
 # RabbitMQ Config
 #-----------------------
 [oslo_messaging_rabbit]
 rabbit_ha_queues = true
-transport_url = rabbit://{% for host in rabbit_hosts %}{{ designate_rabbit_user }}:{{ designate_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ designate_rabbit_vhost }}
 
 [oslo_messaging_notifications]
 driver = messagingv2
