@@ -14,7 +14,7 @@ The deployed cloud is fully production ready, and the controlling and API compon
 
 Current OpenStack versions supported:
 - liberty/Ubuntu Trusty        - trusty/liberty branch
-- mitaka/Ubuntu Trusty/Xenial  - master branch
+- mitaka/Ubuntu Trusty/Xenial  - mitaka branch
 
 Integrated Infra components:
 - Pacemaker
