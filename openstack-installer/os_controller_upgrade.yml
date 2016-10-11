@@ -10,6 +10,7 @@
     - neutron_controller
     - neutron_l3
     - ceilometer_controller
+    - aodh
     - heat
     - trove
     - cinder
@@ -110,6 +111,7 @@
     - nova_controller[0]
     - neutron_l3[0]
     - ceilometer_controller[0]
+    - aodh[0]
     - heat[0]
     - trove[0]
     - cinder[0]
@@ -146,6 +148,7 @@
           - { playbook: "os_neutron.yml", group: "{{ groups['neutron_l3'] }}" }
           - { playbook: "os_nova.yml", group: "{{ groups['nova_controller'] }}" }
           - { playbook: "os_ceilometer.yml", group: "{{ groups['ceilometer_controller'] }}" }
+          - { playbook: "os_aodh.yml", group: "{{ groups['aodh'] }}" }
           - { playbook: "os_heat.yml", group: "{{ groups['heat'] }}" }
           - { playbook: "os_cinder.yml", group: "{{ groups['cinder'] }}" }
           - { playbook: "os_trove.yml", group: "{{ groups['trove'] }}" }
@@ -177,6 +180,7 @@
     - nova_controller[1:]
     - neutron_controller[1:]
     - ceilometer_controller[1:]
+    - aodh[1:]
     - heat[1:]
     - trove[1:]
     - cinder[1:]
@@ -212,6 +216,7 @@
           - { playbook: "os_neutron.yml", group: "{{ groups['neutron_controller'] }}" }
           - { playbook: "os_nova.yml", group: "{{ groups['nova_controller'] }}" }
           - { playbook: "os_ceilometer.yml", group: "{{ groups['ceilometer_controller'] }}" }
+          - { playbook: "os_aodh.yml", group: "{{ groups['aodh'] }}" }
           - { playbook: "os_heat.yml", group: "{{ groups['heat'] }}" }
           - { playbook: "os_cinder.yml", group: "{{ groups['cinder'] }}" }
           - { playbook: "os_trove.yml", group: "{{ groups['trove'] }}" }
