@@ -97,30 +97,21 @@
   register: osd_ids
   when: item.path is defined
 
-- name: ensure ceph OSD is started (upstart)
-  service: name=ceph-osd state=started enabled=yes args="id={{ item.stdout }} cluster={{ ceph_cluster_name }}"
-  with_items: "{{ osd_ids.results }}"
-  when: (item.skipped is not defined or item.skipped != True) and
-        ansible_distribution_version | version_compare('15.04', '<=')
-
 - name: ensure /etc/systemd/system/ceph-osd@.service.d exists
   file: dest=/etc/systemd/system/ceph-osd@.service.d state=directory owner=root group=root mode=0755
-  when: ansible_distribution_version | version_compare('15.10', '>=')
 
 - name: install 10-name.conf override
   copy: content='[Service]\nEnvironment=CLUSTER={{ ceph_cluster_name }}\n'
         dest=/etc/systemd/system/ceph-osd@.service.d/10-name.conf
         owner=root group=root mode=0644
   notify: reload systemd
-  when: ansible_distribution_version | version_compare('15.10', '>=')
 
 - meta: flush_handlers
 
 - name: ensure ceph OSD is started (systemd)
   service: name=ceph-osd@{{ item.stdout }} state=started enabled=yes
   with_items: "{{ osd_ids.results }}"
-  when: (item.skipped is not defined or item.skipped != True) and
-        ansible_distribution_version | version_compare('15.10', '>=')
+  when: item.skipped is not defined or item.skipped != True
 
 ### Add disk-based OSDs
 - name: prepare disks

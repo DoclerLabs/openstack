@@ -6,18 +6,10 @@
   roles:
     - role: common
       apt_extra_repos:
-        - { name: "percona", repo: "http://repo.percona.com/apt trusty main" }
-      apt_extra_keys:
-        - { keyserver: "keys.gnupg.net", keyid: "1C4CBDCDCD2EFD2A" }
-      when: ansible_distribution_version | version_compare('14.04', '=')
-
-    - role: common
-      apt_extra_repos:
         - { name: "percona", repo: "http://repo.percona.com/apt xenial main" }
       apt_extra_keys:
         - { keyserver: "keys.gnupg.net", keyid: "1C4CBDCDCD2EFD2A" }
         - { keyserver: "keys.gnupg.net", keyid: "9334A25F8507EFA5" }
-      when: ansible_distribution_version | version_compare('16.04', '=')
 
     - galera
 

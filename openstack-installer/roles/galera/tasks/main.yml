@@ -1,7 +1,7 @@
 ---
 
 - name: install galera packages
-  apt: update_cache=yes name={{ item }}
+  apt: name={{ item }}
   with_items:
     - percona-xtrabackup
     - percona-xtradb-cluster-server-5.6
