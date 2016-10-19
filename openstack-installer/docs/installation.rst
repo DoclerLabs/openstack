@@ -8,7 +8,7 @@ It does not install the base OS, also doesn't configure the hardware (network in
 2. Pre-requisite
 ================
 
-- A deployment node, which can connect to the provisioned nodes via ssh. Install Ansible on it. Version = 2.0.2.0 is used in the CI system currently,
+- A deployment node, which can connect to the provisioned nodes via ssh. Install Ansible on it. Version = 2.1.2.0 is used in the CI system currently,
   so it is recommended. 1.9.6 should work, too, but not tested constantly. 2.1.0.0 has several bugs, don't use it.
 - Ubuntu 14.04 LTS (Liberty/Mitaka) or 16.04 LTS (Mitaka/Newton) for the base OS. Need odd number of controller nodes, and arbitary number of compute nodes.
 - For ceph, it is recommended to have at least 3 monitor nodes, and 3 OSD nodes.
@@ -22,7 +22,9 @@ It does not install the base OS, also doesn't configure the hardware (network in
   - For Ceph, it is recommended to have separate management and cluster communication interfaces.
 
 - NTP should be working on all nodes.
-- All nodes must have an user 'ansible' created, ssh passwordless login enabled from the deployment node, and sudo rights.
+- All nodes must have an user 'ansible' created, ssh passwordless login enabled from the deployment node, and sudo rights. Several deployment tools, like MAAS,
+  creates an 'ubuntu' user by default with sudo rights. It can be used, too, but have to give '-u ubuntu' parameter in the ansible-playbook command line,
+  or change ansible.cfg remote_user parameter.
 
 3. Installation
 ===============
@@ -39,8 +41,8 @@ It does not install the base OS, also doesn't configure the hardware (network in
 
 - Generate the secrets
 
-  - Edit group_vars/all/secrets.yml, if you want pre-defined passwords for some items, add it to the file.
-  - Auto-generate the passwords which are left empty in secrets.yml:
+  - Edit group_vars/all/secrets.yml, if you want pre-defined passwords for some items, add it to the file. The possible items can be found in scripts/secrets.yml.template.
+  - Auto-generate the missing password entries in secrets.yml:
 
 ::
 
