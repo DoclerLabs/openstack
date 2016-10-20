@@ -76,3 +76,5 @@ Installing an all-in-one (Ceph, controller, compute) VM with Vagrant:
 ```
 
 - Check out Horizon in a browser: http://10.10.1.254, use Default/admin/admIn credentials
+
+- Check current issues in the [Wiki] (https://github.com/DoclerLabs/openstack/wiki)
