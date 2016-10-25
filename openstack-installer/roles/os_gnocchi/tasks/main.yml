@@ -15,7 +15,9 @@
   with_items:
     - gnocchi-api
     - gnocchi-metricd
-    - patch
+
+- name: ensure gnocchi-api is disabled at boot
+  service: name=gnocchi-api state=stopped enabled=no
 
 - name: create gnocchi database
   mysql_db: name={{ gnocchi_db }}
@@ -34,28 +36,31 @@
 
 - name: ensure /var/lib/gnocchi/cache is writeable
   file: path=/var/lib/gnocchi/cache state=directory owner=gnocchi group=gnocchi mode=0700
-  notify: restart gnocchi
 
 - name: install gnocchi configs
   template: src={{ item }}.conf.j2 dest=/etc/gnocchi/{{ item }}.conf owner=gnocchi group=root mode=0460
   with_items:
     - gnocchi
-  notify: restart gnocchi
+  notify:
+    - signal apache to reload
+    - restart gnocchi
 
 - name: sync gnocchi db
   command: su gnocchi -s /bin/sh -c '/usr/bin/gnocchi-upgrade --skip-storage'
   run_once: True
 
+- name: create /var/www/cgi-bin/gnocchi
+  file: path=/var/www/cgi-bin/gnocchi state=directory owner=root group=root mode=0755
+  notify: signal apache to reload
+
+- name: link gnocchi wsgi server
+  file: src=/usr/bin/gnocchi-api dest=/var/www/cgi-bin/gnocchi/app.wsgi state=link
+  notify: signal apache to reload
+
 - name: unmask autostarting of gnocchi
-  service_mask: name={{ item }} state=unmasked
-  with_items:
-    - gnocchi-api
-    - gnocchi-metricd
+  service_mask: name=gnocchi-metricd state=unmasked
 
 - meta: flush_handlers
 
 - name: ensure gnocchi is started
-  service: name={{ item }} state=started enabled=yes
-  with_items:
-    - gnocchi-api
-    - gnocchi-metricd
+  service: name=gnocchi-metricd state=started enabled=yes
