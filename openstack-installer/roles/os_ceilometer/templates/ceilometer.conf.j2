@@ -237,9 +237,9 @@ messaging_urls = rabbit://{{ sahara_rabbit_user }}:{{ sahara_rabbit_password }}@
 # Deprecated group/name - [DATABASE]/sql_connection
 # Deprecated group/name - [sql]/connection
 #connection = <None>
+{% if 'database' in ceilometer_backends %}
 connection = mongodb://ceilometer:{{ ceilometer_db_password }}@{% for host in groups['mongodb'] %}{{ hostvars[host].ip.mgmt }}:27017{% if not loop.last %},{% endif %}{% endfor %}/ceilometer
 mongodb_replica_set = {{ mongodb_replica_set }}
-{% if 'database' in ceilometer_backends %}
 {% endif %}
 
 metering_time_to_live: {{ ceilometer_metering_time_to_live }}

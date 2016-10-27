@@ -47,6 +47,7 @@
   roles:
     - role: apache_frontend
       apache_service_name: ceilometer
+      apache_service_enable: "{{ 'database' in ceilometer_backends | default(['database']) }}"
       apache_service_ssl: "{{ os_ssl | default(False) }}"
       apache_services:
         - { port: 8777, wsgi_process: "ceilometer-api", wsgi_user: "ceilometer", wsgi_script: "/var/www/cgi-bin/ceilometer/app.wsgi" }
@@ -58,7 +59,7 @@
     - role: haproxy_service
       haproxy_services:
         - haproxy_service_name: ceilometer_api
-          haproxy_backend_nodes: "{{ groups['ceilometer_controller'] }}"
+          haproxy_backend_nodes: "{{ ('database' in ceilometer_backends | default(['database'])) | ternary (groups['ceilometer_controller'],[]) }}"
           haproxy_bind_hosts:
             - "{{ vip_mgmt }}"
             - "{{ vip_public }}"
