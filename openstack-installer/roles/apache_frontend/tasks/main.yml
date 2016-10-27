@@ -56,7 +56,8 @@
   notify: reload apache
 
 - name: enable site
-  file: src=../sites-available/{{ apache_service_name }}-site.conf dest=/etc/apache2/sites-enabled/{{ apache_service_name }}-site.conf state=link
+  file: src=../sites-available/{{ apache_service_name }}-site.conf dest=/etc/apache2/sites-enabled/{{ apache_service_name }}-site.conf
+    state={{ apache_service_enable | ternary('link','absent') }}
   notify: reload apache
 
 - name: remove reload signal
