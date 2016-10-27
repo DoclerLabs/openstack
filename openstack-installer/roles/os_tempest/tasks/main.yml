@@ -48,6 +48,7 @@
   command: openstack flavor create
     --os-auth-url "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     --os-interface internal
+    --os-identity-api-version 3
     --os-project-domain-name "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
     {{ ssl_insecure | ternary('--insecure', '') }}
     {{ SSLCACertificateFileSource | ternary('--os-cacert ' + tempest_CAFile, '') }}
@@ -69,6 +70,7 @@
   command: openstack flavor create
     --os-auth-url "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     --os-interface internal
+    --os-identity-api-version 3
     --os-project-domain-name "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
     {{ ssl_insecure | ternary('--insecure', '') }}
     {{ SSLCACertificateFileSource | ternary('--os-cacert ' + tempest_CAFile, '') }}
