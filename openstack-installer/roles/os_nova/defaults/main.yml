@@ -46,6 +46,9 @@ nova_disk_allocation_ratio: 1.0
 nova_live_migration_completion_timeout: 800
 nova_live_migration_progress_timeout: 150
 
+nova_instance_usage_audit: True
+nova_instance_usage_audit_period: hour
+
 #kvm or qemu
 nova_virt_type: kvm
 

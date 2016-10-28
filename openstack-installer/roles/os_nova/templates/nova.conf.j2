@@ -74,8 +74,8 @@ default_ephemeral_format = ext4
 
 
 # Ceilometer notification configurations
-instance_usage_audit = True
-instance_usage_audit_period = hour
+instance_usage_audit = {{ nova_instance_usage_audit }}
+instance_usage_audit_period = {{ nova_instance_usage_audit_period }}
 notify_on_state_change = vm_and_task_state
 
 #console ssl
