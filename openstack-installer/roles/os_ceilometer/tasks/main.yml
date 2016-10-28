@@ -145,4 +145,5 @@
     hour="{{ groups['ceilometer_controller'].index(inventory_hostname) }}-23/{{ groups['ceilometer_controller'] | count }}"
     user=ceilometer
     job="/usr/bin/ceilometer-expirer"
+    state="{{ ('database' in ceilometer_backends) | ternary('present','absent') }}"
   when: inventory_hostname in groups['ceilometer_controller']
