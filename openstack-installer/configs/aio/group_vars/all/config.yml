@@ -37,6 +37,10 @@ os_public_address: "{{ vip_public }}"
 #Use TLS for all OS services
 #os_ssl: False
 
+ceilometer_backends:
+ - gnocchi
+ceilometer_store_events: False
+
 neutron_flat_networks: flat
 neutron_physical_interface_mappings: flat:enp0s10
 neutron_vlan_ranges:
@@ -82,7 +86,3 @@ ceph_osd_pool_default_pg_num: 32
 ceph_osd_pool_default_pgp_num: 32
 ceph_osd_journal_size: 500
 ceph_osd_max_object_name_len: 256
-
-ceilometer_backends:
-  - database
-  - gnocchi

@@ -56,7 +56,7 @@ galera:
   inherit: pacemaker
 
 mongodb:
-  inherit: controller
+#  inherit: controller
 
 rsyslog:
   inherit:
