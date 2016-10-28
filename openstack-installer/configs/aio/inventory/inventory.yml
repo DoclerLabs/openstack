@@ -138,7 +138,7 @@ designate:
   inherit: controller
 
 magnum:
-  inherit: controller
+#  inherit: controller
 
 senlin:
   inherit: controller
