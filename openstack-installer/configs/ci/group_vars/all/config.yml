@@ -55,6 +55,10 @@ trove_physical_network: vlan
 trove_subnet_cidr: 10.20.30.0/24
 trove_image_path: /etc/openstack_deploy/trove-mysql.qcow2
 
+ceilometer_backends:
+ - database
+ - gnocchi
+
 #ceph or lvm
 cinder_backend: ceph
 cinder_ceph_pool: volumes
