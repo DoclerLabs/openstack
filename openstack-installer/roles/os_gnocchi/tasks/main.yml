@@ -45,6 +45,11 @@
     - signal apache to reload
     - restart gnocchi
 
+- name: install api-paste.ini
+  template: src=api-paste.ini.j2 dest=/etc/gnocchi/api-paste.ini owner=gnocchi group=root mode=0460
+  notify:
+    - signal apache to reload
+
 - name: sync gnocchi db
   command: su gnocchi -s /bin/sh -c '/usr/bin/gnocchi-upgrade --skip-storage'
   run_once: True

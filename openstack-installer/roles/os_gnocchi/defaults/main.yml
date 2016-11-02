@@ -24,6 +24,9 @@ gnocchi_ceph_pool: gnocchi
 gnocchi_api_workers: 1
 gnocchi_metricd_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 
+# 'gnocchi+noath' or 'gnocchi+auth'
+gnocchi_pipeline: "gnocchi+auth"
+
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
 SSLCACertificateFileSource:
