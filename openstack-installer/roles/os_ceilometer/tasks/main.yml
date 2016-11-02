@@ -109,6 +109,13 @@
     - signal apache to reload
     - restart ceilometer controller services
 
+- name: install pipeline.yaml
+  copy: src={{ ceilometer_pipeline_src }} dest=/etc/ceilometer/pipeline.yaml owner=root group=root mode=0644
+  notify:
+    - signal apache to reload
+    - restart ceilometer controller services
+    - restart ceilometer compute services
+
 - name: unmask autostarting of ceilometer controller services
   service_mask: name={{ item }} state=unmasked
   with_items:

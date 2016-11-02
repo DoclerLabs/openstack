@@ -36,6 +36,8 @@ ceilometer_metering_time_to_live: 0
 ceilometer_event_time_to_live: 0
 ceilometer_alarm_history_time_to_live: 0
 
+ceilometer_pipeline_src: "pipeline.yaml"
+
 #database and/or gnocchi
 ceilometer_backends:
  - database
