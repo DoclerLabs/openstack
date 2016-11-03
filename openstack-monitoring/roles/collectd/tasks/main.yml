@@ -16,6 +16,7 @@
   template: src={{ item }}.conf.j2 dest=/etc/collectd/collectd.conf.d/{{ item }}.conf owner=root group=root mode=0644
   with_items:
     - network
+    - interface
     - write_graphite
     - mysql
     - memcached

@@ -7,6 +7,9 @@ collectd_graphite_protocol: tcp
 # To send metrics to another collectd
 collectd_network_address:
 
+# Collect metrics from the interfaces in the list:
+collectd_interfaces: []
+
 nagios_cloud_prefix: ''
 nagios_ipmi: False
 nagios_mdraid: False

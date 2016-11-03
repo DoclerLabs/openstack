@@ -1,0 +1,9 @@
+{% if collectd_interfaces %}
+LoadPlugin "interface"
+<Plugin "interface">
+{% for interface in collectd_interfaces %}
+  Interface "{{ interface }}"
+{% endfor %}
+</Plugin>
+{% endif %}
+
