@@ -6,10 +6,19 @@
   notify: update apt cache
 
 - name: add apt key(s)
-  apt_key: keyserver='{{ item.keyserver | default('') }}' id='{{ item.keyid | default('') }}' url='{{ item.keyurl | default('') }}'
+  apt_key: keyserver='{{ item.keyserver }}' id='{{ item.keyid | default('') }}'
   with_items:
     - "{{ apt_keys }}"
     - "{{ apt_extra_keys }}"
+  when: item.keyserver is defined
+  notify: update apt cache
+
+- name: add apt key(s)
+  apt_key: id='{{ item.keyid | default('') }}' url='{{ item.keyurl }}'
+  with_items:
+    - "{{ apt_keys }}"
+    - "{{ apt_extra_keys }}"
+  when: item.keyurl is defined
   notify: update apt cache
 
 - meta: flush_handlers
