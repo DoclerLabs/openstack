@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 
 from django.utils.translation import ugettext_lazy as _
@@ -226,6 +228,17 @@ OPENSTACK_ENABLE_PASSWORD_RETRIEVE = {{ horizon_enable_password_retrieve }}
 LAUNCH_INSTANCE_LEGACY_ENABLED = {{ horizon_launch_instance_legacy_enabled }}
 LAUNCH_INSTANCE_NG_ENABLED = {{ horizon_launch_instance_ng_enabled }}
 
+# A dictionary of settings which can be used to provide the default values for
+# properties found in the Launch Instance modal.
+#LAUNCH_INSTANCE_DEFAULTS = {
+#    'config_drive': False,
+#    'enable_scheduler_hints': True
+#    'disable_image': False,
+#    'disable_instance_snapshot': False,
+#    'disable_volume': False,
+#    'disable_volume_snapshot': False,
+#}
+
 # The Xen Hypervisor has the ability to set the mount point for volumes
 # attached to instances (other Hypervisors currently do not). Setting
 # can_set_mount_point to True will add the option to set the mount point
@@ -234,6 +247,7 @@ OPENSTACK_HYPERVISOR_FEATURES = {
     'can_set_mount_point': False,
     'can_set_password': False,
     'requires_keypair': False,
+    'enable_quotas': True
 }
 
 # The OPENSTACK_CINDER_FEATURES settings can be used to enable optional
@@ -256,17 +270,12 @@ OPENSTACK_NEUTRON_NETWORK = {
     'enable_vpn': {{ neutron_vpnaas }},
     'enable_fip_topology_check': True,
 
-    # Neutron can be configured with a default Subnet Pool to be used for IPv4
-    # subnet-allocation. Specify the label you wish to display in the Address
-    # pool selector on the create subnet step if you want to use this feature.
-    'default_ipv4_subnet_pool_label': None,
-
-    # Neutron can be configured with a default Subnet Pool to be used for IPv6
-    # subnet-allocation. Specify the label you wish to display in the Address
-    # pool selector on the create subnet step if you want to use this feature.
-    # You must set this to enable IPv6 Prefix Delegation in a PD-capable
-    # environment.
-    'default_ipv6_subnet_pool_label': None,
+    # Default dns servers you would like to use when a subnet is
+    # created.  This is only a default, users can still choose a different
+    # list of dns servers when creating a new subnet.
+    # The entries below are examples only, and are not appropriate for
+    # real deployments
+    # 'default_dns_nameservers': ["8.8.8.8", "8.8.4.4", "208.67.222.222"],
 
     # The profile_support option is used to detect if an external router can be
     # configured via the dashboard. When using specific plugins the
@@ -276,15 +285,31 @@ OPENSTACK_NEUTRON_NETWORK = {
 
     # Set which provider network types are supported. Only the network types
     # in this list will be available to choose from when creating a network.
-    # Network types include local, flat, vlan, gre, and vxlan.
-    'supported_provider_types': ['*'],
+    # Network types include local, flat, vlan, gre, vxlan and geneve.
+    # 'supported_provider_types': ['*'],
+
+    # You can configure available segmentation ID range per network type
+    # in your deployment.
+    # 'segmentation_id_range': {
+    #     'vlan': [1024, 2048],
+    #     'vxlan': [4094, 65536],
+    # },
+
+    # You can define additional provider network types here.
+    # 'extra_provider_types': {
+    #     'awesome_type': {
+    #         'display_name': 'Awesome New Type',
+    #         'require_physical_network': False,
+    #         'require_segmentation_id': True,
+    #     }
+    # },
 
     # Set which VNIC types are supported for port binding. Only the VNIC
     # types in this list will be available to choose from when creating a
     # port.
     # VNIC types include 'normal', 'macvtap' and 'direct'.
     # Set to empty list or None to disable VNIC type selection.
-    'supported_vnic_types': ['*']
+    'supported_vnic_types': ['*'],
 }
 
 # The OPENSTACK_HEAT_STACK settings can be used to disable password
@@ -310,7 +335,7 @@ OPENSTACK_HEAT_STACK = {
 #        ('vdi', _('VDI - Virtual Disk Image')),
 #        ('vhd', _('VHD - Virtual Hard Disk')),
 #        ('vmdk', _('VMDK - Virtual Machine Disk')),
-#    ]
+#    ],
 #}
 
 # The IMAGE_CUSTOM_PROPERTY_TITLES settings is used to customize the titles for
@@ -361,6 +386,9 @@ API_RESULT_PAGE_SIZE = 20
 
 # The size of chunk in bytes for downloading objects from Swift
 SWIFT_FILE_TRANSFER_CHUNK_SIZE = 512 * 1024
+
+# The default number of lines displayed for instance console log.
+INSTANCE_LOG_LENGTH = 35
 
 # Specify a maximum number of items to display in a dropdown.
 DROPDOWN_MAX_ITEMS = 30
@@ -431,9 +459,13 @@ MURANO_REPO_URL="{{ murano_repo_url }}"
 #TROVE_ADD_USER_PERMS = []
 #TROVE_ADD_DATABASE_PERMS = []
 
-# Change this patch to the appropriate static directory containing
-# two files: _variables.scss and _styles.scss
-#CUSTOM_THEME_PATH = 'themes/default'
+# Change this patch to the appropriate list of tuples containing
+# a key, label and static directory containing two files:
+# _variables.scss and _styles.scss
+#AVAILABLE_THEMES = [
+#    ('default', 'Default', 'themes/default'),
+#    ('material', 'Material', 'themes/material'),
+#]
 
 LOGGING = {
     'version': 1,
@@ -442,6 +474,13 @@ LOGGING = {
     # if nothing is specified here and disable_existing_loggers is True,
     # django.db.backends will still log unless it is disabled explicitly.
     'disable_existing_loggers': False,
+    'formatters': {
+        'operation': {
+            # The format of "%(message)s" is defined by
+            # OPERATION_LOG_OPTIONS['format']
+            'format': '%(asctime)s %(message)s'
+        },
+    },
     'handlers': {
         'null': {
             'level': 'DEBUG',
@@ -451,6 +490,11 @@ LOGGING = {
             # Set the level to "DEBUG" for verbose output logging.
             'level': 'INFO',
             'class': 'logging.StreamHandler',
+        },
+        'operation': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'operation',
         },
     },
     'loggers': {
@@ -467,6 +511,11 @@ LOGGING = {
         'horizon': {
             'handlers': ['console'],
             'level': 'DEBUG',
+            'propagate': False,
+        },
+        'horizon.operation_log': {
+            'handlers': ['operation'],
+            'level': 'INFO',
             'propagate': False,
         },
         'openstack_dashboard': {
@@ -509,11 +558,6 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
-        'troveclient': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
         'swiftclient': {
             'handlers': ['console'],
             'level': 'DEBUG',
@@ -542,7 +586,7 @@ LOGGING = {
             'handlers': ['null'],
             'propagate': False,
         },
-    }
+    },
 }
 
 # 'direction' should not be specified for all_tcp/udp/icmp.
@@ -680,12 +724,6 @@ SECURITY_GROUP_RULES = {
 # algorithms supported by Python's hashlib library.
 #OPENSTACK_TOKEN_HASH_ALGORITHM = 'md5'
 
-# Hashing tokens from Keystone keeps the Horizon session data smaller, but it
-# doesn't work in some cases when using PKI tokens.  Uncomment this value and
-# set it to False if using PKI tokens and there are 401 errors due to token
-# hashing.
-#OPENSTACK_TOKEN_HASH_ENABLED = True
-
 # AngularJS requires some settings to be made available to
 # the client side. Some settings are required by in-tree / built-in horizon
 # features. These settings must be added to REST_API_REQUIRED_SETTINGS in the
@@ -713,11 +751,8 @@ REST_API_REQUIRED_SETTINGS = ['OPENSTACK_HYPERVISOR_FEATURES',
 # Ubuntu Settings
 ###############################################################################
 
-# Enable the Ubuntu theme if it is present.
-try:
-  from ubuntu_theme import *
-except ImportError:
-  pass
+# The default theme if no cookie is present
+DEFAULT_THEME = 'ubuntu'
 
 # Default Ubuntu apache configuration uses /horizon as the application root.
 WEBROOT='/horizon/'
@@ -737,3 +772,69 @@ COMPRESS_OFFLINE = True
 # For more information see:
 # http://tinyurl.com/anticlickjack
 #DISALLOW_IFRAME_EMBED = True
+
+# Help URL can be made available for the client. To provide a help URL, edit the
+# following attribute to the URL of your choice.
+#HORIZON_CONFIG["help_url"] = "http://openstack.mycompany.org"
+
+# Settings for OperationLogMiddleware
+# OPERATION_LOG_ENABLED is flag to use the function to log an operation on
+# Horizon.
+# mask_targets is arrangement for appointing a target to mask.
+# method_targets is arrangement of HTTP method to output log.
+# format is the log contents.
+#OPERATION_LOG_ENABLED = False
+#OPERATION_LOG_OPTIONS = {
+#    'mask_fields': ['password'],
+#    'target_methods': ['POST'],
+#    'format': ("[%(domain_name)s] [%(domain_id)s] [%(project_name)s]"
+#        " [%(project_id)s] [%(user_name)s] [%(user_id)s] [%(request_scheme)s]"
+#        " [%(referer_url)s] [%(request_url)s] [%(message)s] [%(method)s]"
+#        " [%(http_status)s] [%(param)s]"),
+#}
+
+# The default date range in the Overview panel meters - either <today> minus N
+# days (if the value is integer N), or from the beginning of the current month
+# until today (if set to None). This setting should be used to limit the amount
+# of data fetched by default when rendering the Overview panel.
+#OVERVIEW_DAYS_RANGE = 1
+
+# To allow operators to require users provide a search criteria first
+# before loading any data into the views, set the following dict
+# attributes to True in each one of the panels you want to enable this feature.
+# Follow the convention <dashboard>.<view>
+#FILTER_DATA_FIRST = {
+#    'admin.instances': False,
+#    'admin.images': False,
+#    'admin.networks': False,
+#    'admin.routers': False,
+#    'admin.volumes': False
+#}
+
+# Dict used to restrict user private subnet cidr range.
+# An empty list means that user input will not be restricted
+# for a corresponding IP version. By default, there is
+# no restriction for IPv4 or IPv6. To restrict
+# user private subnet cidr range set ALLOWED_PRIVATE_SUBNET_CIDR
+# to something like
+#ALLOWED_PRIVATE_SUBNET_CIDR = {
+#    'ipv4': ['10.0.0.0/8', '192.168.0.0/16'],
+#    'ipv6': ['fc00::/7']
+#}
+ALLOWED_PRIVATE_SUBNET_CIDR = {'ipv4': [], 'ipv6': []}
+
+# Project and user can have any attributes by keystone v3 mechanism.
+# This settings can treat these attributes on Horizon.
+# It means, when you show Create/Update modal, attribute below is
+# shown and you can specify any value.
+# If you'd like to display these extra data in project or user index table,
+# Keystone v3 allows you to add extra properties to Project and Users.
+# Horizon's customization (http://docs.openstack.org/developer/horizon/topics/customizing.html#horizon-customization-module-overrides)
+# allows you to display this extra information in the Create/Update modal and
+# the corresponding tables.
+#PROJECT_TABLE_EXTRA_INFO = {
+#   'phone_num': _('Phone Number'),
+#}
+#USER_TABLE_EXTRA_INFO = {
+#   'phone_num': _('Phone Number'),
+#}
