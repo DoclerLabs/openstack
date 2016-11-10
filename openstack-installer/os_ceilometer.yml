@@ -7,6 +7,7 @@
       keystone_service_name: ceilometer
       keystone_service_type: metering
       keystone_service_description: "OpenStack Telemetry Service"
+      keystone_service_present: "{{ 'database' in ceilometer_backends | default(['database']) }}"
       keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8777"
       keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8777"
       keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8777"
