@@ -49,6 +49,7 @@
     ignore_other_regions=true
     cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
+    state={{ keystone_service_present | ternary("present", "absent") }}
   when: keystone_service_name is defined
 
 - name: create the project in keystone
