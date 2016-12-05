@@ -29,7 +29,7 @@
       changed_when: False
 
     - name: create ceilometer mongo user
-      mongodb_user: login_user=admin login_password={{ mongodb_admin_password }} database=ceilometer name=ceilometer password={{ ceilometer_db_password }}
+      mongodb_user: login_user=admin login_password={{ mongodb_admin_password }} database=ceilometer name=ceilometer password={{ ceilometer_db_password }} roles=readWrite,dbAdmin
       when: mongo_master.stdout == 'true'
 
 - hosts:
