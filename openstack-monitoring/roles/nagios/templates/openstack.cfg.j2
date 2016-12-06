@@ -13,6 +13,7 @@
                groups['nova_controller'] +
                groups['neutron_controller'] +
                groups['ceilometer_controller'] +
+               groups['aodh'] +
                groups['heat'] +
                groups['trove'] +
                groups['cinder'] +
@@ -82,6 +83,7 @@ define hostgroup{
 {{ hostgroup('nova', 'nova', 'OpenStack Nova hosts', groups['nova_controller']) }}
 {{ hostgroup('neutron', 'neutron', 'OpenStack Neutron hosts', groups['neutron_controller']) }}
 {{ hostgroup('ceilometer', 'ceilometer', 'OpenStack Ceilometer hosts', groups['ceilometer_controller']) }}
+{{ hostgroup('aodh', 'aodh', 'OpenStack AODH hosts', groups['aodh']) }}
 {{ hostgroup('heat', 'heat', 'OpenStack Heat hosts', groups['heat']) }}
 {{ hostgroup('trove', 'trove', 'OpenStack Trove hosts', groups['trove']) }}
 {{ hostgroup('cinder', 'cinder', 'OpenStack Cinder hosts', groups['cinder']) }}
@@ -437,7 +439,7 @@ define service{
 {% if groups['aodh'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}ceilometer,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}aodh,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description aodh-api
     check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 8042!-e 401
