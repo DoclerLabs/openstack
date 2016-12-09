@@ -202,7 +202,7 @@ aodh_is_enabled = {{ groups['aodh'] | count > 0 }}
 
 udp_address = {{ ip.mgmt }}
 {% if 'gnocchi' in ceilometer_backends %}
-batch_size = 100
+batch_size = {{ ceilometer_batch_size }}
 batch_timeout = 5
 {% endif %}
 
@@ -893,7 +893,7 @@ rabbit_ha_queues = true
 # Deprecated group/name - [DEFAULT]/fake_rabbit
 #fake_rabbit = false
 
-rabbit_qos_prefetch_count = 100
+rabbit_qos_prefetch_count = {{ ceilometer_batch_size }}
 
 
 [oslo_policy]
