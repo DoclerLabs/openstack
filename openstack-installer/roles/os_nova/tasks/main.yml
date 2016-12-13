@@ -193,8 +193,8 @@
   when: inventory_hostname in groups['nova_compute']
 
 - name: create ssh key for nova-compute
-  local_action: command ssh-keygen -f "{{ playbook_dir }}/workdir/nova_id_rsa" -b 2048 -P ""
-                creates="{{ playbook_dir }}/workdir/nova_id_rsa.pub"
+  local_action: command ssh-keygen -f "{{ playbook_dir }}/files/nova_id_rsa" -b 2048 -P ""
+                creates="{{ playbook_dir }}/files/nova_id_rsa.pub"
   run_once: True
   become: False
 
@@ -203,11 +203,11 @@
   when: inventory_hostname in groups['nova_compute']
 
 - name: install the public key for nova-compute
-  copy: src=workdir/nova_id_rsa.pub dest=/var/lib/nova/.ssh/authorized_keys owner=nova group=root mode=0640
+  copy: src=files/nova_id_rsa.pub dest=/var/lib/nova/.ssh/authorized_keys owner=nova group=root mode=0640
   when: inventory_hostname in groups['nova_compute']
 
 - name: install the private key for nova-compute
-  copy: src=workdir/nova_id_rsa dest=/var/lib/nova/.ssh/id_rsa owner=nova group=nova mode=0600
+  copy: src=files/nova_id_rsa dest=/var/lib/nova/.ssh/id_rsa owner=nova group=nova mode=0600
   when: inventory_hostname in groups['nova_compute']
 
 - name: install the ssh config for nova-compute
