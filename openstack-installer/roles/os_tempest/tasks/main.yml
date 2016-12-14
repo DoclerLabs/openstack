@@ -1,5 +1,10 @@
 ---
 
+- name: check for Ansible version >= 2.1
+  local_action: assert that="{{ ansible_version.string | version_compare('2.1', '>=') }}"
+  run_once: True
+  become: False
+
 - name: install packages for tempest
   apt: name={{ item }}
   become: True
@@ -8,10 +13,10 @@
     - libssl-dev
     - python-dev
     - python-subunit
+    - python-shade
     - python-glanceclient
     - python-novaclient
     - python-neutronclient
-    - python-openstackclient
   when: ansible_os_family == 'Debian'
 
 - name: make sure the images directory exists
@@ -28,65 +33,47 @@
   copy: src='{{ SSLCACertificateFileSource }}' dest='{{ tempest_CAFile }}'
   when: SSLCACertificateFileSource is not none and SSLCACertificateFileSource | trim != ''
 
-- name: ensure cirros image exists in glance
-  glance_image:
-    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    endpoint_type=internalURL
-    cacert={{ tempest_CAFile }}
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    login_project_name=admin
-    login_username=admin
-    login_domain_name="Default"
-    login_password="{{ keystone_admin_password }}"
-    region_name="{{ keystone_region_name }}"
-    copy_from="{{ cirros_image_url }}"
-    name=cirros-image
+- name: ensure cirros image exists in Glance
+  os_image:
+    auth:
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      username: admin
+      password: "{{ keystone_admin_password }}"
+      domain-name: "{{ keystone_domain_name }}"
+      project_name: admin
+      project_domain_name: "{{ keystone_domain_name }}"
+    cacert: "{{ tempest_CAFile }}"
+    validate_certs: "{{ ssl_insecure | ternary(False, True) }}"
+    region_name: "{{ keystone_region_name }}"
+    endpoint_type: internal
+    name: cirros-image
+    container_format: bare
+    disk_format: qcow2
+    state: present
+    filename: "{{ tempest_images_dest }}/{{ tempest_image_file }}"
   run_once: True
   register: cirros_image
 
 - name: ensure m1.micro flavor exists
-  command: openstack flavor create
-    --os-auth-url "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    --os-interface internal
-    --os-identity-api-version 3
-    --os-project-domain-name "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
-    {{ ssl_insecure | ternary('--insecure', '') }}
-    {{ SSLCACertificateFileSource | ternary('--os-cacert ' + tempest_CAFile, '') }}
-    --os-project-name admin
-    --os-user-domain-name "{{ keystone_domain_name }}"
-    --os-username admin
-    --os-password {{ keystone_admin_password }}
-    --id 0
-    --disk 1
-    --ephemeral 0
-    --ram 256
-    --vcpus 1
-    m1.micro
-  register: nova_results
-  failed_when: nova_results | failed and 'already exists' not in nova_results.stderr
-  changed_when: nova_results | success
-
-- name: ensure m1.tiny flavor exists
-  command: openstack flavor create
-    --os-auth-url "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    --os-interface internal
-    --os-identity-api-version 3
-    --os-project-domain-name "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
-    {{ ssl_insecure | ternary('--insecure', '') }}
-    {{ SSLCACertificateFileSource | ternary('--os-cacert ' + tempest_CAFile, '') }}
-    --os-project-name admin
-    --os-user-domain-name "{{ keystone_domain_name }}"
-    --os-username admin
-    --os-password {{ keystone_admin_password }}
-    --id 1
-    --disk 1
-    --ephemeral 0
-    --ram 512
-    --vcpus 1
-    m1.tiny
-  register: nova_results
-  failed_when: nova_results | failed and 'already exists' not in nova_results.stderr
-  changed_when: nova_results | success
+  os_nova_flavor:
+    auth:
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      username: admin
+      password: "{{ keystone_admin_password }}"
+      domain-name: "{{ keystone_domain_name }}"
+      project_name: admin
+      project_domain_name: "{{ keystone_domain_name }}"
+    cacert: "{{ tempest_CAFile }}"
+    validate_certs: "{{ ssl_insecure | ternary(False, True) }}"
+    region_name: "{{ keystone_region_name }}"
+    endpoint_type: internal
+    name: m1.micro
+    flavorid: 0
+    disk: 1
+    ram: 256
+    ephemeral: 0
+    vcpus: 1
+    state: present
 
 - name: ensure the heat stack owner project exists in keystone
   keystone_user: >
@@ -135,42 +122,48 @@
   run_once: True
 
 - name: ensure external network exists in neutron
-  quantum_network: >
-    login_project_name=admin
-    login_username=admin
-    login_domain_name="Default"
-    login_password="{{ keystone_admin_password }}"
-    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    endpoint_type=internalURL
-    cacert={{ tempest_CAFile }}
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    region_name="{{ keystone_region_name }}"
-    name="{{ external_net_name }}"
-    provider_network_type={{ external_net_type }}
-    provider_physical_network={{ external_physical_network }}
-    provider_segmentation_id="{{ external_net_segmentation_id }}"
-    router_external=yes
-  register: external_net
+  os_network:
+    auth:
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      username: admin
+      password: "{{ keystone_admin_password }}"
+      domain-name: "{{ keystone_domain_name }}"
+      project_name: admin
+      project_domain_name: "{{ keystone_domain_name }}"
+    cacert: "{{ tempest_CAFile }}"
+    validate_certs: "{{ ssl_insecure | ternary(False, True) }}"
+    region_name: "{{ keystone_region_name }}"
+    endpoint_type: internal
+    name: "{{ external_net_name }}"
+    provider_network_type: "{{ external_net_type }}"
+    provider_physical_network: "{{ external_physical_network }}"
+    provider_segmentation_id: "{{ external_net_segmentation_id }}"
+    external: True
+    state: present
   run_once: True
+  register: external_net
 
 - name: set up external subnet in neutron
-  quantum_subnet: >
-    login_project_name=admin
-    login_username=admin
-    login_domain_name="Default"
-    login_password="{{ keystone_admin_password }}"
-    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    endpoint_type=internalURL
-    cacert={{ tempest_CAFile }}
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    region_name="{{ keystone_region_name }}"
-    name=external-subnet
-    network_name="{{ external_net_name }}"
-    cidr="{{ external_subnet_cidr }}"
-    enable_dhcp=False
-    gateway_ip={{ external_subnet_gateway_ip }}
-    allocation_pool_start={{ external_subnet_allocation_start }}
-    allocation_pool_end={{ external_subnet_allocation_end }}
+  os_subnet:
+    auth:
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      username: admin
+      password: "{{ keystone_admin_password }}"
+      domain-name: "{{ keystone_domain_name }}"
+      project_name: admin
+      project_domain_name: "{{ keystone_domain_name }}"
+    cacert: "{{ tempest_CAFile }}"
+    validate_certs: "{{ ssl_insecure | ternary(False, True) }}"
+    region_name: "{{ keystone_region_name }}"
+    endpoint_type: internal
+    name: external-subnet
+    network_name: "{{ external_net_name }}"
+    cidr: "{{ external_subnet_cidr }}"
+    enable_dhcp: False
+    gateway_ip: "{{ external_subnet_gateway_ip }}"
+    allocation_pool_start: "{{ external_subnet_allocation_start }}"
+    allocation_pool_end: "{{ external_subnet_allocation_end }}"
+    state: present
   run_once: True
 
 - name: install tempest from git
