@@ -32,14 +32,13 @@ mdFile = open(mdstat).readlines()
 # Remove the first and lasts lines as we don't need them
 mdFile = mdFile[1:-1]
 
-if (len(mdFile) % 3) != 0:
-    print 'Error with mdstat file'
-    sys.exit(3)
-
 mdData = []
-while len(mdFile) > 0:
-    mdData.append((mdFile[0],mdFile[1]))
-    mdFile = mdFile[3:]
+mdDev = []
+for line in mdFile:
+    if line.strip():
+        mdDev.append(line)
+    else:
+        mdData.append(mdDev)
 
 overallStatus = 0
 errorMsg = ''
