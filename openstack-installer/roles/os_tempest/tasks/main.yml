@@ -49,8 +49,9 @@
     name: cirros-image
     container_format: bare
     disk_format: qcow2
-    state: present
     filename: "{{ tempest_images_dest }}/{{ tempest_image_file }}"
+    is_public: True
+    state: present
   run_once: True
   register: cirros_image
 
