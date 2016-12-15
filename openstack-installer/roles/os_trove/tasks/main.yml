@@ -42,47 +42,52 @@
     - python-troveclient
     - python-keystoneclient
     - python-glanceclient
+    - python-shade
     - trove-api
     - trove-taskmanager
     - trove-conductor
     - trove-taskmanager
 
 - name: set up trove network in neutron
-  quantum_network: >
-    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    endpoint_type=internalURL
-    cacert="{{ SSLCACertificateFile }}"
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    login_project_name=trove
-    login_username=trove
-    login_domain_name={{ trove_domain_name }}
-    login_password="{{ trove_admin_password }}"
-    project_name=trove
-    region_name="{{ keystone_region_name }}"
-    name="{{ trove_net_name }}"
-    provider_network_type={{ trove_net_type }}
-    provider_physical_network={{ trove_physical_network }}
-    provider_segmentation_id="{{ trove_net_segmentation_id }}"
-    router_external=no
-    shared=yes
+  os_network:
+    auth:
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      username: "{{ trove_admin_user }}"
+      password: "{{ trove_admin_password }}"
+      domain_name: "{{ trove_domain_name }}"
+      project_name: "{{ trove_project_name }}"
+      project_domain_name: "{{ trove_project_domain_name }}"
+    cacert: "{{ SSLCACertificateFile }}"
+    validate_certs: "{{ ssl_insecure | ternary(False, True) }}"
+    region_name: "{{ keystone_region_name }}"
+    endpoint_type: internal
+    name: "{{ trove_net_name }}"
+    provider_network_type: "{{ trove_net_type }}"
+    provider_physical_network: "{{ trove_physical_network }}"
+    provider_segmentation_id: "{{ trove_net_segmentation_id }}"
+    external: False
+    shared: True
+    state: present
   register: trove_net
   run_once: True
 
 - name: set up trove subnet in neutron
-  quantum_subnet: >
-    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    endpoint_type=internalURL
-    cacert="{{ SSLCACertificateFile }}"
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    login_project_name=trove
-    login_username=trove
-    login_domain_name={{ trove_domain_name }}
-    login_password="{{ trove_admin_password }}"
-    project_name=trove
-    region_name="{{ keystone_region_name }}"
-    name=trove-subnet
-    network_name="{{ trove_net_name }}"
-    cidr="{{ trove_subnet_cidr }}"
+  os_subnet:
+    auth:
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      username: "{{ trove_admin_user }}"
+      password: "{{ trove_admin_password }}"
+      domain_name: "{{ trove_domain_name }}"
+      project_name: "{{ trove_project_name }}"
+      project_domain_name: "{{ trove_project_domain_name }}"
+    cacert: "{{ SSLCACertificateFile }}"
+    validate_certs: "{{ ssl_insecure | ternary(False, True) }}"
+    region_name: "{{ keystone_region_name }}"
+    endpoint_type: internal
+    name: trove-subnet
+    network_name: "{{ trove_net_name }}"
+    cidr: "{{ trove_subnet_cidr }}"
+    state: present
   run_once: True
 
 - name: determine nova project id
