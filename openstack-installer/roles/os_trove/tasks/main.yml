@@ -169,23 +169,33 @@
 #    dest=/root/trove-mysql.qcow2
 #  run_once: True
 
-- name: upload trove image to glance
-  local_action: glance_image
-    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    endpoint_type=internalURL
-    cacert="{{ SSLCACertificateFileSource }}"
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    login_username=admin
-    login_domain_name="Default"
-    login_project_name="admin"
-    login_password="{{ keystone_admin_password }}"
-    region_name="{{ keystone_region_name }}"
-    file="{{ item.image }}"
-    name="trove-{{ item.datastore }}-{{ item.version }}-image"
-    owner="{{ trove_project_name }}"
+- name: copy trove image
+  copy: src="{{ item.image }}" dest="/root/{{ item.image | basename }}" owner=root group=root mode=0640
+  with_items: "{{ trove_datastores }}"
   run_once: True
+
+- name: upload trove image to glance
+  os_image:
+    auth:
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      username: "{{ trove_admin_user }}"
+      password: "{{ trove_admin_password }}"
+      domain_name: "{{ trove_domain_name }}"
+      project_name: "{{ trove_project_name }}"
+      project_domain_name: "{{ trove_project_domain_name }}"
+    cacert: "{{ SSLCACertificateFile }}"
+    validate_certs: "{{ ssl_insecure | ternary(False, True) }}"
+    region_name: "{{ keystone_region_name }}"
+    endpoint_type: internal
+    name: "trove-{{ item.datastore }}-{{ item.version }}-image"
+    container_format: bare
+    disk_format: qcow2
+    filename: "/root/{{ item.image | basename }}"
+    is_public: True
+    state: present
   with_items: "{{ trove_datastores }}"
   register: trove_images
+  run_once: True
 
 - name: update trove datastore
   command: su trove -s /bin/sh -c 'trove-manage datastore_update {{ item.datastore }} ""'
