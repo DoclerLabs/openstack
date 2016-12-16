@@ -81,6 +81,12 @@
   changed_when: "'Running upgrade' in ironic_db_sync.stderr"
   notify: restart ironic
 
+- name: unmask autostarting of ironic services
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - ironic-api
+    - ironic-conductor
+
 - meta: flush_handlers
 
 - name: ensure ironic services are started
@@ -89,11 +95,11 @@
     - ironic-api
     - ironic-conductor
 
-- name: copy pxelinux to tftpd dir
-  command: cp /usr/lib/syslinux/{{ item }} /var/lib/tftpboot creates=/var/lib/tftpboot/{{ item }}
-  with_items:
-    - pxelinux.0
-    - chain.c32
+#- name: copy pxelinux to tftpd dir
+#  command: cp /usr/lib/syslinux/{{ item }} /var/lib/tftpboot creates=/var/lib/tftpboot/{{ item }}
+#  with_items:
+#    - pxelinux.0
+#    - chain.c32
 
 - name: install map file for tftp
   copy: src=map-file dest=/var/lib/tftpboot/map-file
@@ -106,12 +112,6 @@
     owner=root group=root mode=0644
   notify: restart tftp
 
-- name: unmask autostarting of ironic services
-  service_mask: name={{ item }} state=unmasked
-  with_items:
-    - ironic-api
-    - ironic-conductor
-
 - meta: flush_handlers
 
 - name: ensure tftpd is started
@@ -120,33 +120,50 @@
 - name: set permissions of tftpboot
   file: path=/var/lib/tftpboot recurse=yes owner=ironic
 
+- name: copy the deploy images
+  copy: src={{ item }} dest=/root/{{ item | basename }} owner=root group=root mode=0644
+  with_items:
+    - "{{ ironic_deploy_kernel_path }}"
+    - "{{ ironic_deploy_initramfs_path }}"
+
 - name: upload the deploy kernel to glance
-  local_action: glance_image
-    auth_url="http://{{ keystone_admin_address }}:35357/v3"
-    cacert={{ SSLCACertificateFileSource }}
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    login_domain_name="{{ ironic_domain_name }}"
-    login_username=ironic
-    login_password="{{ ironic_admin_password }}"
-    region_name="{{ keystone_region_name }}"
-    file="{{ ironic_deploy_kernel_path }}"
-    name=ironic-deploy-kernel
-    disk_format=aki
-    container_format=aki
+  os_image:
+    auth:
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      username: "{{ ironic_admin_user }}"
+      password: "{{ ironic_admin_password }}"
+      domain_name: "{{ ironic_domain_name }}"
+      project_name: "{{ ironic_project_name }}"
+      project_domain_name: "{{ ironic_project_domain_name }}"
+    cacert: "{{ SSLCACertificateFile }}"
+    validate_certs: "{{ ssl_insecure | ternary(False, True) }}"
+    region_name: "{{ keystone_region_name }}"
+    endpoint_type: internal
+    name: ironic-deploy-kernel
+    container_format: aki
+    disk_format: aki
+    filename: "/root/{{ ironic_deploy_kernel_path | basename }}"
+    is_public: True
+    state: present
   run_once: True
 
 - name: upload the deploy initramfs to glance
-  local_action: glance_image
-    auth_url="http://{{ keystone_admin_address }}:35357/v3"
-    cacert={{ SSLCACertificateFileSource }}
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    login_project_name=service
-    login_domain_name="{{ ironic_domain_name }}"
-    login_username=ironic
-    login_password="{{ ironic_admin_password }}"
-    region_name="{{ keystone_region_name }}"
-    file="{{ ironic_deploy_initramfs_path }}"
-    name=ironic-deploy-initramfs
-    disk_format=aki
-    container_format=aki
+  os_image:
+    auth:
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      username: "{{ ironic_admin_user }}"
+      password: "{{ ironic_admin_password }}"
+      domain_name: "{{ ironic_domain_name }}"
+      project_name: "{{ ironic_project_name }}"
+      project_domain_name: "{{ ironic_project_domain_name }}"
+    cacert: "{{ SSLCACertificateFile }}"
+    validate_certs: "{{ ssl_insecure | ternary(False, True) }}"
+    region_name: "{{ keystone_region_name }}"
+    endpoint_type: internal
+    name: ironic-deploy-initramfs
+    container_format: aki
+    disk_format: aki
+    filename: "/root/{{ ironic_deploy_initramfs_path | basename }}"
+    is_public: True
+    state: present
   run_once: True

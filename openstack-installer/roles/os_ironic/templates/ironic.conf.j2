@@ -1313,7 +1313,7 @@ username = {{ ironic_admin_user }}
 password = {{ ironic_admin_password }}
 project_domain_name = {{ ironic_project_domain_name }}
 project_name = {{ ironic_project_name }}
-auth_plugin = password
+auth_type = password
 
 [matchmaker_redis]
 
@@ -1473,7 +1473,7 @@ transport_url = rabbit://{% for host in rabbit_hosts %}{{ ironic_rabbit_user }}:
 # IP address of ironic-conductor node's TFTP server. (string
 # value)
 #tftp_server=$my_ip
-tftp_server={{ ip.tftp }}
+tftp_server={{ ip.tftp | default(ip.mgmt) }}
 
 # ironic-conductor node's TFTP root path. (string value)
 tftp_root=/var/lib/tftpboot
