@@ -49,6 +49,7 @@
     - ironic-conductor
     - python-ironic
     - python-ironicclient
+    - python-shade
 
 - name: create ironic database
   mysql_db: name={{ ironic_db }}
@@ -125,6 +126,7 @@
   with_items:
     - "{{ ironic_deploy_kernel_path }}"
     - "{{ ironic_deploy_initramfs_path }}"
+  run_once: True
 
 - name: upload the deploy kernel to glance
   os_image:
