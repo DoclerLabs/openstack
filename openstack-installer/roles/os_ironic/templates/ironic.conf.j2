@@ -1120,8 +1120,8 @@ region_name={{ keystone_region_name }}
 
 # Complete public Identity API endpoint. (string value)
 #auth_uri=<None>
-auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v2.0
-auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
+auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000/v2.0
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
 
 # API version of the admin Identity API endpoint. (string
 # value)

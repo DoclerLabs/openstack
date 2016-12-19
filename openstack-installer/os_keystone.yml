@@ -25,6 +25,7 @@
         - haproxy_service_name: keystone_admin
           haproxy_backend_nodes: "{{ groups['keystone'] }}"
           haproxy_bind_hosts:
+            - "{{ vip_public }}"
             - "{{ vip_mgmt }}"
           haproxy_port: 35357
           haproxy_balance_type: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"

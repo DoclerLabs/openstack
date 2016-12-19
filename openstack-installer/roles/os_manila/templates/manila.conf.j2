@@ -194,8 +194,8 @@ max_retries = -1
 
 auth_type = password
 signing_dir = /var/lib/manila/cache/api
-auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
-auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 region_name = {{ keystone_region_name }}
 user_domain_name = {{ manila_domain_name }}
 username = {{ manila_admin_user }}

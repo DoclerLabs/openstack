@@ -785,7 +785,7 @@ swift_store_auth_version = 3
 # (deprecated - use "auth_address" in swift_store_config_file) (string
 # value)
 #swift_store_auth_address = <None>
-swift_store_auth_address = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v3
+swift_store_auth_address = {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3
 
 # The user to authenticate against the Swift authentication service
 # (deprecated - use "user" in swift_store_config_file) (string value)
@@ -963,8 +963,8 @@ cinder_api_insecure = {{ ssl_insecure }}
 
 # Complete public Identity API endpoint. (string value)
 #auth_uri = <None>
-auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
-auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
+auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
 
 # API version of the admin Identity API endpoint. (string value)
 #auth_version = <None>
@@ -1120,7 +1120,6 @@ memcache_secret_key = "{{ memcache_secret_key }}"
 # unversioned root endpoint e.g. https://localhost:35357/ (string
 # value)
 #identity_uri = <None>
-identity_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:35357/
 
 # This option is deprecated and may be removed in a future release.
 # Single shared secret with the Keystone configuration used for

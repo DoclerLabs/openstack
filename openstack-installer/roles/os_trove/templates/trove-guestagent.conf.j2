@@ -21,7 +21,7 @@ control_exchange = trove
 # ========== Configuration options for Swift ==========
 
 # The swift_url can be specified directly or fetched from Keystone catalog.
-trove_auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v2.0
+trove_auth_url = {{ keystone_proto }}://{{ keystone_public_address }}:5000/v2.0
 
 # To fetch from Keystone, comment out swift_url, and uncomment the others.
 # swift_url = http://10.0.0.1:8080/v1/AUTH_

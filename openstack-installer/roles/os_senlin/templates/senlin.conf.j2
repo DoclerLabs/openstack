@@ -217,8 +217,8 @@ max_retries = -1
 
 auth_type = password
 signing_dir = /var/lib/senlin/cache/api
-auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v3
-auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 region_name = {{ keystone_region_name }}
 user_domain_name = {{ senlin_domain_name }}
 username = {{ senlin_admin_user }}
@@ -239,7 +239,7 @@ memcache_security_strategy = ENCRYPT
 memcache_secret_key = {{ memcache_secret_key }}
 
 [authentication]
-auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v3
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3
 service_user_domain_name = {{ senlin_domain_name }}
 service_username = {{ senlin_admin_user }}
 service_password = {{ senlin_admin_password }}
@@ -283,6 +283,7 @@ service_project_name = {{ senlin_project_name }}
 
 #
 # From oslo.messaging
+
 #
 
 # The Drivers(s) to handle sending notifications. Possible values are messaging, messagingv2, routing, log, test, noop (multi valued)

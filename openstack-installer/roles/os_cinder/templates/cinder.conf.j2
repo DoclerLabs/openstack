@@ -84,7 +84,7 @@ max_retries = -1
 
 
 [keymgr]
-encryption_auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v3
+encryption_auth_url = {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3
 
 
 [keystone_authtoken]
@@ -94,8 +94,8 @@ cafile = {{ SSLCACertificateFile }}
 {% endif %}
 auth_type = password
 signing_dir = /var/lib/cinder/cache
-auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
-auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 region_name = {{ keystone_region_name }}
 user_domain_name = {{ cinder_domain_name }}
 username = {{ cinder_admin_user }}

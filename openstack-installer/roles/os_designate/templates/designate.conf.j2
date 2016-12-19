@@ -163,8 +163,8 @@ enable_api_v2 = True
 [keystone_authtoken]
 auth_type = password
 signing_dir = /var/lib/designate/cache/api
-auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
-auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 region_name = {{ keystone_region_name }}
 user_domain_name = {{ designate_domain_name }}
 username = {{ designate_admin_user }}

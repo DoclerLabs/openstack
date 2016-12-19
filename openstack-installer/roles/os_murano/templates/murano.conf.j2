@@ -175,7 +175,7 @@ connection = mysql+pymysql://{{ murano_db_user }}:{{ murano_db_password }}@{{ mu
 
 # Complete public Identity API endpoint. (string value)
 #auth_uri = <None>
-auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000/v3
+auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 
 # API version of the admin Identity API endpoint. (string value)
 #auth_version = <None>
@@ -331,8 +331,6 @@ memcache_secret_key = "{{ memcache_secret_key }}"
 # unversioned root endpoint e.g. https://localhost:35357/ (string
 # value)
 #identity_uri = <None>
-identity_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:35357/
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357/
 
 # This option is deprecated and may be removed in a future release.
 # Single shared secret with the Keystone configuration used for
@@ -340,6 +338,8 @@ auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357/
 # normal authentication process. This option should not be used, use
 # `admin_user` and `admin_password` instead. (string value)
 #admin_token = <None>
+
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357/
 
 # Service username. (string value)
 #admin_user = admin

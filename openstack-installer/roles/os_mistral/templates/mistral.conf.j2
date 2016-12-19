@@ -342,8 +342,8 @@ host = {{ ip.mgmt }}
 
 auth_type = password
 signing_dir = /var/lib/mistral/cache/api
-auth_uri = {{ keystone_proto }}://{{ keystone_internal_address }}:5000
-auth_url = {{ keystone_proto }}://{{ keystone_internal_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 region_name = {{ keystone_region_name }}
 user_domain_name = {{ mistral_domain_name }}
 username = {{ mistral_admin_user }}
