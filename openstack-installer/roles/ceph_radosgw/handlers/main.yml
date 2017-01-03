@@ -1,2 +1,7 @@
+---
+
+- name: reload systemd
+  command: systemctl daemon-reload
+
 - name: restart radosgw
-  service: name=radosgw state=restarted
+  service: name=ceph-radosgw@{{ radosgw_instance }} state=restarted

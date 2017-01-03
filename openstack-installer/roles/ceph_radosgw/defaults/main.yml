@@ -15,3 +15,5 @@ radosgw_admin_user: radosgw
 radosgw_domain_name: "{{ keystone_domain_name }}"
 radosgw_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
 radosgw_project_name: "{{ keystone_service_project_name | default('service') }}"
+
+radosgw_instance: radosgw.gateway

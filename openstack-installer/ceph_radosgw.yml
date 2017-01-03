@@ -28,10 +28,10 @@
       ceph_users:
         - cluster_name: "{{ ceph_cluster_name | default('ceph') }}"
           monitors: "{{ ceph_monitors | default(groups['ceph_monitor']) }}"
-          user: radosgw.gateway
+          user: "{{ radosgw_instance | default('radosgw.gateway') }}"
           key: "{{ radosgw_ceph_key | default(None) }}"
           rights: mon 'allow rwx' osd 'allow rwx'
-          keyring_owner: root
+          keyring_owner: ceph
 
     - common
 

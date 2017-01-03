@@ -1,27 +1,38 @@
+---
+
 - name: install radosgw
   apt: name={{ item }}
   with_items:
     - radosgw
     - libnss3-tools
 
+- name: ensure /etc/systemd/system/ceph-radosgw@.service.d exists
+  file: dest=/etc/systemd/system/ceph-radosgw@.service.d state=directory owner=root group=root mode=0755
+
+- name: install 10-name.conf override
+  copy: content='[Service]\nEnvironment=CLUSTER={{ ceph_cluster_name }}\n'
+        dest=/etc/systemd/system/ceph-radosgw@.service.d/10-name.conf
+        owner=root group=root mode=0644
+  notify: reload systemd
+
 - name: set up ceph.conf for radosgw
   ini_file: dest=/etc/ceph/{{ ceph_cluster_name }}.conf
-    section=client.radosgw.gateway
+    section=client.{{ radosgw_instance }}
     option="{{ item.key }}"
     value="{{ item.value }}"
   with_dict:
     { "host" : "{{ inventory_hostname }}",
-      "keyring": "/etc/ceph/{{ ceph_cluster_name }}.client.radosgw.gateway.keyring",
+      "keyring": "/etc/ceph/{{ ceph_cluster_name }}.client.{{ radosgw_instance }}.keyring",
       "rgw socket path": "''",
       "rgw frontends": "fastcgi socket_port=9000 socket_host=127.0.0.1",
-      "log file": "/var/log/ceph/client.radosgw.gateway.log",
+      "log file": "/var/log/ceph/client.{{ radosgw_instance }}.log",
       "rgw print continue": "false",
     }
   notify: restart radosgw
 
 - name: set up ceph.conf for radosgw-keystone
   ini_file: dest=/etc/ceph/{{ ceph_cluster_name }}.conf
-    section=client.radosgw.gateway
+    section=client.{{ radosgw_instance }}
     option="{{ item.key }}"
     value="{{ item.value }}"
     state="{{ radosgw_keystone | ternary('present', 'absent') }}"
@@ -44,7 +55,7 @@
 
 - name: remove keystone admin token from ceph.conf
   ini_file: dest=/etc/ceph/{{ ceph_cluster_name }}.conf
-    section=client.radosgw.gateway
+    section=client.{{ radosgw_instance }}
     option="rgw keystone admin token"
     state="absent"
   notify: restart radosgw
@@ -64,6 +75,4 @@
 - meta: flush_handlers
 
 - name: make sure services are started
-  service: name={{ item }} state=started
-  with_items:
-    - radosgw
+  service: name=ceph-radosgw@{{ radosgw_instance }} state=started
