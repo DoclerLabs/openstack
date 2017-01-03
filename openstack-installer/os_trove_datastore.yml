@@ -1,0 +1,7 @@
+---
+
+- hosts: trove[0]
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - os_trove_datastore
