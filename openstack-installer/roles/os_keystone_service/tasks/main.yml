@@ -4,7 +4,7 @@
   apt: name={{ item }}
   with_items:
     - python-keystoneclient
-    - python-openstackclient
+    - python-shade
   become: True
 
 - name: install CA certificate
@@ -13,31 +13,22 @@
   become: True
 
 - name: get an admin token
-  command: openstack token issue
-    --os-identity-api-version=3
-    --os-auth-url "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    --os-user-domain-name Default
-    --os-username admin
-    --os-project-domain-name Default
-    --os-project-name admin
-    --os-password "{{ keystone_admin_password }}"
-    {{ ssl_insecure | ternary('--insecure', '') }}
-    {{ (SSLCACertificateFile != '') | ternary('--os-cacert ' + SSLCACertificateFile, '') }}
-    -c id -f value
-  changed_when: False
-  register: os_token_id
-  until: os_token_id | success
-  delay: 5
-  retries: 5
-  when: os_token_id is not defined
-
-- name: set admin token
-  set_fact: os_admin_token="{{ os_token_id.stdout }}"
-  when: os_token_id.stdout is defined
+  os_auth:
+    auth:
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      username: admin
+      password: "{{ keystone_admin_password }}"
+      domain-name: "{{ keystone_domain_name }}"
+      project_name: admin
+      project_domain_name: "{{ keystone_domain_name }}"
+    cacert: "{{ SSLCACertificateFile }}"
+    validate_certs: "{{ ssl_insecure | ternary(False, True) }}"
+    region_name: "{{ keystone_region_name }}"
+  when: auth_token is not defined
 
 - name: create the service in keystone
   keystone_service: >
-    token="{{ os_admin_token }}"
+    token="{{ auth_token }}"
     auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     name="{{ keystone_service_name }}"
     type="{{ keystone_service_type }}"
@@ -54,7 +45,7 @@
 
 - name: create the project in keystone
   keystone_user: >
-    token="{{ os_admin_token }}"
+    token="{{ auth_token }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     project_domain="{{ item.keystone_project_domain_name | default('Default') }}"
     project="{{ item.keystone_project_name }}"
@@ -65,7 +56,7 @@
 
 - name: create roles in keystone
   keystone_user: >
-    token="{{ os_admin_token }}"
+    token="{{ auth_token }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
@@ -74,7 +65,7 @@
 
 - name: create the user in keystone
   keystone_user: >
-    token="{{ os_admin_token }}"
+    token="{{ auth_token }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     user="{{ item.keystone_user }}"
     user_domain="{{ item.keystone_domain_name | default('Default') }}"
@@ -85,7 +76,7 @@
 
 - name: assign role to the user in keystone
   keystone_user: >
-    token="{{ os_admin_token }}"
+    token="{{ auth_token }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
     project="{{ item.keystone_project_name }}"
     project_domain="{{ item.keystone_project_domain_name | default('Default') }}"
