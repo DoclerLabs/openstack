@@ -74,5 +74,5 @@
 
 - meta: flush_handlers
 
-- name: make sure services are started
-  service: name=ceph-radosgw@{{ radosgw_instance }} state=started
+- name: make sure radosgw is started and enabled at boot
+  service: name=ceph-radosgw@{{ radosgw_instance }} state=started enabled=yes
