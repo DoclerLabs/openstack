@@ -44,8 +44,13 @@ Listen {{ ip.mgmt }}:{{ service.port }}
     WSGIPassAuthorization On
 {% else %}
     ProxyPreserveHost       {{ apache_proxy_preserve_host | ternary('On', 'Off') }}
+{% if service.fcgi_socket is defined %}
+    ProxyPass /             "unix:{{ service.fcgi_socket }}|fcgi://127.0.0.1/"
+    ProxyPassReverse /      "unix:{{ service.fcgi_socket }}|fcgi://127.0.0.1/"
+{% else %}
     ProxyPass /             {{ service.dest_proto | default('http') }}://127.0.0.1:{{ service.dest_port | default(service.port) }}/ retry=10
     ProxyPassReverse /      {{ service.dest_proto | default('http') }}://127.0.0.1:{{ service.dest_port | default(service.port) }}/ retry=10
+{% endif%}
 {% endif %}
 
 </VirtualHost>
