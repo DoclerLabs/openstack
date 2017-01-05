@@ -43,7 +43,8 @@
       apache_proxy_preserve_http_auth: True
       apache_proxy_nokeepalive: True
       apache_services:
-        - { port: "{{ radosgw_port | default(8080) }}", dest_port: 9000, dest_proto: "fcgi" }
+        - { port: "{{ radosgw_port | default(8080) }}",
+            fcgi_socket: "/var/lib/radosgw/ceph.{{ radosgw_instance | default('radosgw.gateway') }}.sock" }
 
 - hosts: haproxy
   become: True

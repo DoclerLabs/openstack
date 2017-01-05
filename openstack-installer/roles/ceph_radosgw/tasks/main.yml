@@ -15,6 +15,10 @@
         owner=root group=root mode=0644
   notify: reload systemd
 
+# Since no existing directory allows access to both ceph and apache, create one
+- name: make sure /var/lib/radosgw exists
+  file: path=/var/lib/radosgw owner=ceph group=ceph mode=0755 state=directory
+
 - name: set up ceph.conf for radosgw
   ini_file: dest=/etc/ceph/{{ ceph_cluster_name }}.conf
     section=client.{{ radosgw_instance }}
@@ -23,8 +27,8 @@
   with_dict:
     { "host" : "{{ inventory_hostname }}",
       "keyring": "/etc/ceph/{{ ceph_cluster_name }}.client.{{ radosgw_instance }}.keyring",
-      "rgw socket path": "''",
-      "rgw frontends": "fastcgi socket_port=9000 socket_host=127.0.0.1",
+      "rgw socket path": "/var/lib/radosgw/ceph.{{ radosgw_instance }}.sock",
+      "rgw frontends": "fastcgi",
       "log file": "/var/log/ceph/client.{{ radosgw_instance }}.log",
       "rgw print continue": "false",
     }
