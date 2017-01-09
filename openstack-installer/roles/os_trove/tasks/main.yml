@@ -133,19 +133,10 @@
     - localhost
     - '%'
 
-#Workaround for https://bugs.launchpad.net/trove/+bug/1473226
-- name: disable foreign key checks
-  shell: echo "SET GLOBAL foreign_key_checks=0" | mysql -h {{ trove_mysql_server }} -u root -p{{ mysql_root_password }} -s trove
-  run_once: True
-
 - name: sync trove db
   command: su trove -s /bin/sh -c "/usr/bin/trove-manage db_sync"
   register: db_sync
   changed_when: '"migrate.versioning.api" in db_sync.stderr'
-  run_once: True
-
-- name: enable foreign key checks
-  shell: echo "SET GLOBAL foreign_key_checks=1" | mysql -h {{ trove_mysql_server }} -u root -p{{ mysql_root_password }} -s trove
   run_once: True
 
 - name: unmask autostarting of trove services
