@@ -50,8 +50,8 @@ neutron_l2_population: False
 
 trove_net_name: trove-net
 trove_net_segmentation_id: 901
-trove_net_type: vlan
-trove_physical_network: vlan
+trove_net_type: vxlan
+trove_physical_network: vxlan
 trove_subnet_cidr: 10.20.30.0/24
 trove_image_path: /etc/openstack_deploy/trove-mysql.qcow2
 

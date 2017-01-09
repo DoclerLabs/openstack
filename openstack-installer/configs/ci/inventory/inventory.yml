@@ -107,6 +107,7 @@ sahara:
   inherit: controller
 
 trove:
+  inherit: controller
 
 barbican:
   inherit: controller
