@@ -675,15 +675,18 @@ ipv6_ptr_zone_prefix_size = {{ neutron_designate_ipv6_ptr_zone_prefix_size }}
 
 # Number of vips allowed per tenant. A negative value means unlimited.
 # quota_vip = 10
+quota_vip = {{ neutron_quota_vip }}
 
 # Number of pools allowed per tenant. A negative value means unlimited.
 # quota_pool = 10
+quota_pool = {{ neutron_quota_pool }}
 
 # Number of pool members allowed per tenant. A negative value means unlimited.
 # The default is unlimited because a member is not a real resource consumer
 # on Openstack. However, on back-end, a member is a resource consumer
 # and that is the reason why quota is possible.
 # quota_member = -1
+quota_member = {{ neutron_quota_member }}
 
 # Number of health monitors allowed per tenant. A negative value means
 # unlimited.
@@ -691,12 +694,15 @@ ipv6_ptr_zone_prefix_size = {{ neutron_designate_ipv6_ptr_zone_prefix_size }}
 # consumer on Openstack. However, on back-end, a member is a resource consumer
 # and that is the reason why quota is possible.
 # quota_health_monitor = -1
+quota_health_monitor = {{ neutron_quota_health_monitor }}
 
 # Number of loadbalancers allowed per tenant. A negative value means unlimited.
 # quota_loadbalancer = 10
+quota_loadbalancer = {{ neutron_quota_loadbalancer }}
 
 # Number of listeners allowed per tenant. A negative value means unlimited.
 # quota_listener = -1
+quota_listener = {{ neutron_quota_listener }}
 
 # Number of v2 health monitors allowed per tenant. A negative value means
 # unlimited. These health monitors exist under the lbaas v2 API
