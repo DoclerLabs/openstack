@@ -53,6 +53,13 @@ neutron_designate_allow_reverse_dns_lookup: True
 neutron_designate_ipv4_ptr_zone_prefix_size: 24
 neutron_designate_ipv6_ptr_zone_prefix_size: 116
 
+neutron_quota_loadbalancer: 10
+neutron_quota_vip: 10
+neutron_quota_pool: 10
+neutron_quota_member: -1
+neutron_quota_health_monitor: -1
+neutron_quota_listener: -1
+
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 os_proto: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
