@@ -376,6 +376,17 @@ define service{
     service_description keystone-admin
     check_command {{ keystone_ssl | ternary('check_https','check_http') }}!-p 35357
 }
+
+{% if nagios_monitor_vip_public and keystone_ssl %}
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ nagios_cloud_prefix }}public-VIP
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description keystone-cert
+    check_command {{ nagios_cloud_prefix }}check_https_url!-p 5000!-C {{ nagios_cert_days }}
+}
+{% endif %}
+
 {% endif %}
 
 {% if groups['nova_controller'] | count > 0 %}
