@@ -43,7 +43,7 @@
     - role: haproxy_service
       haproxy_services:
         - haproxy_service_name: aodh_api
-          haproxy_backend_nodes: "{{ groups['ceilometer_controller'] }}"
+          haproxy_backend_nodes: "{{ groups['aodh'] }}"
           haproxy_bind_hosts:
             - "{{ vip_mgmt }}"
             - "{{ vip_public }}"
