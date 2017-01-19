@@ -178,12 +178,21 @@ class PrimitiveParser(BaseParser):
             if (arg in ["params", "meta", "utilization",
                         "operations", "op"]):
                 mode = arg
+                if mode not in ret:
+                    ret[mode] = {}
+
                 if (arg == "op"):
                     op_type = args.pop(0)
+                    op_type_tmp = op_type
+                    counter=1
+                    while op_type_tmp in ret[mode]:
+                       op_type_tmp=op_type+str(counter)
+                       counter+=1
+                    op_type=op_type_tmp
                 continue
-    
+
             if '=' not in arg:
-                raise Exception("no key=value option: %s" % arg)
+                self.module.fail_json(rc=258,msg="no key=value option: %s" % arg)
 
             key, value = arg.split("=")
             if key == "":
@@ -194,16 +203,13 @@ class PrimitiveParser(BaseParser):
                     rc=258,
                     msg="no value in key=value option (key=%s)" % key)
 
-            if mode not in ret:
-                ret[mode] = {}
             if (mode == "op"):
                 if op_type not in ret[mode]:
                     ret[mode][op_type] = {}
                 ret[mode][op_type][key] = unquote(value)
             else:
-                if mode not in ret:
-                    ret[mode] = {}
                 ret[mode][key] = unquote(value)
+
         return ret
 
     def is_same(self, obj):
@@ -213,7 +219,7 @@ class PrimitiveParser(BaseParser):
             if key not in self.cib.keys():
                 return False
             if key == 'type':
-                if str(self.cib.get(key)) not in value:
+                if not value.endswith(self.cib.get(key)):
                     return False
             else:
                 if value != self.cib.get(key):
@@ -541,6 +547,8 @@ class PrimitiveBuilder(BaseBuilder):
         for key,value in params.iteritems():
             if op:
                 command.append('op')
+                while key[-1].isdigit():
+                    key=key[:-1]
             if key in ('type', 'rsc'):
                 command.insert(0, value)
             elif isinstance(value, dict):
