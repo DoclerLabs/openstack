@@ -52,7 +52,7 @@
     login_user=root login_password={{ mysql_root_password }}
   when: galera_stat.stat.exists == False
 
-- name: create clustecheck user
+- name: create clustercheck user
   mysql_user: name=clustercheck password={{ galera_clustercheck_password }} priv=*.*:USAGE
     login_user=root login_password={{ mysql_root_password }}
   when: galera_stat.stat.exists == False
@@ -69,7 +69,7 @@
   notify: cleanup galera resource
 
 - name: install galera OCF script
-  copy: src=galera dest=/usr/lib/ocf/resource.d/heartbeat/galera owner=root group=root mode=0755
+  copy: src=galera-agent dest=/usr/lib/ocf/resource.d/heartbeat/galera-agent owner=root group=root mode=0755
   notify: cleanup galera resource
 
 - name: create shadow CIB database
@@ -82,7 +82,7 @@
     action: primitive
     name: p_galera
     params:
-      type: ocf:heartbeat:galera
+      type: ocf:heartbeat:galera-agent
       meta:
         target-role: Started
       op:
@@ -101,6 +101,9 @@
         monitor:
            role: "Master"
            interval: "20"
+        monitor1:
+           role: "Slave"
+           interval: "30"
 
       params:
         check_user: "clustercheck"
