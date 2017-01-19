@@ -6,6 +6,6 @@
     - designate-api
     - designate-agent
     - designate-central
-    - designate-pool-manager
-    - designate-zone-manager
+    - designate-producer
+    - designate-worker
     - designate-mdns

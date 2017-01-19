@@ -35,18 +35,24 @@
     - designate-api
     - designate-agent
     - designate-central
-    - designate-pool-manager
-    - designate-zone-manager
+    - designate-producer
+    - designate-worker
     - designate-mdns
 
+- name: uninstall deprecated components
+  apt: name={{ item }} state=absent
+  with_items:
+    - designate-pool-manager
+    - designate-zone-manager
+ 
 - name: install designate
   apt: name={{ item }}
   with_items:
     - designate-api
     - designate-agent
     - designate-central
-    - designate-pool-manager
-    - designate-zone-manager
+    - designate-producer
+    - designate-worker
     - designate-mdns
     - python-designateclient
 
@@ -87,8 +93,8 @@
     - designate-api
     - designate-agent
     - designate-central
-    - designate-pool-manager
-    - designate-zone-manager
+    - designate-producer
+    - designate-worker
     - designate-mdns
 
 - meta: flush_handlers
@@ -99,6 +105,6 @@
     - designate-api
     - designate-agent
     - designate-central
-    - designate-pool-manager
-    - designate-zone-manager
+    - designate-producer
+    - designate-worker
     - designate-mdns
