@@ -311,7 +311,7 @@ user_test5_tester5 = testing5 service
 #
 [filter:authtoken]
 paste.filter_factory = keystonemiddleware.auth_token:filter_factory
-auth_plugin = password
+auth_type = password
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
 auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 region_name = {{ keystone_region_name }}

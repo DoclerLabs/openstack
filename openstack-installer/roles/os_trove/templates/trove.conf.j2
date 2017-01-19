@@ -208,7 +208,7 @@ idle_timeout=180
 cafile = {{ SSLCACertificateFile }}
 {% endif %}
 insecure = {{ ssl_insecure }}
-auth_plugin = password
+auth_type = password
 region_name = {{ keystone_region_name }}
 signing_dir = /var/lib/trove/cache/api
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
