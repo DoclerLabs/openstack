@@ -49,13 +49,13 @@ bind-address = {{ ip.mgmt }}
 #
 # * Fine Tuning
 #
-key_buffer              = 16M
+key-buffer-size         = 16M
 max_allowed_packet      = 16M
 thread_stack            = 192K
 thread_cache_size       = 8
 # This replaces the startup script and checks MyISAM tables if needed
 # the first time they are touched
-myisam-recover         = BACKUP
+myisam-recover-options  = BACKUP
 #max_connections        = 100
 max_connections={{ mysql_max_connections }}
 #table_cache            = 64
@@ -115,7 +115,6 @@ wait_timeout = 28800
 
 binlog_format=ROW
 default_storage_engine=innodb
-innodb_additional_mem_pool_size=24M
 innodb_autoinc_lock_mode=2
 innodb_flush_log_at_trx_commit=0
 innodb_buffer_pool_size={{ mysql_innodb_buffer_pool_size }}
@@ -132,7 +131,7 @@ max_allowed_packet      = 16M
 #no-auto-rehash # faster start of mysql but no tab completition
 
 [isamchk]
-key_buffer              = 16M
+key-buffer-size         = 16M
 
 #
 # * IMPORTANT: Additional settings that can override those from this file!
