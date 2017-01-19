@@ -1,7 +1,7 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-newton", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/newton main" }
+  - { name: "cloudarchive-ocata", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/ocata main" }
 
 apt_extra_repos: []
 
