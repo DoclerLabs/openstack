@@ -437,7 +437,7 @@ define service{
 }
 {% endif %}
 
-{% if groups['ceilometer_controller'] | count > 0 %}
+{% if groups['ceilometer_controller'] | count > 0 and 'database' in ceilometer_backends  %}
 define service{
     use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}ceilometer,{{ vips_monitored }}
