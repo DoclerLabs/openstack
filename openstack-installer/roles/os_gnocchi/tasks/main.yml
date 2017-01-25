@@ -54,6 +54,10 @@
   command: su gnocchi -s /bin/sh -c '/usr/bin/gnocchi-upgrade --skip-storage'
   run_once: True
 
+- name: create legacy resource types
+  command: su gnocchi -s /bin/sh -c '/usr/bin/gnocchi-upgrade --create-legacy-resource-types --skip-storage'
+  run_once: True
+
 - name: create /var/www/cgi-bin/gnocchi
   file: path=/var/www/cgi-bin/gnocchi state=directory owner=root group=root mode=0755
   notify: signal apache to reload
