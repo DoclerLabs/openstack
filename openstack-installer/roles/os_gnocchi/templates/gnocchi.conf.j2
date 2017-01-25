@@ -390,6 +390,7 @@ workers = {{ gnocchi_metricd_workers }}
 
 # Number of workers to run during adding new measures for pre-aggregation needs. (integer value)
 #aggregation_workers_number = <None>
+aggregation_workers_number = {{ gnocchi_metricd_workers }}
 
 # Coordination driver URL (string value)
 #coordination_url = <None>
@@ -405,9 +406,11 @@ driver = {{ gnocchi_backend }}
 
 # How many seconds to wait between new metric measure processing (integer value)
 #metric_processing_delay = 5
+metric_processing_delay = {{ gnocchi_metric_processing_delay }}
 
 # How many seconds to wait between metric ingestion reporting (integer value)
 #metric_reporting_delay = 10
+metric_reporting_delay = {{ gnocchi_metric_reporting_delay }}
 
 # Ceph pool name to use. (string value)
 #ceph_pool = gnocchi

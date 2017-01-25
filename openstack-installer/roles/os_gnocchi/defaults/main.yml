@@ -27,6 +27,9 @@ gnocchi_metricd_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 # 'gnocchi+noath' or 'gnocchi+auth'
 gnocchi_pipeline: "gnocchi+auth"
 
+gnocchi_metric_processing_delay: 30
+gnocchi_metric_reporting_delay: 120
+
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
 SSLCACertificateFileSource:
