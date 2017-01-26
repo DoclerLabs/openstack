@@ -9,6 +9,7 @@ horizon_openstack_endpoint_type: internalURL
 horizon_cinder_enable_backup: True
 horizon_install_dashboards: True
 horizon_heat_enable_user_pass: "{{ (heat_deferred_auth_method | default('trusts')) == 'password' }}"
+horizon_processes: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 horizon_debug: False
 
 neutron_vpnaas: True
