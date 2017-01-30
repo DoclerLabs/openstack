@@ -18,3 +18,11 @@
 
 - name: ensure Zookeeper is started
   service: name=zookeeper state=started enabled=yes
+
+- name: set up daily cleanup job
+  cron:
+    name: "daily cleanup"
+    hour: 0
+    minute: 15
+    user: zookeeper
+    job: '/usr/bin/java -cp /etc/zookeeper/conf:/usr/share/java/jline.jar:/usr/share/java/log4j-1.2.jar:/usr/share/java/xercesImpl.jar:/usr/share/java/xmlParserAPIs.jar:/usr/share/java/netty.jar:/usr/share/java/slf4j-api.jar:/usr/share/java/slf4j-log4j12.jar:/usr/share/java/zookeeper.jar -Dzookeeper.log.dir=/var/log/zookeeper -Dzookeeper.root.logger=INFO,ROLLINGFILE  org.apache.zookeeper.server.PurgeTxnLog /var/lib/zookeeper/ -n 3'
