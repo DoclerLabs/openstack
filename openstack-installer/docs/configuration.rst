@@ -429,6 +429,7 @@ The configuration options are:
   cinder_backup_ceph_user: cinder-backup     # The Ceph user used for the volume backups.
   cinder_volume_secret_uuid:                 # A random UUID for the Ceph secret in Libvirt.
   cinder_ceph_key:                           # If a cephx key is given here, use that, instead of creating a user. Useful for external Ceph.
+  cinder_backup_ceph_key:                    # Same as cinder_ceph_key, for the backup user/pool.
 
 
 Multi-backend support can be activated by using a cinder_backends list instead of the options above. The list structure:
@@ -445,6 +446,7 @@ Multi-backend support can be activated by using a cinder_backends list instead o
       ceph_key:
       backup_ceph_pool: backups
       backup_ceph_user: cinder-backup
+      backup_ceph_key:
       volume_secret_uuid:
     - backend: ceph
       name: ceph-2
