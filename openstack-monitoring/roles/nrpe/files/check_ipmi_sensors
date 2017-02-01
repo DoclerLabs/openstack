@@ -90,18 +90,18 @@ BEGIN {
             MSG[0] = sprintf("%s %s is %.2fV, ",MSG[0], THING, VOLTS);
             next;
         }
-        MIN=$7;
-        MAX=$8;
+        MIN=$6;
+        MAX=$9;
 
         if (MIN !~ /na/ && VOLTS<MIN) {
-            MSG[2] = sprintf("%s %s is %.2fV (min %d) ", 
+            MSG[2] = sprintf("%s %s is %.2fV (min %.2fV) ",
                 MSG[2], THING, VOLTS, MIN);
             EXIT=2;
             next;
         }
 
         if (MAX !~ /na/ && VOLTS>MAX) {
-            MSG[2] = sprintf("%s %s is %.2fV (max %d) ", 
+            MSG[2] = sprintf("%s %s is %.2fV (max %.2fV) ",
                 MSG[2], THING, VOLTS, MAX);
             EXIT=2;
             next;
