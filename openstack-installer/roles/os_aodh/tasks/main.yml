@@ -37,6 +37,9 @@
     - aodh-notifier
     - aodh-listener
 
+- name: mask aodh-api apache config
+  copy: content='' dest=/etc/apache2/sites-available/aodh-api.conf owner=root group=root mode=0644
+
 - name: install aodh
   apt: name={{ item }}
   with_items:
