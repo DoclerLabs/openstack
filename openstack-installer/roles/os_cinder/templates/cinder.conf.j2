@@ -44,15 +44,11 @@ backup_ceph_user = {{ cinder_backup_ceph_user }}
 
 {% if inventory_hostname in groups['cinder_volume'] %}
 
-{% if cinder_backends | count > 1 %}
 enabled_backends = {% for backend in cinder_backends %}{{ backend.name }}{% if not loop.last %},{% endif %}{% endfor %}
-{% endif %}
 
 {% for backend in cinder_backends %}
 
-{% if cinder_backends | count > 1 %}
 [{{ backend.name }}]
-{% endif %}
 
 {% if backend.backend == 'lvm' %}
 
@@ -73,10 +69,7 @@ rbd_user = {{ backend.ceph_user }}
 rbd_secret_uuid = {{ backend.volume_secret_uuid }}
 
 {% endif %}
-
-{% if cinder_backends | count > 1 %}
 volume_backend_name = {{ backend.name }}
-{% endif %}
 
 {% endfor %}
 
