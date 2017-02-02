@@ -442,12 +442,16 @@ nova_api_insecure = {{ ssl_insecure }}
 {% if neutron_external_dns_driver == 'designate' %}
 [designate]
 url = {{ os_proto }}://{{ os_internal_address }}:9001/v2
-admin_auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357/v2.0
-admin_username = {{ designate_admin_user }}
-admin_password = {{ designate_admin_password }}
-admin_tenant_name = {{ designate_project_name }}
+auth_type = password
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+region_name = {{ keystone_region_name }}
+user_domain_name = {{ designate_domain_name }}
+username = {{ designate_admin_user }}
+password = {{ designate_admin_password }}
+project_domain_name = {{ designate_project_domain_name }}
+project_name = {{ designate_project_name }}
 {% if SSLCACertificateFile != '' %}
-ca_cert = {{ SSLCACertificateFile }}
+cafile = {{ SSLCACertificateFile }}
 {% endif %}
 insecure = {{ ssl_insecure }}
 allow_reverse_dns_lookup = {{ neutron_designate_allow_reverse_dns_lookup }}
