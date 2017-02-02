@@ -43,6 +43,10 @@
     - cinder-backup
   when: inventory_hostname in groups['cinder_volume']
 
+- name: mask cinder-wsgi apache config
+  copy: content='' dest=/etc/apache2/conf-available/cinder-wsgi.conf owner=root group=root mode=0644
+  when: inventory_hostname in groups['cinder']
+
 - name: install cinder
   apt: name={{ item }}
   with_items:

@@ -85,6 +85,12 @@
     - name: mask aodh-api apache config
       copy: content='' dest=/etc/apache2/sites-available/aodh-api.conf owner=root group=root mode=0644
 
+- hosts: cinder
+  become: True
+  max_fail_percentage: 0
+  tasks:
+    - name: mask cinder-wsgi apache config
+      copy: content='' dest=/etc/apache2/conf-available/cinder-wsgi.conf owner=root group=root mode=0644
 
 # Neutron server upgrade
 - hosts:
