@@ -29,11 +29,11 @@
     - meta: flush_handlers
 
     - name: ensure ceph monitor is started
-      service: name=ceph-mon state=started enabled=yes args="id={{ inventory_hostname }}"
+      service: name=ceph-mon state=started enabled=yes
 
   handlers:
     - name: restart ceph-monitor
-      service: name=ceph-mon state=restarted args="id={{ inventory_hostname }}"
+      service: name=ceph-mon state=restarted
 
 - hosts: ceph_osd
   become: True
@@ -45,18 +45,27 @@
       delegate_to: "{{ groups['ceph_monitor'][0] }}"
 
     - block:
+
+      - name: collect OSDs
+        shell: cat /var/lib/ceph/osd/*/whoami
+        changed_when: False
+        register: ceph_osds
+
       - name: upgrade ceph
         apt: name=ceph state=latest
 
       - name: ensure ceph OSDs are stopped
-        service: name=ceph-osd-all state=stopped
+        service: name=ceph-osd@{{ item }} state=stopped
+        with_items: "{{ ceph_osds.stdout }}"
 
       - name: fix OSD owner
         file: dest=/var/lib/ceph/osd
             owner=ceph group=root recurse=yes follow=yes
 
       - name: ensure ceph OSDs are started
-        service: name=ceph-osd-all state=started enabled=yes
+        service: name=ceph-osd@{{ item }} state=started enabled=yes
+        with_items: "{{ ceph_osds.stdout }}"
+
 #TODO: wait for OSDs are back
       always:
         - name: unset osd noout
