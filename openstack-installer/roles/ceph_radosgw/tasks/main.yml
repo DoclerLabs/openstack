@@ -65,15 +65,15 @@
   notify: restart radosgw
 
 - name: make sure /var/lib/ceph/nss exists
-  file: path=/var/lib/ceph/nss state=directory mode=0644 owner=root group=root
+  file: path=/var/lib/ceph/nss state=directory mode=0755 owner=ceph group=root
   when: radosgw_keystone
 
 - name: convert keystone CA cert for radosgw use
-  shell: 'openssl x509 -in /etc/keystone/ssl/certs/ca.pem -pubkey | certutil -d /var/lib/ceph/nss -A -n ca -t "TCu,Cu,Tuw"'
+  shell: 'openssl x509 -in /etc/keystone/ssl/certs/ca.pem -pubkey | su -s /bin/sh ceph -c ''certutil -d /var/lib/ceph/nss -A -n ca -t "TCu,Cu,Tuw"'''
   when: radosgw_keystone
 
 - name: convert keystone signing cert for radosgw use
-  shell: 'openssl x509 -in /etc/keystone/ssl/certs/signing_cert.pem -pubkey | certutil -A -d /var/lib/ceph/nss -n signing_cert -t "P,P,P"'
+  shell: 'openssl x509 -in /etc/keystone/ssl/certs/signing_cert.pem -pubkey | su -s /bin/sh ceph -c ''certutil -A -d /var/lib/ceph/nss -n signing_cert -t "P,P,P"'''
   when: radosgw_keystone
 
 - meta: flush_handlers
