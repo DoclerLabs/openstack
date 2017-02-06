@@ -23,13 +23,10 @@
   become: True
   max_fail_percentage: 0
   roles:
-    - common
+    - apt
+
     - os_aodh
 
-- hosts: aodh
-  become: True
-  max_fail_percentage: 0
-  roles:
     - role: apache_frontend
       apache_service_name: aodh
       apache_service_ssl: "{{ os_ssl | default(False) }}"

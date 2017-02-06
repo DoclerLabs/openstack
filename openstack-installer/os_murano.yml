@@ -23,7 +23,10 @@
   become: True
   max_fail_percentage: 0
   roles:
-    - common
+    - apt
+
+    - role: hosts
+      hosts: "{{ groups['murano_rabbitmq'] }}"
 
     - role: rabbitmq
       rabbitmq_hosts: "{{ groups['murano_rabbitmq'] }}"
@@ -35,7 +38,7 @@
   become: True
   max_fail_percentage: 0
   roles:
-    - common
+    - apt
 
     - os_murano
 

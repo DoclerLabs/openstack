@@ -33,7 +33,7 @@
           rights: mon 'allow rwx' osd 'allow rwx'
           keyring_owner: ceph
 
-    - common
+    - apt
 
     - ceph_radosgw
 

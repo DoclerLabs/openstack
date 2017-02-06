@@ -19,13 +19,20 @@
           keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
           keystone_role: admin
 
+- hosts: nova_compute
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - role: hosts
+      hosts: "{{ groups['nova_compute'] }}"
+
 - hosts:
     - nova_controller
     - nova_compute
   become: True
   max_fail_percentage: 0
   roles:
-    - common
+    - apt
     - os_nova
 
 - hosts: nova_controller

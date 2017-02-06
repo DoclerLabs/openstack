@@ -12,5 +12,9 @@
   become: True
   max_fail_percentage: 0
   roles:
-    - common
+    - apt
+
+    - role: hosts
+      hosts: "{{ groups['pacemaker'] }}"
+
     - pacemaker

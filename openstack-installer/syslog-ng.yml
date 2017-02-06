@@ -18,7 +18,7 @@
   become: True
   max_fail_percentage: 0
   roles:
-    - role: common
+    - role: apt
       apt_extra_repos:
         - { name: "syslog-ng", repo: "http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng-3.6/xUbuntu_15.04/ ./" }
       apt_extra_keys:

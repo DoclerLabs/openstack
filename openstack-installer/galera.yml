@@ -4,7 +4,7 @@
   become: True
   max_fail_percentage: 0
   roles:
-    - role: common
+    - role: apt
       apt_extra_repos:
         - { name: "percona", repo: "http://repo.percona.com/apt xenial main" }
       apt_extra_keys:

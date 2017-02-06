@@ -4,7 +4,11 @@
   become: True
   max_fail_percentage: 0
   roles:
-    - common
+    - apt
+
+    - role: hosts
+      hosts: "{{ groups['rabbitmq'] }}"
+
     - role: rabbitmq
       rabbitmq_hosts: "{{ groups['rabbitmq'] }}"
       rabbitmq_listen_addresses:

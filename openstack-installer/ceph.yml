@@ -4,12 +4,12 @@
   become: True
   max_fail_percentage: 0
   roles:
-    - common
+    - apt
     - ceph_monitor
 
 - hosts: ceph_osd
   become: True
   max_fail_percentage: 0
   roles:
-    - common
+    - apt
     - ceph_osd

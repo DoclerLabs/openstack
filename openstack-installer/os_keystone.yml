@@ -4,7 +4,7 @@
   become: True
   max_fail_percentage: 0
   roles:
-    - common
+    - apt
 
     - os_keystone
 

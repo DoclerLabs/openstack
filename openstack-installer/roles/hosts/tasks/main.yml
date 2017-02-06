@@ -5,4 +5,4 @@
     regexp="^{{ hostvars[item].ip.mgmt }}\s.*$"
     line="{{ hostvars[item].ip.mgmt }} {{ item }}"
     state=present
-  with_items: "{{ play_hosts }}"
+  with_items: "{{ hosts }}"
