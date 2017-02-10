@@ -17,6 +17,7 @@
                groups['heat'] +
                groups['trove'] +
                groups['cinder'] +
+               groups['magnum'] +
                groups['murano'] +
                groups['sahara'] +
                groups['barbican'] +
@@ -87,6 +88,7 @@ define hostgroup{
 {{ hostgroup('heat', 'heat', 'OpenStack Heat hosts', groups['heat']) }}
 {{ hostgroup('trove', 'trove', 'OpenStack Trove hosts', groups['trove']) }}
 {{ hostgroup('cinder', 'cinder', 'OpenStack Cinder hosts', groups['cinder']) }}
+{{ hostgroup('magnum', 'magnum', 'OpenStack Magnum hosts', groups['magnum']) }}
 {{ hostgroup('murano', 'murano', 'OpenStack Murano hosts', groups['murano']) }}
 {{ hostgroup('sahara', 'sahara', 'OpenStack Sahara hosts', groups['sahara']) }}
 {{ hostgroup('barbican', 'barbican', 'OpenStack Barbican hosts', groups['barbican']) }}
@@ -494,6 +496,16 @@ define service{
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description trove-api
     check_command check_http!-p 8779
+}
+{% endif %}
+
+{% if groups['magnum'] | count > 0 %}
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ nagios_cloud_prefix }}magnum,{{ vips_monitored }}
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description magnum-api
+    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 9511
 }
 {% endif %}
 
