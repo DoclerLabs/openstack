@@ -7,6 +7,7 @@
 
 - name: fetch the uuid of the cluster
   shell: "if [ -f /etc/ceph/monmap ]; then monmaptool --print /etc/ceph/monmap | grep fsid | cut -d' ' -f2; fi"
+  changed_when: False
   register: ceph_fsid_result
 
 - set_fact: ceph_fsid=''

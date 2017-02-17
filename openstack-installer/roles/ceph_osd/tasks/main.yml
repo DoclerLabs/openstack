@@ -9,6 +9,7 @@
   shell: "monmaptool --print /etc/ceph/monmap | grep fsid | cut -d' ' -f2"
   delegate_to: "{{ groups['ceph_monitor'][0] }}"
   register: ceph_fsid
+  changed_when: False
   run_once: True
 
 - name: generate ceph config file
@@ -68,6 +69,7 @@
   delay: 5
   retries: 5
   delegate_to: "{{ groups['ceph_monitor'][0] }}"
+  changed_when: False
   run_once: True
 
 - name: distribute the bootstrap-osd keyring
