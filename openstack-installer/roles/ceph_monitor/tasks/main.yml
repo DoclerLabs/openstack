@@ -13,7 +13,7 @@
 
 - set_fact: ceph_fsid="{{ hostvars[item].ceph_fsid_result.stdout }}"
   when: hostvars[item].ceph_fsid_result.stdout != ''
-  with_items: "{{ play_hosts }}"
+  with_items: "{{ groups['ceph_monitor'] }}"
 
 - name: generate a new uuid for the cluster
   command: uuidgen
@@ -21,8 +21,8 @@
   when: ceph_fsid == ''
   run_once: True
 
-- set_fact: ceph_fsid="{{ hostvars[play_hosts[0]].ceph_fsid_result.stdout }}"
-  when: hostvars[play_hosts[0]].ceph_fsid_result.stdout is defined
+- set_fact: ceph_fsid="{{ hostvars[groups['ceph_monitor'][0]].ceph_fsid_result.stdout }}"
+  when: hostvars[groups['ceph_monitor'][0]].ceph_fsid_result.stdout is defined
 
 - name: generate ceph config file
   ini_file: dest=/etc/ceph/{{ ceph_cluster_name }}.conf
@@ -31,8 +31,8 @@
     value="{{ item.value }}"
   with_dict:
     { "fsid": "{{ ceph_fsid }}",
-      "mon initial members": "{{ play_hosts | join(',') }}",
-      "mon host": "{% for host in play_hosts %}{{ hostvars[host].ip.mgmt }}{% if not loop.last %},{% endif %}{% endfor %}",
+      "mon initial members": "{{ groups['ceph_monitor'] | join(',') }}",
+      "mon host": "{% for host in groups['ceph_monitor'] %}{{ hostvars[host].ip.mgmt }}{% if not loop.last %},{% endif %}{% endfor %}",
       "auth cluster required": "cephx",
       "auth service required": "cephx",
       "auth client required": "cephx",
@@ -93,11 +93,11 @@
 
 - set_fact: admin_key="{{ hostvars[item].ceph_admin_key_results.stdout }}"
   when: "'not found' not in hostvars[item].ceph_admin_key_results.stderr"
-  with_items: "{{ play_hosts }}"
+  with_items: "{{ groups['ceph_monitor'] }}"
 
 - set_fact: mon_key="{{ hostvars[item].ceph_mon_key_results.stdout }}"
   when: "'not found' not in hostvars[item].ceph_mon_key_results.stderr"
-  with_items: "{{ play_hosts }}"
+  with_items: "{{ groups['ceph_monitor'] }}"
 
 # Generate new keys if old keys are not found
 - name: generate new admin key
@@ -112,11 +112,11 @@
   when: admin_key == ''
   run_once: True
 
-- set_fact: admin_key="{{ hostvars[play_hosts[0]].ceph_admin_key_results.stdout }}"
-  when: hostvars[play_hosts[0]].ceph_admin_key_results.stdout is defined
+- set_fact: admin_key="{{ hostvars[groups['ceph_monitor'][0]].ceph_admin_key_results.stdout }}"
+  when: hostvars[groups['ceph_monitor'][0]].ceph_admin_key_results.stdout is defined
 
-- set_fact: mon_key="{{ hostvars[play_hosts[0]].ceph_mon_key_results.stdout }}"
-  when: hostvars[play_hosts[0]].ceph_mon_key_results.stdout is defined
+- set_fact: mon_key="{{ hostvars[groups['ceph_monitor'][0]].ceph_mon_key_results.stdout }}"
+  when: hostvars[groups['ceph_monitor'][0]].ceph_mon_key_results.stdout is defined
 
 # Put the existing or new keys into the keyrings
 - name: generate ceph.client.admin.keyring
@@ -131,7 +131,7 @@
 
 - name: add the monitor hosts to the monitor map
   command: monmaptool --add {{ item }} {{ hostvars[item].ip.mgmt }} /etc/ceph/monmap
-  with_items: "{{ play_hosts }}"
+  with_items: "{{ groups['ceph_monitor'] }}"
   register: monmap_result
   failed_when: monmap_result.rc != 0 and 'map already contains' not in monmap_result.stderr
   changed_when: "'writing' in monmap_result.stdout"
