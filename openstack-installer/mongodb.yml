@@ -5,4 +5,8 @@
   max_fail_percentage: 0
   roles:
     - apt
+
+    - role: hosts
+      hosts: "{{ groups['mongodb'] }}"
+
     - mongodb
