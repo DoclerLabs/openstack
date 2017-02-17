@@ -30,16 +30,16 @@
 - name: create corosync authkey if it doesn't exist
   command: corosync-keygen -l creates=/etc/corosync/authkey
   notify: restart pacemaker
-  when: inventory_hostname == play_hosts[0]
+  when: inventory_hostname == groups['pacemaker'][0]
 
 - name: fetch the new corosync authkey
   fetch: src=/etc/corosync/authkey dest=workdir/authkey flat=True
-  when: inventory_hostname == play_hosts[0]
+  when: inventory_hostname == groups['pacemaker'][0]
 
 - name: distribute the new corosync authkey
   copy: src=workdir/authkey dest=/etc/corosync/authkey owner=root group=root mode=0400
   notify: restart pacemaker
-  when: inventory_hostname != play_hosts[0]
+  when: inventory_hostname != groups['pacemaker'][0]
 
 - name: unmask autostarting of corosync
   service_mask: name=corosync state=unmasked
@@ -67,7 +67,7 @@
 
 - name: set no-quorum-policy
   pacemaker: action='property' params='no-quorum-policy=ignore'
-  when: play_hosts | count < 3
+  when: groups['pacemaker'] | count < 3
   run_once: True
 
 - name: create mgmt VIP address
