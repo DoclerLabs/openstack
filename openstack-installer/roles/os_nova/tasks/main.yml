@@ -80,6 +80,7 @@
     state=present
   with_items:
     - "{{ nova_api_db }}"
+    - "{{ nova_cell0_db }}"
     - "{{ nova_db }}"
   when: inventory_hostname == groups['nova_controller'][0]
 
@@ -91,6 +92,7 @@
   with_nested:
     -
       - { db: '{{ nova_api_db }}', user: '{{ nova_api_db_user }}', password: '{{ nova_api_db_password }}' }
+      - { db: '{{ nova_cell0_db }}', user: '{{ nova_cell0_db_user }}', password: '{{ nova_cell0_db_password }}' }
       - { db: '{{ nova_db }}', user: '{{ nova_db_user }}', password: '{{ nova_db_password }}' }
     -
       - '%'
@@ -134,13 +136,26 @@
   notify:
     - restart nova compute services
 
-- name: sync nova db
-  command: su nova -s /bin/sh -c "/usr/bin/nova-manage {{ item }} sync"
+- name: do cellv2 setup - cell0
+  command: su nova -s /bin/sh -c "/usr/bin/nova-manage cell_v2 map_cell0 --database_connection
+    mysql+pymysql://{{ nova_cell0_db_user }}:{{ nova_cell0_db_password }}@{{ nova_mysql_server }}/{{ nova_cell0_db }}?charset=utf8"
+  when: inventory_hostname == groups['nova_controller'][0]
+  failed_when: False
+
+- name: do cellv2 setup - map cells
+  command: su nova -s /bin/sh -c "/usr/bin/nova-manage cell_v2 map_cell_and_hosts"
+  when: inventory_hostname == groups['nova_controller'][0]
+
+- name: sync nova API db
+  command: su nova -s /bin/sh -c "/usr/bin/nova-manage api_db sync"
   register: db_sync
   changed_when: '"migrate.versioning.api" in db_sync.stderr'
-  with_items:
-    - api_db
-    - db
+  when: inventory_hostname == groups['nova_controller'][0]
+
+- name: sync nova db
+  command: su nova -s /bin/sh -c "/usr/bin/nova-manage db sync"
+  register: db_sync
+  changed_when: '"migrate.versioning.api" in db_sync.stderr'
   when: inventory_hostname == groups['nova_controller'][0]
 
 - name: do online migrations
