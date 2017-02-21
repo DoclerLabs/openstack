@@ -29,6 +29,10 @@
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
 
+- name: mask nova-placement-api apache config
+  copy: content='' dest=/etc/apache2/sites-available/nova-placement-api.conf owner=root group=root mode=0644
+  when: inventory_hostname in groups['nova_controller']
+
 - name: mask autostarting of nova controller services
   service_mask: name={{ item }} state=masked
   with_items:
@@ -51,6 +55,7 @@
   apt: name={{ item }}
   with_items:
     - nova-api
+    - nova-placement-api
     - nova-cert
     - nova-conductor
     - nova-consoleauth
@@ -174,6 +179,11 @@
   with_items:
     - nova-api
     - nova-metadata
+  when: inventory_hostname in groups['nova_controller']
+  notify: signal apache to reload
+
+- name: link nova-placement-api
+  file: src=/usr/bin/nova-placement-api dest=/var/www/cgi-bin/nova/placement-api state=link
   when: inventory_hostname in groups['nova_controller']
   notify: signal apache to reload
 

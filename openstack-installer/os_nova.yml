@@ -19,6 +19,25 @@
           keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
           keystone_role: admin
 
+- hosts: nova_controller[0]
+  max_fail_percentage: 0
+  roles:
+    - role: os_keystone_service
+      keystone_service_name: placement
+      keystone_service_type: placement
+      keystone_service_description: "OpenStack Placement Service"
+      keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8778"
+      keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8778"
+      keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8778"
+      keystone_region: "{{ keystone_region_name }}"
+      keystone_users:
+        - keystone_user: "{{ placement_admin_user | default('placement') }}"
+          keystone_domain_name: "{{ placement_domain_name | default(keystone_domain_name) }}"
+          keystone_password: "{{ placement_admin_password }}"
+          keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+          keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+          keystone_role: admin
+
 - hosts: nova_compute
   become: True
   max_fail_percentage: 0
@@ -50,6 +69,12 @@
       apache_service_ssl: False
       apache_services:
         - { port: 8775, wsgi_process: "nova-metadata", wsgi_user: "nova", wsgi_script: "/var/www/cgi-bin/nova/nova-metadata" }
+
+    - role: apache_frontend
+      apache_service_name: placement
+      apache_service_ssl: "{{ os_ssl | default(False) }}"
+      apache_services:
+        - { port: 8778, wsgi_process: "placement", wsgi_user: "nova", wsgi_script: "/var/www/cgi-bin/nova/placement-api" }
 
 - hosts: nova_compute
   become: True
@@ -138,6 +163,17 @@
             - forwardfor
             - httpchk
             - httplog
+
+        - haproxy_service_name: placement_api
+          haproxy_backend_nodes: "{{ groups['nova_controller'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 8778
+          haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
+          haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
+          haproxy_backend_extras:
+            - http-check expect rstatus 401
 
         - haproxy_service_name: nova_console
           haproxy_backend_nodes: "{{ groups['nova_controller'] }}"

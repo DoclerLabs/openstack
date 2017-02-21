@@ -31,7 +31,6 @@ instances_path = /var/lib/nova/instances
 instance_name_template = instance-%08x
 allow_resize_to_same_host = True
 osapi_compute_listen = 127.0.0.1
-osapi_compute_link_prefix = {{ os_proto }}://{{ os_public_address }}:8774
 enabled_apis = osapi_compute, metadata
 
 cpu_allocation_ratio = {{ nova_cpu_allocation_ratio }}
@@ -61,9 +60,6 @@ linuxnet_interface_driver = nova.network.linux_net.NeutronLinuxBridgeInterfaceDr
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
 default_floating_pool = {{ nova_default_floating_pool }}
 
-# Authentication
-auth_strategy = keystone
-
 ## Vif
 libvirt_vif_type = ethernet
 vif_plugging_timeout = 10
@@ -86,6 +82,12 @@ cert={{ SSLCertificateFile }}
 {% endif %}
 
 
+[api]
+
+auth_strategy = keystone
+compute_link_prefix = {{ os_proto }}://{{ os_public_address }}:8774
+
+
 [wsgi]
 
 api_paste_config = /etc/nova/api-paste.ini
@@ -98,6 +100,7 @@ keys_path = /var/lib/nova/keys
 
 #vnc
 [vnc]
+
 {% if nova_console_type == 'vnc' %}
 enabled = True
 {% else %}
@@ -112,6 +115,7 @@ vncserver_proxyclient_address = {{ ip.mgmt }}
 
 # Cinder
 [cinder]
+
 catalog_info = volumev2:cinderv2:internalURL
 os_region_name = {{ keystone_region_name }}
 {% if SSLCACertificateFile != '' %}
@@ -121,6 +125,7 @@ insecure = {{ ssl_insecure }}
 
 
 [spice]
+
 {% if nova_console_type == 'spice' %}
 agent_enabled = True
 enabled = True
@@ -144,6 +149,7 @@ memcache_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgm
 
 # Glance
 [glance]
+
 api_servers = {{ os_proto }}://{{ os_internal_address }}:9292
 host = {{ os_internal_address }}
 port = 9292
@@ -153,6 +159,7 @@ protocol = {{ os_proto }}
 
 # Neutron
 [neutron]
+
 url = {{ os_proto }}://{{ os_internal_address }}:9696
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
 auth_type = password
@@ -172,20 +179,20 @@ metadata_proxy_shared_secret = {{ metadata_proxy_shared_secret }}
 
 
 [ssl]
+
 {% if SSLCACertificateFile != '' %}
 ca_file = {{ SSLCACertificateFile }}
 {% endif %}
 
 
 [conductor]
-topic = conductor
+
 workers = {{ nova_conductor_workers }}
 
 
 [keystone_authtoken]
 
 auth_type = password
-signing_dir = /var/lib/nova/cache/api
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
 auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 region_name = {{ keystone_region_name }}
@@ -202,29 +209,26 @@ insecure = {{ ssl_insecure }}
 memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
 
 token_cache_time = 300
-revocation_cache_time = 60
-
 # if your memcached server is shared, use these settings to avoid cache poisoning
 memcache_security_strategy = ENCRYPT
 memcache_secret_key = {{ memcache_secret_key }}
 
-# if your keystone deployment uses PKI, and you value security over performance:
-check_revocations_for_cached = False
-
-
 {% if inventory_hostname in groups['nova_controller'] %}
 [api_database]
+
 connection = mysql+pymysql://{{ nova_api_db_user }}:{{ nova_api_db_password }}@{{ nova_mysql_server }}/{{ nova_api_db }}?charset=utf8
 max_retries = -1
 
 
 [database]
+
 connection = mysql+pymysql://{{ nova_db_user }}:{{ nova_db_password }}@{{ nova_mysql_server }}/{{ nova_db }}?charset=utf8
 max_retries = -1
 {% endif %}
 
 
 [oslo_concurrency]
+
 lock_path = /var/lock/nova
 
 
@@ -242,6 +246,21 @@ transport_url =
 
 rabbit_ha_queues = true
 
+
+[placement]
+
+auth_type = password
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+os_region_name = {{ keystone_region_name }}
+user_domain_name = {{ placement_domain_name }}
+username = {{ placement_admin_user }}
+password = {{ placement_admin_password }}
+project_domain_name = {{ placement_project_domain_name }}
+project_name = {{ placement_project_name }}
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
 
 {% if inventory_hostname in groups['nova_compute'] %}
 [libvirt]
