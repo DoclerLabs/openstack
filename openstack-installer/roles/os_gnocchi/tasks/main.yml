@@ -45,8 +45,11 @@
     - signal apache to reload
     - restart gnocchi
 
-- name: install api-paste.ini
-  template: src=api-paste.ini.j2 dest=/etc/gnocchi/api-paste.ini owner=gnocchi group=root mode=0460
+- name: install api-paste.ini and policy.json
+  copy: src={{ item }} dest=/etc/gnocchi/{{ item }} owner=gnocchi group=root mode=0460
+  with_items:
+    - api-paste.ini
+    - policy.json
   notify:
     - signal apache to reload
 

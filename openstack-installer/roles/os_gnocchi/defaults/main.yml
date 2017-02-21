@@ -24,8 +24,8 @@ gnocchi_ceph_pool: gnocchi
 gnocchi_api_workers: 1
 gnocchi_metricd_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 
-# 'gnocchi+noath' or 'gnocchi+auth'
-gnocchi_pipeline: "gnocchi+auth"
+# 'keystone', 'basic', 'noauth'
+gnocchi_auth_mode: "keystone"
 
 gnocchi_metric_processing_delay: 30
 gnocchi_metric_reporting_delay: 120
