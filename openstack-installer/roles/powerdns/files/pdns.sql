@@ -8,7 +8,7 @@ CREATE TABLE domains (
   notified_serial       INT DEFAULT NULL,
   account               VARCHAR(40) DEFAULT NULL,
   PRIMARY KEY (id)
-) Engine=InnoDB DEFAULT CHARSET=utf8;
+) Engine=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE UNIQUE INDEX name_index ON domains(name);
 
@@ -27,7 +27,7 @@ CREATE TABLE records (
   ordername             VARCHAR(255) BINARY DEFAULT NULL,
   auth                  TINYINT(1) DEFAULT 1,
   PRIMARY KEY (id)
-) Engine=InnoDB DEFAULT CHARSET=utf8;
+) Engine=InnoDB DEFAULT CHARSET=latin1;
 
 ALTER TABLE `records` ADD CONSTRAINT `records_ibfk_1` FOREIGN KEY (`domain_id`)
 REFERENCES `domains` (`id`) ON DELETE CASCADE;
@@ -42,7 +42,7 @@ CREATE TABLE supermasters (
   nameserver            VARCHAR(255) NOT NULL,
   account               VARCHAR(40) NOT NULL,
   PRIMARY KEY (ip, nameserver)
-) Engine=InnoDB DEFAULT CHARSET=utf8;
+) Engine=InnoDB DEFAULT CHARSET=latin1;
 
 
 CREATE TABLE comments (
@@ -54,7 +54,7 @@ CREATE TABLE comments (
   account               VARCHAR(40) NOT NULL,
   comment               VARCHAR(64000) NOT NULL,
   PRIMARY KEY (id)
-) Engine=InnoDB DEFAULT CHARSET=utf8;
+) Engine=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE INDEX comments_domain_id_idx ON comments (domain_id);
 CREATE INDEX comments_name_type_idx ON comments (name, type);
@@ -67,7 +67,7 @@ CREATE TABLE domainmetadata (
   kind                  VARCHAR(32),
   content               TEXT,
   PRIMARY KEY (id)
-) Engine=InnoDB DEFAULT CHARSET=utf8;
+) Engine=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE INDEX domainmetadata_idx ON domainmetadata (domain_id, kind);
 
@@ -79,7 +79,7 @@ CREATE TABLE cryptokeys (
   active                BOOL,
   content               TEXT,
   PRIMARY KEY(id)
-) Engine=InnoDB DEFAULT CHARSET=utf8;
+) Engine=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE INDEX domainidindex ON cryptokeys(domain_id);
 
@@ -91,7 +91,7 @@ CREATE TABLE tsigkeys (
   algorithm             VARCHAR(50),
   secret                VARCHAR(255),
   PRIMARY KEY (id)
-) Engine=InnoDB DEFAULT CHARSET=utf8;
+) Engine=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE UNIQUE INDEX namealgoindex ON tsigkeys(name, algorithm);
 
@@ -100,6 +100,6 @@ CREATE TABLE `migrate_version` (
   `repository_path` text,
   `version` int(11) DEFAULT NULL,
   PRIMARY KEY (`repository_id`)
-) Engine=InnoDB DEFAULT CHARSET=utf8;
+) Engine=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO `migrate_version` VALUES ('DesignatePowerDNS','/usr/lib/python2.7/dist-packages/designate/backend/impl_powerdns/migrate_repo',17);
