@@ -26,22 +26,22 @@ Current OpenStack versions supported:
 Integrated Infra components:
 - Pacemaker
 - Galera cluster (supervised by Pacemaker)
-- MongoDB
+- MongoDB (optional)
 - RabbitMQ
 - HAProxy
 - Memcached
-- PowerDNS (for designate)
-- Zookeeper
-- Ceph
+- PowerDNS (for designate - optional)
+- Zookeeper (optional but recommended)
+- Ceph (optional)
 
-Integrated OpenStack components:
+Integrated OpenStack components (all compontents can be enabled/disabled in the inventory):
 - Core components, they should work out-of-box after the installer finishes:
   - keystone
   - glance
   - nova
   - neutron
   - cinder
-  - gnocchi (only on Xenial)
+  - gnocchi
   - ceilometer
   - aodh
   - heat
