@@ -566,30 +566,29 @@ quota_listener = {{ neutron_quota_listener }}
 # unlimited.
 # quota_firewall_rule = 100
 
+
 [keystone_authtoken]
+
+auth_type = password
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
+username = {{ neutron_admin_user }}
+user_domain_name = {{ neutron_domain_name }}
+project_name = {{ neutron_project_name }}
+project_domain_name = {{ neutron_project_domain_name }}
+password = {{ neutron_admin_password }}
+region_name = {{ keystone_region_name }}
 {% if SSLCACertificateFile != '' %}
 cafile = {{ SSLCACertificateFile }}
 {% endif %}
 insecure = {{ ssl_insecure }}
-signing_dir = /var/lib/neutron/cache
-region_name = {{ keystone_region_name }}
-auth_type = password
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
-auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
-user_domain_name = {{ neutron_domain_name }}
-username = {{ neutron_admin_user }}
-password = {{ neutron_admin_password }}
-project_domain_name = {{ neutron_project_domain_name }}
-project_name = {{ neutron_project_name }}
+service_token_roles_required = True
 
 memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
 
-token_cache_time = 300
-revocation_cache_time = 60
-
-# if your memcached server is shared, use these settings to avoid cache poisoning
 memcache_security_strategy = ENCRYPT
 memcache_secret_key = {{ memcache_secret_key }}
+
 
 [database]
 # This line MUST be changed to actually run the plugin.

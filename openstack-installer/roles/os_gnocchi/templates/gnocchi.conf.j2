@@ -280,7 +280,6 @@ url = mysql+pymysql://{{ gnocchi_db_user }}:{{ gnocchi_db_password }}@{{ gnocchi
 [keystone_authtoken]
 
 auth_type = password
-signing_dir = /var/lib/gnocchi/cache/api
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
 auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 region_name = {{ keystone_region_name }}
@@ -293,15 +292,13 @@ project_name = {{ gnocchi_project_name }}
 cafile = {{ SSLCACertificateFile }}
 {% endif %}
 insecure = {{ ssl_insecure }}
+service_token_roles_required = True
 
 memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
 
-token_cache_time = 300
-revocation_cache_time = 60
-
-# if your memcached server is shared, use these settings to avoid cache poisoning
 memcache_security_strategy = ENCRYPT
 memcache_secret_key = {{ memcache_secret_key }}
+
 
 [metricd]
 
