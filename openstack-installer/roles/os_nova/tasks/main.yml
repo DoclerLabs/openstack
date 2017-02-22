@@ -141,16 +141,6 @@
   notify:
     - restart nova compute services
 
-- name: do cellv2 setup - cell0
-  command: su nova -s /bin/sh -c "/usr/bin/nova-manage cell_v2 map_cell0 --database_connection
-    mysql+pymysql://{{ nova_cell0_db_user }}:{{ nova_cell0_db_password }}@{{ nova_mysql_server }}/{{ nova_cell0_db }}?charset=utf8"
-  when: inventory_hostname == groups['nova_controller'][0]
-  failed_when: False
-
-- name: do cellv2 setup - map cells
-  command: su nova -s /bin/sh -c "/usr/bin/nova-manage cell_v2 map_cell_and_hosts"
-  when: inventory_hostname == groups['nova_controller'][0]
-
 - name: sync nova API db
   command: su nova -s /bin/sh -c "/usr/bin/nova-manage api_db sync"
   register: db_sync
@@ -161,6 +151,17 @@
   command: su nova -s /bin/sh -c "/usr/bin/nova-manage db sync"
   register: db_sync
   changed_when: '"migrate.versioning.api" in db_sync.stderr'
+  when: inventory_hostname == groups['nova_controller'][0]
+
+- name: do cellv2 setup - cell0
+  command: su nova -s /bin/sh -c "/usr/bin/nova-manage cell_v2 map_cell0 --database_connection
+    mysql+pymysql://{{ nova_cell0_db_user }}:{{ nova_cell0_db_password }}@{{ nova_mysql_server }}/{{ nova_cell0_db }}?charset=utf8"
+  when: inventory_hostname == groups['nova_controller'][0]
+
+- name: do cellv2 setup - create cell
+  command: su nova -s /bin/sh -c "/usr/bin/nova-manage cell_v2 create_cell"
+  register: create_cell
+  failed_when: create_cell | failed and 'already exists' not in create_cell.stdout
   when: inventory_hostname == groups['nova_controller'][0]
 
 - name: do online migrations
