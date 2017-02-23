@@ -64,8 +64,8 @@
   template: src=keystone.conf.j2 dest=/etc/keystone/keystone.conf owner=keystone group=root mode=0460
   notify: signal apache to reload
 
-- name: remove admin_token_auth from keystone-paste.ini
-  replace: dest=/etc/keystone/keystone-paste.ini owner=keystone group=keystone mode=0644 regexp='admin_token_auth'
+- name: install keystone-paste.ini
+  copy: src=keystone-paste.ini dest=/etc/keystone/keystone-paste.ini owner=keystone group=keystone mode=0644
   notify: signal apache to reload
 
 - name: install keystone-federation.conf
