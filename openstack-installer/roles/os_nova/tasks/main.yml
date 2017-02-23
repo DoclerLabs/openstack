@@ -141,16 +141,11 @@
   notify:
     - restart nova compute services
 
-- name: sync nova API db
+- name: try to sync nova API db
   command: su nova -s /bin/sh -c "/usr/bin/nova-manage api_db sync"
   register: db_sync
   changed_when: '"migrate.versioning.api" in db_sync.stderr'
-  when: inventory_hostname == groups['nova_controller'][0]
-
-- name: sync nova db
-  command: su nova -s /bin/sh -c "/usr/bin/nova-manage db sync"
-  register: db_sync
-  changed_when: '"migrate.versioning.api" in db_sync.stderr'
+  failed_when: db_sync | failed and 'Cell mappings are not created' not in db_sync.stdout
   when: inventory_hostname == groups['nova_controller'][0]
 
 - name: do cellv2 setup - cell0
@@ -162,6 +157,18 @@
   command: su nova -s /bin/sh -c "/usr/bin/nova-manage cell_v2 create_cell"
   register: create_cell
   failed_when: create_cell | failed and 'already exists' not in create_cell.stdout
+  when: inventory_hostname == groups['nova_controller'][0]
+
+- name: sync nova API db
+  command: su nova -s /bin/sh -c "/usr/bin/nova-manage api_db sync"
+  register: db_sync
+  changed_when: '"migrate.versioning.api" in db_sync.stderr'
+  when: inventory_hostname == groups['nova_controller'][0]
+
+- name: sync nova db
+  command: su nova -s /bin/sh -c "/usr/bin/nova-manage db sync"
+  register: db_sync
+  changed_when: '"migrate.versioning.api" in db_sync.stderr'
   when: inventory_hostname == groups['nova_controller'][0]
 
 - name: do online migrations
