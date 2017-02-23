@@ -55,6 +55,10 @@
     - python-gnocchiclient
   when: inventory_hostname in groups['ceilometer_controller']
 
+- name: mask ceilometer-api apache config
+  copy: content='' dest=/etc/apache2/sites-available/ceilometer-api.conf owner=root group=root mode=0644
+  when: inventory_hostname in groups['ceilometer_controller']
+
 - name: mask autostarting of ceilometer compute services
   service_mask: name={{ item }} state=masked
   with_items:
