@@ -1645,11 +1645,7 @@ driver = sql
 
 # Toggle for token system caching. This has no effect unless global caching is
 # enabled. (boolean value)
-{% if keystone_token_provider == 'uuid' %}
 caching = true
-{% else %}
-caching = false
-{% endif %}
 
 # Time to cache tokens (in seconds). This has no effect unless global and token
 # caching are enabled. (integer value)
