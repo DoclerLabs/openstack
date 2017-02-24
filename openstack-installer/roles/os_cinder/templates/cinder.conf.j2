@@ -11,7 +11,11 @@ my_ip = {{ ip.mgmt }}
 osapi_volume_listen = 127.0.0.1
 osapi_volume_base_URL = {{ os_proto }}://{{ os_public_address }}:8776
 public_endpoint = {{ os_proto }}://{{ os_public_address }}:8776
+backend_host = {{ inventory_hostname }}
 host = {{ inventory_hostname }}
+{% if cinder_cluster_name %}
+cluster = {{ cinder_cluster_name }}
+{% endif %}
 
 rootwrap_config = /etc/cinder/rootwrap.conf
 api_paste_confg = /etc/cinder/api-paste.ini
