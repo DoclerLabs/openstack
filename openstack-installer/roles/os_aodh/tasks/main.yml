@@ -66,14 +66,15 @@
     - localhost
     - '%'
 
-- name: install aodh configs
-  template: src={{ item }}.j2 dest=/etc/aodh/{{ item }} owner=aodh group=root mode=0460
-  with_items:
-    - aodh.conf
-    - api_paste.ini
+- name: install aodh config
+  template: src=aodh.conf.j2 dest=/etc/aodh/aodh.conf owner=aodh group=root mode=0460
   notify:
     - signal apache to reload
     - restart aodh
+
+- name: install api_paste.ini
+  copy: src=api_paste.ini dest=/etc/aodh/api_paste.ini owner=aodh group=root mode=0464
+  notify: signal apache to reload
 
 - name: sync aodh db
   command: su aodh -s /bin/sh -c '/usr/bin/aodh-dbsync'
