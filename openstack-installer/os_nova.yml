@@ -62,13 +62,13 @@
       apache_service_name: nova
       apache_service_ssl: "{{ os_ssl | default(False) }}"
       apache_services:
-        - { port: 8774, wsgi_process: "nova-api", wsgi_user: "nova", wsgi_script: "/var/www/cgi-bin/nova/nova-api" }
+        - { port: 8774 }
 
     - role: apache_frontend
       apache_service_name: nova-metadata
       apache_service_ssl: False
       apache_services:
-        - { port: 8775, wsgi_process: "nova-metadata", wsgi_user: "nova", wsgi_script: "/var/www/cgi-bin/nova/nova-metadata" }
+        - { port: 8775 }
 
     - role: apache_frontend
       apache_service_name: placement

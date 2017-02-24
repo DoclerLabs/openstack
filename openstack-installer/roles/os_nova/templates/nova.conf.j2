@@ -31,6 +31,7 @@ instances_path = /var/lib/nova/instances
 instance_name_template = instance-%08x
 allow_resize_to_same_host = True
 osapi_compute_listen = 127.0.0.1
+osapi_compute_workers = {{ nova_api_workers }}
 enabled_apis = osapi_compute, metadata
 
 cpu_allocation_ratio = {{ nova_cpu_allocation_ratio }}
@@ -42,7 +43,8 @@ transport_url = rabbit://{% for host in rabbit_hosts %}{{ nova_rabbit_user }}:{{
 
 # Metadata
 metadata_host = {{ vip_mgmt }}
-metadata_listen = {{ ip.mgmt }}
+metadata_listen = 172.0.0.1
+metadata_workers = {{ nova_metadata_workers }}
 
 # Network
 my_ip = {{ ip.mgmt }}

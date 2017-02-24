@@ -75,10 +75,6 @@
     - nova-compute-{{ nova_compute_package }}
   when: inventory_hostname in groups['nova_compute']
 
-- name: ensure nova-api service is disabled at boot
-  service: name=nova-api state=stopped enabled=no
-  when: inventory_hostname in groups['nova_controller']
-
 - name: create nova databases
   mysql_db: name={{ item }}
     login_host={{ nova_mysql_server }} login_user=root login_password={{ mysql_root_password }}
@@ -198,6 +194,7 @@
 - name: unmask autostarting of nova controller services
   service_mask: name={{ item }} state=unmasked
   with_items:
+    - nova-api
     - nova-scheduler
     - nova-conductor
     - nova-consoleauth
@@ -217,6 +214,7 @@
 - name: ensure nova controller servies are started
   service: name={{ item }} state=started enabled=yes
   with_items:
+    - nova-api
     - nova-scheduler
     - nova-conductor
     - nova-consoleauth
