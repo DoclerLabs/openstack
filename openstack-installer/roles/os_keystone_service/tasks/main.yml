@@ -41,6 +41,10 @@
     cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
     state={{ keystone_service_present | ternary("present", "absent") }}
+  register: keystone_service_result
+  until: keystone_service_result | success
+  delay: 5
+  retries: 5
   when: keystone_service_name is defined
 
 - name: create the project in keystone
