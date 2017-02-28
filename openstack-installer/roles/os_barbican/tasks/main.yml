@@ -59,14 +59,15 @@
   file: path=/var/lib/barbican/cache state=directory owner=barbican group=barbican mode=0700
   notify: signal apache to reload
 
-- name: install barbican configs
-  template: src={{ item }}.j2 dest=/etc/barbican/{{ item }} owner=barbican group=root mode=0460
-  with_items:
-    - barbican.conf
-    - barbican-api-paste.ini
+- name: install barbican config
+  template: src=barbican.conf.j2 dest=/etc/barbican/barbican.conf owner=barbican group=root mode=0460
   notify:
     - restart barbican-worker
     - signal apache to reload
+
+- name: install barbican-api-paste.ini
+  copy: src=barbican-api-paste.ini dest=/etc/barbican/barbican-api-paste.ini owner=barbican group=root mode=0460
+  notify: signal apache to reload
 
 - name: sync barbican db
   command: su barbican -s /bin/sh -c 'barbican-manage db upgrade'

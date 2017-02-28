@@ -317,3 +317,32 @@ ca_cert_key_path = /etc/barbican/snakeoil-ca.key
 ca_cert_chain_path = /etc/barbican/snakeoil-ca.chain
 ca_cert_pkcs7_path = /etc/barbican/snakeoil-ca.p7b
 subca_cert_key_directory=/etc/barbican/snakeoil-cas
+
+[keystone_authtoken]
+
+insecure = {{ ssl_insecure }}
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357/
+auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
+user_domain_name = {{ barbican_domain_name }}
+username = {{ barbican_admin_user }}
+password = {{ barbican_admin_password }}
+project_domain_name = {{ barbican_project_domain_name }}
+project_name = {{ barbican_project_name }}
+auth_type = password
+region_name = {{ keystone_region_name }}
+#admin_tenant_name = {{ barbican_project_name }}
+#admin_user = {{ barbican_admin_user }}
+#admin_password = {{ barbican_admin_password }}
+#auth_version = v3.0
+#delay failing perhaps to log the unauthorized request in barbican ..
+#delay_auth_decision = true
+#service_token_roles_required = True
+region_name = {{ keystone_region_name }}
+memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
+
+memcache_security_strategy = ENCRYPT
+memcache_secret_key = {{ memcache_secret_key }}
+
