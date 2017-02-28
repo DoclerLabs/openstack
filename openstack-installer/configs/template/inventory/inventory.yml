@@ -126,11 +126,13 @@ neutron_controller:
 neutron_compute:
   inherit: compute
 
-#Gnocchi is available only from Xenial
 gnocchi:
-#  inherit: controller
+  inherit: controller
 
 aodh:
+  inherit: controller
+
+panko:
   inherit: controller
 
 ceilometer_controller:

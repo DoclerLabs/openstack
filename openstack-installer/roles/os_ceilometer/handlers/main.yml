@@ -1,9 +1,5 @@
 ---
 
-- name: signal apache to reload
-  file: dest=/run/apache2.reload state=touch
-  when: inventory_hostname in groups['ceilometer_controller'] and 'database' in ceilometer_backends
-
 - name: restart ceilometer controller services
   service: name={{ item }} state=restarted
   with_items:

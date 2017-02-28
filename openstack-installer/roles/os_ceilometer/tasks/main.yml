@@ -68,7 +68,6 @@
 - name: install ceilometer controller services
   apt: name={{ item }}
   with_items:
-    - ceilometer-api
     - ceilometer-collector
     - ceilometer-agent-central
     - ceilometer-agent-notification
@@ -77,16 +76,6 @@
 
 - name: ensure ceilometer-api service is disabled at boot
   service: name=ceilometer-api state=stopped enabled=no
-  when: inventory_hostname in groups['ceilometer_controller']
-
-- name: create /var/www/cgi-bin/ceilometer
-  file: path=/var/www/cgi-bin/ceilometer state=directory owner=root group=root mode=0755
-  notify: signal apache to reload
-  when: inventory_hostname in groups['ceilometer_controller']
-
-- name: link ceilometer wsgi server
-  file: src=/usr/lib/python2.7/dist-packages/ceilometer/api/app.wsgi dest=/var/www/cgi-bin/ceilometer/app.wsgi state=link
-  notify: signal apache to reload
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: install ceilometer compute services
@@ -98,7 +87,6 @@
 - name: install ceilometer configs
   template: src=ceilometer.conf.j2 dest=/etc/ceilometer/ceilometer.conf owner=ceilometer group=root mode=0460
   notify:
-    - signal apache to reload
     - restart ceilometer controller services
     - restart ceilometer compute services
 
@@ -110,13 +98,11 @@
     - event_definitions
     - gnocchi_resources
   notify:
-    - signal apache to reload
     - restart ceilometer controller services
 
 - name: install pipeline.yaml
   copy: src={{ ceilometer_pipeline_src }} dest=/etc/ceilometer/pipeline.yaml owner=root group=root mode=0644
   notify:
-    - signal apache to reload
     - restart ceilometer controller services
     - restart ceilometer compute services
 
@@ -150,11 +136,11 @@
     - ceilometer-agent-compute
   when: inventory_hostname in groups['ceilometer_compute']
 
-- name: set up ceilometer-expirer cron job
+- name: delete ceilometer-expirer cron job
   cron: name="ceilometer-expirer"
     minute=12
     hour="{{ groups['ceilometer_controller'].index(inventory_hostname) }}-23/{{ groups['ceilometer_controller'] | count }}"
     user=ceilometer
     job="/usr/bin/ceilometer-expirer"
-    state="{{ ('database' in ceilometer_backends) | ternary('present','absent') }}"
+    state=absent
   when: inventory_hostname in groups['ceilometer_controller']

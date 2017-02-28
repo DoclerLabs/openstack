@@ -38,11 +38,18 @@ ceilometer_alarm_history_time_to_live: 0
 
 ceilometer_pipeline_src: "pipeline.yaml"
 
-#database and/or gnocchi
-ceilometer_backends:
- - database
+#metering backend
+#gnocchi only
+ceilometer_store_meters: "{{ groups['gnocchi'] | count > 0 }}"
 ceilometer_gnocchi_archive_policy: low
-ceilometer_store_events: "{{ 'database' in ceilometer_backends }}"
+
+#event backend
+#panko only
+ceilometer_store_events: "{{ groups['panko'] | count > 0 }}"
+panko_db_user: panko
+panko_mysql_server: "{{ vip_mgmt }}"
+panko_db: panko
+panko_backend: mysql
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False

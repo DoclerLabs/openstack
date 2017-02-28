@@ -14,6 +14,7 @@
                groups['neutron_controller'] +
                groups['ceilometer_controller'] +
                groups['aodh'] +
+               groups['panko'] +
                groups['heat'] +
                groups['trove'] +
                groups['cinder'] +
@@ -87,6 +88,7 @@ define hostgroup{
 {{ hostgroup('neutron', 'neutron', 'OpenStack Neutron hosts', groups['neutron_controller']) }}
 {{ hostgroup('ceilometer', 'ceilometer', 'OpenStack Ceilometer hosts', groups['ceilometer_controller']) }}
 {{ hostgroup('aodh', 'aodh', 'OpenStack AODH hosts', groups['aodh']) }}
+{{ hostgroup('panko', 'panko', 'OpenStack Panko hosts', groups['panko']) }}
 {{ hostgroup('heat', 'heat', 'OpenStack Heat hosts', groups['heat']) }}
 {{ hostgroup('trove', 'trove', 'OpenStack Trove hosts', groups['trove']) }}
 {{ hostgroup('cinder', 'cinder', 'OpenStack Cinder hosts', groups['cinder']) }}
@@ -443,13 +445,13 @@ define service{
 }
 {% endif %}
 
-{% if groups['ceilometer_controller'] | count > 0 and 'database' in ceilometer_backends  %}
+{% if groups['panko'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}ceilometer,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}panko,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
-    service_description ceilometer-api
-    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 8777!-e 401
+    service_description panko-api
+    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8777
 }
 {% endif %}
 

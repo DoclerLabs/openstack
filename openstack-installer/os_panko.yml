@@ -1,44 +1,50 @@
 ---
 
-- hosts: ceilometer_controller[0]
+- hosts: panko[0]
   max_fail_percentage: 0
   roles:
     - role: os_keystone_service
-      keystone_service_name: ceilometer
-      keystone_service_type: metering
+      keystone_service_name: panko
+      keystone_service_type: event
       keystone_service_description: "OpenStack Telemetry Service"
-      keystone_service_present: False
       keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8777"
       keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8777"
       keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8777"
       keystone_region: "{{ keystone_region_name }}"
       keystone_users:
-        - keystone_user: "{{ ceilometer_admin_user | default('ceilometer') }}"
-          keystone_domain_name: "{{ ceilometer_domain_name | default(keystone_domain_name) }}"
-          keystone_password: "{{ ceilometer_admin_password }}"
+        - keystone_user: "{{ panko_admin_user | default('panko') }}"
+          keystone_domain_name: "{{ panko_domain_name | default(keystone_domain_name) }}"
+          keystone_password: "{{ panko_admin_password }}"
           keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
           keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
           keystone_role: admin
 
-- hosts:
-    - ceilometer_controller
-    - ceilometer_compute
+- hosts: mongodb
+  become: True
+  max_fail_percentage: 0
+  tasks:
+    - name: determine the primary node
+      command: mongo --quiet --eval 'rs.isMaster().ismaster'
+      register: mongo_master
+      changed_when: False
+
+    - name: create panko mongo user
+      mongodb_user: login_user=admin login_password={{ mongodb_admin_password }} database=panko name=panko password={{ panko_db_password }}
+      when: mongo_master.stdout == 'true' and panko_backend | default('mysql') == 'mongodb'
+
+- hosts: panko
   become: True
   max_fail_percentage: 0
   roles:
     - apt
-    - os_ceilometer
 
-- hosts: ceilometer_controller
-  become: True
-  max_fail_percentage: 0
-  roles:
+    - os_panko
+
     - role: apache_frontend
-      apache_service_name: ceilometer
-      apache_service_enable: False
+      apache_service_name: panko
       apache_service_ssl: "{{ os_ssl | default(False) }}"
       apache_services:
-        - { port: 8777, wsgi_process: "ceilometer-api", wsgi_user: "ceilometer", wsgi_script: "/var/www/cgi-bin/ceilometer/app.wsgi" }
+        - { port: 8043, wsgi_process: "panko-api", wsgi_user: "panko", wsgi_script: "/var/www/cgi-bin/panko/app.wsgi" }
 
 - hosts: haproxy
   become: True
@@ -46,11 +52,11 @@
   roles:
     - role: haproxy_service
       haproxy_services:
-        - haproxy_service_name: ceilometer_api
-          haproxy_backend_nodes: []
+        - haproxy_service_name: panko_api
+          haproxy_backend_nodes: "{{ groups['panko'] }}"
           haproxy_bind_hosts:
             - "{{ vip_mgmt }}"
             - "{{ vip_public }}"
-          haproxy_port: 8777
+          haproxy_port: 8043
           haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
           haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"

@@ -1,0 +1,48 @@
+---
+
+- name: install CA certificate
+  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  when: SSLCACertificateFile != ''
+
+- name: install panko
+  apt: name={{ item }}
+  with_items:
+    - panko-api
+
+- name: create panko database
+  mysql_db: name={{ panko_db }}
+    login_host={{ panko_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  when: panko_backend == 'mysql'
+  run_once: True
+
+- name: create panko database user
+  mysql_user: name={{ panko_db_user }} password={{ panko_db_password }} host={{ item }} priv={{ panko_db }}.*:ALL
+    login_host={{ panko_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  when: panko_backend == 'mysql'
+  with_items:
+    - localhost
+    - '%'
+
+#Note: ceilometer-collector has to read panko.conf
+- name: install panko config
+  template: src=panko.conf.j2 dest=/etc/panko/panko.conf owner=panko group=root mode=0464
+  notify:
+    - signal apache to reload
+
+- name: sync panko db
+  command: su panko -s /bin/sh -c '/usr/bin/panko-dbsync'
+  when: panko_backend == 'mysql'
+  run_once: True
+
+- name: create /var/www/cgi-bin/panko
+  file: path=/var/www/cgi-bin/panko state=directory owner=root group=root mode=0755
+  notify: signal apache to reload
+
+- name: link panko wsgi servers
+  file: src=/usr/lib/python2.7/dist-packages/panko/api/app.wsgi dest=/var/www/cgi-bin/panko/app.wsgi state=link
+  notify: signal apache to reload
+
+- meta: flush_handlers

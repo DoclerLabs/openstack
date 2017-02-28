@@ -121,16 +121,19 @@ auth_startegy = keystone
 
 {% if inventory_hostname in groups['ceilometer_controller'] %}
 
-{% for meter_dispatcher in ceilometer_backends %}
-meter_dispatchers = {{ meter_dispatcher }}
-{% endfor %}
-{% if 'database' in ceilometer_backends %}
-event_dispatchers = database
+{% if ceilometer_store_meters %}
+meter_dispatchers = gnocchi
+{% else %}
+meter_dispatchers =
+{% endif %}
+
+{% if ceilometer_store_events %}
+event_dispatchers = panko
 {% else %}
 event_dispatchers =
 {% endif %}
 
-{% if 'gnocchi' in ceilometer_backends %}
+{% if ceilometer_store_meters %}
 [dispatcher_gnocchi]
 
 filter_service_activity = False
@@ -147,7 +150,7 @@ aodh_is_enabled = {{ groups['aodh'] | count > 0 }}
 [collector]
 
 udp_address = {{ ip.mgmt }}
-{% if 'gnocchi' in ceilometer_backends %}
+{% if ceilometer_store_meters %}
 batch_size = 100
 batch_timeout = 5
 {% endif %}
@@ -237,9 +240,14 @@ messaging_urls = rabbit://{{ sahara_rabbit_user }}:{{ sahara_rabbit_password }}@
 # Deprecated group/name - [DATABASE]/sql_connection
 # Deprecated group/name - [sql]/connection
 #connection = <None>
-{% if 'database' in ceilometer_backends %}
-connection = mongodb://ceilometer:{{ ceilometer_db_password }}@{% for host in groups['mongodb'] %}{{ hostvars[host].ip.mgmt }}:27017{% if not loop.last %},{% endif %}{% endfor %}/ceilometer
-mongodb_replica_set = {{ mongodb_replica_set }}
+{% if ceilometer_store_events %}
+
+{% if panko_backend == 'mongodb' %}
+connection = mongodb://panko:{{ panko_db_password }}@{% for host in groups['mongodb'] %}{{ hostvars[host].ip.mgmt }}:27017{% if not loop.last %},{% endif %}{% endfor %}/panko
+{% else %}
+connection = mysql+pymysql://{{ panko_db_user }}:{{ panko_db_password }}@{{ panko_mysql_server }}/{{ panko_db }}?charset=utf8
+{% endif %}
+
 {% endif %}
 
 metering_time_to_live: {{ ceilometer_metering_time_to_live }}

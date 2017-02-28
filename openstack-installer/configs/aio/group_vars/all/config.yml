@@ -37,10 +37,6 @@ os_public_address: "{{ vip_public }}"
 #Use TLS for all OS services
 #os_ssl: False
 
-ceilometer_backends:
- - gnocchi
-ceilometer_store_events: False
-
 neutron_flat_networks: flat
 neutron_physical_interface_mappings: flat:enp0s10
 neutron_vlan_ranges:
