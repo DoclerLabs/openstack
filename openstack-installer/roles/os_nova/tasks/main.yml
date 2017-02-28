@@ -229,6 +229,10 @@
     - nova-compute
   when: inventory_hostname in groups['nova_compute']
 
+- name: do cellv2 setup - discover new hosts
+  command: su nova -s /bin/sh -c "/usr/bin/nova-manage cell_v2 discover_hosts"
+  when: inventory_hostname == groups['nova_controller'][0]
+
 - name: create ssh key for nova-compute
   local_action: command ssh-keygen -f "{{ playbook_dir }}/files/nova_id_rsa" -b 2048 -P ""
                 creates="{{ playbook_dir }}/files/nova_id_rsa.pub"
