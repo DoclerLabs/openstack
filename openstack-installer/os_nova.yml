@@ -26,9 +26,9 @@
       keystone_service_name: placement
       keystone_service_type: placement
       keystone_service_description: "OpenStack Placement Service"
-      keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8778"
-      keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8778"
-      keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8778"
+      keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8780"
+      keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8780"
+      keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8780"
       keystone_region: "{{ keystone_region_name }}"
       keystone_users:
         - keystone_user: "{{ placement_admin_user | default('placement') }}"
@@ -74,7 +74,7 @@
       apache_service_name: placement
       apache_service_ssl: "{{ os_ssl | default(False) }}"
       apache_services:
-        - { port: 8778, wsgi_process: "placement", wsgi_user: "nova", wsgi_script: "/var/www/cgi-bin/nova/placement-api" }
+        - { port: 8780, wsgi_process: "placement", wsgi_user: "nova", wsgi_script: "/var/www/cgi-bin/nova/placement-api" }
 
 - hosts: nova_compute
   become: True
@@ -169,7 +169,7 @@
           haproxy_bind_hosts:
             - "{{ vip_mgmt }}"
             - "{{ vip_public }}"
-          haproxy_port: 8778
+          haproxy_port: 8780
           haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
           haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
           haproxy_backend_extras:
