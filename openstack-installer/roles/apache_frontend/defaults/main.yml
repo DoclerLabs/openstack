@@ -10,3 +10,4 @@ apache_proxy_preserve_http_auth: False
 apache_proxy_nokeepalive: False
 apache_configure_certificate_chain: False
 apache_oidc: False
+apache_processes: "{{ (ansible_processor_vcpus + 1) // 2 }}"
