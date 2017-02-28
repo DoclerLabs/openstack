@@ -62,6 +62,8 @@ nova_notifications: "{{ notifications_enable | default(False) }}"
 nova_instance_usage_audit: "{{ nova_notifications }}"
 nova_instance_usage_audit_period: hour
 
+nova_discover_hosts_in_cells_interval: 300
+
 #kvm or qemu
 nova_virt_type: kvm
 

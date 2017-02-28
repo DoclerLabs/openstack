@@ -215,6 +215,10 @@ memcache_security_strategy = ENCRYPT
 memcache_secret_key = {{ memcache_secret_key }}
 
 {% if inventory_hostname in groups['nova_controller'] %}
+[scheduler]
+
+discover_hosts_in_cells_interval = {{ nova_discover_hosts_in_cells_interval }}
+
 [api_database]
 
 connection = mysql+pymysql://{{ nova_api_db_user }}:{{ nova_api_db_password }}@{{ nova_mysql_server }}/{{ nova_api_db }}?charset=utf8
