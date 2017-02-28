@@ -43,7 +43,7 @@ transport_url = rabbit://{% for host in rabbit_hosts %}{{ nova_rabbit_user }}:{{
 
 # Metadata
 metadata_host = {{ vip_mgmt }}
-metadata_listen = 172.0.0.1
+metadata_listen = 127.0.0.1
 metadata_workers = {{ nova_metadata_workers }}
 
 # Network
