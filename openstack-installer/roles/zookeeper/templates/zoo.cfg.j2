@@ -49,3 +49,5 @@ server.{{ node+1 }}={{ hostvars[groups['zookeeper'][node]].ip.mgmt }}:2888:3888
 # read throughput the leader can be configured to not accept clients and focus
 # on coordination.
 #leaderServes=yes
+
+maxClientCnxns = {{ zookeeper_maxClientCnxns }}
