@@ -243,9 +243,9 @@ messaging_urls = rabbit://{{ sahara_rabbit_user }}:{{ sahara_rabbit_password }}@
 {% if ceilometer_store_events %}
 
 {% if panko_backend == 'mongodb' %}
-connection = mongodb://panko:{{ panko_db_password }}@{% for host in groups['mongodb'] %}{{ hostvars[host].ip.mgmt }}:27017{% if not loop.last %},{% endif %}{% endfor %}/panko
+event_connection = mongodb://panko:{{ panko_db_password }}@{% for host in groups['mongodb'] %}{{ hostvars[host].ip.mgmt }}:27017{% if not loop.last %},{% endif %}{% endfor %}/panko
 {% else %}
-connection = mysql+pymysql://{{ panko_db_user }}:{{ panko_db_password }}@{{ panko_mysql_server }}/{{ panko_db }}?charset=utf8
+event_connection = mysql+pymysql://{{ panko_db_user }}:{{ panko_db_password }}@{{ panko_mysql_server }}/{{ panko_db }}?charset=utf8
 {% endif %}
 
 {% endif %}
