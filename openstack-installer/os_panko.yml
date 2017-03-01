@@ -29,7 +29,8 @@
       changed_when: False
 
     - name: create panko mongo user
-      mongodb_user: login_user=admin login_password={{ mongodb_admin_password }} database=panko name=panko password={{ panko_db_password }}
+      mongodb_user: login_user=admin login_password={{ mongodb_admin_password }}
+                    database=panko name=panko password={{ panko_db_password }} roles='readWrite,dbAdmin'
       when: mongo_master.stdout == 'true' and panko_backend | default('mysql') == 'mongodb'
 
 - hosts: panko

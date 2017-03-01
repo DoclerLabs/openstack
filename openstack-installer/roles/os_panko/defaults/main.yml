@@ -16,6 +16,8 @@ panko_syslog_use: "{{ syslog_use | default(False) }}"
 
 panko_debug: False
 
+mongodb_replica_set: openstack
+
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
 SSLCACertificateFileSource:

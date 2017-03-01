@@ -218,7 +218,7 @@ backend = sqlalchemy
 # Deprecated group/name - [DATABASE]/sql_connection
 # Deprecated group/name - [sql]/connection
 {% if panko_backend == 'mongodb' %}
-connection = mongodb://panko:{{ panko_db_password }}@{% for host in groups['mongodb'] %}{{ hostvars[host].ip.mgmt }}:27017{% if not loop.last %},{% endif %}{% endfor %}/panko
+connection = mongodb://panko:{{ panko_db_password }}@{% for host in groups['mongodb'] %}{{ hostvars[host].ip.mgmt }}:27017{% if not loop.last %},{% endif %}{% endfor %}/panko?replicaSet={{ mongodb_replica_set }}
 {% else %}
 connection = mysql+pymysql://{{ panko_db_user }}:{{ panko_db_password }}@{{ panko_mysql_server }}/{{ panko_db }}?charset=utf8
 {% endif %}
