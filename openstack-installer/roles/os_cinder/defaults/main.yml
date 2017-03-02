@@ -15,8 +15,11 @@ ceph_cluster_name: ceph
 cinder_backend: lvm
 cinder_ceph_pool: volumes
 cinder_ceph_user: cinder
+
+cinder_backup_backend: posix
 cinder_backup_ceph_pool: backups
 cinder_backup_ceph_user: cinder-backup
+cinder_backup_ceph_cluster_name: "{{ ceph_cluster_name }}"
 
 #convert cinder flat variables to the multi-backend format
 cinder_backends:
@@ -25,8 +28,6 @@ cinder_backends:
     ceph_cluster_name: "{{ ceph_cluster_name }}"
     ceph_pool: "{{ cinder_ceph_pool }}"
     ceph_user: "{{ cinder_ceph_user }}"
-    backup_ceph_pool: "{{ cinder_backup_ceph_pool }}"
-    backup_ceph_user: "{{ cinder_backup_ceph_user }}"
     volume_secret_uuid: "{{ cinder_volume_secret_uuid }}"
 
 cinder_notifications: "{{ notifications_enable | default(False) }}"

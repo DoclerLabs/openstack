@@ -56,12 +56,15 @@ trove_physical_network: vlan
 trove_subnet_cidr: 10.20.30.0/24
 trove_image_path: /etc/openstack_deploy/trove-mysql.qcow2
 
+#ceph os posix
+cinder_backup_backend: ceph
+cinder_backup_ceph_pool: backups
+cinder_backup_ceph_user: cinder-backup
+
 #ceph or lvm
 cinder_backend: ceph
 cinder_ceph_pool: volumes
 cinder_ceph_user: cinder
-cinder_backup_ceph_pool: backups
-cinder_backup_ceph_user: cinder-backup
 cinder_volume_secret_uuid: d048aa33-c46c-4573-a0c9-dd014d56e2b4
 
 #ceph, swift or files
