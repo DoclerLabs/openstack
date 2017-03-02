@@ -52,12 +52,15 @@ external_subnet_gateway_ip: 10.10.2.1
 external_subnet_allocation_start: 10.10.2.100
 external_subnet_allocation_end: 10.10.2.200
 
+#ceph os posix
+cinder_backup_backend: ceph
+cinder_backup_ceph_pool: backups
+cinder_backup_ceph_user: cinder-backup
+
 #ceph or lvm
 cinder_backend: ceph
 cinder_ceph_pool: volumes
 cinder_ceph_user: cinder
-cinder_backup_ceph_pool: backups
-cinder_backup_ceph_user: cinder-backup
 cinder_volume_secret_uuid: d048aa33-c46c-4573-a0c9-dd014d56e2b4
 
 #ceph, swift or files

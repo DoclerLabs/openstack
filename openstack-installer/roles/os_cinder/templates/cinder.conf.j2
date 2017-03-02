@@ -26,6 +26,19 @@ glance_api_insecure = {{ ssl_insecure }}
 glance_ca_certificates_file = {{ SSLCACertificateFile }}
 {% endif %}
 
+{% if cinder_backup_backend == 'posix' %}
+
+backup_driver = cinder.backup.drivers.posix
+
+{% elif cinder_backup_backend == 'ceph' %}
+
+backup_driver = cinder.backup.drivers.ceph
+backup_ceph_conf = /etc/ceph/{{ cinder_backup_ceph_cluster_name }}.conf
+backup_ceph_pool = {{ cinder_backup_ceph_pool }}
+backup_ceph_user = {{ cinder_backup_ceph_user }}
+
+{% endif %}
+
 {% if inventory_hostname in groups['cinder_volume'] %}
 
 {% if cinder_backends | count > 1 %}
@@ -50,17 +63,14 @@ volume_group = cinder-volumes
 {% elif backend.backend == 'ceph' %}
 
 volume_driver=cinder.volume.drivers.rbd.RBDDriver
-backup_driver=cinder.backup.drivers.ceph
 rbd_cluster_name = {{ backend.ceph_cluster_name }}
 rbd_ceph_conf = /etc/ceph/{{ backend.ceph_cluster_name }}.conf
 rbd_pool = {{ backend.ceph_pool }}
 rbd_user = {{ backend.ceph_user }}
 rbd_secret_uuid = {{ backend.volume_secret_uuid }}
-backup_ceph_conf = /etc/ceph/{{ backend.ceph_cluster_name }}.conf
-backup_ceph_pool = {{ backend.backup_ceph_pool }}
-backup_ceph_user = {{ backend.backup_ceph_user }}
 
 {% endif %}
+
 {% if cinder_backends | count > 1 %}
 volume_backend_name = {{ backend.name }}
 {% endif %}

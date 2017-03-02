@@ -111,10 +111,7 @@ turning off verifying the certs).
 
 The list of services which currently has problems:
 
-- cinder: cinder quotas code doesn't work connecting to secured keystone.
 - trove: trove cannot check, nor disable certificate checking to OS components.
-- sahara: sahara has some options to allow to set CA certificate or turn the checking off in nova,
-  neutron and cinder, but they're not implemeneted correctly.
 
 Settings for TLS connections:
 
@@ -425,10 +422,15 @@ The configuration options are:
   cinder_backend: lvm                        # The default backend for Cinder volumes. Can be 'lvm' or 'ceph'.
   cinder_ceph_pool: volumes                  # The default Ceph pool for the volumes.
   cinder_ceph_user: cinder                   # The Ceph user for accessing the Ceph pool.
-  cinder_backup_ceph_pool: backups           # The Ceph pool used for the volume backups.
-  cinder_backup_ceph_user: cinder-backup     # The Ceph user used for the volume backups.
   cinder_volume_secret_uuid:                 # A random UUID for the Ceph secret in Libvirt.
   cinder_ceph_key:                           # If a cephx key is given here, use that, instead of creating a user. Useful for external Ceph.
+
+  cinder_backup_backend: posix               # The backend for cinder backup, Can be 'posix' or 'ceph'
+  cinder_backup_ceph_cluster_name:           # The cluster name for ceph used by cinder-backup. Default is ceph_cluster_name(ceph).
+  cinder_backup_ceph_monitors:               # Alternative ceph monitor hosts for cinder-backup. Userful for external Ceph.
+  cinder_backup_ceph_pool: backups           # The Ceph pool used for the volume backups.
+  cinder_backup_ceph_user: cinder-backup     # The Ceph user used for the volume backups.
+  cinder_backup_ceph_key:                    # Same as cinder_ceph_key, for the backup user/pool.
 
 
 Multi-backend support can be activated by using a cinder_backends list instead of the options above. The list structure:
@@ -443,8 +445,6 @@ Multi-backend support can be activated by using a cinder_backends list instead o
       ceph_pool: cinder
       ceph_user: cinder
       ceph_key:
-      backup_ceph_pool: backups
-      backup_ceph_user: cinder-backup
       volume_secret_uuid:
     - backend: ceph
       name: ceph-2
