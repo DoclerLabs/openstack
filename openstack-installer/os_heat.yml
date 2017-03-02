@@ -17,13 +17,17 @@
           keystone_password: "{{ heat_admin_password }}"
           keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
           keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
-          keystone_role: admin
+          keystone_role:
+            - admin
+            - service
         - keystone_user: "{{ heat_domain_admin | default('heat_domain_admin') }}"
           keystone_domain_name: "{{ heat_user_domain | default('heat_user_domain') }}"
           keystone_password: "{{ heat_domain_admin_password }}"
           keystone_project_name:
           keystone_project_domain_name:
-          keystone_role: admin
+          keystone_role:
+            - admin
+            - service
       keystone_roles:
         - heat_stack_owner
         - heat_stack_user

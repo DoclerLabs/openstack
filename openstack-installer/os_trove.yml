@@ -21,7 +21,9 @@
           keystone_password: "{{ trove_admin_password }}"
           keystone_project_name: "{{ trove_project_name | default('trove') }}"
           keystone_project_domain_name: "{{ trove_domain_name | default(keystone_domain_name) }}"
-          keystone_role: admin
+          keystone_role:
+            - admin
+            - service
 
 - hosts: trove
   become: True
