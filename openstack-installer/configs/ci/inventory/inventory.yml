@@ -46,7 +46,7 @@ galera:
 mongodb:
   inherit: controller
 
-syslog:
+rsyslog:
   inherit:
     - compute
     - controller
