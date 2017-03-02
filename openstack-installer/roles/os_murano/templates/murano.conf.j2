@@ -441,7 +441,12 @@ auth_type = password
 
 [oslo_messaging_notifications]
 
+{% if murano_notifications %}
 driver = messagingv2
+{% else %}
+driver =
+{% endif %}
+
 
 [oslo_messaging_amqp]
 

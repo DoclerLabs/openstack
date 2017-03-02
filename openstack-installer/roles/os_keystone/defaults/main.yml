@@ -32,6 +32,8 @@ keystone_OIDCClientSecret:
 
 keystone_OIDCSSLValidateServer: True
 
+keystone_notifications: "{{ notifications_enable | default(False) }}"
+
 keystone_debug: False
 keystone_ssl: False
 keystone_proto: "{{ keystone_ssl | ternary('https', 'http') }}"

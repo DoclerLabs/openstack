@@ -37,6 +37,10 @@ os_public_address: "{{ vip_public }}"
 #Use TLS for all OS services
 #os_ssl: False
 
+#Globally enable notifications only when Ceilometer is installed,
+#otherwise no one will consume the notification messages.
+notifications_enable: "{{ groups['ceilometer_controller'] | count > 0 }}"
+
 neutron_flat_networks:
 neutron_physical_interface_mappings: vlan:br-vlan
 neutron_vlan_ranges: vlan:901:915,vlan:917:975

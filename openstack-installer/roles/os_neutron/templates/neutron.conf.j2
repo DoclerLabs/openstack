@@ -916,7 +916,12 @@ lock_path = $state_path/lock
 
 [oslo_messaging_notifications]
 
+{% if neutron_notifications %}
 driver = messagingv2
+{% else %}
+driver =
+{% endif %}
+
 
 [oslo_messaging_amqp]
 

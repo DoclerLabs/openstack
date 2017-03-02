@@ -10,6 +10,8 @@ mistral_domain_name: "{{ keystone_domain_name }}"
 mistral_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
 mistral_project_name: "{{ keystone_service_project_name | default('service') }}"
 
+mistral_notifications: "{{ notifications_enable | default(False) }}"
+
 mistral_syslog_use: "{{ syslog_use | default(False) }}"
 
 mistral_debug: False

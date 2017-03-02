@@ -209,7 +209,12 @@ max_retries = -1
 lock_path = /var/lock/nova
 
 [oslo_messaging_notifications]
+
+{% if nova_notifications %}
 driver = messagingv2
+{% else %}
+driver =
+{% endif %}
 
 [oslo_messaging_rabbit]
 rabbit_port = 5672

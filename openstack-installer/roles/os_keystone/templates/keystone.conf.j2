@@ -1368,7 +1368,12 @@ socket_timeout = {{ keystone_memcache_socket_timeout }}
 
 [oslo_messaging_notifications]
 
+{% if keystone_notifications %}
 driver = messagingv2
+{% else %}
+driver =
+{% endif %}
+
 
 [oslo_messaging_amqp]
 
@@ -1492,7 +1497,6 @@ driver = messagingv2
 # able to take everything down, as it requires a clean break. (integer value)
 # Deprecated group/name - [DEFAULT]/qpid_topology_version
 #qpid_topology_version = 1
-
 
 [oslo_messaging_rabbit]
 

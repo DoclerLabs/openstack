@@ -102,7 +102,11 @@ lock_path = /var/lock/cinder
 
 [oslo_messaging_notifications]
 
+{% if cinder_notifications %}
 driver = messagingv2
+{% else %}
+driver =
+{% endif %}
 
 [oslo_messaging_rabbit]
 rabbit_port = 5672

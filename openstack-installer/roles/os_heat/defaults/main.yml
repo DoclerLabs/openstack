@@ -19,6 +19,8 @@ heat_domain_admin: heat_domain_admin
 #trusts or password
 heat_deferred_auth_method: trusts
 
+heat_notifications: "{{ notifications_enable | default(False) }}"
+
 heat_syslog_use: "{{ syslog_use | default(False) }}"
 
 heat_debug: False

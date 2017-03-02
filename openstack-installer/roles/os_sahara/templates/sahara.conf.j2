@@ -114,8 +114,13 @@ periodic_coordinator_backend_url = kazoo://{% for host in groups['zookeeper'] %}
 
 
 [oslo_messaging_notifications]
-enable = true
+
+{% if sahara_notifications %}
 driver = messagingv2
+{% else %}
+driver =
+{% endif %}
+
 
 [oslo_messaging_rabbit]
 rabbit_port = 5672
