@@ -1191,8 +1191,13 @@ auth_type = password
 
 [oslo_messaging_notifications]
 
+{% if glance_notifications %}
 driver = messagingv2
 transport_url = rabbit://{% for host in rabbit_hosts %}{{ glance_rabbit_user }}:{{ glance_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ glance_rabbit_vhost }}
+{% else %}
+driver =
+transport_url =
+{% endif %}
 
 
 [oslo_messaging_rabbit]

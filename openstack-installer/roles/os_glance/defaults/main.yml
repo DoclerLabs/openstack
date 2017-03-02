@@ -19,6 +19,8 @@ glance_backend: files
 glance_ceph_pool: images
 glance_ceph_user: glance
 
+glance_notifications: "{{ notifications_enable | default(False) }}"
+
 glance_syslog_use: "{{ syslog_use | default(False) }}"
 
 glance_debug: False

@@ -754,9 +754,13 @@ lock_path = $state_path/lock
 
 [oslo_messaging_notifications]
 
+{% if neutron_notifications %}
 driver = messagingv2
 transport_url = rabbit://{% for host in rabbit_hosts %}{{ neutron_rabbit_user }}:{{ neutron_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ neutron_rabbit_vhost }}
-
+{% else %}
+driver =
+transport_url =
+{% endif %}
 
 [oslo_messaging_rabbit]
 

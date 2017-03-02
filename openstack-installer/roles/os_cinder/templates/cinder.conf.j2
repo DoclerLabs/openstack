@@ -115,8 +115,13 @@ lock_path = /var/lock/cinder
 
 [oslo_messaging_notifications]
 
+{% if cinder_notifications %}
 driver = messagingv2
 transport_url = rabbit://{% for host in rabbit_hosts %}{{ cinder_rabbit_user }}:{{ cinder_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ cinder_rabbit_vhost }}
+{% else %}
+driver =
+transport_url =
+{% endif %}
 
 
 [oslo_messaging_rabbit]

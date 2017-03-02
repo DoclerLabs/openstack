@@ -25,6 +25,8 @@ trove_verify_swift_checksum_on_restore: True
 trove_backup_use_openssl_encryption: False
 trove_backup_aes_cbc_key: "default_aes_cbc_key"
 
+trove_notifications: "{{ notifications_enable | default(False) }}"
+
 trove_syslog_use: "{{ syslog_use | default(False) }}"
 
 trove_debug: False

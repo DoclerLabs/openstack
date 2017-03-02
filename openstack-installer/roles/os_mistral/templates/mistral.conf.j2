@@ -397,29 +397,16 @@ memcache_secret_key = {{ memcache_secret_key }}
 # Timeout in ms on blocking socket operations (integer value)
 #socket_timeout = 1000
 
+
 [oslo_messaging_notifications]
 
-#
-# From oslo.messaging
-#
-
-# The Drivers(s) to handle sending notifications. Possible values are
-# messaging, messagingv2, routing, log, test, noop (multi valued)
-# Deprecated group/name - [DEFAULT]/notification_driver
-#driver =
+{% if mistral_notifications %}
 driver = messagingv2
-
-# A URL representing the messaging driver to use for notifications. If
-# not set, we fall back to the same configuration used for RPC.
-# (string value)
-# Deprecated group/name - [DEFAULT]/notification_transport_url
-#transport_url = <None>
 transport_url = rabbit://{% for host in rabbit_hosts %}{{ mistral_rabbit_user }}:{{ mistral_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ mistral_rabbit_vhost }}
-
-# AMQP topic used for OpenStack notifications. (list value)
-# Deprecated group/name - [rpc_notifier2]/topics
-# Deprecated group/name - [DEFAULT]/notification_topics
-#topics = notifications
+{% else %}
+driver =
+transport_url =
+{% endif %}
 
 
 [oslo_messaging_rabbit]

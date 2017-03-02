@@ -38,6 +38,8 @@ os_public_address: "{{ vip_public }}"
 #Use TLS for all OS services
 #os_ssl: False
 
+notifications_enable: True
+
 #Don't install additional dashboards due to LP Bug #1575635
 horizon_install_dashboards: False
 

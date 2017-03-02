@@ -29,6 +29,8 @@ cinder_backends:
     backup_ceph_user: "{{ cinder_backup_ceph_user }}"
     volume_secret_uuid: "{{ cinder_volume_secret_uuid }}"
 
+cinder_notifications: "{{ notifications_enable | default(False) }}"
+
 cinder_syslog_use: "{{ syslog_use | default(False) }}"
 
 cinder_debug: False

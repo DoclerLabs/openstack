@@ -117,9 +117,13 @@ periodic_coordinator_backend_url = kazoo://{% for host in groups['zookeeper'] %}
 
 [oslo_messaging_notifications]
 
-enable = true
+{% if sahara_notifications %}
 driver = messagingv2
 transport_url = rabbit://{% for host in rabbit_hosts %}{{ sahara_rabbit_user }}:{{ sahara_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ sahara_rabbit_vhost }}
+{% else %}
+driver =
+transport_url =
+{% endif %}
 
 
 [oslo_messaging_rabbit]

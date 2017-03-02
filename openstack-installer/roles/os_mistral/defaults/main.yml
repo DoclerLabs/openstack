@@ -11,6 +11,9 @@ mistral_project_domain_name: "{{ keystone_service_project_domain_name | default(
 mistral_project_name: "{{ keystone_service_project_name | default('service') }}"
 
 mistral_api_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
+
+mistral_notifications: "{{ notifications_enable | default(False) }}"
+
 mistral_syslog_use: "{{ syslog_use | default(False) }}"
 
 mistral_debug: False

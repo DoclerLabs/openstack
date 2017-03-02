@@ -12,6 +12,9 @@ murano_project_name: "{{ keystone_service_project_name | default('service') }}"
 
 murano_api_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 murano_engine_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
+
+murano_notifications: "{{ notifications_enable | default(False) }}"
+
 murano_syslog_use: "{{ syslog_use | default(False) }}"
 
 murano_debug: False
