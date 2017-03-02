@@ -78,16 +78,17 @@
     insecure={{ ssl_insecure | ternary("true", "false") }}
   with_items: "{{ keystone_users | default([]) }}"
 
-- name: assign role to the user in keystone
+- name: assign roles to the user in keystone
   keystone_user: >
     token="{{ auth_token }}"
     endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    project="{{ item.keystone_project_name }}"
-    project_domain="{{ item.keystone_project_domain_name | default('Default') }}"
-    user="{{ item.keystone_user }}"
-    user_domain="{{ item.keystone_domain_name | default('Default') }}"
-    role="{{ item.keystone_role }}"
     cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
-  with_items: "{{ keystone_users | default([]) }}"
-  when: item.keystone_role is defined
+    project="{{ item.0.keystone_project_name }}"
+    project_domain="{{ item.0.keystone_project_domain_name | default('Default') }}"
+    user="{{ item.0.keystone_user }}"
+    user_domain="{{ item.0.keystone_domain_name | default('Default') }}"
+    role="{{ item.1 }}"
+  with_subelements:
+     - "{{ keystone_users | default([]) }}"
+     - keystone_role
