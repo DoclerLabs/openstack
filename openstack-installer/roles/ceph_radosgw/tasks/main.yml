@@ -68,6 +68,16 @@
   file: path=/var/lib/ceph/nss state=directory mode=0755 owner=ceph group=root
   when: radosgw_keystone
 
+- name: set owner of existing nss database
+  file: path=/var/lib/ceph/nss/{{ item }}.db state=file mode=0600 owner=ceph group=ceph
+  with_items:
+    - cert8
+    - key3
+    - secmod
+  register: nss_file_result
+  failed_when: nss_file_result | failed and nss_file_result.state != 'absent'
+  when: radosgw_keystone
+
 - name: convert keystone CA cert for radosgw use
   shell: 'openssl x509 -in /etc/keystone/ssl/certs/ca.pem -pubkey | su -s /bin/sh ceph -c ''certutil -d /var/lib/ceph/nss -A -n ca -t "TCu,Cu,Tuw"'''
   when: radosgw_keystone
