@@ -90,7 +90,7 @@
            rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_backup_ceph_pool | default('backups') }}'"
            key: "{{ cinder_backup_ceph_key | default(None) }}"
            keyring_owner: cinder
-      when: cinder_backup_backend | default('posix') == 'lvm'
+      when: cinder_backup_backend | default('posix') == 'ceph'
 
 - hosts: haproxy
   become: True
