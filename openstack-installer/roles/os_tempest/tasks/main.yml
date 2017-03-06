@@ -55,7 +55,7 @@
   run_once: True
   register: cirros_image
 
-- name: ensure m1.micro flavor exists
+- name: ensure test flavors are exist
   os_nova_flavor:
     auth:
       auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
@@ -68,13 +68,16 @@
     validate_certs: "{{ ssl_insecure | ternary(False, True) }}"
     region_name: "{{ keystone_region_name }}"
     endpoint_type: internal
-    name: m1.micro
-    flavorid: 0
-    disk: 1
-    ram: 256
-    ephemeral: 0
-    vcpus: 1
+    name: "{{ item.name }}"
+    flavorid: "{{ item.id }}"
+    disk: "{{ item.disk }}"
+    ram: "{{ item.ram }}"
+    ephemeral: "{{ item.ephemeral }}"
+    vcpus: "{{ item.vcpus }}"
     state: present
+  with_items:
+    - {'name': 'm1.micro', 'id': 0, 'disk': 1, 'ram': 256, 'ephemeral': 0, 'vcpus': 1 }
+    - {'name': 'm1.tiny', 'id': 1, 'disk': 1, 'ram': 512, 'ephemeral': 0, 'vcpus': 1 }
 
 - name: ensure the heat stack owner project exists in keystone
   keystone_user: >
