@@ -22,6 +22,7 @@
                groups['sahara'] +
                groups['barbican'] +
                groups['mistral'] +
+               groups['gnocchi'] +
                groups['ironic']) | unique %}
 
 {% set volume_hosts = groups['cinder_volume'] %}
@@ -94,6 +95,7 @@ define hostgroup{
 {{ hostgroup('sahara', 'sahara', 'OpenStack Sahara hosts', groups['sahara']) }}
 {{ hostgroup('barbican', 'barbican', 'OpenStack Barbican hosts', groups['barbican']) }}
 {{ hostgroup('mistral', 'mistral', 'OpenStack Mistral hosts', groups['mistral']) }}
+{{ hostgroup('gnocchi', 'gnocchi', 'OpenStack Gnocchi hosts', groups['gnocchi']) }}
 
 define servicegroup{
     servicegroup_name {{ nagios_cloud_prefix }}ceph
@@ -538,5 +540,15 @@ define service{
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description mistral-api
     check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8989
+}
+{% endif %}
+
+{% if groups['gnocchi'] | count > 0 %}
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ nagios_cloud_prefix }}gnocchi,{{ vips_monitored }}
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description gnocchi-api
+    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8041
 }
 {% endif %}
