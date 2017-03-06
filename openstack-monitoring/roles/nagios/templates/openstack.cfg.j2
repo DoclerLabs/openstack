@@ -489,7 +489,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}barbican,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description barbican-api
-    check_command check_http!-p 9311
+    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 9311
 }
 {% endif %}
 
