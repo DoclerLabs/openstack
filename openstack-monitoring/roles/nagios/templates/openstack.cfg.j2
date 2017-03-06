@@ -21,6 +21,7 @@
                groups['murano'] +
                groups['sahara'] +
                groups['barbican'] +
+               groups['mistral'] +
                groups['ironic']) | unique %}
 
 {% set volume_hosts = groups['cinder_volume'] %}
@@ -92,6 +93,7 @@ define hostgroup{
 {{ hostgroup('murano', 'murano', 'OpenStack Murano hosts', groups['murano']) }}
 {{ hostgroup('sahara', 'sahara', 'OpenStack Sahara hosts', groups['sahara']) }}
 {{ hostgroup('barbican', 'barbican', 'OpenStack Barbican hosts', groups['barbican']) }}
+{{ hostgroup('mistral', 'mistral', 'OpenStack Mistral hosts', groups['mistral']) }}
 
 define servicegroup{
     servicegroup_name {{ nagios_cloud_prefix }}ceph
@@ -526,5 +528,15 @@ define service{
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description sahara-api
     check_command {{ nagios_cloud_prefix }}check_http_url!-p 8386!-e 401
+}
+{% endif %}
+
+{% if groups['mistral'] | count > 0 %}
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ nagios_cloud_prefix }}mistral,{{ vips_monitored }}
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description mistral-api
+    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8989
 }
 {% endif %}
