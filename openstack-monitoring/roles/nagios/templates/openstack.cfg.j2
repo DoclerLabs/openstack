@@ -282,7 +282,7 @@ define service{
 define service{
     use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}ceph-radosgw,{{ vips_monitored }}
-    servicegroups ceph
+    servicegroups {{nagios_cloud_prefix}}ceph
     service_description radosgw
     check_command {{ radosgw_ssl | ternary('check_https','check_http') }}!-p {{ radosgw_port }}
 }
