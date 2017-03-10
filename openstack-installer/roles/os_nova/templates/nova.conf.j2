@@ -219,6 +219,7 @@ memcache_secret_key = {{ memcache_secret_key }}
 
 discover_hosts_in_cells_interval = {{ nova_discover_hosts_in_cells_interval }}
 
+
 [api_database]
 
 connection = mysql+pymysql://{{ nova_api_db_user }}:{{ nova_api_db_password }}@{{ nova_mysql_server }}/{{ nova_api_db }}?charset=utf8
@@ -257,6 +258,7 @@ rabbit_ha_queues = true
 auth_type = password
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
 os_region_name = {{ keystone_region_name }}
+os_interface = internal
 user_domain_name = {{ placement_domain_name }}
 username = {{ placement_admin_user }}
 password = {{ placement_admin_password }}
