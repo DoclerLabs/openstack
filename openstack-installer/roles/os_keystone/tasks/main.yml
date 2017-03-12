@@ -86,9 +86,9 @@
   notify: signal apache to reload
 
 - name: install keystone-wsgi server
-  copy: src=keystone-wsgi dest=/var/www/cgi-bin/keystone/{{ item }} owner=root group=root mode=0644
+  file: src=/usr/bin/keystone-wsgi-{{ item }} dest=/var/www/cgi-bin/keystone/{{ item }} state=link force=yes
   with_items:
-    - main
+    - public
     - admin
   notify: signal apache to reload
 

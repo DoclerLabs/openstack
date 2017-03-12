@@ -13,7 +13,7 @@
       apache_service_ssl: "{{ keystone_ssl | default(False) }}"
       apache_oidc: "{{ keystone_federation_oidc | default(False) }}"
       apache_services:
-        - { port: 5000, wsgi_process: "keystone-public", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/main", include: "/etc/keystone-federation.conf" }
+        - { port: 5000, wsgi_process: "keystone-public", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/public", include: "/etc/keystone-federation.conf" }
         - { port: 35357, wsgi_process: "keystone-admin", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/admin" }
 
 - hosts: haproxy
