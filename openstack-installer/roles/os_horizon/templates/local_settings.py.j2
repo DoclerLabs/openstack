@@ -6,7 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from horizon.utils import secret_key
 
-from openstack_dashboard import exceptions
 from openstack_dashboard.settings import HORIZON_CONFIG
 
 DEBUG = {{ horizon_debug }}
@@ -24,7 +23,6 @@ WEBROOT = '/'
 # Do not set it to '/home/', as this will cause circular redirect loop
 #LOGIN_REDIRECT_URL = WEBROOT
 
-# Required for Django 1.5.
 # If horizon is running in production (DEBUG is False), set this
 # with the list of host/domain names that the application can serve.
 # For more information see:
@@ -33,12 +31,10 @@ WEBROOT = '/'
 ALLOWED_HOSTS = '*'
 
 # Set SSL proxy settings:
-# For Django 1.4+ pass this header from the proxy after terminating the SSL,
+# Pass this header from the proxy after terminating the SSL,
 # and don't forget to strip it from the client's request.
 # For more information see:
-# https://docs.djangoproject.com/en/1.4/ref/settings/#secure-proxy-ssl-header
-#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
-# https://docs.djangoproject.com/en/1.5/ref/settings/#secure-proxy-ssl-header
+# https://docs.djangoproject.com/en/dev/ref/settings/#secure-proxy-ssl-header
 #SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # If Horizon is being served through SSL, then uncomment the following two
@@ -46,21 +42,32 @@ ALLOWED_HOSTS = '*'
 #CSRF_COOKIE_SECURE = True
 #SESSION_COOKIE_SECURE = True
 
+# The absolute path to the directory where message files are collected.
+# The message file must have a .json file extension. When the user logins to
+# horizon, the message files collected are processed and displayed to the user.
+#MESSAGES_PATH=None
+
 # Overrides for OpenStack API versions. Use this setting to force the
 # OpenStack dashboard to use a specific API version for a given service API.
 # Versions specified here should be integers or floats, not strings.
 # NOTE: The version should be formatted as it appears in the URL for the
 # service API. For example, The identity service APIs have inconsistent
 # use of the decimal point, so valid options would be 2.0 or 3.
-OPENSTACK_API_VERSIONS = { "identity": 3, }
+# Minimum compute version to get the instance locked status is 2.9.
+OPENSTACK_API_VERSIONS = {
+     "identity": 3
+}
 #OPENSTACK_API_VERSIONS = {
 #    "data-processing": 1.1,
 #    "identity": 3,
+#    "image": 2,
 #    "volume": 2,
+#    "compute": 2,
 #}
 
-# Set this to True if running on multi-domain model. When this is enabled, it
-# will require user to enter the Domain name in addition to username for login.
+# Set this to True if running on a multi-domain model. When this is enabled, it
+# will require the user to enter the Domain name in addition to the username
+# for login.
 #OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = False
 OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = {{ horizon_keystone_multidomain_support }}
 
@@ -374,7 +381,7 @@ OPENSTACK_ENDPOINT_TYPE = "{{ horizon_openstack_endpoint_type }}"
 # SECONDARY_ENDPOINT_TYPE specifies the fallback endpoint type to use in the
 # case that OPENSTACK_ENDPOINT_TYPE is not present in the endpoints
 # in the Keystone service catalog. Use this setting when Horizon is running
-# external to the OpenStack environment. The default is None.  This
+# external to the OpenStack environment. The default is None. This
 # value should differ from OPENSTACK_ENDPOINT_TYPE if used.
 #SECONDARY_ENDPOINT_TYPE = "publicURL"
 
@@ -449,7 +456,6 @@ MURANO_REPO_URL="{{ murano_repo_url }}"
 #    'image': 'glance_policy.json',
 #    'orchestration': 'heat_policy.json',
 #    'network': 'neutron_policy.json',
-#    'telemetry': 'ceilometer_policy.json',
 #}
 
 # Trove user and database extension support. By default support for
@@ -549,11 +555,6 @@ LOGGING = {
             'propagate': False,
         },
         'heatclient': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'ceilometerclient': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
@@ -738,7 +739,8 @@ SECURITY_GROUP_RULES = {
 # See: https://wiki.openstack.org/wiki/Horizon/RESTAPI
 REST_API_REQUIRED_SETTINGS = ['OPENSTACK_HYPERVISOR_FEATURES',
                               'LAUNCH_INSTANCE_DEFAULTS',
-                              'OPENSTACK_IMAGE_FORMATS']
+                              'OPENSTACK_IMAGE_FORMATS',
+                              'OPENSTACK_KEYSTONE_DEFAULT_DOMAIN']
 
 # Additional settings can be made available to the client side for
 # extensibility by specifying them in REST_API_ADDITIONAL_SETTINGS
@@ -808,7 +810,11 @@ COMPRESS_OFFLINE = {{ horizon_compress_offline }}
 #    'admin.images': False,
 #    'admin.networks': False,
 #    'admin.routers': False,
-#    'admin.volumes': False
+#    'admin.volumes': False,
+#    'identity.users': False,
+#    'identity.projects': False,
+#    'identity.groups': False,
+#    'identity.roles': False
 #}
 
 # Dict used to restrict user private subnet cidr range.
