@@ -42,7 +42,7 @@
   notify: signal apache to reload
 
 - name: link panko wsgi servers
-  file: src=/usr/lib/python2.7/dist-packages/panko/api/app.wsgi dest=/var/www/cgi-bin/panko/app.wsgi state=link
+  file: src=/usr/lib/python2.7/dist-packages/panko/api/app.wsgi dest=/var/www/cgi-bin/panko/panko-api state=link
   notify: signal apache to reload
 
 - meta: flush_handlers
