@@ -41,7 +41,7 @@ debug = {{ panko_debug }}
 # is ignored if log_config_append is set. (string value)
 # Deprecated group/name - [DEFAULT]/logdir
 #log_dir = <None>
-#log_dir = /var/log/panko
+log_dir = /var/log/panko
 
 # Uses logging handler designed to watch file system. When log file is moved or
 # removed this handler will open a new log file with specified path
@@ -330,7 +330,7 @@ cafile = {{ SSLCACertificateFile }}
 {% endif %}
 insecure = {{ ssl_insecure }}
 region_name = {{ keystone_region_name }}
-#service_token_roles_required = True
+service_token_roles_required = True
 
 memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
 
