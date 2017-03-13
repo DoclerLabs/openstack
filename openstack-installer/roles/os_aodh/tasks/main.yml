@@ -85,7 +85,7 @@
   notify: signal apache to reload
 
 - name: link aodh wsgi servers
-  file: src=/usr/lib/python2.7/dist-packages/aodh/api/app.wsgi dest=/var/www/cgi-bin/aodh/app.wsgi state=link
+  file: src=/usr/lib/python2.7/dist-packages/aodh/api/app.wsgi dest=/var/www/cgi-bin/aodh/aodh-api state=link
   notify: signal apache to reload
 
 - name: unmask autostarting of aodh services
