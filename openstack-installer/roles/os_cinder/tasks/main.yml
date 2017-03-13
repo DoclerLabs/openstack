@@ -105,8 +105,8 @@
   when: inventory_hostname in groups['cinder']
   notify: signal apache to reload
 
-- name: install keystone-wsgi server
-  copy: src=cinder-wsgi dest=/var/www/cgi-bin/cinder/cinder-api owner=root group=root mode=0644
+- name: link cinder-wsgi server
+  file: src=/usr/bin/cinder-wsgi dest=/var/www/cgi-bin/cinder/cinder-api state=link force=yes
   when: inventory_hostname in groups['cinder']
   notify: signal apache to reload
 
