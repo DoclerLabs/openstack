@@ -79,8 +79,8 @@
   file: path=/var/www/cgi-bin/barbican state=directory owner=root group=root mode=0755
   notify: signal apache to reload
 
-- name: install barbican-wsgi server
-  copy: src=barbican-wsgi dest=/var/www/cgi-bin/barbican/barbican-api owner=root group=root mode=0644
+- name: link barbican-wsgi server
+  file: src=/usr/share/barbican/app.wsgi dest=/var/www/cgi-bin/barbican/barbican-api state=link force=yes
   notify: signal apache to reload
 
 - name: unmask autostarting of barbican
