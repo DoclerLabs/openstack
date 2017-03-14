@@ -278,7 +278,9 @@ virt_type = {{ nova_virt_type }}
 live_migration_uri = qemu+ssh://nova@%s/system?keyfile=/var/lib/nova/.ssh/id_rsa&no_tty=1&no_verify=1
 live_migration_tunnelled = {{ nova_live_migration_tunelled }}
 live_migration_completion_timeout = {{ nova_live_migration_completion_timeout }}
-live_migration_progress_timeout = {{ nova_live_migration_progress_timeout }}
+live_migration_downtime = {{ nova_live_migration_downtime }}
+live_migartion_downtime_delay = {{ nova_live_migration_downtime_delay }}
+live_migration_downtime_steps = {{ nova_live_migration_downtime_steps }}
 
 {% if nova_ephemeral_backend == 'ceph' %}
 #ceph
