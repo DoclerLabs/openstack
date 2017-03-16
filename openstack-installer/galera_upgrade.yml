@@ -27,6 +27,9 @@
       - name: unmanage galera
         command: crm resource unmanage p_galera
 
+      - name: shutdown mysql instance
+        command: mysqladmin shutdown -u root -p{{ mysql_root_password }}
+
       - name: upgrade packages
         apt: name={{ item }} state=latest
         with_items:
