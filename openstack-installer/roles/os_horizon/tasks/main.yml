@@ -17,8 +17,8 @@
   with_items:
     - { service: 'trove', package: 'python-trove-dashboard' }
     - { service: 'sahara', package: 'python-sahara-dashboard' }
-#    - { service: 'murano', package: 'python-murano-dashboard' }
-#    - { service: 'manila', package: 'python-manila-ui' }
+    - { service: 'murano', package: 'python-murano-dashboard' }
+    - { service: 'manila', package: 'python-manila-ui' }
 
 - name: install CA certificate
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
