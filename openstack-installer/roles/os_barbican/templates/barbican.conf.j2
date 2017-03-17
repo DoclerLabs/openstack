@@ -339,7 +339,7 @@ region_name = {{ keystone_region_name }}
 #auth_version = v3.0
 #delay failing perhaps to log the unauthorized request in barbican ..
 #delay_auth_decision = true
-#service_token_roles_required = True
+service_token_roles_required = True
 region_name = {{ keystone_region_name }}
 memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
 
