@@ -74,7 +74,6 @@ default_ephemeral_format = ext4
 # Ceilometer notification configurations
 instance_usage_audit = {{ nova_instance_usage_audit }}
 instance_usage_audit_period = {{ nova_instance_usage_audit_period }}
-notify_on_state_change = vm_and_task_state
 
 #console ssl
 {% if nova_console_ssl | bool %}
@@ -236,6 +235,11 @@ max_retries = -1
 [oslo_concurrency]
 
 lock_path = /var/lock/nova
+
+
+[notifications]
+
+notify_on_state_change = vm_and_task_state
 
 
 [oslo_messaging_notifications]
