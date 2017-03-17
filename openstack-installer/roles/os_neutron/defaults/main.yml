@@ -33,7 +33,9 @@ designate_project_name: "{{ keystone_service_project_name | default('service') }
 neutron_mtu: 0
 neutron_advertise_mtu: True
 neutron_path_mtu: 0
-neutron_segment_mtu: 0
+#deprecated, use neutron_global_physnet_mtu
+neutron_segment_mtu: 1500
+neutron_global_physnet_mtu: "{{ neutron_segment_mtu }}"
 neutron_physical_network_mtus:
 
 #lbaas or lbaasv2

@@ -58,12 +58,6 @@ extension_drivers = {{ ','.join(extension_drivers) }}
 # path_mtu = 0
 path_mtu = {{ neutron_path_mtu }}
 
-# (IntOpt) Segment MTU.  The maximum permissible size of an
-# unfragmented packet travelling a L2 network segment.  If <=0,
-# the segment MTU is indeterminate and no calculation takes place.
-# segment_mtu = 0
-segment_mtu = {{ neutron_segment_mtu }}
-
 # (ListOpt) Physical network MTUs.  List of mappings of physical
 # network to MTU value.  The format of the mapping is
 # <physnet>:<mtu val>.  This mapping allows specifying a

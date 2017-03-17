@@ -72,13 +72,6 @@ network_device_mtu = {{ neutron_mtu }}
 # if all routers must have an external network gateway
 # handle_internal_only_routers = True
 
-# Name of bridge used for external network traffic. This should be set to
-# empty value for the linux bridge. when this parameter is set, each L3 agent
-# can be associated with no more than one external network.
-# This option is deprecated and will be removed in the M release.
-# external_network_bridge = br-ex
-external_network_bridge =
-
 # TCP Port used by Neutron metadata server
 # metadata_port = 9697
 
