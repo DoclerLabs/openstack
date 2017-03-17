@@ -21,7 +21,7 @@ Upgrade option from the previous version is available.
 Current OpenStack versions supported:
 - Liberty/Ubuntu Trusty        - trusty/liberty branch
 - Mitaka/Ubuntu Trusty/Xenial  - mitaka branch
-- Newton/Ubuntu Xenial         - master branch
+- Newton/Ubuntu Xenial         - xenial/newton branch
 
 Integrated Infra components:
 - Pacemaker
