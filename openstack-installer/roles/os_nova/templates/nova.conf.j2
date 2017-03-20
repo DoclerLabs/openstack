@@ -260,6 +260,23 @@ cafile = {{ SSLCACertificateFile }}
 insecure = {{ ssl_insecure }}
 
 
+[service_user]
+
+auth_type = password
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+region_name = {{ keystone_region_name }}
+user_domain_name = {{ nova_domain_name }}
+username = {{ nova_admin_user }}
+password = {{ nova_admin_password }}
+project_domain_name = {{ nova_project_domain_name }}
+project_name = {{ nova_project_name }}
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
+send_service_user_token = True
+
+
 {% if inventory_hostname in groups['nova_compute'] %}
 [libvirt]
 
