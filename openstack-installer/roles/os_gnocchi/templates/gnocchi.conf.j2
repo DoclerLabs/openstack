@@ -311,6 +311,15 @@ memcache_secret_key = {{ memcache_secret_key }}
 #workers = <None>
 workers = {{ gnocchi_metricd_workers }}
 
+# How many seconds to wait between new metric measure processing (integer value)
+#metric_processing_delay = 5
+metric_processing_delay = {{ gnocchi_metric_processing_delay }}
+
+# How many seconds to wait between metric ingestion reporting (integer value)
+#metric_reporting_delay = 10
+metric_reporting_delay = {{ gnocchi_metric_reporting_delay }}
+
+
 [oslo_middleware]
 
 #
@@ -402,13 +411,7 @@ coordination_url = mysql://{{ gnocchi_db_user }}:{{ gnocchi_db_password }}@{{ gn
 #driver = file
 driver = {{ gnocchi_backend }}
 
-# How many seconds to wait between new metric measure processing (integer value)
-#metric_processing_delay = 5
-metric_processing_delay = {{ gnocchi_metric_processing_delay }}
-
-# How many seconds to wait between metric ingestion reporting (integer value)
-#metric_reporting_delay = 10
-metric_reporting_delay = {{ gnocchi_metric_reporting_delay }}
+{% if gnocchi_backend == 'ceph' %}
 
 # Ceph pool name to use. (string value)
 #ceph_pool = gnocchi
@@ -420,13 +423,13 @@ ceph_username = {{ gnocchi_ceph_user }}
 
 # Ceph keyring path. (string value)
 #ceph_keyring = <None>
-{% if gnocchi_backend == 'ceph' %}
 ceph_keyring = /etc/ceph/{{ ceph_cluster_name }}.client.gnocchi.keyring
-{% endif %}
 
 # Ceph configuration file. (string value)
 #ceph_conffile = /etc/ceph/ceph.conf
 ceph_conffile = /etc/ceph/{{ ceph_cluster_name }}.conf
+
+{% endif %}
 
 # Path used to store gnocchi data files. (string value)
 #file_basepath = /var/lib/gnocchi
