@@ -6,7 +6,7 @@ apt_repos:
 apt_extra_repos: []
 
 apt_keys:
-  - { keyserver: "keyserver.ubuntu.com", keyid: "EC4926EA" }
+  - { keyserver: "keyserver.ubuntu.com", keyid: "5EDB1B62EC4926EA" }
 
 apt_extra_keys: []
 
