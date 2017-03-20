@@ -156,7 +156,7 @@
     - block:
 
       - name: remove current host from haproxy
-        haproxy: host={{ inventory_hostname }} socket=/run/haproxy/admin.sock state=disabled wait=yes
+        haproxy: host={{ inventory_hostname }} socket=/run/haproxy/admin.sock state=disabled
         delegate_to: "{{ item }}"
         with_items: "{{ groups['haproxy'] }}"
 
@@ -190,8 +190,6 @@
 
       always:
 
-        # Don't wait for UP status, since the check is too slow
-        # https://github.com/ansible/ansible-modules-extras/pull/1834
         - name: readd current host to haproxy
           haproxy: host={{ inventory_hostname }} socket=/run/haproxy/admin.sock state=enabled
           delegate_to: "{{ item }}"
@@ -226,7 +224,7 @@
     - block:
 
       - name: remove hosts[1:] from haproxy
-        haproxy: host={{ inventory_hostname }} socket=/run/haproxy/admin.sock state=disabled wait=yes
+        haproxy: host={{ inventory_hostname }} socket=/run/haproxy/admin.sock state=disabled
         delegate_to: "{{ item }}"
         with_items: "{{ groups['haproxy'] }}"
 
