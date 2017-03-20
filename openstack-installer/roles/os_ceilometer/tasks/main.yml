@@ -29,22 +29,6 @@
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
 
-- name: ensure ceilometer account has the ResellerAdmin role
-  keystone_user:
-    login_project_name=admin
-    login_user=admin
-    login_domain_name="Default"
-    login_password="{{ keystone_admin_password }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
-    cacert={{ SSLCACertificateFile }}
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    project_domain="{{ ceilometer_project_domain_name }}"
-    project="{{ ceilometer_project_name }}"
-    user="{{ ceilometer_admin_user }}"
-    user_domain="{{ ceilometer_domain_name }}"
-    role="ResellerAdmin"
-  when: inventory_hostname == groups['ceilometer_controller'][0] and groups['swift_proxy'] | count > 0
-
 - name: mask autostarting of ceilometer controller services
   service_mask: name={{ item }} state=masked
   with_items:
