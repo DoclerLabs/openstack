@@ -52,7 +52,7 @@ control_exchange = trove
 db_api_implementation = "trove.db.sqlalchemy.api"
 
 # Configuration options for talking to nova via the novaclient.
-trove_auth_url = {{ keystone_proto }}://{{ keystone_public_address }}:5000/v2.0
+trove_auth_url = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 #nova_compute_url = http://localhost:8774/v2
 nova_compute_url = {{ os_proto }}://{{ os_internal_address }}:8774/v2
 #cinder_url = http://localhost:8776/v1
@@ -125,10 +125,11 @@ nova_proxy_admin_tenant_id = {{ nova_project_id.id }}
 taskmanager_manager=trove.taskmanager.manager.Manager
 
 # Manager sends Exists Notifications
-exists_notification_transformer = trove.extensions.mgmt.instances.models.NovaNotificationTransformer
+#exists_notification_transformer = trove.extensions.mgmt.instances.models.NovaNotificationTransformer
 
-# Workaround for https://bugs.launchpad.net/trove/+bug/1402055
-#exists_notification_transformer =
+# Workaround for https://bugs.launchpad.net/trove/+bug/1402055 and https://bugs.launchpad.net/trove/+bug/1675400
+# The notification transoformer is not really critical, anyway
+exists_notification_transformer =
 
 exists_notification_ticks = 30
 
