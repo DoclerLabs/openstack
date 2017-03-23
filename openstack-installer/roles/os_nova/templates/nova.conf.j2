@@ -38,7 +38,6 @@ metadata_workers = {{ nova_metadata_workers }}
 
 # Network
 my_ip = {{ ip.mgmt }}
-use_neutron = True
 security_group_api = neutron
 {% if neutron_mtu > 0 %}
 network_device_mtu = {{ neutron_mtu }}
@@ -280,7 +279,6 @@ send_service_user_token = True
 {% if inventory_hostname in groups['nova_compute'] %}
 [libvirt]
 
-use_usb_tablet = False
 use_virtio_for_bridges = True
 virt_type = {{ nova_virt_type }}
 live_migration_uri = qemu+ssh://nova@%s/system?keyfile=/var/lib/nova/.ssh/id_rsa&no_tty=1&no_verify=1
