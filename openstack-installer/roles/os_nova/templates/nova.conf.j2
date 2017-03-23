@@ -15,7 +15,6 @@ state_path = /var/lib/nova
 
 # Compute
 compute_driver = {{ nova_compute_driver }}
-scheduler_default_filters = {{ nova_scheduler_default_filters }}
 
 instances_path = /var/lib/nova/instances
 instance_name_template = instance-%08x
@@ -201,7 +200,14 @@ memcache_secret_key = {{ memcache_secret_key }}
 {% if inventory_hostname in groups['nova_controller'] %}
 [scheduler]
 
+host_manager = host_manager
 discover_hosts_in_cells_interval = {{ nova_discover_hosts_in_cells_interval }}
+
+
+[filter_scheduler]
+
+available_filters = {{ nova_filter_scheduler_available_filters }}
+enabled_filters = {{ nova_filter_scheduler_enabled_filters }}
 
 
 [api_database]

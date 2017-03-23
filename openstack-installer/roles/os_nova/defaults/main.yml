@@ -45,7 +45,10 @@ nova_conductor_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 nova_compute_driver: libvirt.LibvirtDriver
 #kvm, lxd
 nova_compute_package: kvm
-nova_scheduler_default_filters: "RetryFilter, AvailabilityZoneFilter, RamFilter, DiskFilter, ComputeFilter, ComputeCapabilitiesFilter, ImagePropertiesFilter, ServerGroupAntiAffinityFilter, ServerGroupAffinityFilter, SameHostFilter, DifferentHostFilter"
+#deprecated, use nova_filter_scheduler available_filters and nova_filter_scheduler_enabled_filters
+nova_scheduler_default_filters: "RetryFilter,AvailabilityZoneFilter,RamFilter,DiskFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter"
+nova_filter_scheduler_available_filters: nova.scheduler.filters.all_filters
+nova_filter_scheduler_enabled_filters: "{{ nova_scheduler_default_filters }}"
 nova_default_floating_pool: ext-net
 
 #Must be greater than MySQL failover time
