@@ -96,10 +96,12 @@
     - certificates
   notify: restart magnum
 
-- name: install magnum configs
-  template: src={{ item }}.conf.j2 dest=/etc/magnum/{{ item }}.conf owner=magnum group=root mode=0460
-  with_items:
-    - magnum
+- name: install magnum config
+  template: src=magnum.conf.j2 dest=/etc/magnum/magnum.conf owner=magnum group=root mode=0460
+  notify: restart magnum
+
+- name: install api-paste.ini
+  copy: src=api-paste.ini dest=/etc/magnum/api-paste.ini owner=root group=root mode=0644
   notify: restart magnum
 
 - name: sync magnum db
