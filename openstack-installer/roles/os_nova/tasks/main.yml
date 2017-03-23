@@ -56,13 +56,16 @@
   with_items:
     - nova-api
     - nova-placement-api
-    - nova-cert
     - nova-conductor
     - nova-consoleauth
     - nova-novncproxy
     - nova-spiceproxy
     - nova-scheduler
     - python-novaclient
+  when: inventory_hostname in groups['nova_controller']
+
+- name: ensure nova-cert is not installed
+  apt: name=nova-cert state=absent
   when: inventory_hostname in groups['nova_controller']
 
 - name: install nova compute packages
@@ -200,7 +203,6 @@
     - nova-consoleauth
     - nova-spiceproxy
     - nova-novncproxy
-    - nova-cert
   when: inventory_hostname in groups['nova_controller']
 
 - name: unmask autostarting of nova compute services
@@ -220,7 +222,6 @@
     - nova-consoleauth
     - nova-novncproxy
     - nova-spiceproxy
-    - nova-cert
   when: inventory_hostname in groups['nova_controller']
 
 - name: ensure nova compute is started
