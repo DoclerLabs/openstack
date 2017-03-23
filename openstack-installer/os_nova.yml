@@ -7,9 +7,9 @@
       keystone_service_name: nova
       keystone_service_type: compute
       keystone_service_description: "OpenStack Compute Service"
-      keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8774/v2/%(tenant_id)s"
-      keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8774/v2/%(tenant_id)s"
-      keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8774/v2/%(tenant_id)s"
+      keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8774/v2.1"
+      keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8774/v2.1"
+      keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8774/v2.1"
       keystone_region: "{{ keystone_region_name }}"
       keystone_users:
         - keystone_user: "{{ nova_admin_user | default('nova') }}"
