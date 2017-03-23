@@ -571,6 +571,11 @@ endpoint_type = internalURL
 # Version of Glance API to use in glanceclient. (string value)
 #api_version = 2
 
+{% if SSLCACertificateFile != '' %}
+ca_file = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
+
 
 [heat_client]
 
@@ -703,6 +708,11 @@ region_name = {{ keystone_region_name }}
 #endpoint_type = publicURL
 endpoint_type = internalURL
 
+{% if SSLCACertificateFile != '' %}
+ca_file = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
+
 
 [nova_client]
 
@@ -722,6 +732,11 @@ endpoint_type = internalURL
 
 # Version of Nova API to use in novaclient. (string value)
 #api_version = 2
+
+{% if SSLCACertificateFile != '' %}
+ca_file = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
 
 
 [oslo_concurrency]
