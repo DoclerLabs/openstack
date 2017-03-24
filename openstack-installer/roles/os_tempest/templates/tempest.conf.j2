@@ -347,6 +347,9 @@ flavor_ref_alt = 1
 #min_compute_nodes = 1
 min_compute_nodes = {{ groups['nova_compute'] | count }}
 
+#min_microversion = None
+max_microversion = latest
+
 
 [compute-feature-enabled]
 
