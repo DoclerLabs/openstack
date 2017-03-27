@@ -56,7 +56,7 @@
 
       - name: ensure ceph OSDs are stopped
         service: name=ceph-osd@{{ item }} state=stopped
-        with_items: "{{ ceph_osds.stdout }}"
+        with_items: "{{ ceph_osds.stdout_lines }}"
 
       - name: fix OSD owner
         file: dest=/var/lib/ceph/osd
@@ -64,7 +64,7 @@
 
       - name: ensure ceph OSDs are started
         service: name=ceph-osd@{{ item }} state=started enabled=yes
-        with_items: "{{ ceph_osds.stdout }}"
+        with_items: "{{ ceph_osds.stdout_lines }}"
 
 #TODO: wait for OSDs are back
       always:
