@@ -461,7 +461,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}aodh,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description aodh-api
-    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 8042!-e 401
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 8042!-u /healthcheck
 }
 {% endif %}
 
