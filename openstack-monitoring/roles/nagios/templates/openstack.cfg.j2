@@ -57,7 +57,7 @@ define hostgroup{
 {% if nagios_monitor_vip_public %}
 {% set vips_monitored = nagios_cloud_prefix + 'mgmt-VIP,' + nagios_cloud_prefix + 'public-VIP' %}
 {% else %}
-{% set vips_monitored = '{{ nagios_cloud_prefix }}mgmt-VIP' %}
+{% set vips_monitored = nagios_cloud_prefix + 'mgmt-VIP' %}
 {% endif %}
 
 {{ hostgroup('mgmt-VIP', 'mgmt-VIP', 'VIP on the management network') }}
