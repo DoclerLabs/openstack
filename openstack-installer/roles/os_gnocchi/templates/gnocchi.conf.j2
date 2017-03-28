@@ -111,7 +111,10 @@ workers = {{ gnocchi_api_workers }}
 # The maximum number of items returned in a single response from a collection resource (integer value)
 #max_limit = 1000
 
+paste_config = /etc/gnocchi/api-paste.ini
+
 auth_mode = {{ gnocchi_auth_mode }}
+
 
 [archive_policy]
 
@@ -347,6 +350,7 @@ metric_reporting_delay = {{ gnocchi_metric_reporting_delay }}
 # The JSON file that defines policies. (string value)
 # Deprecated group/name - [DEFAULT]/policy_file
 #policy_file = policy.json
+policy_file = /etc/gnocchi/policy.json
 
 # Default rule. Enforced when a requested rule is not found. (string value)
 # Deprecated group/name - [DEFAULT]/policy_default_rule
