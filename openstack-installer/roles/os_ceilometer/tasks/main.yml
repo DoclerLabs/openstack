@@ -84,8 +84,11 @@
   notify:
     - restart ceilometer controller services
 
-- name: install pipeline.yaml
-  copy: src={{ ceilometer_pipeline_src }} dest=/etc/ceilometer/pipeline.yaml owner=root group=root mode=0644
+- name: install pipeline definitions
+  copy: src={{ item.src }} dest=/etc/ceilometer/{{ item.dest }} owner=root group=root mode=0644
+  with_items:
+    - { src: "{{ ceilometer_pipeline_src }}", dest: "pipeline.yaml" }
+    - { src: "{{ ceilometer_polling_src }}", dest: "polling.yaml" }
   notify:
     - restart ceilometer controller services
     - restart ceilometer compute services
