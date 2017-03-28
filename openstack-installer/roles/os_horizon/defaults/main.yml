@@ -14,6 +14,7 @@ horizon_processes: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 horizon_debug: False
 
 neutron_vpnaas: True
+neutron_lbaas_agent: lbaasv2
 
 murano_repo_url: "http://storage.apps.openstack.org"
 

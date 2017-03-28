@@ -1,15 +1,20 @@
 ---
 
+- name: ensure horizon group exists
+  group: name=horizon system=yes
+
+- name: ensure horizon user exists
+  user: name=horizon group=horizon home=/usr/share/openstack-dashboard/ createhome=no shell=/bin/false system=yes
+
+- name: ensure /etc/openstack-dashboard exists
+  file: dest=/etc/openstack-dashboard owner=horizon group=horizon mode=0750 state=directory
+
+- name: install local_settings.py
+  template: src=local_settings.py.j2 dest=/etc/openstack-dashboard/local_settings.py owner=root group=horizon mode=0640
+  notify: restart apache
+
 - name: install horizon
-  apt: name={{ item }}
-  with_items:
-    - openstack-dashboard
-
-- name: ensure /var/lib/openstack-dashboard/secret-key exists
-  file: dest=/var/lib/openstack-dashboard/secret-key owner=horizon group=horizon mode=0750 state=directory
-
-- name: ensure .secret_key_store exits
-  copy: content='' dest=/var/lib/openstack-dashboard/secret-key/.secret_key_store owner=horizon group=horizon mode=0440
+  apt: name=openstack-dashboard
 
 - name: install additional dashboards
   apt: name={{ item.package }}
@@ -19,6 +24,10 @@
     - { service: 'sahara', package: 'python-sahara-dashboard' }
     - { service: 'murano', package: 'python-murano-dashboard' }
     - { service: 'manila', package: 'python-manila-ui' }
+
+- name: install Neutron LBaaS dashboard
+  apt: name=python-neutron-lbaas-dashboard
+  when:  horizon_install_dashboards | bool and neutron_lbaas_agent == 'lbaasv2'
 
 - name: install CA certificate
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
@@ -57,10 +66,6 @@
 - name: enable default-ssl site
   file: src=../sites-available/default-ssl.conf dest=/etc/apache2/sites-enabled/default-ssl.conf state=link
   when: SSLCertificateKeyFileSource is defined
-  notify: restart apache
-
-- name: install local_settings.py
-  template: src=local_settings.py.j2 dest=/etc/openstack-dashboard/local_settings.py owner=root group=root mode=0644
   notify: restart apache
 
 - name: install openstack-dashboard.conf
