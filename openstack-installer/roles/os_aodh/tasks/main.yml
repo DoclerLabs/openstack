@@ -72,8 +72,8 @@
     - signal apache to reload
     - restart aodh
 
-- name: install api_paste.ini
-  copy: src=api_paste.ini dest=/etc/aodh/api_paste.ini owner=aodh group=root mode=0464
+- name: install api-paste.ini
+  copy: src=api-paste.ini dest=/etc/aodh/api-paste.ini owner=aodh group=root mode=0464
   notify: signal apache to reload
 
 - name: sync aodh db

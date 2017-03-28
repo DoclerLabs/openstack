@@ -117,11 +117,15 @@ transport_url = rabbit://{% for host in rabbit_hosts %}{{ aodh_rabbit_user }}:{{
 # starting a service (at DEBUG level). (boolean value)
 #log_options = true
 
-auth_startegy = keystone
 
 [api]
 
 host = 127.0.0.1
+
+paste_config = /etc/aodh/api-paste.ini
+
+auth_mode = keystone
+
 
 [database]
 
