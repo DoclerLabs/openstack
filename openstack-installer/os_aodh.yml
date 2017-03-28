@@ -48,6 +48,4 @@
             - "{{ vip_public }}"
           haproxy_port: 8042
           haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
-          haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
-          haproxy_backend_extras:
-            - http-check expect rstatus 200|401
+          haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk /healthcheck'], ['forwardfor', 'httpchk /healthcheck', 'httplog']) }}"
