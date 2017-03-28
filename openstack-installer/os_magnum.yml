@@ -56,4 +56,4 @@
             - "{{ vip_public }}"
           haproxy_port: 9511
           haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
-          haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
+          haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk /healthcheck'], ['forwardfor', 'httpchk /healthcheck', 'httplog']) }}"
