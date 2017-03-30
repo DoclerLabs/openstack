@@ -120,12 +120,26 @@
 - name: install virsh secret.xml
   template: src=secret.xml.j2 dest=/root/{{ item.volume_secret_uuid }}.xml owner=root group=root mode=0664
   with_items: "{{ cinder_backends }} + {{ nova_ceph_backend | default([]) }}"
-  when: inventory_hostname in groups['nova_compute'] and item.backend=='ceph'
+  when: inventory_hostname in groups['nova_compute'] and item.backend=='ceph' and nova_compute_package in ('qemu','kvm')
 
 - name: configure virsh secret.xml
   command: virsh secret-define --file /root/{{ item.volume_secret_uuid }}.xml
   with_items: "{{ cinder_backends }} + {{ nova_ceph_backend | default([]) }}"
-  when: inventory_hostname in groups['nova_compute'] and item.backend=='ceph'
+  when: inventory_hostname in groups['nova_compute'] and item.backend=='ceph' and nova_compute_package in ('qemu','kvm')
+
+- name: stop default libvirt network
+  command: virsh net-destroy default
+  register: virsh_result
+  failed_when: virsh_result | failed and 'Network not found' not in virsh_result.stderr
+  changed_when: virsh_result | success
+  when: inventory_hostname in groups['nova_compute'] and nova_compute_package in ('qemu','kvm')
+
+- name: remove default libvirt network
+  command: virsh net-undefine default
+  register: virsh_result
+  failed_when: virsh_result | failed and 'Network not found' not in virsh_result.stderr
+  changed_when: virsh_result | success
+  when: inventory_hostname in groups['nova_compute'] and nova_compute_package in ('qemu','kvm')
 
 - name: install nova configs
   template: src=nova.conf.j2 dest=/etc/nova/nova.conf owner=nova group=root mode=0460
