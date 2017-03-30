@@ -134,6 +134,9 @@ auth_mode = {{ gnocchi_auth_mode }}
 
 # Indicate whether this resource may be shared with the domain received in the requests "origin" header. (list value)
 #allowed_origin = <None>
+{% if gnocchi_cors_allowed_origin %}
+allowed_origin = {{ gnocchi_cors_allowed_origin }}
+{% endif %}
 
 # Indicate that the actual request can include user credentials (boolean value)
 #allow_credentials = true
