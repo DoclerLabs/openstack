@@ -286,7 +286,7 @@ send_service_user_token = True
 [libvirt]
 
 use_virtio_for_bridges = True
-virt_type = {{ nova_virt_type }}
+virt_type = {{ nova_libvirt_virt_type }}
 live_migration_uri = qemu+ssh://nova@%s/system?keyfile=/var/lib/nova/.ssh/id_rsa&no_tty=1&no_verify=1
 live_migration_tunnelled = {{ nova_live_migration_tunelled }}
 live_migration_completion_timeout = {{ nova_live_migration_completion_timeout }}

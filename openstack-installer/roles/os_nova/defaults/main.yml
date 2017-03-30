@@ -18,6 +18,7 @@ nova_project_name: "{{ keystone_service_project_name | default('service') }}"
 
 nova_api_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 nova_metadata_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
+nova_conductor_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 
 placement_admin_user: placement
 placement_domain_name: "{{ keystone_domain_name }}"
@@ -40,11 +41,14 @@ nova_ephemeral_ceph_pool: vms
 nova_ephemeral_ceph_user: "{{ cinder_ceph_user }}"
 nova_ephemeral_volume_secret_uuid: "{{ cinder_volume_secret_uuid }}"
 
-nova_conductor_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 #libvirt.LibvirtDriver, nova_lxd.nova.virt.lxd.LXDDriver
 nova_compute_driver: libvirt.LibvirtDriver
 #kvm, lxd
 nova_compute_package: kvm
+#kvm or qemu
+nova_virt_type: kvm
+nova_libvirt_virt_type: "{{ nova_virt_type }}"
+
 #deprecated, use nova_filter_scheduler available_filters and nova_filter_scheduler_enabled_filters
 nova_scheduler_default_filters: "RetryFilter,AvailabilityZoneFilter,RamFilter,DiskFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter"
 nova_filter_scheduler_available_filters: nova.scheduler.filters.all_filters
@@ -68,9 +72,6 @@ nova_instance_usage_audit: "{{ nova_notifications }}"
 nova_instance_usage_audit_period: hour
 
 nova_discover_hosts_in_cells_interval: 300
-
-#kvm or qemu
-nova_virt_type: kvm
 
 #spice or vnc
 nova_console_type: vnc
