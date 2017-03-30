@@ -17,6 +17,8 @@ keystone_token_provider: fernet
 #max. active fernet keys
 keystone_max_active_keys: 3
 
+keystone_cors_allowed_origin:
+
 #OpenID connect federation
 keystone_federation_oidc: False
 

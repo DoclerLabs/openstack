@@ -359,6 +359,9 @@ memcache_pool_unused_timeout = {{ keystone_memcache_pool_unused_timeout }}
 # Indicate whether this resource may be shared with the domain received in the
 # requests "origin" header. (string value)
 #allowed_origin = <None>
+{% if keystone_cors_allowed_origin %}
+allowed_origin = {{ keystone_cors_allowed_origin }}
+{% endif %}
 
 # Indicate that the actual request can include user credentials (boolean value)
 #allow_credentials = true
