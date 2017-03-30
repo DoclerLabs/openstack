@@ -111,6 +111,7 @@
     - name: install cinder secret into virsh
       command: 'virsh secret-set-value --secret {{ item.item.volume_secret_uuid }} --base64 {{ item.stdout }}'
       with_items: "{{ cinder_key.results }}"
+      when: nova_compute_package | default('kvm') in ('qemu','kvm')
 
 - hosts: haproxy
   become: True
