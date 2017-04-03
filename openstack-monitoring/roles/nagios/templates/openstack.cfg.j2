@@ -146,7 +146,7 @@ define service{
     use {{ nagios_service_template }}
     host_name {{ nagios_cloud_prefix }}mgmt-VIP
     service_description PING
-    check_command check_ping!100.0,20%!500.0,60%
+    check_command check_ping!{{ nagios_check_ping_warning }}!{{ nagios_check_ping_critical }}
 }
 
 ### General checks for all hosts ###
@@ -179,7 +179,7 @@ define service{
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix }}general
     service_description PING
-    check_command check_ping!100.0,20%!500.0,60%
+    check_command check_ping!{{ nagios_check_ping_warning }}!{{ nagios_check_ping_critical }}
 }
 
 define service{
