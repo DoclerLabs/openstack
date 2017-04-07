@@ -32,15 +32,14 @@
 - name: mask autostarting of ceilometer controller services
   service_mask: name={{ item }} state=masked
   with_items:
-    - ceilometer-api
     - ceilometer-collector
     - ceilometer-agent-central
     - ceilometer-agent-notification
     - python-gnocchiclient
   when: inventory_hostname in groups['ceilometer_controller']
 
-- name: mask ceilometer-api apache config
-  copy: content='' dest=/etc/apache2/sites-available/ceilometer-api.conf owner=root group=root mode=0644
+- name: ensure ceilometer-api is not installed
+  apt: name=ceilometer-api state=absent
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: mask autostarting of ceilometer compute services
@@ -56,10 +55,6 @@
     - ceilometer-agent-central
     - ceilometer-agent-notification
     - python-ceilometerclient
-  when: inventory_hostname in groups['ceilometer_controller']
-
-- name: ensure ceilometer-api service is disabled at boot
-  service: name=ceilometer-api state=stopped enabled=no
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: install ceilometer compute services
