@@ -106,7 +106,7 @@ TLS for public facing services
 HTTP connections to OpenStack components can be secured by TLS. It is recommended in production.
 This installer implements full end-to-end TLS connections, so HAProxy doesn't terminate the secured
 channel. One implication is that services configured to https are communicating with TLS on the
-management network, too, but some clients doesn't really support correct certificate checking (or
+management network, too, but some clients don't really support correct certificate checking (or
 turning off verifying the certs).
 
 The list of services which currently has problems:
@@ -455,8 +455,10 @@ Multi-backend support can be activated by using a cinder_backends list instead o
 Neutron
 -------
 
-Neutron is the networking component. This installer implements the LinuxBridge and OpenVSwitch drivers, LBaaS, VPNaaS, FWaaS plugins and
-Flat, VLAN, VXLAN and GRE network segmentations.
+Neutron is the networking component. This installer implements the LinuxBridge and OpenVSwitch drivers, LBaaS, VPNaaS, FWaaS plugins and Flat, VLAN, VXLAN and GRE network segmentations.
+
+A good review of the work you must do prior to running this playbook is found here: https://youtu.be/8FYgmM3tUCM
+
 The inventory groups Neutron uses are:
 
 - neutron_controller (for the neutron API server)
@@ -486,7 +488,7 @@ Settings affecting Neutron are:
                                           # More mappings can be added by separating them with a comma. E.g.:
                                           # neutron_physical_interface_mappings: 'flat:eth1, vlan:br-vlan'
                                           # This setting can be used in the inventory, too, if the nodes have different networking setup.
-  neutron_vlan_ranges:                    # The VLAN IDs used for VLAN networks. Example: vlan:100,200
+  neutron_vlan_ranges:                    # The VLAN IDs used for VLAN networks. Example: vlan:100:200
   neutron_ha_routers: False               # Set to 'True' if you want to create a Neutron router in HA mode (the router will be created on all
                                           # l3 nodes, and the active is determined by Keepalived).
   neutron_ha_network_type:                # The network type used for the Keepalived traffic for HA networks. By default it is the default Neutron
