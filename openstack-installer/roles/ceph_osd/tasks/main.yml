@@ -84,7 +84,10 @@
   when: item.path is defined
 
 - name: prepare disks
-  command: ceph-disk prepare --cluster {{ ceph_cluster_name }} "{{ item.path }}"
+  command: ceph-disk prepare
+    --cluster {{ ceph_cluster_name }}
+    {{ (item.bluestore | default(ceph_osd_bluestore)) | ternary('--bluestore','') }}
+    "{{ item.path }}"
   with_items: "{{ osd }}"
   when: item.path is defined
 
@@ -118,7 +121,11 @@
 
 ### Add disk-based OSDs
 - name: prepare disks
-  command: ceph-disk prepare --cluster {{ ceph_cluster_name }} "{{ item.disk }}" {{ item.journal | default('') }}
+  command: ceph-disk prepare
+     --cluster {{ ceph_cluster_name }}
+     {{ (item.bluestore | default(ceph_osd_bluestore)) | ternary('--bluestore','') }}
+     "{{ item.disk }}"
+     {{ item.journal | default('') }}
   register: ceph_disk_status
   failed_when: ceph_disk_status.rc != 0 and ('Could not create partition 2' not in ceph_disk_status.stderr) and ('Device is mounted' not in ceph_disk_status.stderr)
   changed_when: ceph_disk_status.rc == 0
