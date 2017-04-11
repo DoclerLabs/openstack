@@ -126,6 +126,6 @@
   when: item.disk is defined
 
 - name: activate disks
-  command: ceph-disk activate "{{ item.disk }}1"
+  shell: ceph-disk activate $(ceph-disk list "{{ item.disk }}" | awk '/ceph data/{ print $1 }')
   with_items: "{{ osd }}"
   when: item.disk is defined
