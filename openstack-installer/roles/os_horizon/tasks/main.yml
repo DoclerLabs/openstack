@@ -24,6 +24,7 @@
     - { service: 'sahara', package: 'python-sahara-dashboard' }
     - { service: 'murano', package: 'python-murano-dashboard' }
     - { service: 'manila', package: 'python-manila-ui' }
+    - { service: 'designate', package: 'python-designate-dashboard' }
 
 - name: install Neutron LBaaS dashboard
   apt: name=python-neutron-lbaas-dashboard
