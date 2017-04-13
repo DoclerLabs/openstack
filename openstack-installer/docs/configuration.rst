@@ -420,12 +420,13 @@ The configuration options are:
 ::
 
   cinder_backend: lvm                        # The default backend for Cinder volumes. Can be 'lvm' or 'ceph'.
+  cinder_volume_group: cinder-volumes        # The volume group name used by the lvm backend.
   cinder_ceph_pool: volumes                  # The default Ceph pool for the volumes.
   cinder_ceph_user: cinder                   # The Ceph user for accessing the Ceph pool.
   cinder_volume_secret_uuid:                 # A random UUID for the Ceph secret in Libvirt.
   cinder_ceph_key:                           # If a cephx key is given here, use that, instead of creating a user. Useful for external Ceph.
 
-  cinder_backup_backend: posix               # The backend for cinder backup, Can be 'posix' or 'ceph'
+  cinder_backup_backend: posix               # The backend for cinder backup, Can be 'posix', 'swift' or 'ceph'.
   cinder_backup_ceph_cluster_name:           # The cluster name for ceph used by cinder-backup. Default is ceph_cluster_name(ceph).
   cinder_backup_ceph_monitors:               # Alternative ceph monitor hosts for cinder-backup. Userful for external Ceph.
   cinder_backup_ceph_pool: backups           # The Ceph pool used for the volume backups.
@@ -451,6 +452,9 @@ Multi-backend support can be activated by using a cinder_backends list instead o
       .
       .
       .
+    - backend: lvm
+      volume_group: cinder-volumes
+
 
 Neutron
 -------

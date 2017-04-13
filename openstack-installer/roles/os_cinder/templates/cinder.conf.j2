@@ -20,7 +20,6 @@ cluster = {{ cinder_cluster_name }}
 rootwrap_config = /etc/cinder/rootwrap.conf
 api_paste_confg = /etc/cinder/api-paste.ini
 state_path = /var/lib/cinder
-lock_path = /var/lock/cinder
 volumes_dir = /var/lib/cinder/volumes
 allow_availability_zone_fallback = True
 
@@ -33,6 +32,17 @@ glance_api_insecure = {{ ssl_insecure }}
 glance_ca_certificates_file = {{ SSLCACertificateFile }}
 {% endif %}
 
+scheduler_default_filters = {{ cinder_scheduler_default_filters }}
+scheduler_default_weighers = {{ cinder_scheduler_default_weighers }}
+
+os_region_name = {{ keystone_region_name }}
+nova_api_insecure = {{ ssl_insecure }}
+{% if SSLCACertificateFile != '' %}
+nova_ca_certificates_file = {{ SSLCACertificateFile }}
+{% endif %}
+
+{% if inventory_hostname in groups['cinder_volume'] %}
+
 {% if cinder_backup_backend == 'posix' %}
 
 backup_driver = cinder.backup.drivers.posix
@@ -44,9 +54,17 @@ backup_ceph_conf = /etc/ceph/{{ cinder_backup_ceph_cluster_name }}.conf
 backup_ceph_pool = {{ cinder_backup_ceph_pool }}
 backup_ceph_user = {{ cinder_backup_ceph_user }}
 
-{% endif %}
+{% elif cinder_backup_backend == 'swift' %}
 
-{% if inventory_hostname in groups['cinder_volume'] %}
+backup_driver = cinder.backup.drivers.swift
+backup_swift_auth_url = {{ keystone_proto }}://{{ keystone_public_address }}:5000
+{% if SSLCACertificateFile != '' %}
+backup_swift_ca_cert_file = {{ SSLCACertificateFile }}
+{% endif %}
+backup_swift_auth_insecure = {{ ssl_insecure }}
+backup_swift_container = {{ cinder_backup_swift_container }}
+
+{% endif %}
 
 enabled_backends = {% for backend in cinder_backends %}{{ backend.name }}{% if not loop.last %},{% endif %}{% endfor %}
 
@@ -57,11 +75,10 @@ enabled_backends = {% for backend in cinder_backends %}{{ backend.name }}{% if n
 {% if backend.backend == 'lvm' %}
 
 volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
-volume_group = cinder-volumes
+volume_group = {{ backend.volume_group | default(cinder_volume_group) }}
 iscsi_protocol = iscsi
 iscsi_helper = tgtadm
 volume_name_template = volume-%s
-volume_group = cinder-volumes
 
 {% elif backend.backend == 'ceph' %}
 
@@ -91,11 +108,18 @@ backend_url = kazoo://{% for host in groups['zookeeper'] %}{{ hostvars[host].ip.
 connection = mysql+pymysql://{{ cinder_db_user }}:{{ cinder_db_password }}@{{ cinder_mysql_server }}/{{ cinder_db }}?charset=utf8
 max_retries = -1
 
+{% if groups['barbican'] | count > 0 %}
 
-[keymgr]
+[key_manager]
 
-encryption_auth_url = {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3
+api_class = castellan.key_manager.barbican_key_manager.BarbicanKeyManager
 
+
+[barbican]
+
+auth_endpoint = {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3
+
+{% endif %}
 
 [keystone_authtoken]
 

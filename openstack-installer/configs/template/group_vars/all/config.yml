@@ -56,7 +56,7 @@ trove_physical_network: vlan
 trove_subnet_cidr: 10.20.30.0/24
 trove_image_path: /etc/openstack_deploy/trove-mysql.qcow2
 
-#ceph os posix
+#ceph, swift or posix
 cinder_backup_backend: ceph
 cinder_backup_ceph_pool: backups
 cinder_backup_ceph_user: cinder-backup

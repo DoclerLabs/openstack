@@ -15,10 +15,12 @@ ceph_cluster_name: ceph
 cinder_cluster_name:
 
 cinder_backend: lvm
+cinder_volume_group: cinder-volumes
 cinder_ceph_pool: volumes
 cinder_ceph_user: cinder
 
 cinder_backup_backend: posix
+cinder_backup_swift_container: volumebackups
 cinder_backup_ceph_pool: backups
 cinder_backup_ceph_user: cinder-backup
 cinder_backup_ceph_cluster_name: "{{ ceph_cluster_name }}"
@@ -26,11 +28,15 @@ cinder_backup_ceph_cluster_name: "{{ ceph_cluster_name }}"
 #convert cinder flat variables to the multi-backend format
 cinder_backends:
   - backend: "{{ cinder_backend }}"
+    volume_group: "{{ cinder_volume_group }}"
     name: "{{ cinder_backend }}-1"
     ceph_cluster_name: "{{ ceph_cluster_name }}"
     ceph_pool: "{{ cinder_ceph_pool }}"
     ceph_user: "{{ cinder_ceph_user }}"
     volume_secret_uuid: "{{ cinder_volume_secret_uuid }}"
+
+cinder_scheduler_default_filters: "AvailabilityZoneFilter, CapacityFilter, CapabilitiesFilter"
+cinder_scheduler_default_weighers: "CapacityWeigher"
 
 cinder_notifications: "{{ notifications_enable | default(False) }}"
 
