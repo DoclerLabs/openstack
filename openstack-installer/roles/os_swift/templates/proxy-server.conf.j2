@@ -80,11 +80,12 @@ user = swift
 pipeline = {{ " ".join(swift_pipeline) }}
 
 {% if groups['ceilometer_controller'] | count > 0 %}
+{% set host_index = groups['swift_proxy'].index(inventory_hostname) % groups['rabbitmq'] | count %}
+{% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
 [filter:ceilometer]
 paste.filter_factory = ceilometermiddleware.swift:filter_factory
 control_exchange = swift
-{% set rabbit_host = groups['rabbitmq'][(groups['swift_proxy'].index(inventory_hostname) % groups['rabbitmq'] | count)] %}
-url = rabbit://{{ swift_rabbit_user }}:{{ swift_rabbit_password }}@{{ hostvars[rabbit_host].ip.mgmt }}:5672/{{ swift_rabbit_vhost }}
+url = rabbit://{% for host in rabbit_hosts %}{{ swift_rabbit_user }}:{{ swift_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ swift_rabbit_vhost }}
 driver = messagingv2
 topic = notifications
 log_level = WARN
