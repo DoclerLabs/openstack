@@ -27,6 +27,7 @@ placement_project_name: "{{ keystone_service_project_name | default('service') }
 
 cinder_backend: lvm
 cinder_ceph_user: cinder
+cinder_volume_secret_uuid:
 
 cinder_backends:
   - backend: "{{ cinder_backend }}"

@@ -18,6 +18,7 @@ cinder_backend: lvm
 cinder_volume_group: cinder-volumes
 cinder_ceph_pool: volumes
 cinder_ceph_user: cinder
+cinder_volume_secret_uuid:
 cinder_iscsi_helper: tgtadm
 
 cinder_backup_backend: posix
