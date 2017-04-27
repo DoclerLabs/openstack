@@ -425,6 +425,7 @@ The configuration options are:
   cinder_ceph_user: cinder                   # The Ceph user for accessing the Ceph pool.
   cinder_volume_secret_uuid:                 # A random UUID for the Ceph secret in Libvirt.
   cinder_ceph_key:                           # If a cephx key is given here, use that, instead of creating a user. Useful for external Ceph.
+  cinder_iscsi_helper: tgtadm                # iSCSI subsystem, tgtadm is there for backwards compatibility, advisable to use lioadm.
 
   cinder_backup_backend: posix               # The backend for cinder backup, Can be 'posix', 'swift' or 'ceph'.
   cinder_backup_ceph_cluster_name:           # The cluster name for ceph used by cinder-backup. Default is ceph_cluster_name(ceph).

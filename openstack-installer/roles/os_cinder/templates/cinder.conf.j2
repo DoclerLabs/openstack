@@ -77,7 +77,7 @@ enabled_backends = {% for backend in cinder_backends %}{{ backend.name }}{% if n
 volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
 volume_group = {{ backend.volume_group | default(cinder_volume_group) }}
 iscsi_protocol = iscsi
-iscsi_helper = tgtadm
+iscsi_helper = {{ cinder_iscsi_helper }}
 volume_name_template = volume-%s
 
 {% elif backend.backend == 'ceph' %}
