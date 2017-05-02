@@ -367,7 +367,7 @@ def main():
             project_domain=dict(required=False, default="default"),
             user=dict(required=False),
             project=dict(required=False),
-            password=dict(required=False),
+            password=dict(required=False,no_log=True),
             role=dict(required=False),
             state=dict(default='present', choices=['present', 'absent']),
             endpoint=dict(required=False,
@@ -377,7 +377,7 @@ def main():
             insecure=dict(required=False, default=False, choices=BOOLEANS),
             login_domain_name=dict(required=False, default="Default"),
             login_user=dict(required=False),
-            login_password=dict(required=False),
+            login_password=dict(required=False, no_log=True),
             login_project_domain=dict(required=False, default="Default"),
             login_project_name=dict(required=False)
     ))
