@@ -16,10 +16,17 @@ gnocchi_debug: False
 
 ceph_cluster_name: ceph
 
-#ceph or files
+#ceph, swift or files
 gnocchi_backend: ceph
 gnocchi_ceph_user: gnocchi
 gnocchi_ceph_pool: gnocchi
+gnocchi_swift_user: "{{ gnocchi_admin_user }}"
+gnocchi_swift_key: "{{ gnocchi_admin_password }}"
+gnocchi_swift_project_name: "{{ gnocchi_project_name }}"
+gnocchi_swift_project_domain_name: "{{ gnocchi_project_domain_name }}"
+
+# Swift tenant name, only used in v2 auth. (string value)
+#swift_tenant_name = <None>
 
 gnocchi_api_workers: 1
 gnocchi_metricd_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"

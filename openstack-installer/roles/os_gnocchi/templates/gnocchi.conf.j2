@@ -418,6 +418,12 @@ coordination_url = mysql://{{ gnocchi_db_user }}:{{ gnocchi_db_password }}@{{ gn
 #driver = file
 driver = {{ gnocchi_backend }}
 
+# Path used to store gnocchi data files. (string value)
+#file_basepath = /var/lib/gnocchi
+
+# Path used to store Gnocchi temporary files. (string value)
+#file_basepath_tmp = ${file_basepath}/tmp
+
 {% if gnocchi_backend == 'ceph' %}
 
 # Ceph pool name to use. (string value)
@@ -436,34 +442,31 @@ ceph_keyring = /etc/ceph/{{ ceph_cluster_name }}.client.gnocchi.keyring
 #ceph_conffile = /etc/ceph/ceph.conf
 ceph_conffile = /etc/ceph/{{ ceph_cluster_name }}.conf
 
-{% endif %}
-
-# Path used to store gnocchi data files. (string value)
-#file_basepath = /var/lib/gnocchi
-
-# Path used to store Gnocchi temporary files. (string value)
-#file_basepath_tmp = ${file_basepath}/tmp
+{% elif gnocchi_backend =='swift' %}
 
 # Swift authentication version to user. (string value)
 #swift_auth_version = 1
-
+swift_auth_version = 3
 # Swift pre-auth URL. (string value)
 #swift_preauthurl = <None>
 
 # Swift auth URL. (string value)
 #swift_authurl = http://localhost:8080/auth/v1.0
+swift_authurl =  {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3
 
 # Swift token to user to authenticate. (string value)
 #swift_preauthtoken = <None>
 
 # Swift user. (string value)
 #swift_user = admin:admin
+swift_user = {{ gnocchi_swift_user }}
 
 # Swift key/password. (string value)
 #swift_key = admin
+swift_key = {{ gnocchi_swift_key }}
 
-# Swift tenant name, only used in v2 auth. (string value)
-#swift_tenant_name = <None>
+swift_project_name = {{ gnocchi_swift_project_name }}
+swift_project_domain_name = {{ gnocchi_swift_project_domain_name }}
 
 # Prefix to namespace metric containers. (string value)
 #swift_container_prefix = gnocchi
@@ -471,6 +474,8 @@ ceph_conffile = /etc/ceph/{{ ceph_cluster_name }}.conf
 # Connection timeout in seconds. (integer value)
 # Minimum value: 0
 #swift_timeout = 300
+
+{% endif %}
 
 # InfluxDB host (string value)
 #influxdb_host = localhost
