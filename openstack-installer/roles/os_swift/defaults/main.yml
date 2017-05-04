@@ -11,6 +11,7 @@ swift_project_domain_name: "{{ keystone_service_project_domain_name | default(ke
 swift_project_name: "{{ keystone_service_project_name | default('service') }}"
 
 swift_syslog_use: "{{ syslog_use | default(False) }}"
+swift_log_level: WARNING
 
 swift_part_power: 12
 swift_replicas: 3

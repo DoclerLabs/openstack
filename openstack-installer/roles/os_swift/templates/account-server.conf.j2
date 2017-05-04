@@ -11,6 +11,7 @@ user = swift
 swift_dir = /etc/swift
 devices = /srv/node
 mount_check = true
+log_level = {{ swift_log_level }}
 
 [pipeline:main]
 pipeline = healthcheck recon account-server
