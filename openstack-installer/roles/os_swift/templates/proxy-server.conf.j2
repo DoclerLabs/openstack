@@ -27,6 +27,7 @@ user = swift
 # cores in the system.  It's worth noting that individual workers will
 # use many eventlet co-routines to service multiple concurrent requests.
 # workers = auto
+workers = {{ swift_proxy_server_workers }}
 #
 # Maximum concurrent requests per worker
 # max_clients = 1024

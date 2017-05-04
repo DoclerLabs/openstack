@@ -6,7 +6,7 @@ bind_ip = 0.0.0.0
 bind_ip = {{ ip.swift | default(ip.mgmt) }}
 {% endif %}
 bind_port = 6001
-workers = 2
+workers = {{ swift_container_server_workers }}
 user = swift
 swift_dir = /etc/swift
 devices = /srv/node
