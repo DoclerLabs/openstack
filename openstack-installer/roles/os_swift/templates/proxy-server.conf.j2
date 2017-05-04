@@ -81,7 +81,7 @@ log_level = {{ swift_log_level }}
 [pipeline:main]
 pipeline = {{ " ".join(swift_pipeline) }}
 
-{% if groups['ceilometer_controller'] | count > 0 %}
+{% if swift_notifications %}
 {% set host_index = groups['swift_proxy'].index(inventory_hostname) % groups['rabbitmq'] | count %}
 {% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
 [filter:ceilometer]

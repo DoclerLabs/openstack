@@ -13,12 +13,13 @@ swift_project_name: "{{ keystone_service_project_name | default('service') }}"
 swift_syslog_use: "{{ syslog_use | default(False) }}"
 swift_log_level: WARNING
 
+swift_notifications: "{{ notifications_enable | default(False) }}"
+
 swift_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 swift_proxy_server_workers: "{{ swift_workers }}"
 swift_account_server_workers: "{{ swift_workers }}"
 swift_object_server_workers: "{{ swift_workers }}"
 swift_container_server_workers: "{{ swift_workers }}"
-
 
 swift_part_power: 12
 swift_replicas: 3
@@ -42,7 +43,7 @@ swift_pipeline:
  - dlo
  - versioned_writes
  - proxy-logging
- - "{{ (groups['ceilometer_controller'] | count > 0) | ternary('ceilometer', '') }}"
+ - "{{ swift_notifications | ternary('ceilometer', '') }}"
  - proxy-server
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
