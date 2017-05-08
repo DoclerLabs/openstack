@@ -3,6 +3,9 @@
 - name: signal apache to reload
   file: dest=/run/apache2.reload state=touch
 
+- name: recompile python-cinder
+  command: /usr/bin/pycompile -p python-cinder
+
 - name: restart cinder-scheduler
   service: name=cinder-scheduler state=restarted
   when: inventory_hostname in groups['cinder']
