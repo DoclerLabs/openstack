@@ -35,12 +35,6 @@ glance_ca_certificates_file = {{ SSLCACertificateFile }}
 scheduler_default_filters = {{ cinder_scheduler_default_filters }}
 scheduler_default_weighers = {{ cinder_scheduler_default_weighers }}
 
-os_region_name = {{ keystone_region_name }}
-nova_api_insecure = {{ ssl_insecure }}
-{% if SSLCACertificateFile != '' %}
-nova_ca_certificates_file = {{ SSLCACertificateFile }}
-{% endif %}
-
 {% if inventory_hostname in groups['cinder_volume'] %}
 
 {% if cinder_backup_backend == 'posix' %}
@@ -120,6 +114,24 @@ api_class = castellan.key_manager.barbican_key_manager.BarbicanKeyManager
 auth_endpoint = {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3
 
 {% endif %}
+
+
+[nova]
+
+insecure = {{ ssl_insecure }}
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
+auth_type = password
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+token_auth_url = {{ keystone_proto }}://{{ keystone_public_address }}:5000
+region_name = {{ keystone_region_name }}
+user_domain_name = {{ nova_domain_name }}
+username = {{ nova_admin_user }}
+password = {{ nova_admin_password }}
+project_domain_name = {{ nova_project_domain_name }}
+project_name = {{ nova_project_name }}
+
 
 [keystone_authtoken]
 
