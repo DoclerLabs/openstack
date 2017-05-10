@@ -35,12 +35,12 @@
 
 define command{
         command_name    {{ nagios_cloud_prefix }}check_http_url
-        command_line    /usr/lib/nagios/plugins/check_http -H '$HOSTADDRESS$' -I '$HOSTADDRESS$' '$ARG1$' '$ARG2$'
+        command_line    /usr/lib/nagios/plugins/check_http -H '$HOSTADDRESS$' -I '$HOSTADDRESS$' $ARG1$ $ARG2$
         }
 
 define command{
         command_name    {{ nagios_cloud_prefix }}check_https_url
-        command_line    /usr/lib/nagios/plugins/check_http --ssl -H '$HOSTADDRESS$' -I '$HOSTADDRESS$' '$ARG1$' '$ARG2$'
+        command_line    /usr/lib/nagios/plugins/check_http --ssl -H '$HOSTADDRESS$' -I '$HOSTADDRESS$' $ARG1$ $ARG2$
         }
 
 {% macro hostgroup(name, alias, notes, members=[]) -%}
