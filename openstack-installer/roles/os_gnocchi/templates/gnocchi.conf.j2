@@ -423,7 +423,7 @@ ceph_username = {{ gnocchi_ceph_user }}
 # Ceph keyring path. (string value)
 #ceph_keyring = <None>
 {% if gnocchi_backend == 'ceph' %}
-ceph_keyring = /etc/ceph/{{ gnocchi_ceph_cluster_name }}.client.gnocchi.keyring
+ceph_keyring = /etc/ceph/{{ gnocchi_ceph_cluster_name }}.client.{{ gnocchi_ceph_user }}.keyring
 {% endif %}
 
 # Ceph configuration file. (string value)
