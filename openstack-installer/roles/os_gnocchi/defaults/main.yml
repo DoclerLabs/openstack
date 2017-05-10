@@ -15,6 +15,7 @@ gnocchi_syslog_use: "{{ syslog_use | default(False) }}"
 gnocchi_debug: False
 
 ceph_cluster_name: ceph
+gnocchi_ceph_cluster_name: "{{ ceph_cluster_name }}"
 
 #ceph or files
 gnocchi_backend: ceph
