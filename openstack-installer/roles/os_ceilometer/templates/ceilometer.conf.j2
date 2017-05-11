@@ -157,6 +157,9 @@ batch_timeout = 5
 {% endif %}
 
 [notification]
+
+workload_partitioning = {{ groups['zookeeper'] | count > 0 }}
+
 store_events = {{ ceilometer_store_events }}
 
 {% for host in groups['rabbitmq'] %}
