@@ -247,6 +247,7 @@ rabbit_ha_queues = true
 [libvirt]
 
 use_usb_tablet = False
+disk_cachemodes="network=writeback"
 use_virtio_for_bridges = True
 virt_type = {{ nova_virt_type }}
 live_migration_uri = qemu+ssh://nova@%s/system?keyfile=/var/lib/nova/.ssh/id_rsa&no_tty=1&no_verify=1
