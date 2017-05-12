@@ -285,6 +285,7 @@ send_service_user_token = True
 {% if inventory_hostname in groups['nova_compute'] %}
 [libvirt]
 
+disk_cachemodes="network=writeback"
 use_virtio_for_bridges = True
 virt_type = {{ nova_libvirt_virt_type }}
 live_migration_uri = qemu+ssh://nova@%s/system?keyfile=/var/lib/nova/.ssh/id_rsa&no_tty=1&no_verify=1
