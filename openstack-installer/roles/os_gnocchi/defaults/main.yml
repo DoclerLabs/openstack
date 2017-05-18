@@ -22,12 +22,16 @@ gnocchi_backend: ceph
 gnocchi_ceph_user: gnocchi
 gnocchi_ceph_pool: gnocchi
 gnocchi_swift_user: "{{ gnocchi_admin_user }}"
+gnocchi_swift_user_domain_name: "{{ gnocchi_domain_name }}"
 gnocchi_swift_key: "{{ gnocchi_admin_password }}"
 gnocchi_swift_project_name: "{{ gnocchi_project_name }}"
 gnocchi_swift_project_domain_name: "{{ gnocchi_project_domain_name }}"
 
 gnocchi_metricd_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
-
+#Number of workers to run during adding new measures for pre-aggregation
+#needs. Due to the Python GIL, 1 is usually faster, unless you have high
+#latency I/O
+gnocchi_aggregation_workers_number: 1
 gnocchi_cors_allowed_origin:
 
 # 'keystone', 'basic', 'noauth'
@@ -35,6 +39,7 @@ gnocchi_auth_mode: "keystone"
 
 gnocchi_metric_processing_delay: 30
 gnocchi_metric_reporting_delay: 120
+gnocchi_metric_cleanup_delay: 300
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
