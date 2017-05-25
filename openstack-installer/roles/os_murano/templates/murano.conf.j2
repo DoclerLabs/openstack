@@ -386,6 +386,12 @@ auth_type = password
 # Deprecated group/name - [DEFAULT]/matchmaker_ringfile
 #ringfile = /etc/oslo/matchmaker_ring.json
 
+
+[oslo_concurrency]
+
+lock_path = /var/lock/murano
+
+
 [oslo_messaging_notifications]
 
 {% if murano_notifications %}

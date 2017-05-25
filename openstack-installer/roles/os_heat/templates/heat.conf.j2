@@ -490,6 +490,11 @@ insecure = {{ ssl_insecure }}
 #ringfile = /etc/oslo/matchmaker_ring.json
 
 
+[oslo_concurrency]
+
+lock_path = /var/lock/heat
+
+
 [oslo_messaging_notifications]
 
 {% if heat_notifications %}

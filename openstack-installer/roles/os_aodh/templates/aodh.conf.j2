@@ -463,20 +463,7 @@ region_name = {{ keystone_region_name }}
 
 [oslo_concurrency]
 
-#
-# From oslo.concurrency
-#
-
-# Enables or disables inter-process locks. (boolean value)
-# Deprecated group/name - [DEFAULT]/disable_process_locking
-#disable_process_locking = false
-
-# Directory to use for lock files.  For security, the specified
-# directory should only be writable by the user running the processes
-# that need locking. Defaults to environment variable OSLO_LOCK_PATH.
-# If external locks are used, a lock path must be set. (string value)
-# Deprecated group/name - [DEFAULT]/lock_path
-#lock_path = <None>
+lock_path = /var/lock/aodh
 
 
 [oslo_messaging_notifications]

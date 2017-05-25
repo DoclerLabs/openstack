@@ -279,6 +279,11 @@ service_project_name = {{ senlin_project_name }}
 #socket_timeout = 1000
 
 
+[oslo_concurrency]
+
+lock_path = /var/lock/senlin
+
+
 [oslo_messaging_notifications]
 
 #

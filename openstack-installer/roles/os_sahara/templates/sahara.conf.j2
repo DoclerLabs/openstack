@@ -115,6 +115,11 @@ periodic_coordinator_backend_url = kazoo://{% for host in groups['zookeeper'] %}
 {% endif %}
 
 
+[oslo_concurrency]
+
+lock_path = /var/lock/sahara
+
+
 [oslo_messaging_notifications]
 
 {% if sahara_notifications %}

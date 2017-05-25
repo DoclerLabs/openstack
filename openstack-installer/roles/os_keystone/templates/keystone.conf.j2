@@ -1314,6 +1314,11 @@ socket_timeout = {{ keystone_memcache_socket_timeout }}
 #enabled = false
 
 
+[oslo_concurrency]
+
+lock_path = /var/lock/keystone
+
+
 [oslo_messaging_notifications]
 
 {% if keystone_notifications %}
