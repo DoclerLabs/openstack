@@ -142,6 +142,12 @@ scrubber_datadir = /var/lib/barbican/scrubber
 
 transport_url = rabbit://{% for host in rabbit_hosts %}{{ barbican_rabbit_user }}:{{ barbican_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ barbican_rabbit_vhost }}
 
+
+[oslo_concurrency]
+
+lock_path = /var/lock/barbican
+
+
 # ================= Queue Options - oslo.messaging ==========================
 [oslo_messaging_rabbit]
 

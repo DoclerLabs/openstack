@@ -750,6 +750,11 @@ memcache_secret_key = "{{ memcache_secret_key }}"
 #ringfile = /etc/oslo/matchmaker_ring.json
 
 
+[oslo_concurrency]
+
+lock_path = /var/lock/glance
+
+
 [oslo_messaging_notifications]
 
 driver = messagingv2

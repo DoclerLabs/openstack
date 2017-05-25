@@ -395,6 +395,11 @@ memcache_secret_key = {{ memcache_secret_key }}
 #socket_timeout = 1000
 
 
+[oslo_concurrency]
+
+lock_path = /var/lock/mistral
+
+
 [oslo_messaging_notifications]
 
 {% if mistral_notifications %}
