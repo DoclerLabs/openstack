@@ -20,6 +20,8 @@
           keystone_role:
             - admin
             - service
+      keystone_roles:
+        - key-manager:service-admin
 
 - hosts: barbican
   become: True
