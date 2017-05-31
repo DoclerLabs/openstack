@@ -222,6 +222,19 @@ connection = mysql+pymysql://{{ nova_db_user }}:{{ nova_db_password }}@{{ nova_m
 max_retries = -1
 {% endif %}
 
+{% if groups['barbican'] | count > 0 %}
+
+[key_manager]
+
+api_class = castellan.key_manager.barbican_key_manager.BarbicanKeyManager
+
+
+[barbican]
+
+auth_endpoint = {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3
+
+{% endif %}
+
 
 [oslo_concurrency]
 
