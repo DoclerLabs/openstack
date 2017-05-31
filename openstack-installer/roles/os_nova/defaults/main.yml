@@ -3,11 +3,9 @@
 nova_api_db_user: nova_api
 nova_db_user: nova
 nova_cell0_db_user: nova_cell0
-nova_cell1_db_user: nova_cell1
 nova_mysql_server: "{{ vip_mgmt }}"
 nova_api_db: nova_api
 nova_cell0_db: nova_cell0
-nova_cell1_db: nova_cell1
 nova_db: nova
 nova_rabbit_vhost: nova
 nova_rabbit_user: nova
