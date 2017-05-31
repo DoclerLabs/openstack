@@ -11,6 +11,9 @@ tempest_image_file: cirros-0.3.4-x86_64-disk.img
 tempest_image_ari_img_file: cirros-0.3.4-x86_64-initramfs
 tempest_image_aki_img_file: cirros-0.3.4-x86_64-kernel
 
+tempest_barbican_git_repo: https://git.openstack.org/openstack/barbican-tempest-plugin
+tempest_barbican_version: master
+
 cirros_image_url: http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
 cirros_ssh_user: cirros
 

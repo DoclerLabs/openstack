@@ -170,8 +170,19 @@
     state: present
   run_once: True
 
-- name: install tempest from git
-  git: dest={{ tempest_dest }} repo={{ tempest_git_repo }} version={{ tempest_version }}
+- name: get tempest from git
+  git: dest={{ tempest_dest }}/tempest repo={{ tempest_git_repo }} version={{ tempest_version }}
+
+- name: get tempest-barbican plugin from git
+  git: dest={{ tempest_dest }}/barbican-tempest-plugin repo={{ tempest_barbican_git_repo }} version={{ tempest_barbican_version }}
+  when: groups['barbican'] | length > 0
+
+- name: install tempest to virtualenv
+  pip: name={{ tempest_dest }}/tempest virtualenv={{ tempest_dest }}/virtualenv
+
+- name: install tempest-barbican-plugin to virtualenv
+  pip: name={{ tempest_dest }}/barbican-tempest-plugin virtualenv={{ tempest_dest }}/virtualenv
+  when: groups['barbican'] | length > 0
 
 - name: install tempest config
-  template: src=tempest.conf.j2 dest={{ tempest_dest }}/etc/tempest.conf
+  template: src=tempest.conf.j2 dest={{ tempest_dest }}/tempest/etc/tempest.conf

@@ -98,12 +98,15 @@ It is a good idea to run tempest on the installed cloud. The steps for preparing
 
 The default inventory uses the deployment hosts for running tempest. It'll try to install some packages, so if you don't have sudo rights, then you'll get an error. Install those packages manually with a root user then.
 
-- The default installation directory for tempest is ~/tempest, so to run it:
+- The default installation directory for tempest is ~/tempest, and a virtualenv directory is created with the plugins, so to run it:
 
 ::
 
-  $ cd ~/tempest
-  $ ./run_tempest.sh
+  $ cd ~/tempest/tempest
+  $ . ../virtualenv/bin/activate
+  $ testr init
+  $ testr list-tests (to check if everything is set up properly)
+  $ testr run
 
 5. Cloud repair
 ===============
