@@ -26,11 +26,6 @@
   notify:
     - restart haproxy
 
-- name: replace haproxy init script
-  copy: src=haproxy.init dest=/etc/init.d/haproxy owner=root group=root mode=0755
-  notify:
-    - restart haproxy
-
 - meta: flush_handlers
 
 - name: ensure haproxy is started
