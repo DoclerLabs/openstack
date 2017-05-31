@@ -71,17 +71,6 @@ cert={{ SSLCertificateFile }}
 {% endif %}
 
 
-[api]
-
-auth_strategy = keystone
-compute_link_prefix = {{ os_proto }}://{{ os_public_address }}:8774
-
-
-[wsgi]
-
-api_paste_config = /etc/nova/api-paste.ini
-
-
 [crypto]
 
 keys_path = /var/lib/nova/keys
@@ -198,6 +187,17 @@ memcache_security_strategy = ENCRYPT
 memcache_secret_key = {{ memcache_secret_key }}
 
 {% if inventory_hostname in groups['nova_controller'] %}
+[api]
+
+auth_strategy = keystone
+compute_link_prefix = {{ os_proto }}://{{ os_public_address }}:8774
+
+
+[wsgi]
+
+api_paste_config = /etc/nova/api-paste.ini
+
+
 [scheduler]
 
 host_manager = host_manager
