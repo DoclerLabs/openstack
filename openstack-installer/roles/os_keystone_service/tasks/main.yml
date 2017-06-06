@@ -12,6 +12,10 @@
   when: SSLCACertificateFile != ''
   become: True
 
+- name: get current hour
+  set_fact:
+    hour: "{{ lookup('pipe','date +%H') }}"
+
 - name: get an admin token
   os_auth:
     auth:
@@ -24,7 +28,12 @@
     cacert: "{{ SSLCACertificateFile }}"
     validate_certs: "{{ ssl_insecure | ternary(False, True) }}"
     region_name: "{{ keystone_region_name }}"
-  when: auth_token is not defined
+  when: timestamp | default(99) != hour
+
+- name: store token timestamp
+  set_fact:
+    timestamp: "{{ hour }}"
+  when: timestamp | default(99) != hour
 
 - name: create the service in keystone
   keystone_service: >
