@@ -52,6 +52,7 @@
         - keystone
         - python-keystoneclient
         - python-oslo.log
+        - python-oslo.policy
 
 - hosts: memcached
   become: True
