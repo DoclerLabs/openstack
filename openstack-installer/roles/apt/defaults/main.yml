@@ -1,7 +1,7 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-ocata", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/ocata main" }
+  - { name: "cloudarchive-pike", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/pike main" }
 
 apt_extra_repos: []
 
