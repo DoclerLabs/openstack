@@ -143,6 +143,14 @@ verbose = false
 
 # Roles to assign to all users created by tempest (list value)
 #tempest_roles =
+{% set tempest_roles = [] %}
+{% if groups['barbican'] | count > 0 %}
+{% set _ = tempest_roles.append('creator') %}
+{% endif %}
+
+{% if tempest_roles %}
+tempest_roles = {{ ",".join(tempest_roles) }}
+{% endif %}
 
 # Default domain used when getting v3 credentials. This is the name
 # keystone uses for v2 compatibility. (string value)
@@ -459,7 +467,7 @@ preserve_ports = true
 # compute_driver in nova and the volume_driver(s) in cinder. (boolean
 # value)
 #attach_encrypted_volume = true
-attach_encrypted_volume = false
+attach_encrypted_volume = True
 
 # Does the test environment support creating instances with multiple
 # ports on the same network? This is only valid when using Neutron.

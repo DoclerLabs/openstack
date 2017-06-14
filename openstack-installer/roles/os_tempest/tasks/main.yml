@@ -177,12 +177,20 @@
   git: dest={{ tempest_dest }}/barbican-tempest-plugin repo={{ tempest_barbican_git_repo }} version={{ tempest_barbican_version }}
   when: groups['barbican'] | length > 0
 
+- name: get tempest-designate plugin from git
+  git: dest={{ tempest_dest }}/designate-tempest-plugin repo={{ tempest_designate_git_repo }} version={{ tempest_designate_version }}
+  when: groups['designate'] | length > 0
+
 - name: install tempest to virtualenv
   pip: name={{ tempest_dest }}/tempest virtualenv={{ tempest_dest }}/virtualenv
 
 - name: install tempest-barbican-plugin to virtualenv
   pip: name={{ tempest_dest }}/barbican-tempest-plugin virtualenv={{ tempest_dest }}/virtualenv
   when: groups['barbican'] | length > 0
+
+- name: install tempest-designate-plugin to virtualenv
+  pip: name={{ tempest_dest }}/designate-tempest-plugin virtualenv={{ tempest_dest }}/virtualenv
+  when: groups['designate'] | length > 0
 
 - name: install tempest config
   template: src=tempest.conf.j2 dest={{ tempest_dest }}/tempest/etc/tempest.conf
