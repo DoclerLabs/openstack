@@ -22,6 +22,9 @@
             - service
       keystone_roles:
         - key-manager:service-admin
+        - creator
+        - observer
+        - audit
 
 - hosts: barbican
   become: True
