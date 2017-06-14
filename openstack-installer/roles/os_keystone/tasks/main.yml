@@ -176,8 +176,3 @@
 - name: bootstrap keystone
   command: su keystone -s /bin/sh -c "/usr/bin/keystone-manage bootstrap --bootstrap-password {{ keystone_admin_password }}"
   run_once: True
-
-- name: set up pki in keystone
-  command: su keystone -s /bin/sh -c "/usr/bin/keystone-manage pki_setup"
-  register: keystone_pki_setup
-  changed_when: '"already exists" not in keystone_pki_setup.stdout'
