@@ -10,6 +10,9 @@
     - gnocchi-api
     - gnocchi-metricd
 
+- name: mask gnocchi-api apache config
+  copy: content='' dest=/etc/apache2/sites-available/gnocchi-api.conf owner=root group=root mode=0644
+
 - name: install gnocchi
   apt: name={{ item }}
   with_items:
