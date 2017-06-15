@@ -38,7 +38,47 @@
     - name: make sure aptitude is installed
       apt: name=aptitude
 
+
+# Mask apache configs from the packages
+
+- hosts: barbican
+  become: True
+  max_fail_percentage: 0
+  tasks:
+    - name: mask barbican-api apache config
+      copy: content='' dest=/etc/apache2/conf-available/barbican-api.conf owner=root group=root mode=0644
+
+- hosts: aodh
+  become: True
+  max_fail_percentage: 0
+  tasks:
+    - name: mask aodh-api apache config
+      copy: content='' dest=/etc/apache2/sites-available/aodh-api.conf owner=root group=root mode=0644
+
+- hosts: ceilometer_controller
+  become: True
+  max_fail_percentage: 0
+  tasks:
+    - name: mask ceilometer-api apache config
+      copy: content='' dest=/etc/apache2/sites-available/ceilometer-api.conf owner=root group=root mode=0644
+
+- hosts: cinder
+  become: True
+  max_fail_percentage: 0
+  tasks:
+    - name: mask cinder-wsgi apache config
+      copy: content='' dest=/etc/apache2/conf-available/cinder-wsgi.conf owner=root group=root mode=0644
+
+- hosts: gnocchi
+  become: True
+  max_fail_percentage: 0
+  tasks:
+    - name: mask gnocchi-api apache config
+      copy: content='' dest=/etc/apache2/sites-available/gnocchi-api.conf owner=root group=root mode=0644
+
+
 # Upgrade keystone all at once, since it is not supporting rolling upgrades yet
+
 - hosts: keystone
   become: True
   max_fail_percentage: 0
@@ -73,35 +113,9 @@
       become: False
       run_once: True
 
-- hosts: barbican
-  become: True
-  max_fail_percentage: 0
-  tasks:
-    - name: mask barbican-api apache config
-      copy: content='' dest=/etc/apache2/conf-available/barbican-api.conf owner=root group=root mode=0644
-
-- hosts: aodh
-  become: True
-  max_fail_percentage: 0
-  tasks:
-    - name: mask aodh-api apache config
-      copy: content='' dest=/etc/apache2/sites-available/aodh-api.conf owner=root group=root mode=0644
-
-- hosts: ceilometer_controller
-  become: True
-  max_fail_percentage: 0
-  tasks:
-    - name: mask ceilometer-api apache config
-      copy: content='' dest=/etc/apache2/sites-available/ceilometer-api.conf owner=root group=root mode=0644
-
-- hosts: cinder
-  become: True
-  max_fail_percentage: 0
-  tasks:
-    - name: mask cinder-wsgi apache config
-      copy: content='' dest=/etc/apache2/conf-available/cinder-wsgi.conf owner=root group=root mode=0644
 
 # Neutron server upgrade
+
 - hosts:
     - neutron_controller
   become: True
@@ -126,6 +140,9 @@
   handlers:
     - name: restart neutron-server
       service: name=neutron-server state=restarted
+
+
+# Upgrade first host(s)
 
 - hosts:
     - swift_proxy[0]
@@ -195,6 +212,9 @@
           haproxy: host={{ inventory_hostname }} socket=/run/haproxy/admin.sock state=enabled
           delegate_to: "{{ item }}"
           with_items: "{{ groups['haproxy'] }}"
+
+
+# Upgrade other host(s)
 
 - hosts:
     - swift_proxy[1:]
