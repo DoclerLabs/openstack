@@ -5,7 +5,7 @@
   when: inventory_hostname in groups['neutron_controller']
 
 - name: restart neutron-l3-agent
-  service: name="{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}" state=restarted
+  service: name="{{ neutron_vpnaas_type | ternary('neutron-vpn-agent', 'neutron-l3-agent') }}" state=restarted
   when: inventory_hostname in groups['neutron_l3']
 
 - name: restart neutron-dhcp-agent

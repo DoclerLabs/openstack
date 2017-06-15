@@ -83,7 +83,7 @@
 
 - name: install vpn service provider
   apt: name={{ neutron_vpnaas_type }}
-  when: inventory_hostname in groups['neutron_l3'] and neutron_vpnaas_type != None
+  when: inventory_hostname in groups['neutron_l3'] and neutron_vpnaas_type
 
 - name: install neutron server packages
   apt: name={{ item }}
@@ -104,11 +104,10 @@
   apt: name={{ item }}
   with_items:
     - keepalived
-    - "{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}"
+    - "{{ neutron_vpnaas_type | ternary(['neutron-vpn-agent','python-neutron-vpnaas'], 'neutron-l3-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
     - neutron-{{ neutron_lbaas_agent }}-agent
-    - python-neutron-vpnaas
     - python-neutronclient
   when: inventory_hostname in groups['neutron_l3']
 
@@ -239,7 +238,7 @@
 - name: ensure neutron L3 services are started
   service: name={{ item }} state=started enabled=yes
   with_items:
-    - "{{ (neutron_vpnaas_type == None) | ternary('neutron-l3-agent', 'neutron-vpn-agent') }}"
+    - "{{ neutron_vpnaas_type | ternary('neutron-vpn-agent', 'neutron-l3-agent') }}"
     - neutron-dhcp-agent
     - neutron-metadata-agent
     - neutron-{{ neutron_lbaas_agent }}-agent

@@ -127,7 +127,7 @@
         - neutron-server
         - python-neutron
         - python-neutron-fwaas
-        - python-neutron-vpnaas
+        - {{ (neutron_vpnaas_type | default(None)) | ternary('python-neutron-vpnaas','') }}
         - python-neutron-lbaas
         - python-pecan
       notify: restart neutron-server
