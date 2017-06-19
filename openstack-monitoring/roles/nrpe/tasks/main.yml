@@ -18,6 +18,17 @@
     - { 'script': 'check_swraid.py', 'enabled': "{{ nagios_mdraid }}" }
     - { 'script': check_ipmi_sensors, 'enabled': "{{ nagios_ipmi }}" }
 
+- name: install ipmitool
+  apt: name={{ item }}
+  with_items:
+    - ipmitool
+    - openipmi
+  when: nagios_ipmi
+
+- name: enable openipmi
+  service: name=openipmi state=started enabled=yes
+  when: nagios_ipmi
+
 - name: install ceph health check scripts
   copy: src={{ item }} dest=/usr/local/bin/{{ item }} owner=root group=root mode=0755
   with_items:
