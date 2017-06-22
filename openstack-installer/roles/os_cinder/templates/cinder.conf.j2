@@ -112,6 +112,7 @@ api_class = castellan.key_manager.barbican_key_manager.BarbicanKeyManager
 [barbican]
 
 auth_endpoint = {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3
+verify_ssl = {{ not ssl_insecure }}
 
 {% endif %}
 
