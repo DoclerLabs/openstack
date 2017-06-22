@@ -47,8 +47,6 @@ linuxnet_interface_driver=nova.network.linux_net.LinuxOVSInterfaceDriver
 {% elif neutron_physical_interface_driver == 'linuxbridge' %}
 linuxnet_interface_driver = nova.network.linux_net.NeutronLinuxBridgeInterfaceDriver
 {% endif %}
-firewall_driver = nova.virt.firewall.NoopFirewallDriver
-default_floating_pool = {{ nova_default_floating_pool }}
 
 ## Vif
 vif_plugging_timeout = 10
@@ -150,6 +148,8 @@ insecure = {{ ssl_insecure }}
 service_metadata_proxy = True
 metadata_proxy_shared_secret = {{ metadata_proxy_shared_secret }}
 
+default_floating_pool = {{ nova_default_floating_pool }}
+
 
 [ssl]
 
@@ -231,6 +231,7 @@ api_class = castellan.key_manager.barbican_key_manager.BarbicanKeyManager
 [barbican]
 
 auth_endpoint = {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3
+verify_ssl = {{ not ssl_insecure }}
 
 {% endif %}
 
