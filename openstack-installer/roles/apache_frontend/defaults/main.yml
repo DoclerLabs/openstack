@@ -12,3 +12,4 @@ apache_configure_certificate_chain: False
 apache_oidc: False
 apache_processes: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 apache_threads: 2
+apache_group: www-data

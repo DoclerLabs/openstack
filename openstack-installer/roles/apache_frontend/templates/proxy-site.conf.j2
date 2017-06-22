@@ -37,7 +37,12 @@ Listen {{ ip.mgmt }}:{{ service.port }}
 {% endif %}
 
 {% if service.wsgi_process is defined %}
-    WSGIDaemonProcess       {{ service.wsgi_process }} processes={{ service.wsgi_process_count | default(apache_processes) }} threads={{ service.wsgi_thread_count | default(apache_threads) }} user={{ service.wsgi_user }} display-name=%{GROUP}
+    WSGIDaemonProcess       {{ service.wsgi_process }} \
+                            processes={{ service.wsgi_process_count | default(apache_processes) }} \
+                            threads={{ service.wsgi_thread_count | default(apache_threads) }} \
+                            user={{ service.wsgi_user }} \
+                            group={{ service.wsgi_group | default(apache_group) }} \
+                            display-name=%{GROUP}
     WSGIProcessGroup        {{ service.wsgi_process }}
     WSGIScriptAlias /       {{ service.wsgi_script }}
     WSGIApplicationGroup    %{GLOBAL}
