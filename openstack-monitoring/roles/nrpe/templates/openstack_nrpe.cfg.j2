@@ -23,7 +23,7 @@ command[check_memcached]={{ nagios_plugin_path }}/check_tcp -H {{ ip.mgmt }} -p 
 
 {% if inventory_hostname in groups['galera'] %}
 ### MySQL ###
-command[check_galera]={{ nagios_plugin_path }}/check_mysql -H localhost -u clustercheck -p{{ galera_clustercheck_password }}
+command[check_galera]={{ nagios_plugin_path }}/check_mysql -f /etc/my.cnf
 {% endif %}
 
 {% if inventory_hostname in groups['ceph_monitor'] %}
@@ -38,7 +38,7 @@ command[check_haproxy]=sudo /usr/local/bin/check_haproxy_stats.pl -s /run/haprox
 {% endif %}
 
 {% if inventory_hostname in groups['rabbitmq'] %}
-### HAProxy ###
+### RabbitMQ ###
 command[check_rabbitmq]=sudo /usr/local/bin/check_rabbitmq_cluster.py
 {% endif %}
 
