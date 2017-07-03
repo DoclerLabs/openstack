@@ -27,6 +27,10 @@
   max_fail_percentage: 0
   serial: 5
   tasks:
+    - name: get rid of nova.sqlite
+      file: path=/var/lib/nova/nova.sqlite state=absent
+      when: inventory_hostname in groups['nova_compute']
+
     - name: upgrade packages
       apt: upgrade=yes
 
