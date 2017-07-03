@@ -14,6 +14,8 @@ auth_mode = {{ gnocchi_auth_mode }}
 
 [archive_policy]
 
+default_aggregation_methods = {{ ",".join(gnocchi_default_aggregation_methods) }}
+
 
 [cors]
 

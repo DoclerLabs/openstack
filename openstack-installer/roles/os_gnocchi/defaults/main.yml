@@ -37,6 +37,14 @@ gnocchi_cors_allowed_origin:
 # 'keystone', 'basic', 'noauth'
 gnocchi_auth_mode: "keystone"
 
+gnocchi_default_aggregation_methods: 
+  - mean
+  - min
+  - max
+  - sum
+  - std
+  - count
+
 gnocchi_metric_processing_delay: 30
 gnocchi_metric_reporting_delay: 120
 gnocchi_metric_cleanup_delay: 300
