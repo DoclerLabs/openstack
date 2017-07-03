@@ -140,3 +140,18 @@ Newton -> Ocata specific instructions
   ::
 
      cinder> update volumes set host='controller1@ceph-1#ceph-1' where host='controller1#RBD';
+
+- Nova instances must be mapped to a cell:
+
+  ::
+
+    $ nova-manage cell_v2 list_cells
+
+     +-------+--------------------------------------+
+     |  Name |                 UUID                 |
+     +-------+--------------------------------------+
+     |  None | 669ccdca-c368-46a5-a478-299d001a556f |
+     | cell0 | 00000000-0000-0000-0000-000000000000 |
+     +-------+--------------------------------------+
+
+    $ nova-manage cell_v2 map_instances --cell_uuid 669ccdca-c368-46a5-a478-299d001a556f
