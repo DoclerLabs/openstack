@@ -37,6 +37,7 @@ ceilometer_event_time_to_live: 0
 ceilometer_alarm_history_time_to_live: 0
 
 #give custom files here for replacing the defaults
+ceilometer_event_pipeline_src: "event_pipeline.yaml"
 ceilometer_pipeline_src: "pipeline.yaml"
 ceilometer_polling_src: "polling.yaml"
 
