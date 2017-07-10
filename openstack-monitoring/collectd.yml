@@ -35,5 +35,4 @@
   become: True
   max_fail_percentage: 0
   roles:
-    - common
     - collectd
