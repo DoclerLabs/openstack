@@ -4,7 +4,6 @@
   apt: name={{ item }}
   with_items:
     - radosgw
-    - libnss3-tools
 
 - name: ensure /etc/systemd/system/ceph-radosgw@.service.d exists
   file: dest=/etc/systemd/system/ceph-radosgw@.service.d state=directory owner=root group=root mode=0755
@@ -52,8 +51,7 @@
       "rgw keystone admin project": "{{ radosgw_project_name }}",
       "rgw keystone admin domain": "{{ radosgw_domain_name }}",
       "rgw keystone api version": 3,
-      "rgw keystone implicit tenants": "{{ radosgw_keystone_implicit_tenants }}",
-      "nss db path": "/var/lib/ceph/nss"
+      "rgw keystone implicit tenants": "{{ radosgw_keystone_implicit_tenants }}"
     }
   notify: restart radosgw
 
@@ -63,28 +61,6 @@
     option="rgw keystone admin token"
     state="absent"
   notify: restart radosgw
-
-- name: make sure /var/lib/ceph/nss exists
-  file: path=/var/lib/ceph/nss state=directory mode=0755 owner=ceph group=root
-  when: radosgw_keystone
-
-- name: set owner of existing nss database
-  file: path=/var/lib/ceph/nss/{{ item }}.db state=file mode=0600 owner=ceph group=ceph
-  with_items:
-    - cert8
-    - key3
-    - secmod
-  register: nss_file_result
-  failed_when: nss_file_result | failed and nss_file_result.state != 'absent'
-  when: radosgw_keystone
-
-- name: convert keystone CA cert for radosgw use
-  shell: 'openssl x509 -in /etc/keystone/ssl/certs/ca.pem -pubkey | su -s /bin/sh ceph -c ''certutil -d /var/lib/ceph/nss -A -n ca -t "TCu,Cu,Tuw"'''
-  when: radosgw_keystone
-
-- name: convert keystone signing cert for radosgw use
-  shell: 'openssl x509 -in /etc/keystone/ssl/certs/signing_cert.pem -pubkey | su -s /bin/sh ceph -c ''certutil -A -d /var/lib/ceph/nss -n signing_cert -t "P,P,P"'''
-  when: radosgw_keystone
 
 - meta: flush_handlers
 
