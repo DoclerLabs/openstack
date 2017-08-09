@@ -5,6 +5,7 @@ $script = <<SCRIPT
 echo "auto enp0s10" > /etc/network/interfaces.d/enp0s10.cfg
 echo "iface enp0s10 inet manual" >> /etc/network/interfaces.d/enp0s10.cfg
 ifup enp0s10
+apt-get -y install python-minimal
 SCRIPT
 
 Vagrant.configure(2) do |config|
