@@ -10,14 +10,19 @@ ironic_domain_name: "{{ keystone_domain_name }}"
 ironic_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
 ironic_project_name: "{{ keystone_service_project_name | default('service') }}"
 
+ironic_api_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
+
 ironic_deploy_kernel_path: /etc/openstack_deploy/ironic-deploy.vmlinuz
 ironic_deploy_initramfs_path: /etc/openstack_deploy/ironic-deploy.initramfs
+
+ironic_notifications: "{{ notifications_enable | default(False) }}"
 
 ironic_syslog_use: "{{ syslog_use | default(False) }}"
 
 ironic_debug: False
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
+os_proto: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
 SSLCACertificateFileSource:
 SSLCACertificateFile: "{{ (SSLCACertificateFileSource is not none and SSLCACertificateFileSource | trim != '') | ternary('/etc/ssl/certs/openstack.ca.crt','') }}"
