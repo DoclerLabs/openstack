@@ -42,6 +42,7 @@
     - tftpd-hpa
     - syslinux-common
     - syslinux
+    - pxelinux
     - qemu-utils
     - open-iscsi
     - ironic-api
@@ -49,6 +50,7 @@
     - ironic-conductor
     - python-ironic
     - python-ironicclient
+    - python-scciclient
     - python-shade
 
 - name: create ironic database
@@ -96,11 +98,12 @@
     - ironic-api
     - ironic-conductor
 
-#- name: copy pxelinux to tftpd dir
-#  command: cp /usr/lib/syslinux/{{ item }} /var/lib/tftpboot creates=/var/lib/tftpboot/{{ item }}
-#  with_items:
-#    - pxelinux.0
-#    - chain.c32
+- name: copy pxelinux to tftpd dir
+  copy: src={{ item }} dest=/var/lib/tftpboot/{{ item | basename }} remote_src=True
+  with_items:
+    - /usr/lib/PXELINUX/pxelinux.0
+    - /usr/lib/syslinux/modules/bios/chain.c32
+    - /usr/lib/syslinux/modules/bios/ldlinux.c32
 
 - name: install map file for tftp
   copy: src=map-file dest=/var/lib/tftpboot/map-file
