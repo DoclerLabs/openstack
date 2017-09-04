@@ -203,7 +203,8 @@ Ceph
 Ceph has 3 host groups in the inventory, namely ceph_monitor, ceph_osd and ceph_radosgw.
 
 Ceph monitor is the 'brain' of the ceph cluster, it is recommended to have at least 3 hosts. Monitors are
-forming a cluster with quorum, so odd number of monitor hosts is recommended.
+forming a cluster with quorum, so odd number of monitor hosts is recommended. From the Luminous relase,
+ceph-mgr daemons also run on the monitor hosts.
 
 Ceph OSDs (Object Store Daemons) are the actual storage nodes. For performance reasons, it is recommended
 to use bare disks (so if you have a RAID controller, set it to JBOD mode), possibly use a separate fast 

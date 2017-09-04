@@ -21,19 +21,15 @@
     - name: upgrade ceph
       apt: name=ceph state=latest
       notify: restart ceph-monitor
-
-    - name: fix monitor owner
-      file: dest=/var/lib/ceph/mon/{{ ceph_cluster_name | default('ceph')}}-{{ inventory_hostname }}
-          owner=ceph group=root recurse=yes
-
-    - meta: flush_handlers
-
-    - name: ensure ceph monitor is started
-      service: name=ceph-mon state=started enabled=yes
-
   handlers:
     - name: restart ceph-monitor
       service: name=ceph-mon state=restarted
+
+- hosts: ceph_monitor
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - ceph_monitor
 
 - hosts: ceph_osd
   become: True

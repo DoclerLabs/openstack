@@ -86,7 +86,7 @@
 - name: prepare disks
   command: ceph-disk prepare
     --cluster {{ ceph_cluster_name }}
-    {{ (item.bluestore | default(ceph_osd_bluestore)) | ternary('--bluestore','') }}
+    {{ (item.bluestore | default(ceph_osd_bluestore)) | ternary('--bluestore','--filestore') }}
     "{{ item.path }}"
   with_items: "{{ osd }}"
   when: item.path is defined

@@ -1,0 +1,26 @@
+---
+
+- name: create mgr key
+  command: "ceph --cluster {{ ceph_cluster_name }} auth get-or-create mgr.{{ inventory_hostname }} mon 'allow *'"
+  register: ceph_auth
+
+- name: make sure ceph mgr keyring directory exists
+  file: path=/var/lib/ceph/mgr/{{ ceph_cluster_name }}-{{ inventory_hostname }} state=directory
+
+- name: write out mgr keyring
+  copy: content='{{ ceph_auth.stdout }}\n' dest=/var/lib/ceph/mgr/{{ ceph_cluster_name }}-{{ inventory_hostname }}/keyring
+        owner=ceph group=ceph mode=0440
+
+- name: ensure /etc/systemd/system/ceph-mgr.service.d exists
+  file: dest=/etc/systemd/system/ceph-mgr.service.d state=directory owner=root group=root mode=0755
+
+- name: install 10-name.conf override
+  copy: content='[Service]\nEnvironment=CLUSTER={{ ceph_cluster_name }}\n'
+        dest=/etc/systemd/system/ceph-mgr.service.d/10-name.conf
+        owner=root group=root mode=0644
+  notify: reload systemd
+
+- meta: flush_handlers
+
+- name: ensure ceph-mgr is started
+  service: name=ceph-mgr@{{ inventory_hostname }} state=started enabled=yes

@@ -1,5 +1,5 @@
 ceph_cluster_name: ceph
-ceph_osd_bluestore: False
+ceph_osd_bluestore: True
 
 ceph_osd_journal_size: 10000
 ceph_filestore_xattr_use_omap: true
