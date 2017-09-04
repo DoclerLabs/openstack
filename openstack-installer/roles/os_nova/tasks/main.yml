@@ -195,13 +195,13 @@
   when: inventory_hostname in groups['nova_controller']
   notify: signal apache to reload
 
-- name: link nova wsgi servers
-  file: src=/usr/lib/python2.7/dist-packages/nova/wsgi/{{ item }}.py dest=/var/www/cgi-bin/nova/{{ item }} state=link
-  with_items:
-    - nova-api
-    - nova-metadata
-  when: inventory_hostname in groups['nova_controller']
-  notify: signal apache to reload
+#- name: link nova wsgi servers
+#  file: src=/usr/lib/python2.7/dist-packages/nova/wsgi/{{ item }}.py dest=/var/www/cgi-bin/nova/{{ item }} state=link
+#  with_items:
+#    - nova-api
+#    - nova-metadata
+#  when: inventory_hostname in groups['nova_controller']
+#  notify: signal apache to reload
 
 - name: link nova-placement-api
   file: src=/usr/bin/nova-placement-api dest=/var/www/cgi-bin/nova/placement-api state=link
