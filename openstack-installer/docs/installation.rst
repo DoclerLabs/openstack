@@ -22,8 +22,8 @@ It does not install the base OS, also doesn't configure the hardware (network in
   - For Ceph, it is recommended to have separate management and cluster communication interfaces.
 
 - NTP should be working on all nodes.
-- All nodes must have an user 'ansible' created, ssh passwordless login enabled from the deployment node, and sudo rights. Several deployment tools, like MAAS,
-  creates an 'ubuntu' user by default with sudo rights. It can be used, too, but have to give '-u ubuntu' parameter in the ansible-playbook command line,
+- All nodes must have an user 'ubuntu' created, ssh passwordless login enabled from the deployment node, and sudo rights. Several deployment tools, like MAAS,
+  creates an 'ubuntu' user by default with sudo rights. If you're using another user, you have to give '-u username' parameter in the ansible-playbook command line,
   or change ansible.cfg remote_user parameter.
 
 3. Installation
