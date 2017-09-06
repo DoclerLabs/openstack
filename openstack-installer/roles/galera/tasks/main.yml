@@ -16,15 +16,23 @@
   changed_when: False
 
 - name: check if galera is already configured
-  stat: path=/etc/mysql/conf.d/galera.cnf
+  command: grep -q wsrep_cluster_address /etc/mysql/percona-xtradb-cluster.conf.d/wsrep.cnf
   register: galera_stat
+  failed_when: False
+  changed_when: False
 
-- name: stop mysql if it is not already managed by pacemaker
+- name: stop mysql if it is not configured yet
   service: name=mysql state=stopped
-  when: galera_stat.stat.exists == False
+  when: galera_stat.rc != 1
 
-- name: install my.cnf
-  template: src=my.cnf.j2 dest=/etc/mysql/my.cnf owner=mysql group=root mode=0460
+- name: install mysqld.cnf
+  template: src=mysqld.cnf.j2 dest=/etc/mysql/percona-xtradb-cluster.conf.d/mysqld.cnf owner=mysql group=root mode=0460
+
+- name: ensure link to /etc/alternatives/my.cnf
+  file: src=/etc/alternatives/my.cnf path=/etc/mysql/my.cnf state=link force=yes
+
+- name: ensure the alternatives system uses percona-xtradb-cluster.cnf
+  alternatives: name=my.cnf path=/etc/mysql/percona-xtradb-cluster.cnf
 
 - name: check if /var/lib/percona-xtradb-cluster exists
   stat: path=/var/lib/percona-xtradb-cluster
@@ -36,7 +44,7 @@
 
 - name: ensure mysql is running if not configured yet
   service: name=mysql state=started
-  when: galera_stat.stat.exists == False
+  when: galera_stat.rc != 1
 
 - name: set up mysql root password
   mysql_user: name=root host="{{ item }}" password="{{ mysql_root_password }}" priv=*.*:ALL,GRANT
@@ -45,28 +53,28 @@
     - localhost
     - 127.0.0.1
     - '%'
-  when: galera_stat.stat.exists == False
+  when: galera_stat.rc != 1
 
 - name: create wsrep user
   mysql_user: name=wsrep password={{ galera_wsrep_password }} priv=*.*:ALL
     login_user=root login_password={{ mysql_root_password }}
-  when: galera_stat.stat.exists == False
+  when: galera_stat.rc != 1
 
 - name: create clustercheck user
   mysql_user: name=clustercheck password={{ galera_clustercheck_password }} priv=*.*:USAGE
     login_user=root login_password={{ mysql_root_password }}
-  when: galera_stat.stat.exists == False
+  when: galera_stat.rc != 1
 
-- name: stop mysql if it is not already managed by pacemaker
+- name: stop mysql if it is not configured yet
   service: name=mysql state=stopped
-  when: galera_stat.stat.exists == False
+  when: galera_stat.rc != 1
 
-- name: install galera.cnf
-  template: src=galera.cnf.j2 dest=/etc/mysql/conf.d/galera.cnf owner=mysql group=root mode=0460
+- name: install wsrep.cnf
+  template: src=wsrep.cnf.j2 dest=/etc/mysql/percona-xtradb-cluster.conf.d/wsrep.cnf owner=mysql group=root mode=0460
+  notify: cleanup galera resource
 
 - name: install /etc/my.cnf
   template: src=root.my.cnf.j2 dest=/etc/my.cnf owner=root group=root mode=0600
-  notify: cleanup galera resource
 
 - name: install galera OCF script
   copy: src=galera-agent dest=/usr/lib/ocf/resource.d/heartbeat/galera-agent owner=root group=root mode=0755
