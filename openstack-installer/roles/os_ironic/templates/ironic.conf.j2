@@ -11,130 +11,10 @@ transport_url = rabbit://{% for host in rabbit_hosts %}{{ ironic_rabbit_user }}:
 
 my_ip={{ ip.mgmt }}
 
-
-#
-# Options defined in ironic.common.driver_factory
-#
-
-# Specify the list of drivers to load during service
-# initialization. Missing drivers, or drivers which fail to
-# initialize, will prevent the conductor service from
-# starting. The option default is a recommended set of
-# production-oriented drivers. A complete list of drivers
-# present on your system may be found by enumerating the
-# "ironic.drivers" entrypoint. An example may be found in the
-# developer documentation online. (list value)
 #enabled_drivers=pxe_ipmitool
+enabled_network_interfaces = {{ ironic_enabled_network_interfaces }}
 
-
-#
-# Options defined in ironic.common.exception
-#
-
-# Used if there is a formatting error when generating an
-# exception message (a programming error). If True, raise an
-# exception; if False, use the unformatted message. (boolean
-# value)
-#fatal_exception_format_errors=false
-
-
-#
-# Options defined in ironic.common.hash_ring
-#
-
-# Exponent to determine number of hash partitions to use when
-# distributing load across conductors. Larger values will
-# result in more even distribution of load and less load when
-# rebalancing the ring, but more memory usage. Number of
-# partitions per conductor is (2^hash_partition_exponent).
-# This determines the granularity of rebalancing: given 10
-# hosts, and an exponent of the 2, there are 40 partitions in
-# the ring.A few thousand partitions should make rebalancing
-# smooth in most cases. The default is suitable for up to a
-# few hundred conductors. Too many partitions has a CPU
-# impact. (integer value)
-#hash_partition_exponent=5
-
-# [Experimental Feature] Number of hosts to map onto each hash
-# partition. Setting this to more than one will cause
-# additional conductor services to prepare deployment
-# environments and potentially allow the Ironic cluster to
-# recover more quickly if a conductor instance is terminated.
-# (integer value)
-#hash_distribution_replicas=1
-
-
-#
-# Options defined in ironic.common.images
-#
-
-# If True, convert backing images to "raw" disk image format.
-# (boolean value)
-#force_raw_images=true
-
-# Path to isolinux binary file. (string value)
-#isolinux_bin=/usr/lib/syslinux/isolinux.bin
-
-# Template file for isolinux configuration file. (string
-# value)
-#isolinux_config_template=$pybasedir/common/isolinux_config.template
-
-# Template file for grub configuration file. (string value)
-#grub_config_template=$pybasedir/common/grub_conf.template
-
-
-#
-# Options defined in ironic.common.paths
-#
-
-# Directory where the ironic python module is installed.
-# (string value)
-#pybasedir=/usr/lib/python/site-packages/ironic/ironic
-
-# Directory where ironic binaries are installed. (string
-# value)
-#bindir=$pybasedir/bin
-
-# Top-level directory for maintaining ironic's state. (string
-# value)
-#state_path=$pybasedir
-
-
-#
-# Options defined in ironic.common.service
-#
-
-# Seconds between running periodic tasks. (integer value)
-#periodic_interval=60
-
-# Name of this node.  This can be an opaque identifier. It is
-# not necessarily a hostname, FQDN, or IP address. However,
-# the node name must be valid within an AMQP key, and if using
-# ZeroMQ, a valid hostname, FQDN, or IP address. (string
-# value)
-#host=ironic
-
-
-#
-# Options defined in ironic.common.utils
-#
-
-# Path to the rootwrap configuration file to use for running
-# commands as root. (string value)
-#rootwrap_config=/etc/ironic/rootwrap.conf
-
-# Temporary working directory, default is Python temp dir.
-# (string value)
-#tempdir=/tmp
-
-
-#
-# Options defined in ironic.drivers.modules.image_cache
-#
-
-# Run image downloads and raw format conversions in parallel.
-# (boolean value)
-#parallel_image_downloads=false
+default_network_interface = {{ ironic_default_network_interface }}
 
 
 [agent]
@@ -260,7 +140,9 @@ public_endpoint = {{ os_proto }}://{{ os_public_address }}:6385
 # current value from the keystone service catalog. (string
 # value)
 #api_url=<None>
-api_url = {{ os_proto }}://{{ os_public_address }}:6385
+{% if ironic_api_url %}
+api_url = {{ ironic_api_url }}
+{% endif %}
 
 # Seconds between conductor heart beats. (integer value)
 #heartbeat_interval=10
@@ -351,7 +233,7 @@ api_url = {{ os_proto }}://{{ os_public_address }}:6385
 # significantly longer. In an environment where all tenants
 # are trusted (eg, because there is only one tenant), this
 # option could be safely disabled. (boolean value)
-#clean_nodes=true
+automated_clean = {{ ironic_automated_clean }}
 
 # Timeout (seconds) to wait for a callback from the ramdisk
 # doing the cleaning. If the timeout is reached the node will
@@ -526,7 +408,8 @@ cafile = {{ SSLCACertificateFile }}
 {% endif %}
 insecure = {{ ssl_insecure }}
 
-#cleaning_network_uuid=<None>
+cleaning_network = {{ ironic_cleaning_network }}
+provisioning_network = {{ ironic_provisioning_network }}
 
 
 [glance]

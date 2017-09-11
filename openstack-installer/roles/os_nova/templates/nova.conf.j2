@@ -296,6 +296,8 @@ send_service_user_token = True
 
 
 {% if inventory_hostname in groups['nova_compute'] %}
+
+{% if nova_compute_driver == 'libvirt.LibvirtDriver' %}
 [libvirt]
 
 disk_cachemodes="network=writeback"
@@ -316,6 +318,27 @@ images_type = rbd
 images_rbd_pool = {{ nova_ephemeral_ceph_pool }}
 images_rbd_ceph_conf = /etc/ceph/{{ ceph_cluster_name }}.conf
 hw_disk_discard = unmap
+{% endif %}
+
+{% elif nova_compute_driver == 'ironic.IronicDriver' %}
+[ironic]
+
+auth_type = password
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+admin_user={{ ironic_admin_user }}
+admin_password = {{ ironic_admin_password }}
+admin_tenant_name = {{ ironic_project_name }}
+
+user_domain_name = {{ ironic_domain_name }}
+username = {{ ironic_admin_user }}
+password = {{ ironic_admin_password }}
+project_domain_name = {{ ironic_project_domain_name }}
+project_name = {{ ironic_project_name }}
+
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
 {% endif %}
 
 {% endif %}

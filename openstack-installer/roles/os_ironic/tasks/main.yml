@@ -52,6 +52,8 @@
     - python-ironicclient
     - python-scciclient
     - python-shade
+    - python-mysqldb
+    - python-memcache
 
 - name: create ironic database
   mysql_db: name={{ ironic_db }}
@@ -76,6 +78,7 @@
 
 - name: ensure ironic-dbsync.log owned by ironic
   file: path=/var/log/ironic/ironic-dbsync.log state=file owner=ironic group=ironic mode=0640
+  failed_when: False
 
 - name: Perform a ironic DB sync
   command: su ironic -s /bin/sh -c 'ironic-dbsync --config-file /etc/ironic/ironic.conf'
@@ -148,6 +151,8 @@
     container_format: aki
     disk_format: aki
     filename: "/root/{{ ironic_deploy_kernel_path | basename }}"
+    properties:
+      hypervisor_type: baremetal
     is_public: True
     state: present
   run_once: True
@@ -166,9 +171,11 @@
     region_name: "{{ keystone_region_name }}"
     endpoint_type: internal
     name: ironic-deploy-initramfs
-    container_format: aki
-    disk_format: aki
+    container_format: ari
+    disk_format: ari
     filename: "/root/{{ ironic_deploy_initramfs_path | basename }}"
+    properties:
+      hypervisor_type: baremetal
     is_public: True
     state: present
   run_once: True
