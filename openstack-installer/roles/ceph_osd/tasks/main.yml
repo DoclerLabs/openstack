@@ -26,6 +26,7 @@
       "auth client required": "cephx",
       "cephx require signatures": "true",
       "osd journal size": "{{ ceph_osd_journal_size }}",
+      "bluestore block size": "{{ ceph_bluestore_block_size }}",
       "filestore xattr use omap": "{{ ceph_filestore_xattr_use_omap | ternary('true','false') }}",
       "osd pool default size": "{{ ceph_osd_pool_default_size }}",
       "osd pool default min size": "{{ ceph_osd_pool_default_min_size }}",
