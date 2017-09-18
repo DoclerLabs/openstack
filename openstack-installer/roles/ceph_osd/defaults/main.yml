@@ -2,7 +2,7 @@ ceph_cluster_name: ceph
 ceph_osd_bluestore: True
 
 ceph_osd_journal_size: 10000
-ceph_bluestore_block_size: 10737418240        # 10G
+ceph_bluestore_block_size: 0
 ceph_filestore_xattr_use_omap: true
 ceph_osd_pool_default_size: 3
 ceph_osd_pool_default_min_size: 0

@@ -220,7 +220,8 @@ Important configuration options:
   ceph_osd_bluestore: True           # Whether to use the new Bluestore storage backend.
   ceph_osd_journal_size: 10000       # The default journal size. Look at the ceph docs to calculate the correct size.
                                      # Default value is 10GB, it is good for the most use cases.
-  ceph_bluestore_block_size: 10G     # The backing store size for Bluestore if not using a whole disk.
+  ceph_bluestore_block_size: 0       # The backing store size for Bluestore. Default is the maximal space for whole
+                                     # disks. Must set it to some value if using a filesystem path.
   ceph_osd_pool_default_size: 3      # The number of replicas of a pool. By default, 3 copies of each data is
                                      # maintained across the cluster. It is not recommended to lower it, but if you
                                      # have less than 3 OSDs (testing for example), then do it.
