@@ -217,8 +217,10 @@ Important configuration options:
 ::
 
   ceph_cluster_name: ceph            # Name of the cluster. 'ceph' is the default, it is best to leave it as is.
+  ceph_osd_bluestore: True           # Whether to use the new Bluestore storage backend.
   ceph_osd_journal_size: 10000       # The default journal size. Look at the ceph docs to calculate the correct size.
                                      # Default value is 10GB, it is good for the most use cases.
+  ceph_bluestore_block_size: 10G     # The backing store size for Bluestore if not using a whole disk.
   ceph_osd_pool_default_size: 3      # The number of replicas of a pool. By default, 3 copies of each data is
                                      # maintained across the cluster. It is not recommended to lower it, but if you
                                      # have less than 3 OSDs (testing for example), then do it.
@@ -232,7 +234,7 @@ Important configuration options:
                                      # value here will use the same network for front-end and replication traffic.
 
 There are several other settings exposed which can be used to fine-tune ceph, see roles/ceph_monitor/defaults/main.yml and
-roles/ceph_osd/defaults/main.yml.
+roles/ceph_osd/defaults/main.yml. Extra settings for the OSDs can be given with the ceph_osd_extra_settings dict.
 
 Configuring ceph includes setting up disk space for OSD usage. The recommended way is to give whole disks to Ceph,
 and to use a fast journal device (like fast SSDs, or even NVMes). Since the disk configuration likely different

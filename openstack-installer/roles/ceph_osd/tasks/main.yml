@@ -18,36 +18,27 @@
     option="{{ item.key }}"
     value="{{ item.value }}"
   with_dict:
-    { "fsid": "{{ ceph_fsid.stdout }}",
-      "mon initial members": "{{ groups['ceph_monitor'] | join(',') }}",
-      "mon host": "{% for host in groups['ceph_monitor'] %}{{ hostvars[host].ip.mgmt }}{% if not loop.last %},{% endif %}{% endfor %}",
-      "auth cluster required": "cephx",
-      "auth service required": "cephx",
-      "auth client required": "cephx",
-      "cephx require signatures": "true",
-      "osd journal size": "{{ ceph_osd_journal_size }}",
-      "bluestore block size": "{{ ceph_bluestore_block_size }}",
-      "filestore xattr use omap": "{{ ceph_filestore_xattr_use_omap | ternary('true','false') }}",
-      "osd pool default size": "{{ ceph_osd_pool_default_size }}",
-      "osd pool default min size": "{{ ceph_osd_pool_default_min_size }}",
-      "osd crush chooseleaf type": "{{ ceph_osd_crush_chooseleaf_type }}",
-      "osd crush update on start": "{{ ceph_osd_crush_update_on_start | ternary('true','false') }}",
-      "osd max attr size": "{{ ceph_osd_max_attr_size }}",
-      "osd heartbeat grace": "{{ ceph_osd_heartbeat_grace }}",
-      "osd heartbeat interval": "{{ ceph_osd_heartbeat_interval }}",
-      "osd mon heartbeat interval": "{{ ceph_osd_mon_heartbeat_interval }}",
-      "osd mon report interval max": "{{ ceph_osd_mon_report_interval_max }}",
-      "osd mon report interval min": "{{ ceph_osd_mon_report_interval_min }}",
-      "osd mon ack timeout": "{{ ceph_osd_mon_ack_timeout }}",
-      "osd op threads": "{{ ceph_osd_op_threads }}",
-      "osd client op priority": "{{ ceph_osd_client_op_priority }}",
-      "osd recovery op priority": "{{ ceph_osd_recovery_op_priority }}",
-      "osd scrub load threshold": "{{ ceph_osd_scrub_load_threshold }}",
-      "osd recovery max active": "{{ ceph_osd_recovery_max_active }}",
-      "osd max backfills": "{{ ceph_osd_max_backfills }}",
-      "osd recovery max single start": "{{ ceph_osd_recovery_max_single_start }}",
-      "osd max object name len": "{{ ceph_osd_max_object_name_len }}"
-   }
+    "fsid": "{{ ceph_fsid.stdout }}"
+    "mon initial members": "{{ groups['ceph_monitor'] | join(',') }}"
+    "mon host": "{% for host in groups['ceph_monitor'] %}{{ hostvars[host].ip.mgmt }}{% if not loop.last %},{% endif %}{% endfor %}"
+    "auth cluster required": "cephx"
+    "auth service required": "cephx"
+    "auth client required": "cephx"
+    "cephx require signatures": "true"
+    "osd journal size": "{{ ceph_osd_journal_size }}"
+    "bluestore block size": "{{ ceph_bluestore_block_size }}"
+    "filestore xattr use omap": "{{ ceph_filestore_xattr_use_omap | ternary('true','false') }}"
+    "osd pool default size": "{{ ceph_osd_pool_default_size }}"
+    "osd pool default min size": "{{ ceph_osd_pool_default_min_size }}"
+    "osd crush chooseleaf type": "{{ ceph_osd_crush_chooseleaf_type }}"
+    "osd crush update on start": "{{ ceph_osd_crush_update_on_start | ternary('true','false') }}"
+
+- name: apply extra OSD settings
+  ini_file: dest=/etc/ceph/{{ ceph_cluster_name }}.conf
+    section=global
+    option="{{ item.key }}"
+    value="{{ item.value }}"
+  with_dict: "{{ ceph_osd_extra_settings }}"
 
 - name: set up ceph public network
   ini_file: dest=/etc/ceph/{{ ceph_cluster_name }}.conf
@@ -124,7 +115,7 @@
 - name: prepare disks
   command: ceph-disk prepare
      --cluster {{ ceph_cluster_name }}
-     {{ (item.bluestore | default(ceph_osd_bluestore)) | ternary('--bluestore','') }}
+     {{ (item.bluestore | default(ceph_osd_bluestore)) | ternary('--bluestore','--filestore') }}
      "{{ item.disk }}"
      {{ item.journal | default('') }}
   register: ceph_disk_status

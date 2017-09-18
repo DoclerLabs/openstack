@@ -16,3 +16,4 @@ ceph_mon_osd_downout_subtree_limit: rack      # smallest crush unit/type that we
 ceph_mon_osd_min_down_reporters: 2            # number of OSDs from different subtrees who need to report a down OSD for it to count
 ceph_mon_pg_warn_max_per_osd: 300             # max # pgs per (in) osd before we warn the admin
 ceph_mon_osd_max_split_count: 32              # largest number of PGs per "involved" OSD to let split create
+ceph_mon_allow_pool_delete: False             # to allow pool deletes
