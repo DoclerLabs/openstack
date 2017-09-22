@@ -9,7 +9,7 @@ General upgrading instructions are below.
 
   ::
 
-    $ git checkout xenial/newton
+    $ git checkout xenial/ocata
     $ ansible-playbook ceph.yml
     $ ansible-playbook main.yml
 
