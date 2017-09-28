@@ -129,22 +129,22 @@ barbican:
 ironic:
 
 mistral:
-  inherit: controller
+#  inherit: controller
 
 manila:
-  inherit: controller
+#  inherit: controller
 
 powerdns:
-  inherit: controller
+#  inherit: controller
 
 designate:
-  inherit: controller
+#  inherit: controller
 
 magnum:
 #  inherit: controller
 
 senlin:
-  inherit: controller
+#  inherit: controller
 
 # -------- Tempest ------
 tempest:

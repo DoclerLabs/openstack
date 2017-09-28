@@ -2,10 +2,13 @@
 # vi: set ft=ruby :
 
 $script = <<SCRIPT
+apt-get -y install python-minimal openvswitch-switch
 echo "auto enp0s10" > /etc/network/interfaces.d/enp0s10.cfg
 echo "iface enp0s10 inet manual" >> /etc/network/interfaces.d/enp0s10.cfg
 ifup enp0s10
-apt-get -y install python-minimal
+ovs-vsctl add-br ovs-ext
+ovs-vsctl add-br ovs-vlan
+ovs-vsctl add-port ovs-ext enp0s10
 SCRIPT
 
 Vagrant.configure(2) do |config|
@@ -14,8 +17,8 @@ Vagrant.configure(2) do |config|
 
   # Networking
   config.vm.network :private_network, ip: "10.10.0.11"  # management
-  config.vm.network :private_network, ip: "10.10.1.11"  # external
-  config.vm.network :private_network, ip: "10.10.2.11", # Neutron flat network
+  config.vm.network :private_network, ip: "10.10.1.11"  # public
+  config.vm.network :private_network, ip: "10.10.2.11", # Neutron flat ext + vlan projects
                      auto_config: false
 
   config.vm.provider :virtualbox do |vb|
