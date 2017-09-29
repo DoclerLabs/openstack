@@ -67,8 +67,11 @@
     - python-cinderclient
   when: inventory_hostname in groups['cinder_volume']
 
-- name: patch cinder for bug 1686616
-  patch: src=compute.diff basedir=/usr/lib/python2.7/dist-packages strip=1
+- name: patch cinder for bug 1686616 and 1649956
+  patch: src={{ item }} basedir=/usr/lib/python2.7/dist-packages strip=1
+  with_items:
+    - compute.diff
+    - rbd.diff
   notify:
     - recompile python-cinder
     - restart cinder-scheduler
