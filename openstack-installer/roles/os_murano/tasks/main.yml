@@ -116,5 +116,7 @@
   service: name={{ item }} state=started enabled=yes
   with_items:
     - murano-api
-    - murano-cfapi
     - murano-engine
+
+- name: ensure murano-cfapi is stopped
+  service: name=murano-cfapi enabled=no state=stopped

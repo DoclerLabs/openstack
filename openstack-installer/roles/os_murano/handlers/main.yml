@@ -4,5 +4,4 @@
   service: name={{ item }} state=restarted
   with_items:
     - murano-api
-    - murano-cfapi
     - murano-engine
