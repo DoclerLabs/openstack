@@ -93,6 +93,7 @@
         - python-keystoneclient
         - python-oslo.log
         - python-oslo.policy
+        - python-webob
 
 - hosts: memcached
   become: True
