@@ -318,7 +318,7 @@ OPENSTACK_NEUTRON_NETWORK = {
     # network field on the admin create network modal. If it's set to an empty
     # list, the field will be a regular input field.
     # e.g. ['default', 'test']
-    'physical_networks': [],
+    'physical_networks': {{ horizon_neutron_physical_networks }},
 
 }
 
