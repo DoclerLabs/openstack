@@ -1,7 +1,10 @@
 ---
 
-- name: mask autostarting of corosync
-  service_mask: name=corosync state=masked
+- name: mask autostarting of corosync and pacemaker
+  service_mask: name={{ item }} state=masked
+  with_items:
+    - corosync
+    - pacemaker
 
 - name: install pacemaker
   apt: name={{ item }}
@@ -41,8 +44,11 @@
   notify: restart pacemaker
   when: inventory_hostname != play_hosts[0]
 
-- name: unmask autostarting of corosync
-  service_mask: name=corosync state=unmasked
+- name: unmask autostarting of corosync and pacemaker
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - corosync
+    - pacemaker
 
 - meta: flush_handlers
 
