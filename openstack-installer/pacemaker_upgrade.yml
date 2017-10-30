@@ -20,8 +20,20 @@
       apt: name={{ item }} state=latest
       with_items:
         - corosync
+        - pacemaker-common
         - pacemaker
       notify: restart pacemaker
+
+    - meta: flush_handlers
+
+    - name: wait until the cluster is active
+      command: /usr/sbin/crm_mon -1
+      register: pacemaker_status
+      until: 'pacemaker_status.stdout.find("Current DC: NONE") == -1 and pacemaker_status.rc == 0'
+      failed_when: False
+      changed_when: False
+      retries: 10
+      delay: 5
 
   handlers:
     - name: restart pacemaker
