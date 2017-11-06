@@ -8,10 +8,10 @@ It does not install the base OS, also doesn't configure the hardware (network in
 2. Pre-requisite
 ================
 
-- A deployment node, which can connect to the provisioned nodes via ssh. Install Ansible on it. Version = 2.1.2.0 is used in the CI system currently,
-  so it is recommended. The 1.x series doesn't work anymore! 2.1.0.0 has several bugs, don't use it (usually x.x.0 versions are not working).
-- Ubuntu 14.04 LTS (Liberty/Mitaka) or 16.04 LTS (Mitaka/Newton) for the base OS. Need odd number of controller nodes, and arbitary number of compute nodes.
-- For ceph, it is recommended to have at least 3 monitor nodes, and 3 OSD nodes.
+- A deployment node, which can connect to the provisioned nodes via ssh. Install Ansible on it. Version = 2.4.1.0 is used in the CI system currently,
+  so it is recommended. The 1.x series doesn't work anymore! 2.4.0.0 has several bugs, don't use it (usually x.x.0 versions are not working).
+- Ubuntu 14.04 LTS (Liberty/Mitaka) or 16.04 LTS (Mitaka/Newton/Ocata/Pike) for the base OS. Need odd number of controller nodes, and arbitary number of compute nodes.
+- For ceph, it is recommended to have at least 3 monitor/manager nodes, and 3 OSD nodes.
 - Set up the network for the nodes:
 
   - OpenStack Controller nodes need a management interface, and a separate public interface is recommended.
