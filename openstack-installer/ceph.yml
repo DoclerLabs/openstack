@@ -1,15 +1,4 @@
 ---
 
-- hosts: ceph_monitor
-  become: True
-  max_fail_percentage: 0
-  roles:
-    - apt
-    - ceph_monitor
-
-- hosts: ceph_osd
-  become: True
-  max_fail_percentage: 0
-  roles:
-    - apt
-    - ceph_osd
+- include: ceph_monitor.yml
+- include: ceph_osd.yml

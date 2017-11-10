@@ -1,0 +1,8 @@
+---
+
+- hosts: ceph_osd
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - apt
+    - ceph_osd
