@@ -122,18 +122,6 @@ auth_startegy = keystone
 {% if inventory_hostname in groups['ceilometer_controller'] %}
 
 {% if ceilometer_store_meters %}
-meter_dispatchers = gnocchi
-{% else %}
-meter_dispatchers =
-{% endif %}
-
-{% if ceilometer_store_events %}
-event_dispatchers = panko
-{% else %}
-event_dispatchers =
-{% endif %}
-
-{% if ceilometer_store_meters %}
 [dispatcher_gnocchi]
 
 filter_service_activity = False
