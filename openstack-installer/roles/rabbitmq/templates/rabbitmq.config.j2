@@ -5,7 +5,7 @@
     {loopback_users, []},
     {tcp_listeners, [ {% for listen_address in listen_addresses %}{"{{ listen_address }}", 5672}{% if not loop.last %}, {% endif %}{% endfor %} ]},
     {hipe_compile, true},
-    {cluster_partition_handling, autoheal},
+    {cluster_partition_handling, {{ rabbitmq_cluster_partition_handling }}},
     {default_user, <<"admin">>},
     {default_pass, <<"{{ rabbitmq_password }}">>},
     {cluster_nodes, {
