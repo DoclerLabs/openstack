@@ -36,6 +36,14 @@ ceilometer_metering_time_to_live: 0
 ceilometer_event_time_to_live: 0
 ceilometer_alarm_history_time_to_live: 0
 
+ceilometer_polling_interval: 300
+ceilometer_meter_publishers: "{{ (groups['gnocchi'] | count > 0) | ternary(['gnocchi://'],[]) }}"
+ceilometer_event_publishers: "{{ (groups['panko'] | count > 0) | ternary(['panko://'],['gnocchi://']) }}"
+
+ceilometer_notification_workers: 1
+ceilometer_batch_size: 100
+ceilometer_batch_timeout: 5
+
 #give custom files here for replacing the defaults
 ceilometer_event_pipeline_src: "event_pipeline.yaml"
 ceilometer_pipeline_src: "pipeline.yaml"
@@ -43,12 +51,10 @@ ceilometer_polling_src: "polling.yaml"
 
 #metering backend
 #gnocchi only
-ceilometer_store_meters: "{{ groups['gnocchi'] | count > 0 }}"
 ceilometer_gnocchi_archive_policy: low
 
 #event backend
 #panko only
-ceilometer_store_events: "{{ groups['panko'] | count > 0 }}"
 panko_db_user: panko
 panko_mysql_server: "{{ vip_mgmt }}"
 panko_db: panko

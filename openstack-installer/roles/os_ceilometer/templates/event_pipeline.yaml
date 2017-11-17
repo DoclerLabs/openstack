@@ -9,5 +9,4 @@ sources:
 sinks:
     - name: event_sink
       transformers:
-      publishers:
-          - panko://
+      publishers: {{ ceilometer_event_publishers }}

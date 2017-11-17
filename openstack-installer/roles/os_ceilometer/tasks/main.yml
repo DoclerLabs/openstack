@@ -81,7 +81,7 @@
     - restart ceilometer controller services
 
 - name: install pipeline definitions
-  copy: src={{ item.src }} dest=/etc/ceilometer/{{ item.dest }} owner=root group=root mode=0644
+  template: src={{ item.src }} dest=/etc/ceilometer/{{ item.dest }} owner=root group=root mode=0644
   with_items:
     - { src: "{{ ceilometer_event_pipeline_src }}", dest: "event_pipeline.yaml" }
     - { src: "{{ ceilometer_pipeline_src }}", dest: "pipeline.yaml" }

@@ -34,8 +34,7 @@ sources:
 sinks:
     - name: meter_sink
       transformers:
-      publishers:
-          - gnocchi://
+      publishers: {{ ceilometer_meter_publishers }}
     - name: cpu_sink
       transformers:
           - name: "rate_of_change"
@@ -45,8 +44,7 @@ sinks:
                     unit: "%"
                     type: "gauge"
                     scale: "100.0 / (10**9 * (resource_metadata.cpu_number or 1))"
-      publishers:
-          - gnocchi://
+      publishers: {{ ceilometer_meter_publishers }}
     - name: cpu_delta_sink
       transformers:
           - name: "delta"
@@ -54,8 +52,7 @@ sinks:
                 target:
                     name: "cpu.delta"
                 growth_only: True
-      publishers:
-          - gnocchi://
+      publishers: {{ ceilometer_meter_publishers }}
     - name: disk_sink
       transformers:
           - name: "rate_of_change"
@@ -69,8 +66,7 @@ sinks:
                         name: "\\1.\\2.\\3.rate"
                         unit: "\\1/s"
                     type: "gauge"
-      publishers:
-          - gnocchi://
+      publishers: {{ ceilometer_meter_publishers }}
     - name: network_sink
       transformers:
           - name: "rate_of_change"
@@ -84,5 +80,4 @@ sinks:
                         name: "network.\\1.\\2.rate"
                         unit: "\\1/s"
                     type: "gauge"
-      publishers:
-          - gnocchi://
+      publishers: {{ ceilometer_meter_publishers }}
