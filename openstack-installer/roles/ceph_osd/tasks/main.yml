@@ -78,6 +78,7 @@
 - name: prepare disks
   command: ceph-disk prepare
     --cluster {{ ceph_cluster_name }}
+    {{ (item.id | default(None)) | ternary('--osd-id ' + item.id | default(None) | string, '') }}
     {{ (item.bluestore | default(ceph_osd_bluestore)) | ternary('--bluestore','--filestore') }}
     "{{ item.path }}"
   with_items: "{{ osd }}"
@@ -115,9 +116,10 @@
 - name: prepare disks
   command: ceph-disk prepare
      --cluster {{ ceph_cluster_name }}
-     {{ (item.bluestore | default(ceph_osd_bluestore)) | ternary('--bluestore','--filestore') }}
-     "{{ item.disk }}"
-     {{ item.journal | default('') }}
+    {{ (item.id | default(None)) | ternary('--osd-id ' + item.id | default(None) | string, '') }}
+    {{ (item.bluestore | default(ceph_osd_bluestore)) | ternary('--bluestore','--filestore') }}
+    "{{ item.disk }}"
+    {{ item.journal | default('') }}
   register: ceph_disk_status
   failed_when: ceph_disk_status.rc != 0 and ('Could not create partition 2' not in ceph_disk_status.stderr) and ('Device is mounted' not in ceph_disk_status.stderr)
   changed_when: ceph_disk_status.rc == 0

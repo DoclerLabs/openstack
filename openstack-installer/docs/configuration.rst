@@ -251,8 +251,9 @@ Example OSD configuration in the inventory:
       ip:
         mgmt: 192.168.0.1          # Address of the os-ceph-1 node.
       osd:
-        - { disk: "/dev/sdb" }     # Use the whole device directly.
-        - { disk: "/dev/sdc", journal: "/dev/sdf1" }  # For the OSD on /dev/sdc, create a journal on /dev/sdf1
+        - { disk: "/dev/sdb", id: 0 }     # Use the whole device directly, OSD ID will be 0.
+        - { disk: "/dev/sdc", journal: "/dev/sdf1" }  # For the OSD on /dev/sdc, create a journal on /dev/sdf1.
+                                                      # OSD ID will be auto-allocated.
     os-ceph-2:
       ip:
         mgmt: 192.168.0.2          # Address of the os-ceph-2 node.
