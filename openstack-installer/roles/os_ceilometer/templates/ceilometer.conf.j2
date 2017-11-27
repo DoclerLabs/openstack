@@ -121,6 +121,11 @@ auth_startegy = keystone
 
 {% if inventory_hostname in groups['ceilometer_controller'] %}
 
+meter_dispatchers = {% if groups['gnocchi'] | count > 0 %}gnocchi{% endif %}
+
+event_dispatchers = {% if groups['panko'] | count > 0 %}panko{% endif %}
+
+
 [dispatcher_gnocchi]
 
 filter_service_activity = False
@@ -139,7 +144,7 @@ aodh_is_enabled = {{ groups['aodh'] | count > 0 }}
 [notification]
 
 workers = {{ ceilometer_notification_workers }}
-workload_partitioning = {{ groups['zookeeper'] | count > 0 }}
+workload_partitioning = {{ groups['ceilometer_controller'] | count > 1 }}
 batch_size = {{ ceilometer_batch_size }}
 batch_timeout = {{ ceilometer_batch_timeout }}
 

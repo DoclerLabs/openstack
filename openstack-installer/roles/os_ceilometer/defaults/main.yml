@@ -37,8 +37,11 @@ ceilometer_event_time_to_live: 0
 ceilometer_alarm_history_time_to_live: 0
 
 ceilometer_polling_interval: 300
-ceilometer_meter_publishers: "{{ (groups['gnocchi'] | count > 0) | ternary(['gnocchi://'],[]) }}"
-ceilometer_event_publishers: "{{ (groups['panko'] | count > 0) | ternary(['panko://'],['gnocchi://']) }}"
+#ceilometer_meter_publishers: "{{ (groups['gnocchi'] | count > 0) | ternary(['gnocchi://'],[]) }}"
+#ceilometer_event_publishers: "{{ (groups['panko'] | count > 0) | ternary(['panko://'],['gnocchi://']) }}"
+#Use the notifier until bug #1729865 fixed
+ceilometer_meter_publishers: "{{ ['notifier://'] }}"
+ceilometer_event_publishers: "{{ ['notifier://'] }}"
 
 ceilometer_notification_workers: 1
 ceilometer_batch_size: 100

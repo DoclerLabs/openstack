@@ -5,6 +5,7 @@
   with_items:
     - ceilometer-agent-central
     - ceilometer-agent-notification
+    - ceilometer-collector
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: restart ceilometer compute services
