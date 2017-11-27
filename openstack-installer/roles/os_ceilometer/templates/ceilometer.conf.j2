@@ -389,6 +389,13 @@ region_name = {{ keystone_region_name }}
 #ringfile = /etc/oslo/matchmaker_ring.json
 
 
+[cache]
+
+enabled = True
+backend = oslo_cache.memcache_pool
+memcache_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
+
+
 [oslo_concurrency]
 
 lock_path = /var/lock/ceilometer
