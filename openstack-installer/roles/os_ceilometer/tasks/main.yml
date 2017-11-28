@@ -53,6 +53,8 @@
     - ceilometer-collector
     - ceilometer-agent-central
     - ceilometer-agent-notification
+    - python-oslo.cache
+    - python-memcache
     - python-ceilometerclient
     - python-gnocchiclient
   when: inventory_hostname in groups['ceilometer_controller']
