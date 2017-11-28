@@ -394,6 +394,7 @@ region_name = {{ keystone_region_name }}
 enabled = True
 backend = oslo_cache.memcache_pool
 memcache_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
+expiration_time = {{ ceilometer_cache_expiration_time }}
 
 
 [oslo_concurrency]

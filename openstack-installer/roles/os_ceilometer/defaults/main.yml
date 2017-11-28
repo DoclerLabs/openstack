@@ -46,6 +46,7 @@ ceilometer_event_publishers: "{{ ['notifier://'] }}"
 ceilometer_notification_workers: 1
 ceilometer_batch_size: 100
 ceilometer_batch_timeout: 5
+ceilometer_cache_expiration_time: 600
 
 #give custom files here for replacing the defaults
 ceilometer_event_pipeline_src: "event_pipeline.yaml"
