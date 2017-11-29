@@ -74,6 +74,17 @@
   notify: reload sysctl
   when: inventory_hostname in groups['neutron_l3']
 
+- name: set nf_conntrack_max
+  lineinfile: >
+    regexp='^{{ item.key }}'
+    line='{{ item.key }} = {{ item.value }}'
+    dest=/etc/sysctl.d/10-conntrack.conf owner=root group=root mode=0644
+    create=yes
+  with_dict:
+    { 'net.netfilter.nf_conntrack_max' : "{{ sysctl_conntrack_max }}" }
+  notify: reload sysctl
+  when: inventory_hostname in groups['neutron_l2']
+
 - name: insert br_netfilter module
   modprobe: name=br_netfilter
   when: ansible_kernel | version_compare('3.18', '>=')
