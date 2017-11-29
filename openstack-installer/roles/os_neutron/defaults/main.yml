@@ -64,6 +64,8 @@ neutron_quota_listener: -1
 
 neutron_notifications: "{{ notifications_enable | default(False) }}"
 
+sysctl_conntrack_max: 524288
+
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 os_proto: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
