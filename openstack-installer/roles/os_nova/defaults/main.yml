@@ -72,6 +72,8 @@ nova_instance_usage_audit_period: hour
 
 nova_discover_hosts_in_cells_interval: 300
 
+nova_resume_guests_state_on_host_boot: False
+
 #spice or vnc
 nova_console_type: vnc
 nova_console_keymap: en-us
