@@ -1,0 +1,51 @@
+From b907450d7d7500fbcb9e4040efc2d0e42f4a78f9 Mon Sep 17 00:00:00 2001
+From: zhangsong <zhangsong@cmss.chinamobile.com>
+Date: Thu, 15 Dec 2016 01:22:10 +0800
+Subject: [PATCH] Correct RBD Provision stats&fix a perf problem
+
+Use v.size() to get virtual size of volumes for
+provisioned_capacity_gb instead of v.diff_iterate().
+There are two reasons:
+
+1.The diff_iterate() API of librbd returns actually
+allocated size of volumes, but cinder-scheduler just want
+virtual size by v.size() for provisioned_capacity_gb to
+compute the ratio of over subscription.
+
+2.Traverse all the volumes with diff_iterate() brings
+greater pressure to both cinder and ceph cluster. It
+can cause critical problems:
+a. Run a periodic task may need a long time(may be need
+serval minutes), depend on how many volumes in backend
+pool and the load of ceph cluster;
+b. Periodic report of the service can be blocked, and
+cause service down in the end.
+
+Change-Id: If37e3820ebd00c85e11f1fbb1f32faabf0890bbb
+Closes-Bug: #1649956
+---
+
+diff --git a/cinder/volume/drivers/rbd.py b/cinder/volume/drivers/rbd.py
+index 888ed83..62daf87 100644
+--- a/cinder/volume/drivers/rbd.py
++++ b/cinder/volume/drivers/rbd.py
+@@ -281,10 +281,6 @@
+             ports.append(port)
+         return hosts, ports
+ 
+-    def _iterate_cb(self, offset, length, exists):
+-        if exists:
+-            self._total_usage += length
+-
+     def _get_usage_info(self):
+         with RADOSClient(self) as client:
+             for t in self.RBDProxy().list(client.ioctx):
+@@ -293,7 +289,7 @@
+                     # non-default volume_name_template settings.  Template
+                     # must start with "volume".
+                     with RBDVolumeProxy(self, t, read_only=True) as v:
+-                        v.diff_iterate(0, v.size(), None, self._iterate_cb)
++                        self._total_usage += v.size()
+ 
+     def _update_volume_stats(self):
+         stats = {

@@ -1,0 +1,16 @@
+---
+
+- name: recompile oslo.messaging
+  command: pycompile -p python-oslo.messaging
+
+- name: recompile python-ceilometer
+  command: pycompile -p python-ceilometer
+
+- name: recompile python-cinder
+  command: pycompile -p python-cinder
+
+- name: restart ceilometer-agent-notification
+  service: name=ceilometer-agent-notification state=restarted
+
+- name: restart cinder-volume
+  service: name=cinder-volume state=restarted
