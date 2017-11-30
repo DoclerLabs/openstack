@@ -56,7 +56,7 @@ vif_plugging_is_fatal = False
 
 # Hypervisor
 default_ephemeral_format = ext4
-
+resume_guests_state_on_host_boot = {{ nova_resume_guests_state_on_host_boot }}
 
 # Ceilometer notification configurations
 instance_usage_audit = {{ nova_instance_usage_audit }}
