@@ -1,6 +1,6 @@
 ---
 
-- command: apt-get install --reinstall python-oslo.messaging python-ceilometer python-cinder
+#- command: apt-get install --reinstall python-oslo.messaging python-ceilometer python-cinder
 
 - name: patch oslo.messaging for bug 1734788
   patch: basedir=/usr/lib/python2.7/dist-packages/oslo_messaging strip=2 src=oslo.messaging.diff
@@ -9,6 +9,7 @@
     - restart ceilometer-agent-notification
   when: inventory_hostname in groups['ceilometer_controller']
 
+#Fixed in ceilometer 9.0.2
 - name: patch ceilometer for bug 1729617
   patch: basedir=/usr/lib/python2.7/dist-packages/ceilometer strip=2 src=ceilometer.diff
   notify:
@@ -16,6 +17,7 @@
     - restart ceilometer-agent-notification
   when: inventory_hostname in groups['ceilometer_controller']
 
+#Fixed in cinder 11.0.1
 - name: patch cinder-volume for bug 1649956
   patch: basedir=/usr/lib/python2.7/dist-packages/cinder strip=2 src=rbd.diff
   notify:

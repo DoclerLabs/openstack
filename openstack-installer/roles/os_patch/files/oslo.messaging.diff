@@ -21,20 +21,6 @@ diff --git a/oslo_messaging/_drivers/amqpdriver.py b/oslo_messaging/_drivers/amq
 index 539e48b..deeaba2 100644
 --- a/oslo_messaging/_drivers/amqpdriver.py
 +++ b/oslo_messaging/_drivers/amqpdriver.py
-@@ -56,13 +56,6 @@
-             target=self._process_in_background)
-         self._shutdown_thread.daemon = True
- 
--        # HACK(sileht): this is set by the server.Server temporary
--        # to not have to rewrite the entire internal API to pass
--        # executor everywhere to make Listener aware of the server
--        # executor. All this hack is only for the blocking executor.
--        # And it's deprecated so...
--        self._executor = None
--
-     def stop(self):
-         self._shutdown.set()
- 
 @@ -82,26 +75,14 @@
  
          while True:
@@ -66,26 +52,3 @@ index 539e48b..deeaba2 100644
  
  
  class AMQPIncomingMessage(base.RpcIncomingMessage):
-diff --git a/oslo_messaging/server.py b/oslo_messaging/server.py
-index c8e77a6..d2e50ac 100644
---- a/oslo_messaging/server.py
-+++ b/oslo_messaging/server.py
-@@ -417,18 +417,6 @@
-         except driver_base.TransportDriverError as ex:
-             raise ServerListenError(self.target, ex)
- 
--        # HACK(sileht): We temporary pass the executor to the rabbit
--        # listener to fix a race with the deprecated blocking executor.
--        # We do this hack because this is need only for 'synchronous'
--        # executor like blocking. And this one is deprecated. Making
--        # driver working in an sync and an async way is complicated
--        # and blocking have 0% tests coverage.
--        if hasattr(self.listener, '_poll_style_listener'):
--            l = self.listener._poll_style_listener
--            if hasattr(l, "_message_operations_handler"):
--                l._message_operations_handler._executor = (
--                    self.executor_type)
--
-         self.listener.start(self._on_incoming)
- 
-     @ordered(after='start')
