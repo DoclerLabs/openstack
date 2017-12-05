@@ -341,6 +341,14 @@ max_retries = -1
 
 {% endif %}
 
+{% if inventory_hostname in groups['ceilometer_compute'] %}
+
+[compute]
+
+instance_discovery_method = {{ ceilometer_instance_discovery_method }}
+
+{% endif %}
+
 [keystone_authtoken]
 
 auth_type = password

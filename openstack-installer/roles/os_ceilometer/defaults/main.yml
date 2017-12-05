@@ -37,6 +37,7 @@ ceilometer_event_time_to_live: 0
 ceilometer_alarm_history_time_to_live: 0
 
 ceilometer_cache_expiration_time: 600
+ceilometer_instance_discovery_method: libvirt_metadata
 
 #give custom files here for replacing the defaults
 ceilometer_pipeline_src: "pipeline.yaml"
