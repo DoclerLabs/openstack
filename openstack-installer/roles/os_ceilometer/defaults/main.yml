@@ -32,10 +32,6 @@ trove_rabbit_user: trove
 sahara_rabbit_vhost: sahara
 sahara_rabbit_user: sahara
 
-ceilometer_metering_time_to_live: 0
-ceilometer_event_time_to_live: 0
-ceilometer_alarm_history_time_to_live: 0
-
 ceilometer_polling_interval: 300
 ceilometer_meter_publishers: "{{ (groups['gnocchi'] | count > 0) | ternary(['gnocchi://'],[]) }}"
 ceilometer_event_publishers: "{{ (groups['panko'] | count > 0) | ternary(['panko://'],['gnocchi://']) }}"
