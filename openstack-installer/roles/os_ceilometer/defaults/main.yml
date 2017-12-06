@@ -32,10 +32,6 @@ trove_rabbit_user: trove
 sahara_rabbit_vhost: sahara
 sahara_rabbit_user: sahara
 
-ceilometer_metering_time_to_live: 0
-ceilometer_event_time_to_live: 0
-ceilometer_alarm_history_time_to_live: 0
-
 ceilometer_cache_expiration_time: 600
 ceilometer_instance_discovery_method: libvirt_metadata
 
