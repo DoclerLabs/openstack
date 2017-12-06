@@ -10,13 +10,15 @@ The motivation for creating this deployment tool is that existing solutions are 
 
 The design behind this installer is to remain simple, use Ansible's features, but not over-use them.
 Don't use bash scripts, which are usually going to an unmaintainable state after some iterations.
-Use the packages of the underlying OS (from the Newton release, only 16.04 is supported),
+Use the packages of the underlying OS (from the Newton release, only Ubuntu 16.04 is supported),
 and don't mess the system with software installed from various sources.
 The installer also can be used after the deployment to change parameters of an existing cloud,
 so it supports the full life-cycle of the deployed OpenStack.
 
 The deployed cloud is fully production ready, and the controlling and API components are highly available.
 Upgrade option from the previous version is available.
+
+Several clouds in production are installed and upgraded with this installer (from 10 to 40 computes, 512 to 1600 VCPUs).
 
 Current OpenStack versions supported:
 - Liberty/Ubuntu Trusty        - trusty/liberty branch
