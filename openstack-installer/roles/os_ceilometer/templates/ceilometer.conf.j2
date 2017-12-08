@@ -123,8 +123,8 @@ auth_startegy = keystone
 
 [dispatcher_gnocchi]
 
-filter_service_activity = False
-filter_project = service
+filter_service_activity = True
+filter_project = {{ keystone_service_project_name | default('service') }}
 archive_policy = {{ ceilometer_gnocchi_archive_policy }}
 resources_definition_file = /etc/ceilometer/gnocchi_resources.yaml
 
