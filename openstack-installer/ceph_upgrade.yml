@@ -49,21 +49,20 @@
 
       - name: upgrade ceph
         apt: name=ceph state=latest
+        notify: restart OSDs
 
-      - name: ensure ceph OSDs are stopped
-        service: name=ceph-osd@{{ item }} state=stopped
-        with_items: "{{ ceph_osds.stdout_lines }}"
+      - meta: flush_handlers
 
-      - name: fix OSD owner
-        file: dest=/var/lib/ceph/osd
-            owner=ceph group=root recurse=yes follow=yes
-
-      - name: ensure ceph OSDs are started
-        service: name=ceph-osd@{{ item }} state=started enabled=yes
-        with_items: "{{ ceph_osds.stdout_lines }}"
+      - pause:
+          prompt: "press a key when the OSDs are back"
 
 #TODO: wait for OSDs are back
       always:
         - name: unset osd noout
           command: ceph --cluster {{ ceph_cluster_name | default('ceph') }} osd unset noout
           delegate_to: "{{ groups['ceph_monitor'][0] }}"
+
+  handlers:
+    - name: restart OSDs
+      service: name=ceph-osd@{{ item }} state=restarted
+      with_items: "{{ ceph_osds.stdout_lines }}"
