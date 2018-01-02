@@ -5,7 +5,6 @@
 # and this playbook can be deleted.
 
 - hosts:
-    - cinder_volume
     - ceilometer_controller
   become: True
   max_fail_percentage: 0
