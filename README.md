@@ -74,7 +74,7 @@ Installing an all-in-one (Ceph, controller, compute) VM with Vagrant:
 
 ```
     $ cd openstack/openstack-installer
-    $ scripts/restorecfg.sh aio
+    $ scripts/switchcfg.sh -b configs aio
     $ scripts/generate_secrets.py
     $ cd vagrant
     $ vagrant up

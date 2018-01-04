@@ -29,11 +29,11 @@ It does not install the base OS, also doesn't configure the hardware (network in
 3. Installation
 ===============
 
-- Copy the configuration templates from configs/template to the base directory of the installer:
+- Copy the configuration templates from configs/template to the config directory (by default it is ~/.oscfg/default):
 
 ::
 
-  $ scripts/restorecfg.sh template
+  $ scripts/newcfg.sh
 
 - Preparare the inventory
 
