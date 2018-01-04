@@ -17,13 +17,37 @@ it is also possible to use this setting on a per-host basis in inventory.yml.
 
 Various other artifacts (like certificates) can be put into the files/ directory.
 
-2. Configuration backup/restore
-===============================
+2. Configuration storage
+========================
 
-There are two small helper scripts supplied with this installer, scripts/savecfg.sh and
-scripts/restorecfg.sh, which backup and restore the inventory the global config  and the files/
-artifacts into the configs/ directory. With these scripts, you can maintain configurations to more than
+By default, configuration of a cloud is stored at ~/.oscfg/default.
+
+There are two small helper scripts supplied with this installer, scripts/newcfg.sh and
+scripts/switchcfg.sh, which can create a new empty configuration from the config template and activate an
+already created configuration. With these scripts, you can maintain configurations to more than
 one OpenStack environment.
+
+Usage of these scripts:
+
+::
+
+  # scripts/newcfg.sh [-b basedir] cfgname
+  # scripts/switchcfg.sh [-b basdir] cfgname
+
+Where basedir is the base of your config files, and cfgname is a subdirectory for a given cloud.
+E.g.
+
+::
+
+  # scripts/newcfg -b $HOME/openstack cloud-1
+
+will create a new config directory in ~/openstack/cloud-1. Later on, you can re-activate this configuration
+via
+
+::
+
+  #scripts/switchcfg.sh -b $HOME/openstack cloud-1
+
 
 3. Inventory format
 ===================
