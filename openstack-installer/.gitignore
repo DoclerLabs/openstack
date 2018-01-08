@@ -1,3 +1,4 @@
 *.retry
 files
 templates
+ansible.cfg

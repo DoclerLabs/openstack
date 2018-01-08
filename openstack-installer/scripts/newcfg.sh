@@ -33,10 +33,11 @@ echo "CFGNAME: $CFGNAME"
 echo "BASEDIR: $BASEDIR"
 
 mkdir -p "$BASEDIR/$CFGNAME"
-for dir in inventory files group_vars; do
+for dir in ansible.cfg inventory files group_vars; do
     cp -r "$INSTALLER/configs/template/$dir" "$BASEDIR/$CFGNAME"
 done
 
+ln -sfn "$BASEDIR/$CFGNAME/ansible.cfg" "$INSTALLER/ansible.cfg"
 ln -sfn "$BASEDIR/$CFGNAME/files" "$INSTALLER/files"
 ln -sfn "$BASEDIR/$CFGNAME/files" "$INSTALLER/templates"
 ln -sfn "$BASEDIR/$CFGNAME/group_vars/all" "$INSTALLER/group_vars/all"
