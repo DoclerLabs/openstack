@@ -32,6 +32,7 @@ done
 echo "CFGNAME: $CFGNAME"
 echo "BASEDIR: $BASEDIR"
 
+ln -sfn "$BASEDIR/$CFGNAME/ansible.cfg" "$INSTALLER/ansible.cfg"
 ln -sfn "$BASEDIR/$CFGNAME/files" "$INSTALLER/files"
 ln -sfn "$BASEDIR/$CFGNAME/files" "$INSTALLER/templates"
 ln -sfn "$BASEDIR/$CFGNAME/group_vars/all" "$INSTALLER/group_vars/all"
