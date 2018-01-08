@@ -3,12 +3,12 @@
 
 $script = <<SCRIPT
 apt-get -y install python-minimal openvswitch-switch
-echo "auto enp0s10" > /etc/network/interfaces.d/enp0s10.cfg
-echo "iface enp0s10 inet manual" >> /etc/network/interfaces.d/enp0s10.cfg
-ifup enp0s10
-ovs-vsctl add-br ovs-ext
-ovs-vsctl add-br ovs-vlan
-ovs-vsctl add-port ovs-ext enp0s10
+echo "auto eth3" > /etc/network/interfaces.d/eth3.cfg
+echo "iface eth3 inet manual" >> /etc/network/interfaces.d/eth3.cfg
+ifup eth3
+ovs-vsctl br-exists ovs-ext || ovs-vsctl add-br ovs-ext
+ovs-vsctl br-exists ovs-vlan || ovs-vsctl add-br ovs-vlan
+ovs-vsctl list-ports ovs-ext | grep eth3 || ovs-vsctl add-port ovs-ext eth3
 SCRIPT
 
 Vagrant.configure(2) do |config|
