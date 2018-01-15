@@ -85,6 +85,11 @@
   notify: reload sysctl
   when: inventory_hostname in groups['neutron_l2']
 
+- name: add an udev rule for setting nf_conntrack_max
+  copy: content='ACTION=="add", SUBSYSTEM=="module", KERNEL=="nf_conntrack", RUN+="/lib/systemd/systemd-sysctl --prefix=/net/netfilter"\n'
+    dest=/etc/udev/rules.d/99-conntrack.rules owner=root group=root mode=0644
+  when: inventory_hostname in groups['neutron_l2']
+
 - name: insert br_netfilter module
   modprobe: name=br_netfilter
   when: ansible_kernel | version_compare('3.18', '>=')
