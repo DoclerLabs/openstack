@@ -10,7 +10,7 @@ nagios_check_ping_critical: "500.0,60%"
 
 nagios_host_template: generic-host
 nagios_service_template: generic-service
-nagios_command_check_nrpe: check_nrpe_1arg
+nagios_nrpe_timeout: 15
 nagios_monitor_vip_public: True
 nagios_cert_days: 5
 

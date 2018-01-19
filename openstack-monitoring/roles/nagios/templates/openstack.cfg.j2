@@ -43,6 +43,11 @@ define command{
         command_line    /usr/lib/nagios/plugins/check_http --ssl -H '$HOSTADDRESS$' -I '$HOSTADDRESS$' $ARG1$ $ARG2$
         }
 
+define command{
+        command_name    {{ nagios_cloud_prefix }}check_nrpe
+        command_line    /usr/lib/nagios/plugins/check_nrpe -u -t {{ nagios_nrpe_timeout }} -H $HOSTADDRESS$ -c $ARG1$
+        }
+
 {% macro hostgroup(name, alias, notes, members=[]) -%}
 define hostgroup{
     hostgroup_name   {{ nagios_cloud_prefix }}{{ name }}
@@ -185,7 +190,7 @@ define service{
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix }}general
     service_description LOAD
-    check_command {{ nagios_command_check_nrpe }}!check_load
+    check_command {{ nagios_cloud_prefix }}check_nrpe!check_load
 }
 
 define service{
@@ -193,7 +198,7 @@ define service{
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix }}general
     service_description disk_root
-    check_command {{ nagios_command_check_nrpe }}!check_disk_root
+    check_command {{ nagios_cloud_prefix }}check_nrpe!check_disk_root
 }
 
 define service{
@@ -201,7 +206,7 @@ define service{
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix }}general
     service_description disk_var
-    check_command {{ nagios_command_check_nrpe }}!check_disk_var
+    check_command {{ nagios_cloud_prefix }}check_nrpe!check_disk_var
 }
 
 define service{
@@ -209,7 +214,7 @@ define service{
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix }}general
     service_description disk_log
-    check_command {{ nagios_command_check_nrpe }}!check_disk_log
+    check_command {{ nagios_cloud_prefix }}check_nrpe!check_disk_log
 }
 
 define service{
@@ -226,7 +231,7 @@ define service{
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix}}hardware
     service_description sensors
-    check_command {{ nagios_command_check_nrpe }}!check_ipmi
+    check_command {{ nagios_cloud_prefix }}check_nrpe!check_ipmi
 }
 {% endif %}
 
@@ -236,7 +241,7 @@ define service{
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix}}hardware
     service_description bonding
-    check_command {{ nagios_command_check_nrpe }}!check_bonding
+    check_command {{ nagios_cloud_prefix }}check_nrpe!check_bonding
 }
 {% endif %}
 
@@ -246,7 +251,7 @@ define service{
     host_name {{ host }}
     servicegroups {{ nagios_cloud_prefix}}hardware
     service_description swraid
-    check_command {{ nagios_command_check_nrpe }}!check_swraid
+    check_command {{ nagios_cloud_prefix }}check_nrpe!check_swraid
 }
 {% endif %}
 
@@ -258,7 +263,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}compute
     servicegroups {{ nagios_cloud_prefix }}general
     service_description disk_nova
-    check_command {{ nagios_command_check_nrpe }}!check_disk_nova
+    check_command {{ nagios_cloud_prefix }}check_nrpe!check_disk_nova
 }
 {% endif %}
 
@@ -270,7 +275,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}ceph-monitor
     servicegroups {{ nagios_cloud_prefix }}ceph
     service_description ceph_health
-    check_command {{ nagios_command_check_nrpe }}!check_ceph_health
+    check_command {{ nagios_cloud_prefix }}check_nrpe!check_ceph_health
 }
 
 define service{
@@ -278,7 +283,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}ceph-monitor
     servicegroups {{ nagios_cloud_prefix }}ceph
     service_description ceph_df
-    check_command {{ nagios_command_check_nrpe }}!check_ceph_df
+    check_command {{ nagios_cloud_prefix }}check_nrpe!check_ceph_df
 }
 {% endif %}
 
@@ -300,7 +305,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix}}galera
     servicegroups {{ nagios_cloud_prefix }}general,{{ nagios_cloud_prefix }}Infra
     service_description disk_mysql
-    check_command {{ nagios_command_check_nrpe }}!check_disk_mysql
+    check_command {{ nagios_cloud_prefix }}check_nrpe!check_disk_mysql
 }
 
 define service{
@@ -308,7 +313,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}galera
     servicegroups {{ nagios_cloud_prefix }}Infra
     service_description galera
-    check_command {{ nagios_command_check_nrpe }}!check_galera
+    check_command {{ nagios_cloud_prefix }}check_nrpe!check_galera
 }
 
 {% endif %}
@@ -319,7 +324,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}mongodb
     servicegroups {{ nagios_cloud_prefix }}general,{{ nagios_cloud_prefix }}Infra
     service_description disk_mongodb
-    check_command {{ nagios_command_check_nrpe }}!check_disk_mongodb
+    check_command {{ nagios_cloud_prefix }}check_nrpe!check_disk_mongodb
 }
 {% endif %}
 
@@ -330,7 +335,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}memcached
     servicegroups {{ nagios_cloud_prefix }}Infra
     service_description memcached
-    check_command {{ nagios_command_check_nrpe }}!check_memcached
+    check_command {{ nagios_cloud_prefix }}check_nrpe!check_memcached
 }
 {% endif %}
 
@@ -340,7 +345,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}haproxy
     servicegroups {{ nagios_cloud_prefix }}Infra
     service_description haproxy
-    check_command {{ nagios_command_check_nrpe }}!check_haproxy
+    check_command {{ nagios_cloud_prefix }}check_nrpe!check_haproxy
 }
 {% endif %}
 
@@ -350,7 +355,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}rabbitmq
     servicegroups {{ nagios_cloud_prefix }}Infra
     service_description rabbitmq
-    check_command {{ nagios_command_check_nrpe }}!check_rabbitmq
+    check_command {{ nagios_cloud_prefix }}check_nrpe!check_rabbitmq
 }
 {% endif %}
 
