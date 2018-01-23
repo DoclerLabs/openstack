@@ -1,7 +1,7 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-pike", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/pike main" }
+  - { name: "cloudarchive-queens", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/queens main" }
 
 apt_extra_repos: []
 
