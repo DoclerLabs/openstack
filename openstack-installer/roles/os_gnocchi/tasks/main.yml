@@ -57,11 +57,7 @@
     - signal apache to reload
 
 - name: sync gnocchi db
-  command: su gnocchi -s /bin/sh -c '/usr/bin/gnocchi-upgrade --skip-storage'
-  run_once: True
-
-- name: create legacy resource types
-  command: su gnocchi -s /bin/sh -c '/usr/bin/gnocchi-upgrade --create-legacy-resource-types --skip-storage'
+  command: su gnocchi -s /bin/sh -c '/usr/bin/gnocchi-upgrade --skip-incoming --skip-storage'
   run_once: True
 
 - name: create /var/www/cgi-bin/gnocchi
