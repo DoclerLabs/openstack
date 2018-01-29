@@ -108,6 +108,7 @@
       params:
         check_user: "clustercheck"
         wsrep_cluster_address: "gcomm://{% for host in groups['galera'] %}{{ host }}{% if not loop.last %},{% endif %}{% endfor %}"
+        binary: "/usr/sbin/mysqld"
         config: "/etc/mysql/my.cnf"
         socket: "{{ mysql_sock_file }}"
         pid: "{{ mysql_pid_file }}"
