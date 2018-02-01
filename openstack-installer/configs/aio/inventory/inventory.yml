@@ -116,7 +116,7 @@ cinder_volume:
   inherit: controller
 
 murano:
-  inherit: controller
+#  inherit: controller
 
 sahara:
   inherit: controller
