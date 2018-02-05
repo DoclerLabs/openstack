@@ -32,6 +32,11 @@ done
 echo "CFGNAME: $CFGNAME"
 echo "BASEDIR: $BASEDIR"
 
+if [ -e "$BASEDIR/$CFGNAME" ]; then
+    echo "$BASEDIR/$CFGNAME directory already exists! Not creating a new config there."
+    exit 1
+fi
+
 mkdir -p "$BASEDIR/$CFGNAME"
 for dir in ansible.cfg inventory files group_vars; do
     cp -r "$INSTALLER/configs/template/$dir" "$BASEDIR/$CFGNAME"
