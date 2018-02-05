@@ -69,6 +69,8 @@ nova_live_migration_downtime_steps: 10
 nova_notifications: "{{ notifications_enable | default(False) }}"
 nova_instance_usage_audit: "{{ nova_notifications }}"
 nova_instance_usage_audit_period: hour
+#unversioned until ceilometer can consume versioned notificiations
+nova_notification_format: unversioned
 
 nova_discover_hosts_in_cells_interval: 300
 

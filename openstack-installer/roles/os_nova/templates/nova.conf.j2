@@ -244,6 +244,7 @@ lock_path = /var/lock/nova
 [notifications]
 
 notify_on_state_change = vm_and_task_state
+notification_format = {{ nova_notification_format }}
 
 
 [oslo_messaging_notifications]
