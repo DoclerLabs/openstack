@@ -1,4 +1,4 @@
 *.retry
-files
-templates
-ansible.cfg
+/files
+/templates
+/ansible.cfg
