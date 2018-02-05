@@ -32,6 +32,11 @@ done
 echo "CFGNAME: $CFGNAME"
 echo "BASEDIR: $BASEDIR"
 
+if [ ! -d "$BASEDIR/$CFGNAME" ]; then
+    echo "$BASEDIR/$CFGNAME directory does not exist!"
+    exit 1
+fi
+
 ln -sfn "$BASEDIR/$CFGNAME/ansible.cfg" "$INSTALLER/ansible.cfg"
 ln -sfn "$BASEDIR/$CFGNAME/files" "$INSTALLER/files"
 ln -sfn "$BASEDIR/$CFGNAME/files" "$INSTALLER/templates"
