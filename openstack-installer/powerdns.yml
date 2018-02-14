@@ -5,4 +5,33 @@
   max_fail_percentage: 0
   roles:
     - apt
+
     - powerdns
+
+    - role: apache_frontend
+      apache_service_enable: "{{ powerdns_api | default(True) }}"
+      apache_service_name: powerdns
+      apache_service_ssl: "{{ powerdns_ssl | default(False) }}"
+      apache_proxy_preserve_http_auth: True
+      apache_services:
+        - { port: "{{ powerdns_api_port | default(8081) }}" }
+
+- hosts: haproxy
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - role: haproxy_service
+      haproxy_services:
+        - haproxy_service_name: powerdns
+          haproxy_backend_nodes: "{{ (powerdns_api | default(True)) | ternary(groups['powerdns'],[]) }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: "{{ powerdns_api_port | default(8081) }}"
+          haproxy_balance_type: http
+          haproxy_backend_options:
+            - forwardfor
+            - httpchk GET /
+            - httplog
+          haproxy_backend_extras:
+            - http-check expect rstatus 401

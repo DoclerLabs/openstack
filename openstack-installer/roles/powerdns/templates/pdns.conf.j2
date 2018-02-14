@@ -43,11 +43,13 @@
 # api   Enable/disable the REST API
 #
 # api=no
+api = {{ powerdns_api | ternary('yes','no') }}
 
 #################################
 # api-key       Static pre-shared authentication key for access to the REST API
 #
 # api-key=
+api-key = {{ powerdns_api_key }}
 
 #################################
 # api-logfile   Location of the server logfile (used by the REST API)
@@ -521,11 +523,13 @@ slave=yes
 # webserver     Start a webserver for monitoring
 #
 # webserver=no
+webserver = {{ powerdns_api | ternary('yes','no') }}
 
 #################################
 # webserver-address     IP Address of webserver to listen on
 #
 # webserver-address=127.0.0.1
+webserver-address = 127.0.0.1
 
 #################################
 # webserver-allow-from  Webserver access is only allowed from these subnets
@@ -536,11 +540,13 @@ slave=yes
 # webserver-password    Password required for accessing the webserver
 #
 # webserver-password=
+webserver-password = {{ powerdns_web_password }}
 
 #################################
 # webserver-port        Port of webserver to listen on
 #
 # webserver-port=8081
+webserver-port = {{ powerdns_api_port }}
 
 #################################
 # webserver-print-arguments     If the webserver should print arguments
