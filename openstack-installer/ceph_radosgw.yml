@@ -59,8 +59,5 @@
             - "{{ vip_mgmt }}"
             - "{{ vip_public }}"
           haproxy_port: "{{ radosgw_port | default(8080) }}"
-          haproxy_balance_type: http
-          haproxy_backend_options:
-            - forwardfor
-            - httpchk GET /
-            - httplog
+          haproxy_balance_type: "{{ (radosgw_ssl | default(False)) | ternary('https', 'http') }}"
+          haproxy_backend_options: "{{ (radosgw_ssl | default(False)) | ternary(['httpchk GET /'], ['forwardfor', 'httpchk GET /', 'httplog']) }}"
