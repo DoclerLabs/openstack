@@ -456,7 +456,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}panko,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description panko-api
-    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8777
+    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8977
 }
 {% endif %}
 
