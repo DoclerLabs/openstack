@@ -1,6 +1,6 @@
 {% if collectd_network_address %}
 LoadPlugin network
-<Plugin write_network>
+<Plugin "network">
         Server "{{ collectd_network_address }}"
 </Plugin>
 {% endif %}
