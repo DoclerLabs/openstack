@@ -28,10 +28,7 @@
             - "{{ vip_mgmt }}"
             - "{{ vip_public }}"
           haproxy_port: "{{ powerdns_api_port | default(8081) }}"
-          haproxy_balance_type: http
-          haproxy_backend_options:
-            - forwardfor
-            - httpchk GET /
-            - httplog
+          haproxy_balance_type: "{{ (powerdns_ssl | default(False)) | ternary('https', 'http') }}"
+          haproxy_backend_options: "{{ (powerdns_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
           haproxy_backend_extras:
             - http-check expect rstatus 401
