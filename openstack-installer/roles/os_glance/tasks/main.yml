@@ -63,7 +63,6 @@
   template: src={{ item }}.conf.j2 dest=/etc/glance/{{ item }}.conf owner=glance group=root mode=0460
   with_items:
     - glance-api
-    - glance-registry
   notify: restart glance
 
 - name: sync glance db
@@ -76,15 +75,14 @@
   service_mask: name={{ item }} state=unmasked
   with_items:
     - glance-api
-    - glance-registry
 
 - meta: flush_handlers
 
-- name: ensure glance is started
-  service: name={{ item }} state=started enabled=yes
-  with_items:
-    - glance-api
-    - glance-registry
+- name: ensure glance-api is started
+  service: name=glance-api state=started enabled=yes
+
+- name: ensure glance-registry is stopped
+  service: name=glance-registry state=stopped enabled=no
 
 - name: load metadata definitions
   command: su glance -s /bin/sh -c "/usr/bin/glance-manage db_load_metadefs"

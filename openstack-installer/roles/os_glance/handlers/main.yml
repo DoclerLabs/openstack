@@ -4,4 +4,3 @@
   service: name={{ item }} state=restarted
   with_items:
     - glance-api
-    - glance-registry

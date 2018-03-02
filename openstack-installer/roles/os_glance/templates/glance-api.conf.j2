@@ -103,12 +103,6 @@ show_image_direct_url = True
 # Deploy the v3 OpenStack Objects API. (boolean value)
 #enable_v3_api = false
 
-# Deploy the v1 OpenStack Registry API. (boolean value)
-#enable_v1_registry = true
-
-# Deploy the v2 OpenStack Registry API. (boolean value)
-#enable_v2_registry = true
-
 # The hostname/IP of the pydev process listening for debug connections
 # (string value)
 #pydev_worker_debug_host = <None>
@@ -247,22 +241,6 @@ workers = {{ glance_api_workers }}
 # metadefinition namespaces will be sent. (list value)
 #disabled_notifications =
 
-# Address to find the registry server. (string value)
-#registry_host = 0.0.0.0
-registry_host = {{ os_internal_address }}
-
-# Port the registry server is listening on. (integer value)
-# Minimum value: 1
-# Maximum value: 65535
-#registry_port = 9191
-
-# Whether to pass through the user token when making requests to the
-# registry. To prevent failures with token expiration during big files
-# upload, it is recommended to set this parameter to False.If
-# "use_user_token" is not in effect, then admin credentials can be
-# specified. (boolean value)
-#use_user_token = true
-
 # The administrators user name. If "use_user_token" is not in effect,
 # then admin credentials can be specified. (string value)
 #admin_user = <None>
@@ -290,52 +268,6 @@ registry_host = {{ os_internal_address }}
 # specified. (string value)
 #auth_region = <None>
 
-# The protocol to use for communication with the registry server.
-# Either http or https. (string value)
-#registry_client_protocol = http
-registry_client_protocol = {{ os_proto }}
-
-# The path to the key file to use in SSL connections to the registry
-# server, if any. Alternately, you may set the GLANCE_CLIENT_KEY_FILE
-# environment variable to a filepath of the key file (string value)
-#registry_client_key_file = <None>
-
-# The path to the cert file to use in SSL connections to the registry
-# server, if any. Alternately, you may set the GLANCE_CLIENT_CERT_FILE
-# environment variable to a filepath of the CA cert file (string
-# value)
-#registry_client_cert_file = <None>
-
-# The path to the certifying authority cert file to use in SSL
-# connections to the registry server, if any. Alternately, you may set
-# the GLANCE_CLIENT_CA_FILE environment variable to a filepath of the
-# CA cert file. (string value)
-#registry_client_ca_file = <None>
-{% if SSLCACertificateFile != '' %}
-registry_client_ca_file = {{ SSLCACertificateFile }}
-{% endif %}
-
-# When using SSL in connections to the registry server, do not require
-# validation via a certifying authority. This is the registry's
-# equivalent of specifying --insecure on the command line using
-# glanceclient for the API. (boolean value)
-#registry_client_insecure = false
-registry_client_insecure = {{ ssl_insecure }}
-
-# The period of time, in seconds, that the API server will wait for a
-# registry request to complete. A value of 0 implies no timeout.
-# (integer value)
-#registry_client_timeout = 600
-
-# Whether to pass through headers containing user and tenant
-# information when making requests to the registry. This allows the
-# registry to use the context middleware without keystonemiddleware's
-# auth_token middleware, removing calls to the keystone auth service.
-# It is recommended that when using this option, secure communication
-# between glance api and glance registry is ensured by means other
-# than auth_token middleware. (boolean value)
-#send_identity_headers = false
-
 # The amount of time in seconds to delay before performing a delete.
 # (integer value)
 #scrub_time = 0
@@ -352,15 +284,6 @@ registry_client_insecure = {{ ssl_insecure }}
 # Role used to identify an authenticated user as administrator.
 # (string value)
 #admin_role = admin
-
-# Whether to pass through headers containing user and tenant
-# information when making requests to the registry. This allows the
-# registry to use the context middleware without keystonemiddleware's
-# auth_token middleware, removing calls to the keystone auth service.
-# It is recommended that when using this option, secure communication
-# between glance api and glance registry is ensured by means other
-# than auth_token middleware. (boolean value)
-#send_identity_headers = false
 
 #
 # From oslo.log

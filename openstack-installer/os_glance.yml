@@ -34,7 +34,6 @@
       apache_service_ssl: "{{ os_ssl | default(False) }}"
       apache_services:
         - { port: 9292 }
-        - { port: 9191 }
 
     - role: ceph_client
       ceph_users:
@@ -62,7 +61,7 @@
           haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk /healthcheck'], ['forwardfor', 'httpchk /healthcheck', 'httplog']) }}"
 
         - haproxy_service_name: glance_registry
-          haproxy_backend_nodes: "{{ groups['glance'] }}"
+          haproxy_backend_nodes: []
           haproxy_bind_hosts:
             - "{{ vip_mgmt }}"
             - "{{ vip_public }}"
