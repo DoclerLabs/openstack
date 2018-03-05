@@ -104,9 +104,8 @@ The default inventory uses the deployment hosts for running tempest. It'll try t
 
   $ cd ~/tempest/tempest
   $ . ../virtualenv/bin/activate
-  $ testr init
-  $ testr list-tests (to check if everything is set up properly)
-  $ testr run
+  $ ostestr -l (to check if everything is set up properly)
+  $ ostestr
 
 5. Cloud repair
 ===============
