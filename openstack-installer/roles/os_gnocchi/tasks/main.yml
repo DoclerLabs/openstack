@@ -16,7 +16,7 @@
 - name: install gnocchi
   apt: name={{ item }}
   with_items:
-    - gnocchi-api
+    - python-gnocchi
     - gnocchi-metricd
 
 - name: ensure gnocchi-api is disabled at boot

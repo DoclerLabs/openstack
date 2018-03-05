@@ -179,6 +179,10 @@
         delegate_to: "{{ item }}"
         with_items: "{{ groups['haproxy'] }}"
 
+      - name: remove gnocchi-api
+        apt: name=gnocchi-api state=absent
+        when: inventory_hostname in groups['gnocchi']
+
       - name: upgrade packages
         apt: upgrade=yes
 
@@ -249,6 +253,10 @@
         haproxy: host={{ inventory_hostname }} socket=/run/haproxy/admin.sock state=disabled
         delegate_to: "{{ item }}"
         with_items: "{{ groups['haproxy'] }}"
+
+      - name: remove gnocchi-api
+        apt: name=gnocchi-api state=absent
+        when: inventory_hostname in groups['gnocchi']
 
       - name: upgrade packages
         apt: upgrade=yes
