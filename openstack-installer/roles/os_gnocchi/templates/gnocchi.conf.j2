@@ -5,6 +5,14 @@ log_dir = /var/log/gnocchi
 use_syslog = {{ gnocchi_syslog_use }}
 use_stderr = false
 
+{% if groups['zookeeper'] | count > 0 %}
+coordination_url = kazoo://{% for host in groups['zookeeper'] %}{{ hostvars[host].ip.mgmt }}:2181{% if not loop.last %},{% endif %}{% endfor %}
+{% else %}
+coordination_url = mysql://{{ gnocchi_db_user }}:{{ gnocchi_db_password }}@{{ gnocchi_mysql_server }}/{{ gnocchi_db }}?charset=utf8
+{% endif %}
+
+parallel_operations = {{ gnocchi_parallel_operations }}
+
 
 [api]
 
@@ -85,13 +93,6 @@ policy_file = /etc/gnocchi/policy.json
 
 
 [storage]
-
-aggregation_workers_number = {{ gnocchi_aggregation_workers_number }}
-{% if groups['zookeeper'] | count > 0 %}
-coordination_url = kazoo://{% for host in groups['zookeeper'] %}{{ hostvars[host].ip.mgmt }}:2181{% if not loop.last %},{% endif %}{% endfor %}
-{% else %}
-coordination_url = mysql://{{ gnocchi_db_user }}:{{ gnocchi_db_password }}@{{ gnocchi_mysql_server }}/{{ gnocchi_db }}?charset=utf8
-{% endif %}
 
 driver = {{ gnocchi_backend }}
 

@@ -32,6 +32,7 @@ gnocchi_metricd_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 #needs. Due to the Python GIL, 1 is usually faster, unless you have high
 #latency I/O
 gnocchi_aggregation_workers_number: 1
+gnocchi_parallel_operations: "{{ gnocchi_aggregation_workers_number }}"
 gnocchi_cors_allowed_origin:
 
 # 'keystone', 'basic', 'noauth'
