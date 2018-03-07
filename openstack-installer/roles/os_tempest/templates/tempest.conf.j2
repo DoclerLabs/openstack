@@ -1302,6 +1302,7 @@ floating_ip_range = 10.0.0.0/29
 
 # Catalog type of the Volume Service (string value)
 #catalog_type = volume
+catalog_type = volumev3
 
 {% if cinder_backup_backend == 'ceph' %}
 storage_protocol = ceph
@@ -1363,11 +1364,13 @@ storage_protocol = ceph
 
 # Is the v1 volume API enabled (boolean value)
 #api_v1 = true
+api_v1 = False
 
 # Is the v2 volume API enabled (boolean value)
 #api_v2 = true
+api_v2 = True
 
-api_v3 = true
+api_v3 = True
 
 # Update bootable status of a volume Not implemented on icehouse
 # (boolean value)

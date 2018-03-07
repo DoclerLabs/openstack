@@ -112,7 +112,7 @@ server_proxyclient_address = {{ ip.mgmt }}
 
 [cinder]
 
-catalog_info = volumev2:cinderv2:internalURL
+catalog_info = volumev3:cinderv3:internalURL
 os_region_name = {{ keystone_region_name }}
 {% if SSLCACertificateFile != '' %}
 cafile = {{ SSLCACertificateFile }}
