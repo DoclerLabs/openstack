@@ -10,7 +10,7 @@ host = 127.0.0.1
 # Port that will be used to listen on. (integer value)
 #port=8386
 
-api_paste_config = /usr/share/sahara/api-paste.ini
+api_paste_config = /etc/sahara/api-paste.ini
 
 # If set to True, Sahara will use floating IPs to communicate
 # with instances. To make sure that all instances have
@@ -166,6 +166,18 @@ memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mg
 
 memcache_security_strategy = ENCRYPT
 memcache_secret_key = {{ memcache_secret_key }}
+
+
+[trustee]
+
+auth_type = password
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+region_name = {{ keystone_region_name }}
+username = {{ sahara_admin_user }}
+user_domain_name = {{ sahara_domain_name }}
+project_name = {{ sahara_project_name }}
+project_domain_name = {{ sahara_project_domain_name }}
+password = {{ sahara_admin_password }}
 
 
 [keystone]
