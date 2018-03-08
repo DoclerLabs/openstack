@@ -11,6 +11,7 @@
   with_items:
     - pacemaker
     - corosync
+    - crmsh
 
 - name: install corosync.conf
   template: src=corosync.conf.j2 dest=/etc/corosync/corosync.conf owner=root group=root mode=0644
