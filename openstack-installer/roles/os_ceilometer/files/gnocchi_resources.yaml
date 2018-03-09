@@ -2,7 +2,6 @@
 
 resources:
   - resource_type: identity
-    archive_policy: low
     metrics:
       - 'identity.authenticate.success'
       - 'identity.authenticate.pending'
@@ -35,14 +34,18 @@ resources:
 
   - resource_type: instance
     metrics:
-      - 'instance'
       - 'memory'
       - 'memory.usage'
       - 'memory.resident'
+      - 'memory.swap.in'
+      - 'memory.swap.out'
+      - 'memory.bandwidth.total'
+      - 'memory.bandwidth.local'
       - 'vcpus'
       - 'cpu'
       - 'cpu.delta'
       - 'cpu_util'
+      - 'cpu_l3_cache'
       - 'disk.root.size'
       - 'disk.ephemeral.size'
       - 'disk.read.requests'
@@ -58,22 +61,24 @@ resources:
       - 'disk.capacity'
       - 'disk.allocation'
       - 'disk.usage'
+      - 'compute.instance.booting.time'
+      - 'perf.cpu.cycles'
+      - 'perf.instructions'
+      - 'perf.cache.references'
+      - 'perf.cache.misses'
     attributes:
-      host: resource_metadata.host
+      host: resource_metadata.(instance_host|host)
       image_ref: resource_metadata.image_ref
       display_name: resource_metadata.display_name
       flavor_id: resource_metadata.(instance_flavor_id|(flavor.id)|flavor_id)
+      flavor_name: resource_metadata.(instance_type|(flavor.name)|flavor_name)
       server_group: resource_metadata.user_metadata.server_group
     event_delete: compute.instance.delete.start
     event_attributes:
       id: instance_id
     event_associated_resources:
-      instance_network_interface:
-        query: '{"=": {"instance_id": "%s"}}'
-        fields: [id]
-      instance_disk:
-        query: '{"=": {"instance_id": "%s"}}'
-        fields: [id]
+      instance_network_interface: '{"=": {"instance_id": "%s"}}'
+      instance_disk: '{"=": {"instance_id": "%s"}}'
 
   - resource_type: instance_network_interface
     metrics:
@@ -81,6 +86,10 @@ resources:
       - 'network.incoming.packets.rate'
       - 'network.outgoing.packets'
       - 'network.incoming.packets'
+      - 'network.outgoing.packets.drop'
+      - 'network.incoming.packets.drop'
+      - 'network.outgoing.packets.error'
+      - 'network.incoming.packets.error'
       - 'network.outgoing.bytes.rate'
       - 'network.incoming.bytes.rate'
       - 'network.outgoing.bytes'
@@ -110,7 +119,6 @@ resources:
 
   - resource_type: image
     metrics:
-      - 'image'
       - 'image.size'
       - 'image.download'
       - 'image.serve'
@@ -140,21 +148,10 @@ resources:
   - resource_type: network
     metrics:
       - 'bandwidth'
-      - 'network'
-      - 'network.create'
-      - 'network.update'
-      - 'subnet'
-      - 'subnet.create'
-      - 'subnet.update'
-      - 'port'
-      - 'port.create'
-      - 'port.update'
-      - 'router'
-      - 'router.create'
-      - 'router.update'
       - 'ip.floating'
-      - 'ip.floating.create'
-      - 'ip.floating.update'
+    event_delete: floatingip.delete.end
+    event_attributes:
+      id: resource_id
 
   - resource_type: stack
     metrics:
@@ -179,14 +176,33 @@ resources:
     metrics:
       - 'volume'
       - 'volume.size'
-      - 'volume.create'
-      - 'volume.delete'
-      - 'volume.update'
-      - 'volume.resize'
-      - 'volume.attach'
-      - 'volume.detach'
+      - 'snapshot.size'
+      - 'volume.snapshot.size'
+      - 'volume.backup.size'
     attributes:
-      display_name: resource_metadata.display_name
+      display_name: resource_metadata.(display_name|name)
+      volume_type: resource_metadata.volume_type
+    event_delete: volume.delete.start
+    event_attributes:
+      id: resource_id
+
+  - resource_type: volume_provider
+    metrics:
+      - 'volume.provider.capacity.total'
+      - 'volume.provider.capacity.free'
+      - 'volume.provider.capacity.allocated'
+      - 'volume.provider.capacity.provisioned'
+      - 'volume.provider.capacity.virtual_free'
+
+  - resource_type: volume_provider_pool
+    metrics:
+      - 'volume.provider.pool.capacity.total'
+      - 'volume.provider.pool.capacity.free'
+      - 'volume.provider.pool.capacity.allocated'
+      - 'volume.provider.pool.capacity.provisioned'
+      - 'volume.provider.pool.capacity.virtual_free'
+    attributes:
+      provider: resource_metadata.provider
 
   - resource_type: host
     metrics:
@@ -212,6 +228,10 @@ resources:
     metrics:
       - 'hardware.disk.size.total'
       - 'hardware.disk.size.used'
+      - 'hardware.disk.read.bytes'
+      - 'hardware.disk.write.bytes'
+      - 'hardware.disk.read.requests'
+      - 'hardware.disk.write.requests'
     attributes:
       host_name: resource_metadata.resource_url
       device_name: resource_metadata.device
@@ -224,3 +244,77 @@ resources:
     attributes:
       host_name: resource_metadata.resource_url
       device_name: resource_metadata.name
+
+  - resource_type: nova_compute
+    metrics:
+      - 'compute.node.cpu.frequency'
+      - 'compute.node.cpu.idle.percent'
+      - 'compute.node.cpu.idle.time'
+      - 'compute.node.cpu.iowait.percent'
+      - 'compute.node.cpu.iowait.time'
+      - 'compute.node.cpu.kernel.percent'
+      - 'compute.node.cpu.kernel.time'
+      - 'compute.node.cpu.percent'
+      - 'compute.node.cpu.user.percent'
+      - 'compute.node.cpu.user.time'
+    attributes:
+      host_name: resource_metadata.host
+
+  - resource_type: manila_share
+    metrics:
+      - 'manila.share.size'
+    attributes:
+      name: resource_metadata.name
+      host: resource_metadata.host
+      status: resource_metadata.status
+      availability_zone: resource_metadata.availability_zone
+      protocol: resource_metadata.protocol
+
+  - resource_type: switch
+    metrics:
+      - 'switch'
+      - 'switch.ports'
+    attributes:
+      controller: resource_metadata.controller
+
+  - resource_type: switch_port
+    metrics:
+      - 'switch.port'
+      - 'switch.port.uptime'
+      - 'switch.port.receive.packets'
+      - 'switch.port.transmit.packets'
+      - 'switch.port.receive.bytes'
+      - 'switch.port.transmit.bytes'
+      - 'switch.port.receive.drops'
+      - 'switch.port.transmit.drops'
+      - 'switch.port.receive.errors'
+      - 'switch.port.transmit.errors'
+      - 'switch.port.receive.frame_error'
+      - 'switch.port.receive.overrun_error'
+      - 'switch.port.receive.crc_error'
+      - 'switch.port.collision.count'
+    attributes:
+      switch: resource_metadata.switch
+      port_number_on_switch: resource_metadata.port_number_on_switch
+      neutron_port_id: resource_metadata.neutron_port_id
+      controller: resource_metadata.controller
+
+  - resource_type: port
+    metrics:
+      - 'port'
+      - 'port.uptime'
+      - 'port.receive.packets'
+      - 'port.transmit.packets'
+      - 'port.receive.bytes'
+      - 'port.transmit.bytes'
+      - 'port.receive.drops'
+      - 'port.receive.errors'
+    attributes:
+      controller: resource_metadata.controller
+
+  - resource_type: switch_table
+    metrics:
+      - 'switch.table.active.entries'
+    attributes:
+      controller: resource_metadata.controller
+      switch: resource_metadata.switch

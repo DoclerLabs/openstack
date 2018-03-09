@@ -7,6 +7,8 @@
       fields: payload.user_id
     instance_id:
       fields: payload.instance_id
+    display_name:
+      fields: payload.display_name
     resource_id:
       fields: payload.instance_id
     host:
@@ -90,6 +92,36 @@
       fields: payload.volume_type
     replication_status:
       fields: payload.replication_status
+- event_type: ['share.create.*', 'share.delete.*', 'share.extend.*', 'share.shrink.*']
+  traits: &share_traits
+    share_id:
+      fields: payload.share_id
+    user_id:
+      fields: payload.user_id
+    project_id:
+      fields: payload.tenant_id
+    snapshot_id:
+      fields: payload.snapshot_id
+    availability_zone:
+      fields: payload.availability_zone
+    status:
+      fields: payload.status
+    created_at:
+      fields: payload.created_at
+    share_group_id:
+      fields: payload.share_group_id
+    size:
+      fields: payload.size
+    name:
+      fields: payload.name
+    proto:
+      fields: payload.proto
+    is_public:
+      fields: payload.is_public
+    description:
+      fields: payload.description
+    host:
+      fields: payload.host
 - event_type: ['snapshot.exists', 'snapshot.create.*', 'snapshot.delete.*', 'snapshot.update.*']
   traits:
     <<: *cinder_traits
@@ -141,17 +173,21 @@
     project_id:
       fields: payload.tenant_id
     user_id:
-      fields: ['_context_trustor_user_id', '_context_user_id']
+      fields: ['ctxt.trustor_user_id', 'ctxt.user_id']
     resource_id:
       fields: payload.stack_identity
+    name:
+      fields: payload.name
 - event_type: sahara.cluster.*
   traits: &sahara_crud
     project_id:
       fields: payload.project_id
     user_id:
-      fields: _context_user_id
+      fields: ctxt.user_id
     resource_id:
       fields: payload.cluster_id
+    name:
+      fields: payload.name
 - event_type: sahara.cluster.health
   traits: &sahara_health
     <<: *sahara_crud
@@ -263,27 +299,35 @@
 - event_type: ['network.*', 'subnet.*', 'port.*', 'router.*', 'floatingip.*', 'pool.*', 'vip.*', 'member.*', 'health_monitor.*', 'healthmonitor.*', 'listener.*', 'loadbalancer.*', 'firewall.*', 'firewall_policy.*', 'firewall_rule.*', 'vpnservice.*', 'ipsecpolicy.*', 'ikepolicy.*', 'ipsec_site_connection.*']
   traits: &network_traits
     user_id:
-      fields: _context_user_id
+      fields: ctxt.user_id
     project_id:
-      fields: _context_tenant_id
+      fields: ctxt.tenant_id
 - event_type: network.*
   traits:
     <<: *network_traits
+    name:
+      fields: payload.network.name
     resource_id:
       fields: ['payload.network.id', 'payload.id']
 - event_type: subnet.*
   traits:
     <<: *network_traits
+    name:
+      fields: payload.subnet.name
     resource_id:
       fields: ['payload.subnet.id', 'payload.id']
 - event_type: port.*
   traits:
     <<: *network_traits
+    name:
+      fields: payload.port.name
     resource_id:
       fields: ['payload.port.id', 'payload.id']
 - event_type: router.*
   traits:
     <<: *network_traits
+    name:
+      fields: payload.router.name
     resource_id:
       fields: ['payload.router.id', 'payload.id']
 - event_type: floatingip.*
@@ -294,6 +338,8 @@
 - event_type: pool.*
   traits:
     <<: *network_traits
+    name:
+      fields: payload.pool.name
     resource_id:
       fields: ['payload.pool.id', 'payload.id']
 - event_type: vip.*
@@ -309,51 +355,71 @@
 - event_type: health_monitor.*
   traits:
     <<: *network_traits
+    name:
+      fields: payload.health_monitor.name
     resource_id:
       fields: ['payload.health_monitor.id', 'payload.id']
 - event_type: healthmonitor.*
   traits:
     <<: *network_traits
+    name:
+      fields: payload.healthmonitor.name
     resource_id:
       fields: ['payload.healthmonitor.id', 'payload.id']
 - event_type: listener.*
   traits:
     <<: *network_traits
+    name:
+      fields: payload.listener.name
     resource_id:
       fields: ['payload.listener.id', 'payload.id']
 - event_type: loadbalancer.*
   traits:
     <<: *network_traits
+    name:
+      fields: payload.loadbalancer.name
     resource_id:
       fields: ['payload.loadbalancer.id', 'payload.id']
 - event_type: firewall.*
   traits:
     <<: *network_traits
+    name:
+      fields: payload.firewall.name
     resource_id:
       fields: ['payload.firewall.id', 'payload.id']
 - event_type: firewall_policy.*
   traits:
     <<: *network_traits
+    name:
+      fields: payload.firewall_policy.name
     resource_id:
       fields: ['payload.firewall_policy.id', 'payload.id']
 - event_type: firewall_rule.*
   traits:
     <<: *network_traits
+    name:
+      fields: payload.firewall_rule.name
     resource_id:
       fields: ['payload.firewall_rule.id', 'payload.id']
 - event_type: vpnservice.*
   traits:
     <<: *network_traits
+    name:
+      fields: payload.vpnservice.name
     resource_id:
       fields: ['payload.vpnservice.id', 'payload.id']
 - event_type: ipsecpolicy.*
   traits:
     <<: *network_traits
+    name:
+      fields: payload.ipsecpolicy.name
     resource_id:
       fields: ['payload.ipsecpolicy.id', 'payload.id']
 - event_type: ikepolicy.*
   traits:
     <<: *network_traits
+    name:
+      fields: payload.ikepolicy.name
     resource_id:
       fields: ['payload.ikepolicy.id', 'payload.id']
 - event_type: ipsec_site_connection.*
@@ -443,8 +509,6 @@
       fields: payload.audit_period_ending
 - event_type: trove.*
   traits: &trove_base_traits
-    state:
-      fields: payload.state_description
     instance_type:
       fields: payload.instance_type
     user_id:
@@ -551,8 +615,8 @@
       fields: payload.info.db.statement
     db.params:
       fields: payload.info.db.params
-- event_type: 'magnum.bay.*'
-  traits: &magnum_bay_crud
+- event_type: 'magnum.cluster.*'
+  traits: &magnum_cluster_crud
     id:
       fields: payload.id
     typeURI:
@@ -583,3 +647,19 @@
       fields: payload.observer.id
     observer_typeURI:
       fields: payload.observer.typeURI
+- event_type: 'alarm.*'
+  traits:
+    id:
+      fields: payload.alarm_id
+    user_id:
+      fields: payload.user_id
+    project_id:
+      fields: payload.project_id
+    on_behalf_of:
+      fields: payload.on_behalf_of
+    severity:
+      fields: payload.severity
+    detail:
+      fields: payload.detail
+    type:
+      fields: payload.type
