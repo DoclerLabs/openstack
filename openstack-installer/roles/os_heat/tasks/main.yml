@@ -33,7 +33,6 @@
   service_mask: name={{ item }} state=masked
   with_items:
     - heat-api
-    - heat-api-cloudwatch
     - heat-api-cfn
     - heat-engine
 
@@ -41,7 +40,6 @@
   apt: name={{ item }}
   with_items:
     - heat-api
-    - heat-api-cloudwatch
     - heat-api-cfn
     - heat-engine
     - python-heatclient
@@ -77,7 +75,6 @@
   service_mask: name={{ item }} state=unmasked
   with_items:
     - heat-api
-    - heat-api-cloudwatch
     - heat-api-cfn
     - heat-engine
 
@@ -87,6 +84,5 @@
   service: name={{ item }} state=started enabled=yes
   with_items:
     - heat-api
-    - heat-api-cloudwatch
     - heat-api-cfn
     - heat-engine
