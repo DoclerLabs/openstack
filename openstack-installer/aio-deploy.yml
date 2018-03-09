@@ -1,6 +1,6 @@
 - include: ceph.yml
 
-- hosts: ceph_monitor
+- hosts: ceph_monitor[0]
   become: True
   tasks:
     - name: create pools
@@ -13,3 +13,13 @@
         - gnocchi
 
 - include: main.yml
+
+- hosts: gnocchi[0]
+  become: True
+  tasks:
+    - name: create gnocchi storage
+      command: su gnocchi -s /bin/sh -c '/usr/bin/gnocchi-upgrade'
+
+    - name: create incoming sacks
+      command: su gnocchi -s /bin/sh -c '/usr/bin/gnocchi-change-sack-size --sacks 10'
+      failed_when: False
