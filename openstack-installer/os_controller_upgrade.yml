@@ -183,6 +183,10 @@
         apt: name=gnocchi-api state=absent
         when: inventory_hostname in groups['gnocchi']
 
+      - name: remove heat-api-cloudwatch
+        apt: name=heat-api-cloudwatch state=absent
+        when: inventory_hostname in groups['heat']
+
       - name: upgrade packages
         apt: upgrade=yes
 
@@ -257,6 +261,10 @@
       - name: remove gnocchi-api
         apt: name=gnocchi-api state=absent
         when: inventory_hostname in groups['gnocchi']
+
+      - name: remove heat-api-cloudwatch
+        apt: name=heat-api-cloudwatch state=absent
+        when: inventory_hostname in groups['heat']
 
       - name: upgrade packages
         apt: upgrade=yes
