@@ -200,7 +200,7 @@
     - glance[1:]
     - horizon[1:]
     - nova_controller[1:]
-    - neutron_controller[1:]
+    - neutron_l3[1:]
     - gnocchi[1:]
     - ceilometer_controller[1:]
     - aodh[1:]
@@ -236,7 +236,7 @@
         when: inventory_hostname in item.group
         with_items:
           - { playbook: "os_glance.yml", group: "{{ groups['glance'] }}" }
-          - { playbook: "os_neutron.yml", group: "{{ groups['neutron_controller'] }}" }
+          - { playbook: "os_neutron.yml", group: "{{ groups['neutron_l3'] }}" }
           - { playbook: "os_nova.yml", group: "{{ groups['nova_controller'] }}" }
           - { playbook: "os_gnocchi.yml", group: "{{ groups['gnocchi'] }}" }
           - { playbook: "os_ceilometer.yml", group: "{{ groups['ceilometer_controller'] }}" }
