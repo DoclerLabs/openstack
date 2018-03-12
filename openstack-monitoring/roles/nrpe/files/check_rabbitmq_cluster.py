@@ -32,7 +32,7 @@ def get_rabbitmq_nodes():
     # remove first line
     status = out[out.find('\n')+1:]
     # erl to yaml
-    yml_s = re.sub('{([a-z].*?),', r'{"\1":', status)
+    yml_s = re.sub('{([a-z\'].*?),', r'{"\1":', status)
     yml = yaml.safe_load(yml_s)
 
     disc_nodes = ram_nodes = running_nodes = partitions = []
