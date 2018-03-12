@@ -440,14 +440,6 @@ define service{
     service_description glance-api
     check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 9292!-u /healthcheck
 }
-
-define service{
-    use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}glance,{{ nagios_cloud_prefix }}mgmt-VIP
-    servicegroups {{ nagios_cloud_prefix }}OpenStack
-    service_description glance-registry
-    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 9191!-u /healthcheck
-}
 {% endif %}
 
 {% if groups['panko'] | count > 0 %}
@@ -536,7 +528,7 @@ define service{
     hostgroup_name {{ nagios_cloud_prefix }}sahara,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description sahara-api
-    check_command {{ nagios_cloud_prefix }}check_http_url!-p 8386!-e 401
+    check_command {{ nagios_cloud_prefix }}check_http_url!-p 8386!-e 300
 }
 {% endif %}
 
