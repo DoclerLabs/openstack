@@ -52,4 +52,4 @@
             - httpchk GET /
             - httplog
           haproxy_backend_extras:
-            - http-check expect status 401
+            - http-check expect status 300
