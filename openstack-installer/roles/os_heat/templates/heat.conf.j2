@@ -119,7 +119,6 @@ transport_url = rabbit://{% for host in rabbit_hosts %}{{ heat_rabbit_user }}:{{
 # service (at DEBUG level). (boolean value)
 #log_options = true
 
-heat_watch_server_url = http://{{ vip_public }}:8003
 heat_metadata_server_url = http://{{ vip_public }}:8000
 heat_waitcondition_server_url = http://{{ vip_public }}:8000/v1/waitcondition
 stack_domain_admin = {{ heat_domain_admin }}

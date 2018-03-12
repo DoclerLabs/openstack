@@ -55,7 +55,6 @@
       apache_services:
         - { port: 8004 }
         - { port: 8000 }
-        - { port: 8003 }
 
 - hosts: haproxy
   become: True
@@ -88,7 +87,7 @@
             - httplog
 
         - haproxy_service_name: heat_api_cloudwatch
-          haproxy_backend_nodes: "{{ groups['heat'] }}"
+          haproxy_backend_nodes: []
           haproxy_bind_hosts:
             - "{{ vip_mgmt }}"
             - "{{ vip_public }}"
