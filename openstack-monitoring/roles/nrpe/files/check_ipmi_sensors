@@ -16,6 +16,12 @@ BEGIN {
         MSG[0]="OK: ";
         MSG[1]="WARNING: ";
         MSG[2]="CRITICAL: ";
+
+        # Acceptable values for discrete sensors
+        # Supermicro PS and HDD sensors
+        DISCRETE["PS1_Status"]="0x1";
+        DISCRETE["PS2_Status"]="0x1";
+        DISCRETE["HDD_Status"]="0x1";
 }
 
 # Remove extraneous spaces to make output prettyer
@@ -111,6 +117,24 @@ BEGIN {
 
         MSG[2] = sprintf("%s %s is %.2f (%s) ", MSG[2], THING, VOLTS, OK);
         if (EXIT=0) EXIT=1;
+}
+
+/discrete/ {
+        THING=$1;
+        VALUE=$2;
+
+        sub(/ /,"_",THING);
+
+        if (THING in DISCRETE) {
+            if (DISCRETE[THING] != VALUE) {
+                MSG[2] = sprintf("%s %s is %s", MSG[2], THING, VALUE);
+                EXIT=2;
+                next;
+            } else {
+                MSG[0] = sprintf("%s %s is %s", MSG[0], THING, VALUE);
+                next;
+            }
+         }
 }
 
 END {
