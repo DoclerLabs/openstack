@@ -5,7 +5,10 @@
   when: inventory_hostname in groups['neutron_controller']
 
 - name: restart neutron-l3-agent
-  service: name="{{ neutron_vpnaas_type | ternary('neutron-vpn-agent', 'neutron-l3-agent') }}" state=restarted
+  # service: name="{{ neutron_vpnaas_type | ternary('neutron-vpn-agent', 'neutron-l3-agent') }}" state=restarted
+  # simulate serial:1 in the restart handler, don't restart all of the l3 agents simultaneously
+  shell: sleep $((10*{{ groups['neutron_l3'].index(inventory_hostname) }})) &&
+         /usr/sbin/service {{ neutron_vpnaas_type | ternary('neutron-vpn-agent', 'neutron-l3-agent') }} restart
   when: inventory_hostname in groups['neutron_l3']
 
 - name: restart neutron-dhcp-agent
