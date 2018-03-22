@@ -44,6 +44,10 @@
   copy: src=check_rabbitmq_cluster.py dest=/usr/local/bin/check_rabbitmq_cluster.py owner=root group=root mode=0755
   when: inventory_hostname in groups['rabbitmq']
 
+- name: add permission to read /etc/my.cnf
+  acl: path=/etc/my.cnf etype=user entity=nagios permissions=r state=present
+  when: inventory_hostname in groups['galera']
+
 - name: install nrpe config
   template: src=nrpe.cfg.j2 dest=/etc/nagios/nrpe.cfg owner=root group=root mode=0644
   notify: restart nrpe
