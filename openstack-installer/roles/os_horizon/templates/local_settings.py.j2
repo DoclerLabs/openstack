@@ -9,8 +9,17 @@ from horizon.utils import secret_key
 from openstack_dashboard.settings import HORIZON_CONFIG
 
 DEBUG = {{ horizon_debug }}
-TEMPLATE_DEBUG = DEBUG
 
+# This setting controls whether or not compression is enabled. Disabling
+# compression makes Horizon considerably slower, but makes it much easier
+# to debug JS and CSS changes
+COMPRESS_ENABLED = {{ horizon_compress }}
+
+# This setting controls whether compression happens on the fly, or offline
+# with `python manage.py compress`
+# See https://django-compressor.readthedocs.io/en/latest/usage/#offline-compression
+# for more information
+COMPRESS_OFFLINE = {{ horizon_compress_offline }}
 
 # WEBROOT is the location relative to Webserver root
 # should end with a slash.
@@ -77,9 +86,15 @@ OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = {{ horizon_keystone_multidomain_support
 OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = '{{ horizon_keystone_default_domain }}'
 
 # Set Console type:
-# valid options are "AUTO"(default), "VNC", "SPICE", "RDP", "SERIAL" or None
-# Set to None explicitly if you want to deactivate the console.
+# valid options are "AUTO"(default), "VNC", "SPICE", "RDP", "SERIAL", "MKS"
+# or None. Set to None explicitly if you want to deactivate the console.
 #CONSOLE_TYPE = "AUTO"
+
+# Toggle showing the openrc file for Keystone V2.
+# If set to false the link will be removed from the user dropdown menu
+# and the API Access page
+#SHOW_KEYSTONE_V2_RC = True
+SHOW_KEYSTONE_V2_RC = False
 
 # Show backdrop element outside the modal, do not close the modal
 # after clicking on backdrop.
@@ -258,6 +273,11 @@ OPENSTACK_HYPERVISOR_FEATURES = {
     'enable_quotas': True
 }
 
+# This settings controls whether IP addresses of servers are retrieved from
+# neutron in the project instance table. Setting this to ``False`` may mitigate
+# a performance issue in the project instance table in large deployments.
+#OPENSTACK_INSTANCE_RETRIEVE_IP_ADDRESSES = True
+
 # The OPENSTACK_CINDER_FEATURES settings can be used to enable optional
 # services provided by cinder that is not exposed by its extension API.
 OPENSTACK_CINDER_FEATURES = {
@@ -375,6 +395,11 @@ HORIZON_IMAGES_UPLOAD_MODE = 'legacy'
 # If using Glance V2, this value should be False unless the Glance
 # configuration and policies allow setting locations.
 #IMAGES_ALLOW_LOCATION = False
+
+# A dictionary of default settings for create image modal.
+#CREATE_IMAGE_DEFAULTS = {
+#    'image_visibility': "public",
+#}
 
 # OPENSTACK_ENDPOINT_TYPE specifies the endpoint type to use for the endpoints
 # in the Keystone service catalog. Use this setting when Horizon is running
@@ -516,16 +541,6 @@ LOGGING = {
         },
     },
     'loggers': {
-        # Logging from django.db.backends is VERY verbose, send to null
-        # by default.
-        'django.db.backends': {
-            'handlers': ['null'],
-            'propagate': False,
-        },
-        'requests': {
-            'handlers': ['null'],
-            'propagate': False,
-        },
         'horizon': {
             'handlers': ['console'],
             'level': 'DEBUG',
@@ -551,6 +566,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'keystoneauth': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
         'keystoneclient': {
             'handlers': ['console'],
             'level': 'DEBUG',
@@ -566,12 +586,12 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
-        'heatclient': {
+        'swiftclient': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
         },
-        'swiftclient': {
+        'oslo_policy': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
@@ -589,6 +609,24 @@ LOGGING = {
         'django': {
             'handlers': ['console'],
             'level': 'DEBUG',
+            'propagate': False,
+        },
+        # Logging from django.db.backends is VERY verbose, send to null
+        # by default.
+        'django.db.backends': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
+        'requests': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
+        'urllib3': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
+        'chardet.charsetprober': {
+            'handlers': ['null'],
             'propagate': False,
         },
         'iso8601': {
@@ -753,7 +791,8 @@ REST_API_REQUIRED_SETTINGS = ['OPENSTACK_HYPERVISOR_FEATURES',
                               'LAUNCH_INSTANCE_DEFAULTS',
                               'OPENSTACK_IMAGE_FORMATS',
                               'OPENSTACK_KEYSTONE_DEFAULT_DOMAIN',
-                              'CREATE_IMAGE_DEFAULTS']
+                              'CREATE_IMAGE_DEFAULTS',
+                              'ENFORCE_PASSWORD_CHECK']
 
 # Additional settings can be made available to the client side for
 # extensibility by specifying them in REST_API_ADDITIONAL_SETTINGS
@@ -776,9 +815,6 @@ WEBROOT='/horizon/'
 # installations should have this set accordingly.  For more information
 # see https://docs.djangoproject.com/en/dev/ref/settings/.
 ALLOWED_HOSTS = '*'
-
-# Compress all assets offline as part of packaging installation
-COMPRESS_OFFLINE = {{ horizon_compress_offline }}
 
 # DISALLOW_IFRAME_EMBED can be used to prevent Horizon from being embedded
 # within an iframe. Legacy browsers are still vulnerable to a Cross-Frame
