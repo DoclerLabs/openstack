@@ -44,7 +44,6 @@
 - name: mask autostarting of neutron L3 services
   service_mask: name={{ item }} state=masked
   with_items:
-    - neutron-vpn-agent
     - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
@@ -120,7 +119,7 @@
   apt: name={{ item }}
   with_items:
     - keepalived
-    - "{{ neutron_vpnaas_type | ternary('neutron-vpn-agent', 'neutron-l3-agent') }}"
+    - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
     - neutron-{{ neutron_lbaas_agent }}-agent
@@ -231,7 +230,6 @@
 - name: unmask autostarting of neutron L3 services
   service_mask: name={{ item }} state=unmasked
   with_items:
-    - neutron-vpn-agent
     - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
@@ -255,7 +253,7 @@
 - name: ensure neutron L3 services are started
   service: name={{ item }} state=started enabled=yes
   with_items:
-    - "{{ neutron_vpnaas_type | ternary('neutron-vpn-agent', 'neutron-l3-agent') }}"
+    - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
     - neutron-{{ neutron_lbaas_agent }}-agent

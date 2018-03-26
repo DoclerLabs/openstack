@@ -189,6 +189,11 @@
         apt: name=heat-api-cloudwatch state=absent
         when: inventory_hostname in groups['heat']
 
+      # VPN agent is integrated into the l3 agent
+      - name: make sure neutron-l3-agent is used
+        apt: name=neutron-l3-agent state=present
+        when: inventory_hostname in groups['neutron_l3']
+
       - name: upgrade packages
         apt: upgrade=yes
 
@@ -269,6 +274,11 @@
       - name: remove heat-api-cloudwatch
         apt: name=heat-api-cloudwatch state=absent
         when: inventory_hostname in groups['heat']
+
+      # VPN agent is integrated into the l3 agent
+      - name: make sure neutron-l3-agent is used
+        apt: name=neutron-l3-agent state=present
+        when: inventory_hostname in groups['neutron_l3']
 
       - name: upgrade packages
         apt: upgrade=yes
