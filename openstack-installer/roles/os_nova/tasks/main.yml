@@ -164,11 +164,14 @@
 - name: do cellv2 setup - cell0
   command: su nova -s /bin/sh -c "/usr/bin/nova-manage cell_v2 map_cell0 --database_connection
     mysql+pymysql://{{ nova_cell0_db_user }}:{{ nova_cell0_db_password }}@{{ nova_mysql_server }}/{{ nova_cell0_db }}?charset=utf8"
+  register: create_cell0
+  changed_when: '"Cell0 is already setup" not in create_cell0.stdout'
   when: inventory_hostname == groups['nova_controller'][0]
 
 - name: do cellv2 setup - create cell
   command: su nova -s /bin/sh -c "/usr/bin/nova-manage cell_v2 create_cell"
   register: create_cell
+  changed_when: create_cell is success and 'already exists' not in create_cell.stdout
   failed_when: create_cell is failed and 'already exists' not in create_cell.stdout
   when: inventory_hostname == groups['nova_controller'][0]
 
