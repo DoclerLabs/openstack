@@ -41,7 +41,7 @@
         - cluster_name: "{{ ceph_cluster_name | default('ceph') }}"
           monitors: "{{ ceph_monitors | default(groups['ceph_monitor']) }}"
           user: "{{ glance_ceph_user | default('glance') }}"
-          rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ glance_ceph_pool | default('images') }}'"
+          rights: "mon 'profile rbd' osd 'profile rbd pool={{ glance_ceph_pool | default('images') }}'"
           key: "{{ glance_ceph_key | default(None) }}"
           keyring_owner: glance
       when: glance_backend | default('files') == 'ceph'

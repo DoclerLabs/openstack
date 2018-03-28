@@ -92,7 +92,7 @@
           'cluster_name': item.ceph_cluster_name,
           'monitors': item.ceph_monitors | default(groups.ceph_monitor),
           'user': item.ceph_user,
-          'rights': 'mon \"allow r\" osd \"allow class-read object_prefix rbd_children, allow rwx pool=' + item.ceph_pool + ', allow rwx pool=' + nova_ephemeral_ceph_pool | default('vms') + ', allow rx pool=' + glance_ceph_pool | default('images') + '\"',
+          'rights': 'mon \"profile rbd\" osd \"profile rbd pool=' + item.ceph_pool + ', profile rbd pool=' + nova_ephemeral_ceph_pool | default('vms') + ', profile rbd-read-only pool=' + glance_ceph_pool | default('images') + '\"',
           'key': item.ceph_key | default(None),
           'keyring_owner': 'nova',
           'keyring_group': (inventory_hostname in groups['cinder_volume']) | ternary('cinder','root'),
@@ -106,7 +106,7 @@
           - cluster_name: "{{ ceph_cluster_name | default('ceph') }}"
             monitors: "{{ ceph_monitors | default(groups['ceph_monitor']) }}"
             user: "{{ cinder_ceph_user | default('cinder') }}"
-            rights: "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool={{ cinder_ceph_pool | default('volumes') }}, allow rwx pool={{ nova_ephemeral_ceph_pool | default('vms') }}, allow rx pool={{ glance_ceph_pool | default('images') }}'"
+            rights: "mon 'profile rbd' osd 'profile rbd pool={{ cinder_ceph_pool | default('volumes') }}, profile rbd pool={{ nova_ephemeral_ceph_pool | default('vms') }}, profile rbd-read-only pool={{ glance_ceph_pool | default('images') }}'"
             key: "{{ cinder_ceph_key | default(None) }}"
             keyring_owner: nova
             keyring_group: "{{ (inventory_hostname in groups['cinder_volume']) | ternary('cinder','root') }}"
@@ -119,7 +119,7 @@
           'cluster_name': ceph_cluster_name | default('ceph'),
           'monitors': ceph_monitors | default(groups.ceph_monitor),
           'user': nova_ephemeral_ceph_user | default(cinder_ceph_user) | default('cinder'),
-          'rights': 'mon \"allow r\" osd \"allow class-read object_prefix rbd_children, allow rwx pool=' + cinder_ceph_pool | default('volumes') + ', allow rwx pool=' + nova_ephemeral_ceph_pool | default('vms') + ', allow rx pool=' + glance_ceph_pool | default('images') + '\"',
+          'rights': 'mon \"profile rbd\" osd \"profile rbd pool=' + cinder_ceph_pool | default('volumes') + ', profile rbd pool=' + nova_ephemeral_ceph_pool | default('vms') + ', profile rbd-read-only pool=' + glance_ceph_pool | default('images') + '\"',
           'key': nova_ephemeral_ceph_key | default(None),
           'keyring_owner': 'nova',
           'keyring_group': (inventory_hostname in groups['cinder_volume']) | ternary('cinder','root'),
