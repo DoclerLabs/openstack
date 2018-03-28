@@ -24,7 +24,7 @@
     login_host={{ powerdns_mysql_server }} login_user={{ powerdns_db_user }} login_password={{ powerdns_db_password }}
     target=/root/pdns.sql state=import
   register: powerdns_results
-  failed_when: powerdns_results | failed and 'already exists' not in powerdns_results.msg
+  failed_when: powerdns_results is failed and 'already exists' not in powerdns_results.msg
   run_once: True
 
 - name: mask autostarting of PowerDNS

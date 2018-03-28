@@ -57,7 +57,7 @@
 - name: fetch the bootstrap-osd key
   command: ceph --cluster {{ ceph_cluster_name }} auth print-key client.bootstrap-osd
   register: bootstrap_osd_key_results
-  until: bootstrap_osd_key_results | success
+  until: bootstrap_osd_key_results is success
   delay: 5
   retries: 5
   delegate_to: "{{ groups['ceph_monitor'][0] }}"

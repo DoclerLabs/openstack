@@ -75,13 +75,13 @@
 - name: query the keyring for the client.admin key
   command: /usr/bin/ceph-authtool /etc/ceph/{{ ceph_cluster_name }}.client.admin.keyring -n client.admin -p
   register: ceph_admin_key_results
-  failed_when: ceph_admin_key_results | failed and 'not found' not in ceph_admin_key_results.stderr
+  failed_when: ceph_admin_key_results is failed and 'not found' not in ceph_admin_key_results.stderr
   changed_when: False
 
 - name: query the keyring for the mon. key
   command: /usr/bin/ceph-authtool /etc/ceph/{{ ceph_cluster_name }}.mon.keyring -n mon. -p
   register: ceph_mon_key_results
-  failed_when: ceph_mon_key_results | failed and 'not found' not in ceph_mon_key_results.stderr
+  failed_when: ceph_mon_key_results is failed and 'not found' not in ceph_mon_key_results.stderr
   changed_when: False
 
 - set_fact: admin_key=''
@@ -129,7 +129,7 @@
   command: monmaptool --add {{ item }} {{ hostvars[item].ip.mgmt }} /etc/ceph/monmap
   with_items: "{{ groups['ceph_monitor'] }}"
   register: monmap_result
-  failed_when: monmap_result.rc != 0 and 'map already contains' not in monmap_result.stderr
+  failed_when: monmap_result is failed and 'map already contains' not in monmap_result.stderr
   changed_when: "'writing' in monmap_result.stdout"
 
 - name: create the default data directories

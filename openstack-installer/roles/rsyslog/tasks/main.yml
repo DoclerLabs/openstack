@@ -19,7 +19,7 @@
 - name: set permissions of log files
   file: path=/var/log/{{ item }} owner=syslog group=adm
   register: log_results
-  failed_when: log_results | failed and 'absent' not in log_results.msg
+  failed_when: log_results is failed and 'absent' not in log_results.msg
   with_items:
     - syslog
     - debug

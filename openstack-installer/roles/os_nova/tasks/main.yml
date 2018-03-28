@@ -130,15 +130,15 @@
 - name: stop default libvirt network
   command: virsh net-destroy default
   register: virsh_result
-  failed_when: virsh_result | failed and 'Network not found' not in virsh_result.stderr
-  changed_when: virsh_result | success
+  failed_when: virsh_result is failed and 'Network not found' not in virsh_result.stderr
+  changed_when: virsh_result is success
   when: inventory_hostname in groups['nova_compute'] and nova_compute_package in ('qemu','kvm')
 
 - name: remove default libvirt network
   command: virsh net-undefine default
   register: virsh_result
-  failed_when: virsh_result | failed and 'Network not found' not in virsh_result.stderr
-  changed_when: virsh_result | success
+  failed_when: virsh_result is failed and 'Network not found' not in virsh_result.stderr
+  changed_when: virsh_result is success
   when: inventory_hostname in groups['nova_compute'] and nova_compute_package in ('qemu','kvm')
 
 - name: install nova configs
@@ -158,7 +158,7 @@
   command: su nova -s /bin/sh -c "/usr/bin/nova-manage api_db sync"
   register: db_sync
   changed_when: '"migrate.versioning.api" in db_sync.stderr'
-  failed_when: db_sync | failed and 'Cell mappings are not created' not in db_sync.stdout
+  failed_when: db_sync is failed and 'Cell mappings are not created' not in db_sync.stdout
   when: inventory_hostname == groups['nova_controller'][0]
 
 - name: do cellv2 setup - cell0
@@ -169,7 +169,7 @@
 - name: do cellv2 setup - create cell
   command: su nova -s /bin/sh -c "/usr/bin/nova-manage cell_v2 create_cell"
   register: create_cell
-  failed_when: create_cell | failed and 'already exists' not in create_cell.stdout
+  failed_when: create_cell is failed and 'already exists' not in create_cell.stdout
   when: inventory_hostname == groups['nova_controller'][0]
 
 - name: sync nova API db
