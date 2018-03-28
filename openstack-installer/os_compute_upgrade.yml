@@ -11,7 +11,7 @@
     - apt
   pre_tasks:
     - name: check for Ansible version > 2.0.1
-      local_action: assert that="{{ ansible_version.string | version_compare('2.0.1', '>=') }}"
+      local_action: assert that="{{ ansible_version.string is version_compare('2.0.1', '>=') }}"
       run_once: True
       become: False
   tasks:

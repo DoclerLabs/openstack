@@ -1,7 +1,7 @@
 ---
 
 - name: check for Ansible version >= 2.1
-  local_action: assert that="{{ ansible_version.string | version_compare('2.1', '>=') }}"
+  local_action: assert that="{{ ansible_version.string is version_compare('2.1', '>=') }}"
   run_once: True
   become: False
 
