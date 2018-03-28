@@ -116,34 +116,6 @@
       run_once: True
 
 
-# Neutron server upgrade
-
-- hosts:
-    - neutron_controller
-  become: True
-  max_fail_percentage: 0
-  tasks:
-    - name: upgrade neutron server
-      apt: name={{ item }} state=latest
-      with_items:
-        - neutron-server
-        - python-neutron
-        - python-neutron-fwaas
-        - python-neutron-lbaas
-        - python-neutron-vpnaas
-        - python-pecan
-      notify: restart neutron-server
-
-    - name: run neutron playbook
-      local_action: command ansible-playbook {{ playbook_dir }}/os_neutron.yml -i "{{ inventory_file }}" -l "{{ ','.join(groups['neutron_controller']) }}"
-      become: False
-      run_once: True
-
-  handlers:
-    - name: restart neutron-server
-      service: name=neutron-server state=restarted
-
-
 # Upgrade first host(s)
 
 - hosts:
@@ -151,6 +123,7 @@
     - glance[0]
     - horizon[0]
     - nova_controller[0]
+    - neutron_controller[0]
     - neutron_l3[0]
     - gnocchi[0]
     - panko[0]
@@ -202,7 +175,7 @@
         when: inventory_hostname in item.group
         with_items:
           - { playbook: "os_glance.yml", group: "{{ groups['glance'] }}" }
-          - { playbook: "os_neutron.yml", group: "{{ groups['neutron_l3'] }}" }
+          - { playbook: "os_neutron.yml", group: "{{ groups['neutron_l3'] | union(groups['neutron_controller']) }}" }
           - { playbook: "os_nova.yml", group: "{{ groups['nova_controller'] }}" }
           - { playbook: "os_gnocchi.yml", group: "{{ groups['gnocchi'] }}" }
           - { playbook: "os_panko.yml", group: "{{ groups['panko'] }}" }
@@ -238,6 +211,7 @@
     - glance[1:]
     - horizon[1:]
     - nova_controller[1:]
+    - neutron_controller[1:]
     - neutron_l3[1:]
     - gnocchi[1:]
     - panko[1:]
@@ -288,7 +262,7 @@
         when: inventory_hostname in item.group
         with_items:
           - { playbook: "os_glance.yml", group: "{{ groups['glance'] }}" }
-          - { playbook: "os_neutron.yml", group: "{{ groups['neutron_l3'] }}" }
+          - { playbook: "os_neutron.yml", group: "{{ groups['neutron_l3'] | union(groups['neutron_controller']) }}" }
           - { playbook: "os_nova.yml", group: "{{ groups['nova_controller'] }}" }
           - { playbook: "os_gnocchi.yml", group: "{{ groups['gnocchi'] }}" }
           - { playbook: "os_panko.yml", group: "{{ groups['panko'] }}" }
