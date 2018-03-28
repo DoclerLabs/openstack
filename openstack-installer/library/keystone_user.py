@@ -374,7 +374,7 @@ def main():
                           default="http://127.0.0.1:35357/v2.0"),
             token=dict(required=False),
             cacert=dict(required=False),
-            insecure=dict(required=False, default=False, choices=BOOLEANS),
+            insecure=dict(required=False, default=False, type='bool'),
             login_domain_name=dict(required=False, default="Default"),
             login_user=dict(required=False),
             login_password=dict(required=False),
