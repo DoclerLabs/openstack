@@ -46,7 +46,7 @@
     "mon osd down out interval" : "{{ ceph_mon_osd_down_out_interval }}"
     "mon osd downout subtree limit" : "{{ ceph_mon_osd_downout_subtree_limit }}"
     "mon osd min down reporters" : "{{ ceph_mon_osd_min_down_reporters }}"
-    "mon pg warn max per osd" : "{{ ceph_mon_pg_warn_max_per_osd }}"
+    "mon max pg per osd" : "{{ ceph_mon_max_pg_per_osd }}"
     "mon osd max split count" : "{{ ceph_mon_osd_max_split_count }}"
     "mon allow pool delete" : "{{ ceph_mon_allow_pool_delete }}"
 
