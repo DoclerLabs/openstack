@@ -204,22 +204,17 @@ Configuration options:
 
   pacemaker_colocate_vips: False   # Put the public and management VIPs on the same host.
 
-Syslog-ng or rsyslog
+Rsyslog
 --------------------
 
-The installer configures syslog-ng or rsyslog on the hosts. You can choose between the two by assigning
-your hosts to the inventory groups syslog-ng or rsyslog. The syslog inventory group is inherited by
-syslog-ng. The options controlling the system logger's behavior:
+The installer configures rsyslog on the hosts. You can assign your hosts to the the inventory groups syslog or rsyslog.
+The options controlling the system logger's behavior:
 
 ::
 
   syslog_use: False               # Disables/Enables sending logs from OpenStack components into the system logger.
-  syslog_use_mongodb: False       # Syslog-ng only. Enabling this will send the logs to the MongoDB replica set,
-                                  # which can be used as a central logging service. The document format sent
-                                  # to Mongo is compatible with Adiscon LogAnalyzer.
   syslog_remote_syslog:           # If a domain name or IP address is given, send logs to a remote syslog.
-  syslog_elasticsearch:           # Rsyslog and Ubuntu Xenial only. Send the logs to an Elasticsearch cluster
-                                  # directly, no need to install Logstash.
+  syslog_elasticsearch:           # Send the logs to an Elasticsearch cluster directly, no need to install Logstash.
 
 Ceph
 ----

@@ -22,9 +22,8 @@ galera:
 mongodb:
 powerdns:
 syslog:
-syslog-ng:
-  inherit: syslog
 rsyslog:
+  inherit: syslog
 
 # -------- OpenStack ---------
 keystone:

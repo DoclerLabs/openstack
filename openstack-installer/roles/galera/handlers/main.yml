@@ -12,8 +12,5 @@
   command: crm_shadow --commit shadowcib --force
   run_once: True
 
-- name: restart syslog-ng
-  service: name=syslog-ng state=restarted
-
 - name: restart rsyslog
   service: name=rsyslog state=restarted

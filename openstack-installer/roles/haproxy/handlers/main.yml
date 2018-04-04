@@ -5,6 +5,3 @@
 
 - name: restart haproxy
   service: name=haproxy state=restarted
-
-- name: restart syslog-ng
-  service: name=syslog-ng state=restarted

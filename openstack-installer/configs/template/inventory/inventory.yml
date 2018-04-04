@@ -91,8 +91,6 @@ galera:
 mongodb:
   inherit: controller
 
-#It is possible to choose between rsyslog and syslog-ng
-#syslog-ng:
 rsyslog:
   inherit:
     - compute

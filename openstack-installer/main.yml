@@ -2,7 +2,6 @@
 
 - include: checksecrets.yml
 - include: mongodb.yml
-- include: syslog-ng.yml
 - include: rsyslog.yml
 - include: pacemaker.yml
 - include: zookeeper.yml

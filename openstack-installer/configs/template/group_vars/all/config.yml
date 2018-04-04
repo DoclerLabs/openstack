@@ -8,8 +8,6 @@ vip_public_nic: br-vlan
 
 #Openstack services log to syslog
 syslog_use: False
-#Send logs to mongodb
-syslog_use_mongodb: False
 #Send log to a remote syslog, if an IP is given
 #syslog_remote_syslog:
 
