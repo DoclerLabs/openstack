@@ -90,8 +90,8 @@ enabled = False
 novncproxy_host = {{ ip.mgmt }}
 keymap = {{ nova_console_keymap }}
 novncproxy_base_url = {{ nova_novncproxy_base_url }}
-vncserver_listen = {{ ip.mgmt }}
-vncserver_proxyclient_address = {{ ip.mgmt }}
+server_listen = {{ ip.mgmt }}
+server_proxyclient_address = {{ ip.mgmt }}
 
 
 [spice]
@@ -122,19 +122,20 @@ insecure = {{ ssl_insecure }}
 
 [glance]
 
-api_servers = {{ os_proto }}://{{ os_internal_address }}:9292
-host = {{ os_internal_address }}
-port = 9292
-api_insecure = {{ ssl_insecure }}
-protocol = {{ os_proto }}
+region_name = {{ keystone_region_name }}
+valid_interfaces = internal
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
 
 
 [neutron]
 
-url = {{ os_proto }}://{{ os_internal_address }}:9696
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
 auth_type = password
 region_name = {{ keystone_region_name }}
+valid_interfaces = internal
 user_domain_name = {{ neutron_domain_name }}
 username = {{ neutron_admin_user }}
 password = {{ neutron_admin_password }}
@@ -149,13 +150,6 @@ service_metadata_proxy = True
 metadata_proxy_shared_secret = {{ metadata_proxy_shared_secret }}
 
 default_floating_pool = {{ nova_default_floating_pool }}
-
-
-[ssl]
-
-{% if SSLCACertificateFile != '' %}
-ca_file = {{ SSLCACertificateFile }}
-{% endif %}
 
 
 [conductor]
@@ -225,7 +219,7 @@ max_retries = -1
 
 [key_manager]
 
-api_class = castellan.key_manager.barbican_key_manager.BarbicanKeyManager
+backend = castellan.key_manager.barbican_key_manager.BarbicanKeyManager
 
 
 [barbican]
@@ -267,7 +261,7 @@ rabbit_ha_queues = true
 auth_type = password
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
 os_region_name = {{ keystone_region_name }}
-os_interface = internal
+valid_interfaces = internal
 user_domain_name = {{ placement_domain_name }}
 username = {{ placement_admin_user }}
 password = {{ placement_admin_password }}
