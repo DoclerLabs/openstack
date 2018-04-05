@@ -85,3 +85,9 @@
   with_items:
     - glance-api
     - glance-registry
+
+- name: load metadata definitions
+  command: su glance -s /bin/sh -c "/usr/bin/glance-manage db_load_metadefs"
+  register: db_sync
+  changed_when: '"loaded to database" in db_sync.stdout'
+  run_once: True
