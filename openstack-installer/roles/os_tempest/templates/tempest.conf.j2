@@ -1301,6 +1301,10 @@ floating_ip_range = 10.0.0.0/29
 # Catalog type of the Volume Service (string value)
 #catalog_type = volume
 
+{% if cinder_backup_backend == 'ceph' %}
+storage_protocol = ceph
+{% endif %}
+
 # The volume region name to use. If empty, the value of
 # identity.region is used instead. If no such region is found in the
 # service catalog, the first found one is used. (string value)
