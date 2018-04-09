@@ -14,8 +14,12 @@
   service: name=apache2 state=started enabled=yes
 
 - name: enable mod_ssl
-  file: src=../mods-available/ssl.load dest=/etc/apache2/mods-enabled/ssl.load state=link
+  file: src=../mods-available/{{ item }} dest=/etc/apache2/mods-enabled/{{ item }} state=link
   when: SSLCertificateKeyFileSource is defined
+  with_items:
+    - ssl.load
+    - ssl.conf
+    - socache_shmcb.load
   notify: restart apache
 
 - name: enable apache modules
