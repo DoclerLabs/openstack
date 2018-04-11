@@ -74,7 +74,7 @@
   notify: cleanup galera resource
 
 - name: install /etc/my.cnf
-  template: src=root.my.cnf.j2 dest=/etc/my.cnf owner=root group=root mode=0600
+  template: src=root.my.cnf.j2 dest=/etc/my.cnf owner=root group=root mode=0640
 
 - name: install galera OCF script
   copy: src=galera-agent dest=/usr/lib/ocf/resource.d/heartbeat/galera-agent owner=root group=root mode=0755
