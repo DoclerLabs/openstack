@@ -5,10 +5,7 @@
   when: SSLCACertificateFile != ''
 
 - name: mask autostarting of gnocchi
-  service_mask: name={{ item }} state=masked
-  with_items:
-    - gnocchi-api
-    - gnocchi-metricd
+  service_mask: name=gnocchi-metricd state=masked
 
 - name: mask gnocchi-api apache config
   copy: content='' dest=/etc/apache2/sites-available/gnocchi-api.conf owner=root group=root mode=0644
@@ -18,9 +15,6 @@
   with_items:
     - python-gnocchi
     - gnocchi-metricd
-
-- name: ensure gnocchi-api is disabled at boot
-  service: name=gnocchi-api state=stopped enabled=no
 
 - name: create gnocchi database
   mysql_db: name={{ gnocchi_db }}
