@@ -32,7 +32,6 @@
 - name: mask autostarting of aodh services
   service_mask: name={{ item }} state=masked
   with_items:
-    - aodh-api
     - aodh-evaluator
     - aodh-notifier
     - aodh-listener
@@ -47,9 +46,6 @@
     - aodh-evaluator
     - aodh-notifier
     - aodh-listener
-
-- name: ensure aodh-api service is disabled at boot
-  service: name=aodh-api state=stopped enabled=no
 
 - name: create aodh database
   mysql_db: name={{ aodh_db }}
