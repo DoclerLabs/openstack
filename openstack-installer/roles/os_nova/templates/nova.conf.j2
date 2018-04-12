@@ -122,6 +122,7 @@ insecure = {{ ssl_insecure }}
 
 [glance]
 
+endpoint_override = {{ os_proto }}://{{ os_internal_address }}:9292
 region_name = {{ keystone_region_name }}
 valid_interfaces = internal
 {% if SSLCACertificateFile != '' %}
@@ -134,6 +135,7 @@ insecure = {{ ssl_insecure }}
 
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
 auth_type = password
+endpoint_override = {{ os_proto }}://{{ os_internal_address }}:9696
 region_name = {{ keystone_region_name }}
 valid_interfaces = internal
 user_domain_name = {{ neutron_domain_name }}
