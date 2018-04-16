@@ -10,7 +10,7 @@
 # Donated to the public domain by Nicolai Langfeldt (janl@linpro.no)
 #
 
-ipmitool sensor | awk -F'|' '
+ipmitool sensor | awk -v exclude=$1 -F'|' '
 BEGIN { 
         EXIT=0;
         MSG[0]="OK: ";
@@ -38,6 +38,9 @@ BEGIN {
         THING=$1;
         TEMP=$2;
         OK=$4;
+
+        if (index(exclude, THING)) next;
+
         if (OK ~ /ok/) {
             MSG[0] = sprintf("%s %s is %dC, ",MSG[0] , THING,TEMP);
             next;
@@ -68,6 +71,8 @@ BEGIN {
         SPEED=$2;
         OK=$4;
 
+        if (index(exclude, THING)) next;
+
         if (OK ~ /ok/) {
             MSG[0] = sprintf("%s %s is at %d RPM, ",MSG[0], THING, SPEED);
             next;
@@ -91,6 +96,8 @@ BEGIN {
         THING=$1;
         VOLTS=$2;
         OK=$4;
+
+        if (index(exclude, THING)) next;
 
         if (OK ~ /ok/) {
             MSG[0] = sprintf("%s %s is %.2fV, ",MSG[0], THING, VOLTS);

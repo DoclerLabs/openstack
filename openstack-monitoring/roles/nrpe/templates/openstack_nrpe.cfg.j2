@@ -51,5 +51,5 @@ command[check_swraid]=/usr/local/bin/check_swraid.py
 {% endif %}
 
 {% if nagios_ipmi %}
-command[check_ipmi]=sudo /usr/local/bin/check_ipmi_sensors
+command[check_ipmi]=sudo /usr/local/bin/check_ipmi_sensors {{ nagios_skip_ipmi_sensors }}
 {% endif %}
