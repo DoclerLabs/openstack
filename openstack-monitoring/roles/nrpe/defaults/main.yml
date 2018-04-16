@@ -5,6 +5,7 @@ load_average_warning: 5,3,2
 load_average_critical: 8,5,3
 
 nagios_ipmi: False
+nagios_skip_ipmi_sensors:
 nagios_bond: False
 nagios_mdraid: False
 
