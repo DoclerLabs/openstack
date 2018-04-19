@@ -17,7 +17,7 @@ General upgrading instructions are below.
 
   ::
 
-    $ git checkout master
+    $ git checkout xenial/pike
 
 - Generate newly added secrets:
 

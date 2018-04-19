@@ -25,7 +25,7 @@ Current OpenStack versions supported:
 - Mitaka/Ubuntu Trusty/Xenial  - mitaka branch
 - Newton/Ubuntu Xenial         - xenial/newton branch
 - Ocata/Ubuntu Xenial          - xenial/ocata branch
-- Pike/Ubuntu Xenial           - master branch
+- Pike/Ubuntu Xenial           - xenial/pike branch
 
 Integrated Infra components:
 - Pacemaker
