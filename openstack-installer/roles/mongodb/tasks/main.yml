@@ -23,7 +23,7 @@
   wait_for: port=27017
 
 - name: query the replica set status
-  command: mongo --quiet --eval 'rs.status().errmsg;' admin
+  command: mongo --quiet --eval 'rs.status().info;' admin
   changed_when: False
   register: mongo_status
 
@@ -31,7 +31,7 @@
 
 - name: determine if the replica set is already initialized
   set_fact: mongo_initialized=True
-  when: hostvars[item].mongo_status.stdout.find('EMPTYCONFIG') == -1
+  when: hostvars[item].mongo_status.stdout.find('run rs.initiate') == -1
   with_items: "{{ groups['mongodb'] }}"
   run_once: True
 
@@ -55,13 +55,15 @@
   register: mongo_master
 
 - name: ensure the admin user exists
-  mongodb_user: database=admin name=admin password={{ mongodb_admin_password }} roles=userAdminAnyDatabase
+  mongodb_user: login_database=admin database=admin name=admin password={{ mongodb_admin_password }} roles="userAdminAnyDatabase"
   when: mongo_master.stdout == 'true'
   register: mongo_admin
-  failed_when: mongo_admin is failed and "not authorized" not in mongo_admin.msg
+  failed_when: mongo_admin is failed and
+      "not authorized" not in mongo_admin.msg and
+      "no users authenticated" not in mongo_admin.msg
 
 - name: ensure the cluster admin user exists
-  mongodb_user: database=admin login_user=admin login_password={{ mongodb_admin_password }}
+  mongodb_user: login_database=admin database=admin login_user=admin login_password={{ mongodb_admin_password }}
     name=clusteradmin password={{ mongodb_clusteradmin_password }} roles="readAnyDatabase,clusterAdmin,clusterManager"
   when: mongo_master.stdout == 'true'
 
