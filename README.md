@@ -10,7 +10,7 @@ The motivation for creating this deployment tool is that existing solutions are 
 
 The design behind this installer is to remain simple, use Ansible's features, but not over-use them.
 Don't use bash scripts, which are usually going to an unmaintainable state after some iterations.
-Use the packages of the underlying OS (from the Newton release, only Ubuntu 16.04 is supported),
+Use the packages of the underlying OS (from the Newton release, only Ubuntu 16.04 is supported, Queens supports Ubuntu 16.04 and 18.04),
 and don't mess the system with software installed from various sources.
 The installer also can be used after the deployment to change parameters of an existing cloud,
 so it supports the full life-cycle of the deployed OpenStack.
@@ -25,7 +25,8 @@ Current OpenStack versions supported:
 - Mitaka/Ubuntu Trusty/Xenial  - mitaka branch
 - Newton/Ubuntu Xenial         - xenial/newton branch
 - Ocata/Ubuntu Xenial          - xenial/ocata branch
-- Pike/Ubuntu Xenial           - master branch
+- Pike/Ubuntu Xenial           - xenial/pike branch
+- Queens/Ubuntu Xenial/Bionic  - master branch
 
 Integrated Infra components:
 - Pacemaker
