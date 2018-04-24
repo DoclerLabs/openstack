@@ -302,7 +302,7 @@ def main():
             allocation_pool_end     = dict(default=None),
             endpoint_type           = dict(default='publicURL', choices=['publicURL', 'internalURL']),
             cacert                  = dict(default=None),
-            insecure                = dict(required=False, default=False, choices=BOOLEANS)
+            insecure                = dict(required=False, default=False, type='bool')
     ))
     module = AnsibleModule(argument_spec=argument_spec)
     neutron = _get_neutron_client(module, module.params)

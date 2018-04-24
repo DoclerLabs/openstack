@@ -267,7 +267,7 @@ def main():
         file              = dict(default=None),
         endpoint_type     = dict(default='publicURL', choices=['publicURL', 'internalURL']),
         cacert            = dict(default=None),
-        insecure          = dict(required=False, default=False, choices=BOOLEANS),
+        insecure          = dict(required=False, default=False, type='bool'),
         state             = dict(default='present', choices=['absent', 'present']),
         login_domain_name = dict(default='default'),
         login_project_name = dict(default=None)

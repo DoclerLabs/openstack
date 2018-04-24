@@ -280,7 +280,7 @@ def main():
             state                           = dict(default='present', choices=['absent', 'present']),
             endpoint_type                   = dict(default='publicURL', choices=['publicURL', 'internalURL']),
             cacert                          = dict(default=None),
-            insecure                        = dict(required=False, default=False, choices=BOOLEANS)
+            insecure                        = dict(required=False, default=False, type='bool')
     ))
     module = AnsibleModule(argument_spec=argument_spec)
 
