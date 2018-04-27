@@ -1,5 +1,14 @@
 ---
 
+- name: ensure mysql group exists
+  group: name=mysql system=yes
+
+- name: ensure mysql user exists
+  user: name=mysql comment="MySQL Server" group=mysql home={{ mysql_datadir }} createhome=no shell=/bin/false system=yes
+
+- name: ensure MySQL datadir exists
+  file: dest={{ mysql_datadir }} owner=mysql group=mysql mode=0750 state=directory
+
 - name: install galera packages
   apt: name={{ item }}
   with_items:
@@ -33,14 +42,6 @@
 
 - name: ensure the alternatives system uses percona-xtradb-cluster.cnf
   alternatives: name=my.cnf path=/etc/mysql/percona-xtradb-cluster.cnf
-
-- name: check if /var/lib/percona-xtradb-cluster exists
-  stat: path=/var/lib/percona-xtradb-cluster
-  register: percona_stat
-
-- name: link /var/lib/mysql to percona-xtradb-cluster
-  file: path=/var/lib/mysql src=/var/lib/percona-xtradb-cluster state=link force=no
-  when: percona_stat.stat.exists
 
 - name: ensure mysql is running if not configured yet
   service: name=mysql state=started
@@ -119,6 +120,7 @@
         binary: "/usr/sbin/mysqld"
         config: "/etc/mysql/my.cnf"
         socket: "{{ mysql_sock_file }}"
+        datadir: "{{ mysql_datadir }}"
         pid: "{{ mysql_pid_file }}"
         log: "{{ mysql_log_error }}"
     shadow: shadowcib
