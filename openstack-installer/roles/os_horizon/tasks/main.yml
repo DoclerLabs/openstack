@@ -17,18 +17,7 @@
   apt: name=openstack-dashboard
 
 - name: install additional dashboards
-  apt: name={{ item.package }}
-  when: horizon_install_dashboards | bool and groups[item.service] | count > 0
-  with_items:
-    - { service: 'trove', package: 'python-trove-dashboard' }
-    - { service: 'sahara', package: 'python-sahara-dashboard' }
-    - { service: 'murano', package: 'python-murano-dashboard' }
-    - { service: 'manila', package: 'python-manila-ui' }
-    - { service: 'designate', package: 'python-designate-dashboard' }
-
-- name: install Neutron LBaaS dashboard
-  apt: name=python-neutron-lbaas-dashboard
-  when:  horizon_install_dashboards | bool and neutron_lbaas_agent == 'lbaasv2'
+  apt: name={{ horizon_extra_packages }}
 
 - name: install CA certificate
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644

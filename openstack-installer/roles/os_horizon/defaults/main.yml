@@ -8,7 +8,6 @@ horizon_launch_instance_legacy_enabled: True
 horizon_launch_instance_ng_enabled: False
 horizon_openstack_endpoint_type: internalURL
 horizon_cinder_enable_backup: True
-horizon_install_dashboards: True
 horizon_heat_enable_user_pass: "{{ (heat_deferred_auth_method | default('trusts')) == 'password' }}"
 horizon_processes: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 horizon_debug: False
@@ -17,6 +16,17 @@ horizon_compress_offline: "{{ not horizon_debug }}"
 
 neutron_vpnaas: True
 neutron_lbaas_agent: lbaasv2
+
+horizon_install_dashboards: True
+horizon_dashboards:
+    - { install: "{{ groups['trove'] | count > 0 }}", package: 'python-trove-dashboard' }
+    - { install: "{{ groups['sahara'] | count > 0 }}", package: 'python-sahara-dashboard' }
+    - { install: "{{ groups['murano'] | count > 0 }}", package: 'python-murano-dashboard' }
+    - { install: "{{ groups['manila'] | count > 0 }}", package: 'python-manila-ui' }
+    - { install: "{{ groups['designate'] | count > 0 }}", package: 'python-designate-dashboard' }
+    - { install: neutron_lbaas_agent == 'lbaasv2', package: 'python-neutron-lbaas-dashboard' }
+
+horizon_extra_packages: "{% for item in horizon_dashboards %}{% if item.install and horizon_install_dashboards %}{{ item.package }}{% if not loop.last %},{% endif %}{% endif %}{% endfor %}"
 
 murano_repo_url: "http://storage.apps.openstack.org"
 
