@@ -18,6 +18,7 @@
 
 - name: install additional dashboards
   apt: name={{ horizon_extra_packages }}
+  when: horizon_extra_packages
 
 - name: install CA certificate
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
