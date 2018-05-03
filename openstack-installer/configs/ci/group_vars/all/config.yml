@@ -1,10 +1,10 @@
 vip_mgmt: 192.168.168.100
 vip_mgmt_cidr: 24
-vip_mgmt_nic: eth0
+vip_mgmt_nic: ens3
 
 vip_public: 192.168.168.100
 vip_public_cidr: 24
-vip_public_nic: eth0
+vip_public_nic: ens3
 
 mysql_innodb_buffer_pool_size: 2G
 
@@ -37,9 +37,6 @@ os_public_address: "{{ vip_public }}"
 #os_ssl: False
 
 notifications_enable: True
-
-#Don't install additional dashboards due to LP Bug #1575635
-horizon_install_dashboards: False
 
 nova_filter_scheduler_enabled_filters: "RetryFilter,AvailabilityZoneFilter,RamFilter,DiskFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter,SameHostFilter,DifferentHostFilter"
 
