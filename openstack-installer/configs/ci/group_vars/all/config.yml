@@ -97,4 +97,4 @@ tempest_images_dest: "{{ ansible_env.WORKSPACE | default(ansible_env.HOME) }}/te
 ceph_osd_journal_size: 1000
 
 radosgw_keystone: False
-radosgw_port: 8081
+radosgw_port: 8083
