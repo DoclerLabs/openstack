@@ -41,7 +41,7 @@ os_public_address: "{{ vip_public }}"
 notifications_enable: True
 
 neutron_flat_networks:
-neutron_physical_interface_mappings: flat:eth0
+neutron_physical_interface_mappings: flat:ens3
 neutron_vlan_ranges:
 neutron_ha_network_type:
 neutron_ha_network_physical_name:
