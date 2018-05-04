@@ -41,7 +41,7 @@ notifications_enable: True
 nova_filter_scheduler_enabled_filters: "RetryFilter,AvailabilityZoneFilter,RamFilter,DiskFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter,SameHostFilter,DifferentHostFilter"
 
 neutron_flat_networks:
-neutron_physical_interface_mappings: flat:eth0
+neutron_physical_interface_mappings: flat:ens3
 neutron_vlan_ranges:
 neutron_ha_network_type:
 neutron_ha_network_physical_name:
