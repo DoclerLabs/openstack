@@ -66,6 +66,10 @@
     cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
   with_items: "{{ keystone_projects | default([]) }}"
+  register: keystone_project_result
+  until: keystone_project_result is success
+  delay: 5
+  retries: 5
 
 - name: create roles in keystone
   keystone_user: >
@@ -75,6 +79,10 @@
     insecure={{ ssl_insecure | ternary("true", "false") }}
     role="{{ item }}"
   with_items: "{{ keystone_roles | default([]) }}"
+  register: keystone_roles_result
+  until: keystone_roles_result is success
+  delay: 5
+  retries: 5
 
 - name: create the user in keystone
   keystone_user: >
@@ -86,6 +94,10 @@
     cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
   with_items: "{{ keystone_users | default([]) }}"
+  register: keystone_user_result
+  until: keystone_user_result is success
+  delay: 5
+  retries: 5
 
 - name: assign roles to the user in keystone
   keystone_user: >
