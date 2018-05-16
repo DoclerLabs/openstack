@@ -40,9 +40,12 @@
   with_items:
     - python-rbd
     - python-rados
-    - glance
+    - glance-api
     - python-glanceclient
     - python-swiftclient
+
+- name: make sure glance-registry is not installed
+  apt: name=glance-registry state=absent
 
 - name: create glance database
   mysql_db: name={{ glance_db }}
