@@ -34,3 +34,4 @@
 - include: os_aodh.yml
 - include: os_panko.yml
 - include: os_ceilometer.yml
+- include: os_cloudkitty.yml

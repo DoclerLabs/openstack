@@ -60,6 +60,7 @@ manila:
 designate:
 magnum:
 senlin:
+cloudkitty:
 
 tempest:
   inherit: local

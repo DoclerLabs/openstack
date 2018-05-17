@@ -66,6 +66,7 @@ Integrated OpenStack components (all compontents can be enabled/disabled in the 
   - mistral
   - sahara
   - senlin
+  - cloudkitty
 
 Installing an all-in-one (Ceph, controller, compute) VM with Vagrant:
 

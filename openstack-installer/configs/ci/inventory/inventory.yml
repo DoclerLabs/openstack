@@ -135,6 +135,9 @@ magnum:
 senlin:
   inherit: controller
 
+cloudkitty:
+  inherit: controller
+
 # -------- Tempest ------
 tempest:
   localhost:

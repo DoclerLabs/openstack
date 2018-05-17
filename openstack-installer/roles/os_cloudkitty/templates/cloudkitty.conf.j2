@@ -1,0 +1,385 @@
+{% set host_index = groups['cloudkitty'].index(inventory_hostname) % groups['rabbitmq'] | count %}
+{% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
+[DEFAULT]
+
+#
+# From cloudkitty.common.config
+#
+
+# Configuration file for WSGI definition of API. (string value)
+#api_paste_config = api_paste.ini
+
+# The strategy to use for auth. Supports noauth and keystone (string
+# value)
+# Possible values:
+# noauth - <No description provided>
+# keystone - <No description provided>
+#auth_strategy = keystone
+
+# Name of this node. This can be an opaque identifier. It is not
+# necessarily a hostname, FQDN, or IP address. However, the node name
+# must be valid within an AMQP key, and if using ZeroMQ, a valid
+# hostname, FQDN, or IP address. (string value)
+#host = <server-hostname.example.com>
+
+#
+# From oslo.log
+#
+
+debug = {{ cloudkitty_debug }}
+log_dir = /var/log/cloudkitty
+use_syslog = {{ cloudkitty_syslog_use }}
+
+#
+# From oslo.messaging
+#
+
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ cloudkitty_rabbit_user }}:{{ cloudkitty_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ cloudkitty_rabbit_vhost }}
+
+
+[api]
+
+#
+# From cloudkitty.common.config
+#
+
+# The listen IP for the cloudkitty API server. (IP address value)
+#host_ip = 0.0.0.0
+
+# The port for the cloudkitty API server. (port value)
+# Minimum value: 0
+# Maximum value: 65535
+#port = 8889
+
+# Toggle Pecan Debug Middleware. (boolean value)
+#pecan_debug = false
+
+
+[ceilometer_collector]
+
+#
+# From cloudkitty.common.config
+#
+
+# Authentication type to load (string value)
+# Deprecated group/name - [ceilometer_collector]/auth_plugin
+#auth_type = <None>
+
+# Config Section from which to load plugin specific options (string
+# value)
+auth_section = keystone_authtoken
+
+
+[collect]
+
+#
+# From cloudkitty.common.config
+#
+
+# DEPRECATED: Data collector. (string value)
+# This option is deprecated for removal.
+# Its value may be silently ignored in the future.
+#collector = gnocchi
+
+# DEPRECATED: Number of samples to collect per call. (integer value)
+# This option is deprecated for removal.
+# Its value may be silently ignored in the future.
+#window = 1800
+
+# DEPRECATED: Rating period in seconds. (integer value)
+# This option is deprecated for removal.
+# Its value may be silently ignored in the future.
+#period = 3600
+
+# DEPRECATED: Wait for N periods before collecting new data. (integer
+# value)
+# This option is deprecated for removal.
+# Its value may be silently ignored in the future.
+#wait_periods = 2
+
+# DEPRECATED: Services to monitor. (list value)
+# This option is deprecated for removal.
+# Its value may be silently ignored in the future.
+#services = compute,volume,network.bw.in,network.bw.out,network.floating,image
+
+# Metrology configuration file. (string value)
+#metrics_conf = etc/cloudkitty/metrics.yml
+
+
+[collector_monasca]
+
+#
+# From cloudkitty.common.config
+#
+
+# Authentication type to load (string value)
+# Deprecated group/name - [collector_monasca]/auth_plugin
+#auth_type = <None>
+
+# Config Section from which to load plugin specific options (string
+# value)
+#auth_section = <None>
+
+
+[cors]
+
+#
+# From oslo.middleware.cors
+#
+
+# Indicate whether this resource may be shared with the domain
+# received in the requests "origin" header. Format:
+# "<protocol>://<host>[:<port>]", no trailing slash. Example:
+# https://horizon.example.com (list value)
+#allowed_origin = <None>
+
+# Indicate that the actual request can include user credentials
+# (boolean value)
+#allow_credentials = true
+
+# Indicate which headers are safe to expose to the API. Defaults to
+# HTTP Simple Headers. (list value)
+#expose_headers = X-Auth-Token,X-Subject-Token,X-Service-Token,X-OpenStack-Request-ID
+
+# Maximum cache age of CORS preflight requests. (integer value)
+#max_age = 3600
+
+# Indicate which methods can be used during the actual request. (list
+# value)
+#allow_methods = GET,PUT,POST,DELETE,PATCH
+
+# Indicate which header field names may be used during the actual
+# request. (list value)
+#allow_headers = X-Auth-Token,X-Identity-Status,X-Roles,X-Service-Catalog,X-User-Id,X-Tenant-Id,X-OpenStack-Request-ID
+
+
+[database]
+
+connection = mysql+pymysql://{{ cloudkitty_db_user }}:{{ cloudkitty_db_password }}@{{ cloudkitty_mysql_server }}/{{ cloudkitty_db }}?charset=utf8
+max_retries = -1
+
+
+[gnocchi_collector]
+
+#
+# From cloudkitty.common.config
+#
+
+# Authentication type to load (string value)
+# Deprecated group/name - [gnocchi_collector]/auth_plugin
+#auth_type = <None>
+
+# Config Section from which to load plugin specific options (string
+# value)
+auth_section = keystone_authtoken
+
+
+[keystone_authtoken]
+
+auth_type = password
+auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+user_domain_name = {{ cloudkitty_domain_name }}
+username = {{ cloudkitty_admin_user }}
+password = {{ cloudkitty_admin_password }}
+project_domain_name = {{ cloudkitty_project_domain_name }}
+project_name = {{ cloudkitty_project_name }}
+region_name = {{ keystone_region_name }}
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
+service_token_roles_required = True
+
+memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
+
+memcache_security_strategy = ENCRYPT
+memcache_secret_key = "{{ memcache_secret_key }}"
+
+
+[keystone_fetcher]
+
+#
+# From cloudkitty.common.config
+#
+
+# Keystone version to use. (string value)
+#keystone_version = 2
+keystone_version = 3
+
+# Authentication type to load (string value)
+# Deprecated group/name - [keystone_fetcher]/auth_plugin
+#auth_type = <None>
+
+# Config Section from which to load plugin specific options (string
+# value)
+auth_section = keystone_authtoken
+
+
+[orchestrator]
+
+#
+# From cloudkitty.common.config
+#
+
+# Coordination driver URL (string value)
+#coordination_url = file:///var/lib/cloudkitty/locks
+
+
+[oslo_concurrency]
+
+#
+# From oslo.concurrency
+#
+
+# Enables or disables inter-process locks. (boolean value)
+#disable_process_locking = false
+
+# Directory to use for lock files.  For security, the specified
+# directory should only be writable by the user running the processes
+# that need locking. Defaults to environment variable OSLO_LOCK_PATH.
+# If OSLO_LOCK_PATH is not set in the environment, use the Python
+# tempfile.gettempdir function to find a suitable location. If
+# external locks are used, a lock path must be set. (string value)
+lock_path = /var/lock/cloudkitty
+
+
+[oslo_messaging_notifications]
+
+{% if cloudkitty_notifications %}
+driver = messagingv2
+transport_url = rabbit://{% for host in rabbit_hosts %}{{ cloudkitty_rabbit_user }}:{{ cloudkitty_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ cloudkitty_rabbit_vhost }}
+{% else %}
+driver =
+transport_url =
+{% endif %}
+
+
+[oslo_messaging_rabbit]
+
+rabbit_ha_queues = true
+
+
+[oslo_middleware]
+
+#
+# From oslo.middleware.http_proxy_to_wsgi
+#
+
+# Whether the application is behind a proxy or not. This determines if
+# the middleware should parse the headers or not. (boolean value)
+#enable_proxy_headers_parsing = false
+
+
+[oslo_policy]
+
+#
+# From oslo.policy
+#
+
+# This option controls whether or not to enforce scope when evaluating
+# policies. If ``True``, the scope of the token used in the request is
+# compared to the ``scope_types`` of the policy being enforced. If the
+# scopes do not match, an ``InvalidScope`` exception will be raised.
+# If ``False``, a message will be logged informing operators that
+# policies are being invoked with mismatching scope. (boolean value)
+#enforce_scope = false
+
+# The file that defines policies. (string value)
+#policy_file = policy.json
+
+# Default rule. Enforced when a requested rule is not found. (string
+# value)
+#policy_default_rule = default
+
+# Directories where policy configuration files are stored. They can be
+# relative to any directory in the search path defined by the
+# config_dir option, or absolute paths. The file defined by
+# policy_file must exist for these directories to be searched.
+# Missing or empty directories are ignored. (multi valued)
+#policy_dirs = policy.d
+
+# Content Type to send and receive data for REST based policy check
+# (string value)
+# Possible values:
+# application/x-www-form-urlencoded - <No description provided>
+# application/json - <No description provided>
+#remote_content_type = application/x-www-form-urlencoded
+
+# server identity verification for REST based policy check (boolean
+# value)
+#remote_ssl_verify_server_crt = false
+
+# Absolute path to ca cert file for REST based policy check (string
+# value)
+#remote_ssl_ca_crt_file = <None>
+
+# Absolute path to client cert for REST based policy check (string
+# value)
+#remote_ssl_client_crt_file = <None>
+
+# Absolute path client key file REST based policy check (string value)
+#remote_ssl_client_key_file = <None>
+
+
+[output]
+
+#
+# From cloudkitty.common.config
+#
+
+# Backend for the output manager. (string value)
+#backend = cloudkitty.backend.file.FileBackend
+
+# Storage directory for the file output backend. (string value)
+#basepath = /var/lib/cloudkitty/states/
+
+# Output pipeline (list value)
+#pipeline = osrf
+
+
+[state]
+
+#
+# From cloudkitty.common.config
+#
+
+# Backend for the state manager. (string value)
+#backend = cloudkitty.backend.file.FileBackend
+
+# Storage directory for the file state backend. (string value)
+#basepath = /var/lib/cloudkitty/states/
+
+
+[storage]
+
+#
+# From cloudkitty.common.config
+#
+
+# Name of the storage backend driver. (string value)
+#backend = sqlalchemy
+
+
+[storage_gnocchi]
+
+#
+# From cloudkitty.common.config
+#
+
+# Gnocchi storage archive policy name. (string value)
+#archive_policy_name = rating
+
+# Gnocchi storage archive policy definition. (string value)
+#archive_policy_definition = [{"granularity": 3600, "timespan": "90 days"}, {"granularity": 86400, "timespan": "360 days"}, {"granularity": 2592000, "timespan": "1800 days"}]
+
+
+[tenant_fetcher]
+
+#
+# From cloudkitty.common.config
+#
+
+# Driver used to fetch tenant list. (string value)
+#backend = keystone
+

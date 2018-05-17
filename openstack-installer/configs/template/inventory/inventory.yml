@@ -172,6 +172,8 @@ magnum:
 
 senlin:
 
+cloudkitty:
+
 # -------- Tempest ------
 tempest:
   inherit: local
