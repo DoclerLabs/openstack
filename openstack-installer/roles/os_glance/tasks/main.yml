@@ -47,6 +47,11 @@
 - name: make sure glance-registry is not installed
   apt: name=glance-registry state=absent
 
+- name: mark glance-api manually installed
+  command: /usr/bin/apt-mark manual glance-api
+  register: apt_mark_result
+  changed_when: '"glance-api set to manually installed." in apt_mark_result.stdout'
+
 - name: create glance database
   mysql_db: name={{ glance_db }}
     login_host={{ glance_mysql_server }} login_user=root login_password={{ mysql_root_password }}
