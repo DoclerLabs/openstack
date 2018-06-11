@@ -7,7 +7,7 @@
 - name: upload trove image to glance
   os_image:
     auth:
-      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
       username: "{{ trove_admin_user }}"
       password: "{{ trove_admin_password }}"
       domain_name: "{{ trove_domain_name }}"

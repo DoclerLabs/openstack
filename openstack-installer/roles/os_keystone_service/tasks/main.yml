@@ -19,7 +19,7 @@
 - name: get an admin token
   os_auth:
     auth:
-      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
       username: admin
       password: "{{ keystone_admin_password }}"
       domain-name: "{{ keystone_domain_name }}"
@@ -38,7 +38,7 @@
 - name: create the service in keystone
   keystone_service: >
     token="{{ auth_token }}"
-    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
     name="{{ keystone_service_name }}"
     type="{{ keystone_service_type }}"
     description="{{ keystone_service_description }}"
@@ -59,7 +59,7 @@
 - name: create the project in keystone
   keystone_user: >
     token="{{ auth_token }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
     project_domain="{{ item.keystone_project_domain_name | default('Default') }}"
     project="{{ item.keystone_project_name }}"
     project_description="{{ item.keystone_project_description }}"
@@ -74,7 +74,7 @@
 - name: create roles in keystone
   keystone_user: >
     token="{{ auth_token }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
     cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
     role="{{ item }}"
@@ -87,7 +87,7 @@
 - name: create the user in keystone
   keystone_user: >
     token="{{ auth_token }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
     user="{{ item.keystone_user }}"
     user_domain="{{ item.keystone_domain_name | default('Default') }}"
     password="{{ item.keystone_password }}"
@@ -102,7 +102,7 @@
 - name: assign roles to the user in keystone
   keystone_user: >
     token="{{ auth_token }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
     cacert="{{ SSLCACertificateFile }}"
     insecure={{ ssl_insecure | ternary("true", "false") }}
     project="{{ item.0.keystone_project_name }}"

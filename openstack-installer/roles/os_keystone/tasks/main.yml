@@ -90,10 +90,7 @@
   notify: signal apache to reload
 
 - name: install keystone-wsgi server
-  file: src=/usr/bin/keystone-wsgi-{{ item }} dest=/var/www/cgi-bin/keystone/{{ item }} state=link force=yes
-  with_items:
-    - public
-    - admin
+  file: src=/usr/bin/keystone-wsgi-public dest=/var/www/cgi-bin/keystone/keystone state=link force=yes
   notify: signal apache to reload
 
 - meta: flush_handlers

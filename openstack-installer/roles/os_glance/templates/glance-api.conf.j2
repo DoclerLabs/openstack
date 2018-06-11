@@ -881,7 +881,7 @@ cinder_api_insecure = {{ ssl_insecure }}
 
 auth_type = password
 auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 user_domain_name = {{ glance_domain_name }}
 username = {{ glance_admin_user }}
 password = {{ glance_admin_password }}

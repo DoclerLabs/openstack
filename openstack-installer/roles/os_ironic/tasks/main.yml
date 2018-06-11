@@ -137,7 +137,7 @@
 - name: upload the deploy kernel to glance
   os_image:
     auth:
-      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
       username: "{{ ironic_admin_user }}"
       password: "{{ ironic_admin_password }}"
       domain_name: "{{ ironic_domain_name }}"
@@ -160,7 +160,7 @@
 - name: upload the deploy initramfs to glance
   os_image:
     auth:
-      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
       username: "{{ ironic_admin_user }}"
       password: "{{ ironic_admin_password }}"
       domain_name: "{{ ironic_domain_name }}"

@@ -446,7 +446,7 @@ nova_api_insecure = {{ ssl_insecure }}
 [designate]
 url = {{ os_proto }}://{{ os_internal_address }}:9001/v2
 auth_type = password
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 region_name = {{ keystone_region_name }}
 user_domain_name = {{ designate_domain_name }}
 username = {{ designate_admin_user }}
@@ -573,7 +573,7 @@ quota_listener = {{ neutron_quota_listener }}
 [keystone_authtoken]
 
 auth_type = password
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 username = {{ neutron_admin_user }}
 user_domain_name = {{ neutron_domain_name }}
@@ -675,7 +675,7 @@ region_name = {{ keystone_region_name }}
 # Timeout value for http requests
 # timeout =
 
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 user_domain_name = {{ nova_domain_name }}
 username = {{ nova_admin_user }}
 password = {{ nova_admin_password }}

@@ -345,7 +345,7 @@ region_name={{ keystone_region_name }}
 
 auth_type = password
 auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 admin_user={{ ironic_admin_user }}
 admin_password = {{ ironic_admin_password }}
 admin_tenant_name = {{ ironic_project_name }}
@@ -372,7 +372,7 @@ memcache_secret_key = "{{ memcache_secret_key }}"
 [service_catalog]
 
 auth_type = password
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 admin_user={{ ironic_admin_user }}
 admin_password = {{ ironic_admin_password }}
 admin_tenant_name = {{ ironic_project_name }}
@@ -392,7 +392,7 @@ insecure = {{ ssl_insecure }}
 [neutron]
 
 auth_type = password
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 admin_user={{ ironic_admin_user }}
 admin_password = {{ ironic_admin_password }}
 admin_tenant_name = {{ ironic_project_name }}
@@ -415,7 +415,7 @@ provisioning_network = {{ ironic_provisioning_network }}
 [glance]
 
 auth_type = password
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 admin_user={{ ironic_admin_user }}
 admin_password = {{ ironic_admin_password }}
 admin_tenant_name = {{ ironic_project_name }}
@@ -435,7 +435,7 @@ insecure = {{ ssl_insecure }}
 [inspector]
 
 auth_type = password
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 admin_user={{ ironic_admin_user }}
 admin_password = {{ ironic_admin_password }}
 admin_tenant_name = {{ ironic_project_name }}

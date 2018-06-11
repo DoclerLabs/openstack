@@ -251,7 +251,7 @@ max_retries = -1
 [keystone_authtoken]
 
 auth_type = password
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357/
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/
 auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3
 username = {{ heat_admin_user }}
 user_domain_name = {{ heat_domain_name }}
@@ -275,7 +275,7 @@ memcache_secret_key = "{{ memcache_secret_key }}"
 
 auth_type = password
 auth_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 #project_domain_name = {{ heat_project_domain_name }}
 #project_name = {{ heat_project_name }}
 user_domain_name = {{ heat_domain_name }}

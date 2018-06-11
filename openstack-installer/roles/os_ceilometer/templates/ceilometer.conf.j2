@@ -217,7 +217,7 @@ instance_discovery_method = {{ ceilometer_instance_discovery_method }}
 [keystone_authtoken]
 
 auth_type = password
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 region_name = {{ keystone_region_name }}
 username = {{ ceilometer_admin_user }}
@@ -244,7 +244,7 @@ auth_type = password
 cafile = {{ SSLCACertificateFile }}
 {% endif %}
 insecure = {{ ssl_insecure }}
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 username = {{ ceilometer_admin_user }}
 user_domain_name = {{ ceilometer_domain_name }}
 password = {{ ceilometer_admin_password }}

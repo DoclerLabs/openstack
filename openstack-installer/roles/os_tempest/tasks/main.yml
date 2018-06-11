@@ -36,7 +36,7 @@
 - name: ensure cirros image exists in Glance
   os_image:
     auth:
-      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
       username: admin
       password: "{{ keystone_admin_password }}"
       domain-name: "{{ keystone_domain_name }}"
@@ -58,7 +58,7 @@
 - name: ensure test flavors are exist
   os_nova_flavor:
     auth:
-      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
       username: admin
       password: "{{ keystone_admin_password }}"
       domain-name: "{{ keystone_domain_name }}"
@@ -85,7 +85,7 @@
     login_user=admin
     login_domain_name="Default"
     login_password="{{ keystone_admin_password }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
     cacert={{ tempest_CAFile }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
     project_domain="Default"
@@ -99,7 +99,7 @@
     login_user=admin
     login_domain_name="Default"
     login_password="{{ keystone_admin_password }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
     cacert={{ tempest_CAFile }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
     project="{{ heat_stack_owner_project }}"
@@ -115,7 +115,7 @@
     login_user=admin
     login_domain_name="Default"
     login_password="{{ keystone_admin_password }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
     cacert={{ tempest_CAFile }}
     insecure={{ ssl_insecure | ternary("true", "false") }}
     project_domain="Default"
@@ -128,7 +128,7 @@
 - name: ensure external network exists in neutron
   os_network:
     auth:
-      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
       username: admin
       password: "{{ keystone_admin_password }}"
       domain-name: "{{ keystone_domain_name }}"
@@ -150,7 +150,7 @@
 - name: set up external subnet in neutron
   os_subnet:
     auth:
-      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
       username: admin
       password: "{{ keystone_admin_password }}"
       domain-name: "{{ keystone_domain_name }}"

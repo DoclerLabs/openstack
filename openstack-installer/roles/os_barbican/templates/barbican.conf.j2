@@ -330,7 +330,7 @@ insecure = {{ ssl_insecure }}
 {% if SSLCACertificateFile != '' %}
 cafile = {{ SSLCACertificateFile }}
 {% endif %}
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357/
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/
 auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 user_domain_name = {{ barbican_domain_name }}
 username = {{ barbican_admin_user }}

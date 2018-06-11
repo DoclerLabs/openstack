@@ -60,7 +60,7 @@
 - name: get magnum domain
   command: openstack
     --os-identity-api-version=3
-    --os-auth-url "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    --os-auth-url "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
     --os-user-domain-name Default
     --os-username admin
     --os-project-domain-name Default
@@ -76,7 +76,7 @@
 - name: get magnum domain admin
   command: openstack
     --os-identity-api-version=3
-    --os-auth-url "{{ keystone_proto }}://{{ keystone_admin_address }}:35357/v3"
+    --os-auth-url "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
     --os-user-domain-name Default
     --os-username admin
     --os-project-domain-name Default

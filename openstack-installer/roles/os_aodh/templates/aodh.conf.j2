@@ -237,7 +237,7 @@ max_retries = -1
 
 [keystone_authtoken]
 
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 auth_type = password
 username = {{ aodh_admin_user }}
@@ -266,7 +266,7 @@ auth_type = password
 cafile = {{ SSLCACertificateFile }}
 {% endif %}
 insecure = {{ ssl_insecure }}
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 username = {{ aodh_admin_user }}
 user_domain_name = {{ aodh_domain_name }}
 password = {{ aodh_admin_password }}

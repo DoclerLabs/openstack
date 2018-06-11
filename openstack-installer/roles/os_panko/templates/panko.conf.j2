@@ -317,7 +317,7 @@ connection = mysql+pymysql://{{ panko_db_user }}:{{ panko_db_password }}@{{ pank
 
 [keystone_authtoken]
 
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 auth_type = password
 username = {{ panko_admin_user }}

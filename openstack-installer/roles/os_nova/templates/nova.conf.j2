@@ -135,7 +135,7 @@ insecure = {{ ssl_insecure }}
 
 [neutron]
 
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 auth_type = password
 endpoint_override = {{ os_proto }}://{{ os_internal_address }}:9696
 region_name = {{ keystone_region_name }}
@@ -164,7 +164,7 @@ workers = {{ nova_conductor_workers }}
 [keystone_authtoken]
 
 auth_type = password
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 region_name = {{ keystone_region_name }}
 user_domain_name = {{ nova_domain_name }}
@@ -263,7 +263,7 @@ rabbit_ha_queues = true
 [placement]
 
 auth_type = password
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 os_region_name = {{ keystone_region_name }}
 valid_interfaces = internal
 user_domain_name = {{ placement_domain_name }}
@@ -280,7 +280,7 @@ insecure = {{ ssl_insecure }}
 [service_user]
 
 auth_type = password
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 region_name = {{ keystone_region_name }}
 user_domain_name = {{ nova_domain_name }}
 username = {{ nova_admin_user }}
@@ -323,7 +323,7 @@ hw_disk_discard = unmap
 [ironic]
 
 auth_type = password
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 admin_user={{ ironic_admin_user }}
 admin_password = {{ ironic_admin_password }}
 admin_tenant_name = {{ ironic_project_name }}

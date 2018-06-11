@@ -298,7 +298,7 @@ user_test5_tester5 = testing5 service
 #
 # [filter:authtoken]
 # paste.filter_factory = keystonemiddleware.auth_token:filter_factory
-# identity_uri = http://keystonehost:35357/
+# identity_uri = http://keystonehost:5000/
 # auth_uri = http://keystonehost:5000/
 # admin_tenant_name = service
 # admin_user = swift
@@ -315,7 +315,7 @@ user_test5_tester5 = testing5 service
 [filter:authtoken]
 paste.filter_factory = keystonemiddleware.auth_token:filter_factory
 auth_type = password
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 region_name = {{ keystone_region_name }}
 user_domain_name = {{ swift_domain_name }}

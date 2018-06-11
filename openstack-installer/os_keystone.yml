@@ -13,8 +13,7 @@
       apache_service_ssl: "{{ keystone_ssl | default(False) }}"
       apache_oidc: "{{ keystone_federation_oidc | default(False) }}"
       apache_services:
-        - { port: 5000, wsgi_process: "keystone-public", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/public", include: "/etc/keystone-federation.conf" }
-        - { port: 35357, wsgi_process: "keystone-admin", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/admin" }
+        - { port: 5000, wsgi_process: "keystone", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/keystone", include: "/etc/keystone-federation.conf" }
 
 - hosts: haproxy
   become: True
@@ -23,7 +22,7 @@
     - role: haproxy_service
       haproxy_services:
         - haproxy_service_name: keystone_admin
-          haproxy_backend_nodes: "{{ groups['keystone'] }}"
+          haproxy_backend_nodes: []
           haproxy_bind_hosts:
             - "{{ vip_public }}"
             - "{{ vip_mgmt }}"
@@ -54,7 +53,7 @@
       keystone_service_description: "OpenStack Identity"
       keystone_public_url: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}://{{ keystone_public_address }}:5000/v3"
       keystone_internal_url: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}://{{ keystone_internal_address }}:5000/v3"
-      keystone_admin_url: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}://{{ keystone_admin_address }}:35357/v3"
+      keystone_admin_url: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}://{{ keystone_admin_address }}:5000/v3"
       keystone_region: "{{ keystone_region_name }}"
       keystone_projects:
         - keystone_project_name: "{{ keystone_service_project_name | default('service') }}"

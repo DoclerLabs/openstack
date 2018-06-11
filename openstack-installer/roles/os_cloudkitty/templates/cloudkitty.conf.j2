@@ -178,7 +178,7 @@ auth_section = keystone_authtoken
 
 auth_type = password
 auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
-auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:35357
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 user_domain_name = {{ cloudkitty_domain_name }}
 username = {{ cloudkitty_admin_user }}
 password = {{ cloudkitty_admin_password }}
