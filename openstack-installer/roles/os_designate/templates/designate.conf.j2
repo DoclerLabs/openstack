@@ -161,7 +161,7 @@ enable_api_v2 = True
 
 auth_type = password
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
-auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
+www_authenticate_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 region_name = {{ keystone_region_name }}
 user_domain_name = {{ designate_domain_name }}
 username = {{ designate_admin_user }}

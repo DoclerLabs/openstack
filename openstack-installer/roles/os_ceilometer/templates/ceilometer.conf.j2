@@ -218,7 +218,7 @@ instance_discovery_method = {{ ceilometer_instance_discovery_method }}
 
 auth_type = password
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
-auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
+www_authenticate_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 region_name = {{ keystone_region_name }}
 username = {{ ceilometer_admin_user }}
 user_domain_name = {{ ceilometer_domain_name }}

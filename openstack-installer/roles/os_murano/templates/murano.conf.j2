@@ -171,7 +171,7 @@ connection = mysql+pymysql://{{ murano_db_user }}:{{ murano_db_password }}@{{ mu
 
 auth_type = password
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
-auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
+www_authenticate_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 username = {{ murano_admin_user }}
 user_domain_name = {{ murano_domain_name }}
 project_name = {{ murano_project_name }}
@@ -194,7 +194,7 @@ memcache_secret_key = {{ memcache_secret_key }}
 
 auth_type = password
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
-auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
+www_authenticate_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 username = {{ murano_admin_user }}
 user_domain_name = {{ murano_domain_name }}
 project_name = {{ murano_project_name }}

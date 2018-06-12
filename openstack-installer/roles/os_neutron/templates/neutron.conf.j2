@@ -574,7 +574,7 @@ quota_listener = {{ neutron_quota_listener }}
 
 auth_type = password
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
-auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
+www_authenticate_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 username = {{ neutron_admin_user }}
 user_domain_name = {{ neutron_domain_name }}
 project_name = {{ neutron_project_name }}

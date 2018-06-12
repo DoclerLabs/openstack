@@ -252,7 +252,7 @@ max_retries = -1
 
 auth_type = password
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/
-auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3
+www_authenticate_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3
 username = {{ heat_admin_user }}
 user_domain_name = {{ heat_domain_name }}
 password = {{ heat_admin_password }}
@@ -274,7 +274,7 @@ memcache_secret_key = "{{ memcache_secret_key }}"
 [trustee]
 
 auth_type = password
-auth_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
+www_authenticate_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 #project_domain_name = {{ heat_project_domain_name }}
 #project_name = {{ heat_project_name }}
@@ -298,7 +298,7 @@ endpoint_type = internalURL
 
 [clients_keystone]
 
-#auth_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3
+#www_authenticate_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3
 #insecure = {{ ssl_insecure }}
 
 
@@ -309,7 +309,7 @@ endpoint_type = publicURL
 
 [ec2authtoken]
 
-auth_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3
+www_authenticate_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3
 {% if SSLCACertificateFile != '' %}
 cafile = {{ SSLCACertificateFile }}
 {% endif %}

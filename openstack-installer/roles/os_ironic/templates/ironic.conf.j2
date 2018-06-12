@@ -344,7 +344,7 @@ region_name={{ keystone_region_name }}
 [keystone_authtoken]
 
 auth_type = password
-auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
+www_authenticate_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 admin_user={{ ironic_admin_user }}
 admin_password = {{ ironic_admin_password }}

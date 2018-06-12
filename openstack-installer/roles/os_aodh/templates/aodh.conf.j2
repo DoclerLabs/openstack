@@ -238,7 +238,7 @@ max_retries = -1
 [keystone_authtoken]
 
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
-auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
+www_authenticate_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 auth_type = password
 username = {{ aodh_admin_user }}
 user_domain_name = {{ aodh_domain_name }}

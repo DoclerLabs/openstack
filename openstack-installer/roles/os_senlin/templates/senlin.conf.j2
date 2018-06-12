@@ -218,7 +218,7 @@ max_retries = -1
 
 auth_type = password
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
-auth_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
+www_authenticate_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 region_name = {{ keystone_region_name }}
 username = {{ senlin_admin_user }}
 user_domain_name = {{ senlin_domain_name }}
