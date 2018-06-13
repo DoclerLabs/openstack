@@ -378,16 +378,8 @@ define service{
     use {{ nagios_service_template }}
     hostgroup_name {{ nagios_cloud_prefix }}keystone,{{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
-    service_description keystone-main
+    service_description keystone
     check_command {{ keystone_ssl | ternary('check_https','check_http') }}!-p 5000
-}
-
-define service{
-    use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}keystone,{{ nagios_cloud_prefix }}mgmt-VIP
-    servicegroups {{ nagios_cloud_prefix }}OpenStack
-    service_description keystone-admin
-    check_command {{ keystone_ssl | ternary('check_https','check_http') }}!-p 35357
 }
 
 {% if nagios_monitor_vip_public and keystone_ssl %}
