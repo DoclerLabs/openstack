@@ -274,7 +274,7 @@ memcache_secret_key = "{{ memcache_secret_key }}"
 [trustee]
 
 auth_type = password
-www_authenticate_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
+auth_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 #project_domain_name = {{ heat_project_domain_name }}
 #project_name = {{ heat_project_name }}
@@ -298,8 +298,7 @@ endpoint_type = internalURL
 
 [clients_keystone]
 
-#www_authenticate_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3
-#insecure = {{ ssl_insecure }}
+auth_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3
 
 
 [clients_heat]
@@ -309,7 +308,7 @@ endpoint_type = publicURL
 
 [ec2authtoken]
 
-www_authenticate_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3
+auth_uri = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3
 {% if SSLCACertificateFile != '' %}
 cafile = {{ SSLCACertificateFile }}
 {% endif %}
