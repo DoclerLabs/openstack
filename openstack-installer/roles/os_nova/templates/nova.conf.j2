@@ -249,6 +249,10 @@ rabbit_ha_queues = true
 [libvirt]
 
 use_usb_tablet = False
+
+cpu_mode = {{ nova_libvirt_cpu_mode }}
+cpu_model = {{ nova_libvirt_cpu_model }}
+
 disk_cachemodes="network=writeback"
 use_virtio_for_bridges = True
 virt_type = {{ nova_virt_type }}

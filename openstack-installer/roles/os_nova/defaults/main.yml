@@ -34,6 +34,9 @@ nova_compute_driver: libvirt.LibvirtDriver
 #kvm, lxd
 nova_compute_package: kvm
 nova_scheduler_default_filters: "RetryFilter, AvailabilityZoneFilter, RamFilter, DiskFilter, ComputeFilter, ComputeCapabilitiesFilter, ImagePropertiesFilter, ServerGroupAntiAffinityFilter, ServerGroupAffinityFilter, SameHostFilter, DifferentHostFilter"
+nova_libvirt_cpu_mode: none
+nova_libvirt_cpu_model:
+
 nova_default_schedule_zone:
 nova_default_floating_pool: ext-net
 
@@ -53,6 +56,7 @@ nova_instance_usage_audit_period: hour
 
 #kvm or qemu
 nova_virt_type: kvm
+
 
 #spice or vnc
 nova_console_type: vnc
