@@ -47,6 +47,8 @@ nova_compute_package: kvm
 #kvm or qemu
 nova_virt_type: kvm
 nova_libvirt_virt_type: "{{ nova_virt_type }}"
+nova_libvirt_cpu_mode: none
+nova_libvirt_cpu_model:
 
 nova_default_schedule_zone:
 #deprecated, use nova_filter_scheduler available_filters and nova_filter_scheduler_enabled_filters
@@ -76,6 +78,7 @@ nova_notification_format: unversioned
 nova_discover_hosts_in_cells_interval: 300
 
 nova_resume_guests_state_on_host_boot: False
+
 
 #spice or vnc
 nova_console_type: vnc
