@@ -64,6 +64,10 @@ nova_cpu_allocation_ratio: 16.0
 nova_ram_allocation_ratio: 1.5
 nova_disk_allocation_ratio: 1.0
 
+nova_cpu_weight_multiplier: 1.0
+nova_ram_weight_multiplier: 1.0
+nova_disk_weight_multiplier: 1.0
+
 nova_live_migration_completion_timeout: 800
 nova_live_migration_downtime: 500
 nova_live_migration_downtime_delay: 75
