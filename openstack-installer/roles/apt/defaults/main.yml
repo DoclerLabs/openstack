@@ -1,7 +1,7 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-queens", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu xenial-updates/queens main" }
+  - { name: "cloudarchive-rocky", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu bionic-updates/rocky main" }
 
 apt_extra_repos: []
 
