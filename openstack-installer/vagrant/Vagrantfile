@@ -4,16 +4,13 @@
 $script = <<SCRIPT
 apt-get update
 apt-get -y install python-minimal openvswitch-switch
-echo "auto eth3" > /etc/network/interfaces.d/eth3.cfg
-echo "iface eth3 inet manual" >> /etc/network/interfaces.d/eth3.cfg
-ifup eth3
 ovs-vsctl br-exists ovs-ext || ovs-vsctl add-br ovs-ext
 ovs-vsctl br-exists ovs-vlan || ovs-vsctl add-br ovs-vlan
-ovs-vsctl list-ports ovs-ext | grep eth3 || ovs-vsctl add-port ovs-ext eth3
+ovs-vsctl list-ports ovs-ext | grep enp0s10 || ovs-vsctl add-port ovs-ext enp0s10
 SCRIPT
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "bento/ubuntu-16.04"
+  config.vm.box = "ubuntu/bionic64"
   config.vm.hostname = "openstack-aio"
 
   # Networking

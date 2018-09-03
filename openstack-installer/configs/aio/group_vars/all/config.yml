@@ -1,10 +1,10 @@
 vip_mgmt: 10.10.0.254
 vip_mgmt_cidr: 24
-vip_mgmt_nic: eth1
+vip_mgmt_nic: enp0s8
 
 vip_public: 10.10.1.254
 vip_public_cidr: 24
-vip_public_nic: eth2
+vip_public_nic: enp0s9
 
 mysql_innodb_buffer_pool_size: 2G
 
