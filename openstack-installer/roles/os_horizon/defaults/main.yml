@@ -25,6 +25,7 @@ horizon_dashboards:
     - { install: "{{ groups['manila'] | count > 0 }}", package: 'python-manila-ui' }
     - { install: "{{ groups['designate'] | count > 0 }}", package: 'python-designate-dashboard' }
     - { install: neutron_lbaas_agent == 'lbaasv2', package: 'python-neutron-lbaas-dashboard' }
+    - { install: "{{ groups['heat'] | count > 0 }}", package: 'python-heat-dashboard' }
 
 horizon_extra_packages: "{% for item in horizon_dashboards %}{% if item.install and horizon_install_dashboards %}{{ item.package }}{% if not loop.last %},{% endif %}{% endif %}{% endfor %}"
 
