@@ -32,8 +32,10 @@
 - name: mask autostarting of sahara
   service_mask: name={{ item }} state=masked
   with_items:
-    - sahara-api
     - sahara-engine
+
+- name: mask sahara-api apache config
+  copy: content='' dest=/etc/apache2/sites-available/sahara-api.conf owner=root group=root mode=0644
 
 - name: install sahara
   apt:
@@ -65,7 +67,9 @@
   template: src={{ item }}.conf.j2 dest=/etc/sahara/{{ item }}.conf owner=sahara group=root mode=0460
   with_items:
     - sahara
-  notify: restart sahara
+  notify: 
+    - restart sahara
+    - signal apache to reload
 
 - name: sync sahara db
   command: su sahara -s /bin/sh -c 'sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head'
@@ -74,13 +78,19 @@
 - name: unmask autostarting of sahara
   service_mask: name={{ item }} state=unmasked
   with_items:
-    - sahara-api
     - sahara-engine
+
+- name: create /var/www/cgi-bin/sahara
+  file: path=/var/www/cgi-bin/sahara state=directory owner=root group=root mode=0755
+  notify: signal apache to reload
+
+- name: link sahara wsgi server
+  file: src=/usr/bin/python2-sahara-wsgi-api dest=/var/www/cgi-bin/sahara/sahara-api state=link
+  notify: signal apache to reload
 
 - meta: flush_handlers
 
 - name: ensure sahara is started
   service: name={{ item }} state=started enabled=yes
   with_items:
-    - sahara-api
     - sahara-engine
