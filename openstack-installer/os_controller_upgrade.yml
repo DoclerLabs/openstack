@@ -84,6 +84,12 @@
     - name: mask sahara-api apache config
       copy: content='' dest=/etc/apache2/sites-available/sahara-api.conf owner=root group=root mode=0644
 
+- hosts: panko
+  become: True
+  max_fail_percentage: 0
+  tasks:
+    - name: mask panko-api apache config
+      copy: content='' dest=/etc/apache2/sites-available/panko-api.conf owner=root group=root mode=0644
 
 # Upgrade keystone all at once, since it is not supporting rolling upgrades yet
 

@@ -4,6 +4,9 @@
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
 
+- name: mask panko-api apache config
+  copy: content='' dest=/etc/apache2/sites-available/panko-api.conf owner=root group=root mode=0644
+
 - name: install panko
   apt: name=panko-api
 
