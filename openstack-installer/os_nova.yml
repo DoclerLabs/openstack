@@ -78,7 +78,7 @@
       apache_service_name: placement
       apache_service_ssl: "{{ os_ssl | default(False) }}"
       apache_services:
-        - { port: 8780, wsgi_process: "placement", wsgi_user: "nova", wsgi_script: "/var/www/cgi-bin/nova/placement-api" }
+        - { port: 8780, wsgi_process: "placement", wsgi_user: "nova", wsgi_group: "nova", wsgi_script: "/var/www/cgi-bin/nova/placement-api" }
 
 - hosts: nova_compute
   become: True
