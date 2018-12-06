@@ -686,8 +686,12 @@ project_name = {{ nova_project_name }}
 
 {% if neutron_lbaas_agent == 'lbaas' %}
 service_provider=LOADBALANCER:Haproxy:neutron_lbaas.services.loadbalancer.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default
-{% else %}
+{% elif neutron_lbaas_agent == 'lbaasv2' %}
+{% if neutron_lbaasv2_provider == 'haproxy' %}
 service_provider=LOADBALANCERV2:Haproxy:neutron_lbaas.drivers.haproxy.plugin_driver.HaproxyOnHostPluginDriver:default
+{% elif neutron_lbaasv2_provider == 'octavia' %}
+service_provider = LOADBALANCERV2:Octavia:neutron_lbaas.drivers.octavia.driver.OctaviaDriver:default
+{% endif %}
 {% endif %}
 {% if neutron_vpnaas_type %}
 service_provider=VPN:strongswan:neutron_vpnaas.services.vpn.service_drivers.ipsec.IPsecVPNDriver:default
@@ -769,3 +773,9 @@ rabbit_ha_queues = true
 [qos]
 # Drivers list to use to send the update notification
 # notification_drivers = message_queue
+
+{% if neutron_lbaasv2_provider == 'octavia' %}
+[octavia]
+
+base_url = {{ os_proto }}://{{ os_internal_address }}:9876
+{% endif %}

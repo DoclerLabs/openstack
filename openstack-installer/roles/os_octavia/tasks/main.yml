@@ -1,0 +1,93 @@
+---
+
+- name: create octavia vhost in rabbitmq
+  rabbitmq_vhost: node="rabbit@{{ groups['rabbitmq'][0] }}" name="{{ octavia_rabbit_vhost }}"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: create octavia user in rabbitmq
+  rabbitmq_user: node="rabbit@{{ groups['rabbitmq'][0] }}"
+      user="{{ octavia_rabbit_user }}" password="{{ octavia_rabbit_password }}"
+      vhost="{{ octavia_rabbit_vhost }}"
+      configure_priv=".*" read_priv=".*" write_priv=".*"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: ensure the octavia vhost contains the HA policy
+  rabbitmq_policy:
+    node: "rabbit@{{ groups['rabbitmq'][0] }}"
+    vhost: "{{ octavia_rabbit_vhost }}"
+    name: HA
+    pattern: '.*'
+    tags:
+      "ha-mode": "all"
+      "ha-sync-mode": "automatic"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  run_once: True
+
+- name: install CA certificate
+  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  when: SSLCACertificateFile != ''
+
+- name: mask autostarting of octavia
+  service_mask: name={{ item }} state=masked
+  with_items:
+    - octavia-api
+    - octavia-worker
+    - octavia-health-manager
+    - octavia-housekeeping
+
+- name: install octavia
+  apt: name={{ item }}
+  with_items:
+    - octavia-api
+    - octavia-worker
+    - octavia-health-manager
+    - octavia-housekeeping
+
+- name: create octavia database
+  mysql_db: name={{ octavia_db }}
+    login_host={{ octavia_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+
+- name: create octavia database user
+  mysql_user: name={{ octavia_db_user }} password={{ octavia_db_password }} host={{ item }} priv={{ octavia_db }}.*:ALL
+    login_host={{ octavia_mysql_server }} login_user=root login_password={{ mysql_root_password }}
+    state=present
+  run_once: True
+  with_items:
+    - localhost
+    - '%'
+
+- name: install octavia configs
+  template: src=octavia.conf.j2 dest=/etc/octavia/octavia.conf owner=octavia group=root mode=0460
+  notify: restart octavia
+
+#- name: install /etc/default/octavia-api
+#  copy: content='DAEMON_ARGS="--master --paste-logger --processes {{ octavia_api_workers }} --die-on-term --logto /var/log/octavia/octavia-api.log --http-socket 127.0.0.1:8889 --wsgi-file /usr/bin/octavia-api"\n'
+#        dest=/etc/default/octavia-api owner=root group=root mode=0644
+
+- name: sync octavia db
+  command: su octavia -s /bin/sh -c "/usr/bin/octavia-db-manage upgrade head"
+  register: db_sync
+  changed_when: '"Running upgrade" in db_sync.stderr'
+  run_once: True
+
+- name: unmask autostarting of octavia
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - octavia-api
+    - octavia-worker
+    - octavia-health-manager
+    - octavia-housekeeping
+
+- meta: flush_handlers
+
+- name: ensure octavia is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - octavia-api
+    - octavia-worker
+    - octavia-health-manager
+    - octavia-housekeeping

@@ -41,6 +41,7 @@ neutron_l2:
   inherit:
     - neutron_l3
     - neutron_compute
+octavia:
 gnocchi:
 aodh:
 panko:

@@ -1,0 +1,9 @@
+---
+
+- name: restart octavia
+  service: name={{ item }} state=restarted
+  with_items:
+    - octavia-api
+    - octavia-worker
+    - octavia-health-manager
+    - octavia-housekeeping

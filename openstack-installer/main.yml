@@ -20,6 +20,7 @@
 - include: os_cinder.yml
 - include: os_neutron.yml
 - include: os_nova.yml
+- include: os_octavia.yml
 - include: os_heat.yml
 - include: os_designate.yml
 - include: os_ironic.yml
