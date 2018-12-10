@@ -89,7 +89,7 @@
   notify: signal apache to reload
 
 - name: link sahara wsgi server
-  file: src=/usr/bin/sahara-wsgi-api dest=/var/www/cgi-bin/sahara/sahara-api state=link
+  file: src=/usr/bin/python3-sahara-wsgi-api dest=/var/www/cgi-bin/sahara/sahara-api state=link
   notify: signal apache to reload
 
 - meta: flush_handlers
