@@ -82,6 +82,9 @@
     - nova-compute
   when: inventory_hostname in groups['nova_compute']
 
+- name: ensure python-nova is not installed
+  apt: name=python-nova state=absent
+
 - name: create nova databases
   mysql_db: name={{ item }}
     login_host={{ nova_mysql_server }} login_user=root login_password={{ mysql_root_password }}
