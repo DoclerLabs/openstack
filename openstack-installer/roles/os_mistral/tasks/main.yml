@@ -39,10 +39,14 @@
 - name: install mistral
   apt:
     name:
+    - python3-mistral
     - mistral-api
     - mistral-engine
     - mistral-executor
     - python-mistralclient
+
+- name: ensure python-mistral is not installed
+  apt: name=python-mistral state=absent
 
 - name: create mistral database
   mysql_db: name={{ mistral_db }}

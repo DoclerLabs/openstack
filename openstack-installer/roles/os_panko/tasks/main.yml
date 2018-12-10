@@ -8,7 +8,13 @@
   copy: content='' dest=/etc/apache2/sites-available/panko-api.conf owner=root group=root mode=0644
 
 - name: install panko
-  apt: name=panko-api
+  apt:
+    name:
+    - python3-panko
+    - panko-api
+
+- name: ensure python-panko is not installed
+  apt: name=python-panko state=absent
 
 - name: create panko database
   mysql_db: name={{ panko_db }}
@@ -43,7 +49,7 @@
   notify: signal apache to reload
 
 - name: link panko wsgi servers
-  file: src=/usr/lib/python2.7/dist-packages/panko/api/app.wsgi dest=/var/www/cgi-bin/panko/panko-api state=link
+  file: src=/usr/lib/python3/dist-packages/panko/api/app.wsgi dest=/var/www/cgi-bin/panko/panko-api state=link
   notify: signal apache to reload
 
 - meta: flush_handlers

@@ -38,9 +38,13 @@
 - name: install manila
   apt:
     name:
+    - python3-manila
     - manila-api
     - manila-scheduler
     - python-manilaclient
+
+- name: ensure python-manula is not installed
+  apt: name=python-manila state=absent
 
 - name: create manila database
   mysql_db: name={{ manila_db }}

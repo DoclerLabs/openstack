@@ -38,7 +38,11 @@
     name:
     - barbican-api
     - barbican-worker
-    - python-barbicanclient
+    - python3-barbican
+    - python3-barbicanclient
+
+- name: ensure python-barbican is not installed
+  apt: name=python-barbican state=absent
 
 - name: create barbican database
   mysql_db: name={{ barbican_db }}

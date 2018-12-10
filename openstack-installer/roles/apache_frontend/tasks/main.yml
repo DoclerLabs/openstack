@@ -4,7 +4,7 @@
   apt:
     name:
     - apache2
-    - libapache2-mod-wsgi
+    - libapache2-mod-wsgi-py3
 
 - name: ensure mod-auth-openidc is installed
   apt: name=libapache2-mod-auth-openidc

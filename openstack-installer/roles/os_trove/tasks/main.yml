@@ -43,10 +43,14 @@
     - python-keystoneclient
     - python-glanceclient
     - python-shade
+    - python3-trove
     - trove-api
     - trove-taskmanager
     - trove-conductor
     - trove-taskmanager
+
+- name: ensure python-trove is not installed
+  apt: name=python-trove state=absent
 
 - name: set up trove network in neutron
   os_network:

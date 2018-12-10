@@ -42,7 +42,11 @@
     name:
     - sahara-api
     - sahara-engine
-    - python-saharaclient
+    - python3-sahara
+    - python3-saharaclient
+
+- name: ensure python-sahara is not installed
+  apt: name=python-sahara state=absent
 
 - name: create sahara database
   mysql_db: name={{ sahara_db }}
@@ -85,7 +89,7 @@
   notify: signal apache to reload
 
 - name: link sahara wsgi server
-  file: src=/usr/bin/python2-sahara-wsgi-api dest=/var/www/cgi-bin/sahara/sahara-api state=link
+  file: src=/usr/bin/python3-sahara-wsgi-api dest=/var/www/cgi-bin/sahara/sahara-api state=link
   notify: signal apache to reload
 
 - meta: flush_handlers

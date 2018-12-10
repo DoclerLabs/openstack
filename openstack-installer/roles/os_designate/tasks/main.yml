@@ -39,12 +39,6 @@
     - designate-worker
     - designate-mdns
 
-- name: uninstall deprecated components
-  apt: name={{ item }} state=absent
-  with_items:
-    - designate-pool-manager
-    - designate-zone-manager
- 
 - name: install designate
   apt:
     name:
@@ -54,7 +48,16 @@
     - designate-producer
     - designate-worker
     - designate-mdns
-    - python-designateclient
+    - python3-designate
+    - python3-designateclient
+
+- name: ensure deprecated items are not installed
+  apt:
+    name:
+      - python-designate
+      - designate-pool-manager
+      - designate-zone-manager
+    state: absent
 
 - name: create designate database
   mysql_db: name={{ designate_db }}

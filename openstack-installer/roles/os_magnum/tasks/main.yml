@@ -38,9 +38,13 @@
 - name: install magnum
   apt:
     name:
+    - python3-magnum
     - magnum-api
     - magnum-conductor
     - python-magnumclient
+
+- name: ensure python-magnum is not installed
+  apt: name=python-magnum state=absent
 
 - name: create magnum database
   mysql_db: name={{ magnum_db }}

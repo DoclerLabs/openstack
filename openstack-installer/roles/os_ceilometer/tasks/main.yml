@@ -56,17 +56,22 @@
     name:
     - ceilometer-agent-central
     - ceilometer-agent-notification
-    - python-oslo.cache
-    - python-memcache
-    - python-ceilometerclient
-    - python-gnocchiclient
+    - python3-ceilometer
+    - python3-oslo.cache
+    - python3-memcache
+    - python3-ceilometerclient
+    - python3-gnocchiclient
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: install ceilometer compute services
   apt: 
     name:
+    - python3-ceilometer
     - ceilometer-agent-compute
   when: inventory_hostname in groups['ceilometer_compute']
+
+- name: ensure python-ceilometer is not installed
+  apt: name=python-ceilometer state=absent
 
 - name: install ceilometer configs
   template: src=ceilometer.conf.j2 dest=/etc/ceilometer/ceilometer.conf owner=ceilometer group=root mode=0460

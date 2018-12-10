@@ -42,7 +42,11 @@
     - heat-api
     - heat-api-cfn
     - heat-engine
-    - python-heatclient
+    - python3-heat
+    - python3-heatclient
+
+- name: ensure python-heat is not installed
+  apt: name=python-heat state=absent
 
 - name: create heat database
   mysql_db: name={{ heat_db }}

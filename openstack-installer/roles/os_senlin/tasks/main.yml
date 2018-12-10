@@ -40,7 +40,11 @@
     name:
     - senlin-api
     - senlin-engine
-    - python-senlinclient
+    - python3-senlin
+    - python3-senlinclient
+
+- name: ensure python-senlin is not installed
+  apt: name=python-senlin state=absent
 
 - name: create senlin database
   mysql_db: name={{ senlin_db }}

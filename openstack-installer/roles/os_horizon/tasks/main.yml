@@ -14,7 +14,13 @@
   notify: restart apache
 
 - name: install horizon
-  apt: name=openstack-dashboard
+  apt:
+    name:
+      - openstack-dashboard
+      - python3-django-horizon
+
+- name: ensure python-django-horizon is not installed
+  apt: name=python-django-horizon state=absent
 
 - name: install additional dashboards
   apt: name={{ horizon_extra_packages }}

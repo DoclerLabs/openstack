@@ -67,12 +67,16 @@
 - name: install murano
   apt:
     name:
-    - python-pymysql
-    - python-memcache
+    - python3-pymysql
+    - python3-memcache
+    - python3-murano
     - murano-api
     - murano-cfapi
     - murano-engine
-    - python-muranoclient
+    - python3-muranoclient
+
+- name: ensure python-murano is not installed
+  apt: name=python-murano state=absent
 
 - name: create murano database
   mysql_db: name={{ murano_db }}

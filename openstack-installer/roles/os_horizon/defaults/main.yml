@@ -15,17 +15,18 @@ horizon_compress: "{{ not horizon_debug }}"
 horizon_compress_offline: "{{ not horizon_debug }}"
 
 neutron_vpnaas: True
-neutron_lbaas_agent: lbaasv2
+neutron_lbaasv2_provider: lbaasv2
 
 horizon_install_dashboards: True
 horizon_dashboards:
-    - { install: "{{ groups['trove'] | count > 0 }}", package: 'python-trove-dashboard' }
-    - { install: "{{ groups['sahara'] | count > 0 }}", package: 'python-sahara-dashboard' }
-    - { install: "{{ groups['murano'] | count > 0 }}", package: 'python-murano-dashboard' }
-    - { install: "{{ groups['manila'] | count > 0 }}", package: 'python-manila-ui' }
-    - { install: "{{ groups['designate'] | count > 0 }}", package: 'python-designate-dashboard' }
-    - { install: neutron_lbaas_agent == 'lbaasv2', package: 'python-neutron-lbaas-dashboard' }
-    - { install: "{{ groups['heat'] | count > 0 }}", package: 'python-heat-dashboard' }
+    - { install: "{{ groups['trove'] | count > 0 }}", package: 'python3-trove-dashboard' }
+    - { install: "{{ groups['sahara'] | count > 0 }}", package: 'python3-sahara-dashboard' }
+    - { install: "{{ groups['murano'] | count > 0 }}", package: 'python3-murano-dashboard' }
+    - { install: "{{ groups['manila'] | count > 0 }}", package: 'python3-manila-ui' }
+    - { install: "{{ groups['designate'] | count > 0 }}", package: 'python3-designate-dashboard' }
+    - { install: neutron_lbaasv2_provider == 'haproxy', package: 'python3-neutron-lbaas-dashboard' }
+    - { install: "{{ groups['octavia'] | count > 0 }}", package: 'python3-octavia-dashboard' }
+    - { install: "{{ groups['heat'] | count > 0 }}", package: 'python3-heat-dashboard' }
 
 horizon_extra_packages: "{% for item in horizon_dashboards %}{% if item.install and horizon_install_dashboards %}{{ item.package }}{% if not loop.last %},{% endif %}{% endif %}{% endfor %}"
 

@@ -42,10 +42,14 @@
 - name: install aodh
   apt:
     name:
+    - python3-aodh
     - aodh-api
     - aodh-evaluator
     - aodh-notifier
     - aodh-listener
+
+- name: ensure python-aodh is not installed
+  apt: name=python-aodh state=absent
 
 - name: create aodh database
   mysql_db: name={{ aodh_db }}
@@ -81,7 +85,7 @@
   notify: signal apache to reload
 
 - name: link aodh wsgi servers
-  file: src=/usr/lib/python2.7/dist-packages/aodh/api/app.wsgi dest=/var/www/cgi-bin/aodh/aodh-api state=link
+  file: src=/usr/lib/python3/dist-packages/aodh/api/app.wsgi dest=/var/www/cgi-bin/aodh/aodh-api state=link
   notify: signal apache to reload
 
 - name: unmask autostarting of aodh services

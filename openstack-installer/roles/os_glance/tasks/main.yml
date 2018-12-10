@@ -37,15 +37,19 @@
 
 - name: install glance
   apt:
-    name:
-    - python-rbd
-    - python-rados
+    - python3-rbd
+    - python3-rados
+    - python3-glance
     - glance-api
-    - python-glanceclient
-    - python-swiftclient
+    - python3-glanceclient
+    - python3-swiftclient
 
-- name: make sure glance-registry is not installed
-  apt: name=glance-registry state=absent
+- name: make sure glance-registry and python-glance are not installed
+  apt:
+     name:
+       - glance-registry
+       - python-glance
+     state: absent
 
 - name: mark glance-api manually installed
   command: /usr/bin/apt-mark manual glance-api

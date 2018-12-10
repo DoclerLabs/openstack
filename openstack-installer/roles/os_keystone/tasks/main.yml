@@ -39,8 +39,12 @@
     name:
     - rsync
     - keystone
-    - python-openstackclient
-    - python-memcache
+    - python3-keystone
+    - python3-openstackclient
+    - python3-memcache
+
+- name: ensure python-keystone is not installed
+  apt: name=python-keystone state=absent
 
 - name: ensure keystone service is disabled at boot
   service: name=keystone state=stopped enabled=no

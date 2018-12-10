@@ -13,8 +13,11 @@
 - name: install gnocchi
   apt:
     name:
-    - python-gnocchi
+    - python3-gnocchi
     - gnocchi-metricd
+
+- name: ensure python-gnocchi is not installed
+  apt: name=python-gnocchi state=absent
 
 - name: create gnocchi database
   mysql_db: name={{ gnocchi_db }}

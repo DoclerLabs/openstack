@@ -52,20 +52,25 @@
     name:
     - cinder-api
     - cinder-scheduler
-    - python-cinderclient
+    - python3-cinder
+    - python3-cinderclient
   when: inventory_hostname in groups['cinder']
 
 - name: install cinder-volume
   apt:
     name:
-    - python-rbd
-    - python-rados
-    - python-rtslib-fb
+    - python3-rbd
+    - python3-rados
+    - python3-rtslib-fb
     - ceph-common
     - cinder-volume
     - cinder-backup
-    - python-cinderclient
+    - python3-cinder
+    - python3-cinderclient
   when: inventory_hostname in groups['cinder_volume']
+
+- name: ensure python-cinder is not installed
+  apt: name=python-cinder state=absent
 
 - name: ensure cinder-api service is disabled at boot
   service: name=cinder-api state=stopped enabled=no
