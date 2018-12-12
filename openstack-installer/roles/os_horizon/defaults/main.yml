@@ -15,7 +15,7 @@ horizon_compress: "{{ not horizon_debug }}"
 horizon_compress_offline: "{{ not horizon_debug }}"
 
 neutron_vpnaas: True
-neutron_lbaasv2_provider: lbaasv2
+neutron_lbaasv2_provider: haproxy
 
 horizon_install_dashboards: True
 horizon_dashboards:
@@ -24,7 +24,7 @@ horizon_dashboards:
 #    - { install: "{{ groups['murano'] | count > 0 }}", package: 'python3-murano-dashboard' }
     - { install: "{{ groups['manila'] | count > 0 }}", package: 'python3-manila-ui' }
     - { install: "{{ groups['designate'] | count > 0 }}", package: 'python3-designate-dashboard' }
-    - { install: neutron_lbaasv2_provider == 'haproxy', package: 'python3-neutron-lbaas-dashboard' }
+    - { install: "{{ neutron_lbaasv2_provider == 'haproxy' }}", package: 'python3-neutron-lbaas-dashboard' }
     - { install: "{{ groups['octavia'] | count > 0 }}", package: 'python3-octavia-dashboard' }
     - { install: "{{ groups['heat'] | count > 0 }}", package: 'python3-heat-dashboard' }
 
