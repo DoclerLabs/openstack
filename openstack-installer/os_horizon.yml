@@ -14,6 +14,7 @@
     - role: haproxy_service
       haproxy_services:
         - haproxy_service_name: horizon
+          haproxy_balance_alg: source
           haproxy_backend_nodes: "{{ groups['horizon'] }}"
           haproxy_bind_hosts:
             - "{{ vip_mgmt }}"
@@ -26,6 +27,7 @@
             - httplog
 
         - haproxy_service_name: horizon-ssl
+          haproxy_balance_alg: source
           haproxy_backend_nodes: "{{ SSLCertificateKeyFileSource is defined | ternary(groups['horizon'], []) }}"
           haproxy_bind_hosts:
             - "{{ vip_mgmt }}"
