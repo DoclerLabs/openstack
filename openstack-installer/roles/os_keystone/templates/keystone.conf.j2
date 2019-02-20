@@ -225,7 +225,7 @@ driver = sql
 
 # Allowed authentication methods. (list value)
 #methods = external,password,token,oauth1
-methods = password,token{% if keystone_federation_oidc | bool %},oidc{% endif %}
+methods = password,token{% if keystone_federation_oidc | bool %},openid,mapped{% endif %}
 
 # Entrypoint for the password auth plugin module in the keystone.auth.password
 # namespace. (string value)
@@ -243,9 +243,12 @@ methods = password,token{% if keystone_federation_oidc | bool %},oidc{% endif %}
 # Entrypoint for the oAuth1.0 auth plugin module in the keystone.auth.oauth1
 # namespace. (string value)
 #oauth1 = <None>
-{% if keystone_federation_oidc | bool %}
-oidc = keystone.auth.plugins.mapped.Mapped
-{% endif %}
+
+
+[openid]
+
+remote_id_attribute = HTTP_OIDC_ISS
+
 
 [cache]
 
@@ -704,7 +707,6 @@ max_retries = -1
 # environment (e.g. if using the mod_shib plugin this value is `Shib-Identity-
 # Provider`). (string value)
 #remote_id_attribute = <None>
-remote_id_attribute = HTTP_OIDC_ISS
 
 # A domain name that is reserved to allow federated ephemeral users to have a
 # domain concept. Note that an admin will not be able to create a domain with

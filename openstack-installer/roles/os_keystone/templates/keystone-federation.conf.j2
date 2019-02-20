@@ -24,14 +24,19 @@
     OIDCClientID                      {{ keystone_OIDCClientID }}
     OIDCClientSecret                  {{ keystone_OIDCClientSecret }}
     OIDCCryptoPassphrase              {{ keystone_OIDCCryptoPassphrase }}
-    OIDCRedirectURI                   {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3/auth/OS-FEDERATION/websso/oidc/redirect
+    OIDCRedirectURI                   {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3/auth/OS-FEDERATION/websso/openid/redirect
 
-    <LocationMatch /v3/auth/OS-FEDERATION/websso/oidc>
+    <LocationMatch /v3/auth/OS-FEDERATION/websso/openid>
       AuthType openid-connect
       Require valid-user
     </LocationMatch>
 
-    <LocationMatch /v3/OS-FEDERATION/identity_providers/.*?/protocols/oidc/auth>
+    <LocationMatch /v3/auth/OS-FEDERATION/identity_providers/.*?/protocols/openid/websso>
+      AuthType openid-connect
+      Require valid-user
+    </LocationMatch>
+
+    <LocationMatch /v3/OS-FEDERATION/identity_providers/.*?/protocols/openid/auth>
       AuthType openid-connect
       Require valid-user
     </LocationMatch>
