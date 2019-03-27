@@ -34,6 +34,10 @@
     - name: upgrade packages
       apt: upgrade=yes
 
+    - name: make sure nova-compute is installed
+      apt: name=nova-compute state=present
+      when: inventory_hostname in groups['nova_compute']
+
     - name: run playbooks
       local_action: command ansible-playbook {{ playbook_dir }}/{{ item.playbook }} -i "{{ inventory_file }}" -l "{{ inventory_hostname }}"
       when: inventory_hostname in item.group
