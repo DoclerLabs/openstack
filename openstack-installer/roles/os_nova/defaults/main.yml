@@ -72,6 +72,7 @@ nova_live_migration_completion_timeout: 800
 nova_live_migration_downtime: 500
 nova_live_migration_downtime_delay: 75
 nova_live_migration_downtime_steps: 10
+nova_live_migration_permit_post_copy: False
 
 nova_notifications: "{{ notifications_enable | default(False) }}"
 nova_instance_usage_audit: "{{ nova_notifications }}"
