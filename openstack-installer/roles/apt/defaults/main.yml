@@ -1,7 +1,7 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-rocky", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu bionic-updates/rocky main" }
+  - { name: "cloudarchive-stein", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu bionic-updates/stein main" }
 
 apt_extra_repos: []
 
