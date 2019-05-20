@@ -104,7 +104,7 @@
     name:
     - neutron-server
     - neutron-plugin-ml2
-    - python-neutronclient
+    - python3-neutronclient
   when: inventory_hostname in groups['neutron_controller']
 
 - name: install conntrack
@@ -124,8 +124,8 @@
     - neutron-dhcp-agent
     - neutron-metadata-agent
     - neutron-{{ neutron_lbaas_agent }}-agent
-    - python-neutron-vpnaas
-    - python-neutronclient
+    - python3-neutron-vpnaas
+    - python3-neutronclient
   when: inventory_hostname in groups['neutron_l3']
 
 - name: stop and disable strongswan
