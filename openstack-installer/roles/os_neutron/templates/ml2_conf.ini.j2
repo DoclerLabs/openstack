@@ -26,6 +26,10 @@ type_drivers = flat, vlan, vxlan, gre
 {% set _ = mechanism_drivers.append('l2population') %}
 {% endif %}
 
+{% if neutron_sriov_enable %}
+{% set _ = mechanism_drivers.append('sriovnicswitch') %}
+{% endif %}
+
 tenant_network_types = {{ ','.join(tenant_network_types) }}
 
 # (ListOpt) Ordered list of networking mechanism driver entrypoints
