@@ -1,5 +1,9 @@
 {% if syslog_remote_syslog %}
+{% if syslog_default_template %}
+action(type="omfwd" Target="{{ syslog_remote_syslog }}" Port="{{ syslog_remote_port }}" Protocol="{{ syslog_remote_proto }}" template="{{ syslog_default_template }}" )
+{% else %}
 action(type="omfwd" Target="{{ syslog_remote_syslog }}" Port="{{ syslog_remote_port }}" Protocol="{{ syslog_remote_proto }}" )
+{% endif %}
 {% endif %}
 {% if syslog_elasticsearch %}
 module(load="omelasticsearch")
