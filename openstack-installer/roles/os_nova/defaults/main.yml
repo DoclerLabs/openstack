@@ -84,7 +84,7 @@ nova_discover_hosts_in_cells_interval: 300
 
 nova_resume_guests_state_on_host_boot: False
 
-nova_pci_passthrough_whitelist:
+nova_pci_passthrough_whitelist: []
 
 #spice or vnc
 nova_console_type: vnc
