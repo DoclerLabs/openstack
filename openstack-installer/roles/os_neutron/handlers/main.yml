@@ -24,7 +24,8 @@
   when: inventory_hostname in groups['neutron_l3']
 
 - name: restart neutron-l2-agent
-  service: name="neutron-{{ neutron_physical_interface_driver }}-agent" state=restarted
+  service: name="neutron-{{ item }}-agent" state=restarted
+  with_items: "{{ neutron_physical_interface_drivers }}"
   when: inventory_hostname in groups['neutron_l2']
 
 - name: reload sysctl

@@ -48,9 +48,9 @@ security_group_api = neutron
 network_device_mtu = {{ neutron_mtu }}
 {% endif %}
 
-{% if neutron_physical_interface_driver == 'openvswitch' %}
+{% if 'openvswitch' in neutron_physical_interface_drivers %}
 linuxnet_interface_driver=nova.network.linux_net.LinuxOVSInterfaceDriver
-{% elif neutron_physical_interface_driver == 'linuxbridge' %}
+{% elif 'linuxbridge' in neutron_physical_interface_drivers  %}
 linuxnet_interface_driver = nova.network.linux_net.NeutronLinuxBridgeInterfaceDriver
 {% endif %}
 

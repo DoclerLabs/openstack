@@ -36,9 +36,8 @@
   when: inventory_hostname in groups['neutron_controller']
 
 - name: mask autostarting of neutron L2 agent
-  service_mask: name={{ item }} state=masked
-  with_items:
-    - neutron-{{ neutron_physical_interface_driver }}-agent
+  service_mask: name=neutron-{{ item }}-agent state=masked
+  with_items: "{{ neutron_physical_interface_drivers }}"
   when: inventory_hostname in groups['neutron_l2']
 
 - name: mask autostarting of neutron L3 services
@@ -108,11 +107,13 @@
     - python-neutronclient
   when: inventory_hostname in groups['neutron_controller']
 
+- name: install conntrack
+  apt: name=conntrack
+  when: inventory_hostname in groups['neutron_l2']
+ 
 - name: install neutron L2 agent
-  apt: name={{ item }}
-  with_items:
-    - conntrack
-    - neutron-{{ neutron_physical_interface_driver }}-agent
+  apt: name=neutron-{{ item }}-agent
+  with_items: "{{ neutron_physical_interface_drivers }}"
   when: inventory_hostname in groups['neutron_l2']
 
 - name: install neutron L3 packages
@@ -204,8 +205,9 @@
     - restart neutron-lbaas-agent
 
 - name: install L2 agent config
-  template: src="{{ neutron_physical_interface_driver }}_agent.ini.j2" dest="/etc/neutron/plugins/ml2/{{ neutron_physical_interface_driver }}_agent.ini" owner=neutron group=root mode=0460
+  template: src="{{ item }}_agent.ini.j2" dest="/etc/neutron/plugins/ml2/{{ item }}_agent.ini" owner=neutron group=root mode=0460
   when: inventory_hostname in groups['neutron_l2']
+  with_items: "{{ neutron_physical_interface_drivers }}"
   notify:
     - restart neutron-l2-agent
 
@@ -222,9 +224,8 @@
   when: inventory_hostname in groups['neutron_controller']
 
 - name: unmask autostarting of neutron L2 agent
-  service_mask: name={{ item }} state=unmasked
-  with_items:
-    - neutron-{{ neutron_physical_interface_driver }}-agent
+  service_mask: name=neutron-{{ item }}-agent state=unmasked
+  with_items: "{{ neutron_physical_interface_drivers }}"
   when: inventory_hostname in groups['neutron_l2']
 
 - name: unmask autostarting of neutron L3 services
@@ -245,9 +246,8 @@
   when: inventory_hostname in groups['neutron_controller']
 
 - name: ensure neutron L2 agent is started
-  service: name={{ item }} state=started enabled=yes
-  with_items:
-    - neutron-{{ neutron_physical_interface_driver }}-agent
+  service: name=neutron-{{ item }}-agent state=started enabled=yes
+  with_items: "{{ neutron_physical_interface_drivers }}"
   when: inventory_hostname in groups['neutron_l2']
 
 - name: ensure neutron L3 services are started

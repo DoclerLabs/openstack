@@ -19,10 +19,10 @@
 # ovs_integration_bridge = br-int
 
 
-{% if neutron_physical_interface_driver == 'openvswitch' %}
+{% if 'openvswitch' in neutron_physical_interface_drivers %}
 interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
 ovs_integration_bridge = br-int
-{% elif neutron_physical_interface_driver == 'linuxbridge' %}
+{% elif 'linuxbridge' in neutron_physical_interface_drivers %}
 interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
 {% endif %}
 

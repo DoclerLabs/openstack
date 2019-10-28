@@ -97,6 +97,8 @@ nova_novncproxy_base_url: "{{ nova_console_ssl | ternary('https','http') }}://{{
 nova_spiceproxy_base_url: "{{ nova_console_ssl | ternary('https','http') }}://{{ os_public_address }}:6082/spice_auto.html"
 
 neutron_physical_interface_driver: linuxbridge
+neutron_physical_interface_drivers:
+  - "{{ neutron_physical_interface_driver }}"
 neutron_mtu: 0
 neutron_domain_name: "{{ keystone_domain_name }}"
 neutron_admin_user: neutron

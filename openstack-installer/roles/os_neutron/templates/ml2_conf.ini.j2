@@ -13,7 +13,12 @@ type_drivers = flat, vlan, vxlan, gre
 # tenant_network_types = local
 # Example: tenant_network_types = vlan,gre,vxlan,geneve
 
-{% set mechanism_drivers = [neutron_physical_interface_driver] %}
+{% if 'openvswitch' in neutron_physical_interface_drivers %}
+{% set mechanism_drivers = ['openvswitch'] %}
+{% elif 'linuxbridge' in neutron_physical_interface_drivers %}
+{% set mechanism_drivers = ['linuxbridge'] %}
+{% endif %}
+
 
 {% set tenant_network_types = ['vlan', 'flat'] %}
 {% if ip.gre is defined %}
