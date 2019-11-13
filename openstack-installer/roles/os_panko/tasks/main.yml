@@ -5,9 +5,7 @@
   when: SSLCACertificateFile != ''
 
 - name: install panko
-  apt: name={{ item }}
-  with_items:
-    - panko-api
+  apt: name=panko-api
 
 - name: create panko database
   mysql_db: name={{ panko_db }}

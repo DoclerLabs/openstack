@@ -36,8 +36,8 @@
     - magnum-conductor
 
 - name: install magnum
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - magnum-api
     - magnum-conductor
     - python-magnumclient

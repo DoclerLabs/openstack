@@ -38,10 +38,11 @@
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: ensure ceilometer-api and collector are not installed
-  apt: name={{ item }} state=absent
-  with_items:
+  apt:
+    name:
     - ceilometer-api
     - ceilometer-collector
+    state: absent
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: mask autostarting of ceilometer compute services
@@ -51,8 +52,8 @@
   when: inventory_hostname in groups['ceilometer_compute']
 
 - name: install ceilometer controller services
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - ceilometer-agent-central
     - ceilometer-agent-notification
     - python-oslo.cache
@@ -62,8 +63,8 @@
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: install ceilometer compute services
-  apt: name={{ item }}
-  with_items:
+  apt: 
+    name:
     - ceilometer-agent-compute
   when: inventory_hostname in groups['ceilometer_compute']
 

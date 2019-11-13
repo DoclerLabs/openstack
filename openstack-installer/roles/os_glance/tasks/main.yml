@@ -36,8 +36,8 @@
     - glance-registry
 
 - name: install glance
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - python-rbd
     - python-rados
     - glance-api

@@ -1,8 +1,8 @@
 ---
 
 - name: Install Zookeeper
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - zookeeper
     - zookeeperd
 

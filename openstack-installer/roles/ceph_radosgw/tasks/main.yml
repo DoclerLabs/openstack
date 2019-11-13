@@ -1,9 +1,7 @@
 ---
 
 - name: install radosgw
-  apt: name={{ item }}
-  with_items:
-    - radosgw
+  apt: name=radosgw
 
 - name: ensure /etc/systemd/system/ceph-radosgw@.service.d exists
   file: dest=/etc/systemd/system/ceph-radosgw@.service.d state=directory owner=root group=root mode=0755

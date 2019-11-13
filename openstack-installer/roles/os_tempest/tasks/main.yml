@@ -6,9 +6,9 @@
   become: False
 
 - name: install packages for tempest
-  apt: name={{ item }}
   become: True
-  with_items:
+  apt:
+    name:
     - git
     - libssl-dev
     - python-dev

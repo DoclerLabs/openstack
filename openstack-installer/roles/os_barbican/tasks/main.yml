@@ -34,8 +34,8 @@
   copy: content='' dest=/etc/apache2/conf-available/barbican-api.conf owner=root group=root mode=0644
 
 - name: install barbican
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - barbican-api
     - barbican-worker
     - python-barbicanclient

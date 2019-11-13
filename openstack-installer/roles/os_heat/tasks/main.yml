@@ -37,8 +37,8 @@
     - heat-engine
 
 - name: install heat
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - heat-api
     - heat-api-cfn
     - heat-engine

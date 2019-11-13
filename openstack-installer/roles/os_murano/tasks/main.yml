@@ -65,8 +65,8 @@
     - murano-engine
 
 - name: install murano
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - python-pymysql
     - python-memcache
     - murano-api

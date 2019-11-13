@@ -48,16 +48,16 @@
   when: inventory_hostname in groups['cinder']
 
 - name: install cinder
-  apt: name={{ item }}
-  with_items:
+  apt: 
+  name:
     - cinder-api
     - cinder-scheduler
     - python-cinderclient
   when: inventory_hostname in groups['cinder']
 
 - name: install cinder-volume
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - python-rbd
     - python-rados
     - python-rtslib-fb

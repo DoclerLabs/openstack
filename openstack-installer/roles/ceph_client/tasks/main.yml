@@ -1,9 +1,7 @@
 ---
 
 - name: install ceph-common package
-  apt: name={{ item }} state=present
-  with_items:
-    - ceph-common
+  apt: name=ceph-common state=present
 
 - name: ensure /etc/ceph exists
   file: path=/etc/ceph state=directory owner=root group=root mode=0755

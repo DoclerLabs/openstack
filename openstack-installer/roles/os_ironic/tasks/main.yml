@@ -36,8 +36,8 @@
     - ironic-conductor
 
 - name: install ironic packages
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - ipmitool
     - tftpd-hpa
     - syslinux-common

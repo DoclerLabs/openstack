@@ -2,8 +2,8 @@
 
 # Don't use latest, rabbitmq upgrade should be manual
 - name: install RabbitMQ packages
-  apt: name={{ item }} state=present
-  with_items:
+  apt:
+    name:
     - rabbitmq-server
     - erlang-base-hipe
 

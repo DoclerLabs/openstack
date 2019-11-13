@@ -46,8 +46,8 @@
     - designate-zone-manager
  
 - name: install designate
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - designate-api
     - designate-agent
     - designate-central

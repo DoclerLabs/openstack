@@ -40,8 +40,8 @@
   copy: content='' dest=/etc/apache2/sites-available/aodh-api.conf owner=root group=root mode=0644
 
 - name: install aodh
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - aodh-api
     - aodh-evaluator
     - aodh-notifier

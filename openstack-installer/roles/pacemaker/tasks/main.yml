@@ -7,8 +7,8 @@
     - pacemaker
 
 - name: install pacemaker
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - pacemaker
     - corosync
     - crmsh

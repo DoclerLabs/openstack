@@ -36,8 +36,8 @@
     - manila-scheduler
 
 - name: install manila
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - manila-api
     - manila-scheduler
     - python-manilaclient

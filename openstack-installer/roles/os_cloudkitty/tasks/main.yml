@@ -36,8 +36,8 @@
     - cloudkitty-processor
 
 - name: install cloudkitty
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - cloudkitty-api
     - cloudkitty-processor
 

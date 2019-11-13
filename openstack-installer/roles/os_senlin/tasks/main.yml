@@ -36,8 +36,8 @@
     - senlin-engine
 
 - name: install senlin
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - senlin-api
     - senlin-engine
     - python-senlinclient

@@ -36,8 +36,8 @@
     - sahara-engine
 
 - name: install sahara
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - sahara-api
     - sahara-engine
     - python-saharaclient

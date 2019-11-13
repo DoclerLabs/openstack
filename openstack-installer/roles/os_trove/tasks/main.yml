@@ -37,8 +37,8 @@
     - trove-taskmanager
 
 - name: install trove packages
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - python-troveclient
     - python-keystoneclient
     - python-glanceclient

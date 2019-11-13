@@ -10,8 +10,8 @@
   file: dest={{ mysql_datadir }} owner=mysql group=mysql mode=0750 state=directory
 
 - name: install galera packages
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - percona-xtrabackup-24
     - percona-xtradb-cluster-server-5.7
     - percona-xtradb-cluster-galera-3

@@ -3,8 +3,8 @@
 ## Storage
 
 - name: install packages for swift storage
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - xfsprogs
     - rsync
     - swift-account

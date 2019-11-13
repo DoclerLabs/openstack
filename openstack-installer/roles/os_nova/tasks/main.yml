@@ -52,8 +52,8 @@
   when: inventory_hostname in groups['nova_compute']
 
 - name: install nova controller packages
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - nova-api
     - nova-placement-api
     - nova-conductor
@@ -69,8 +69,8 @@
   when: inventory_hostname in groups['nova_controller']
 
 - name: install nova compute packages
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - ceph-common
     - python-rbd
     - python-rados

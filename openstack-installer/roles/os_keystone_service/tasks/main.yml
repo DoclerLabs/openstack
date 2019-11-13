@@ -1,8 +1,8 @@
 ---
 
 - name: make sure clients are exist
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - python-keystoneclient
     - python-shade
   become: True

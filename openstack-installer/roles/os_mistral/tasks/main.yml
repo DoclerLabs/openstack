@@ -37,8 +37,8 @@
     - mistral-executor
 
 - name: install mistral
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - mistral-api
     - mistral-engine
     - mistral-executor

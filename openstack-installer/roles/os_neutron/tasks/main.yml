@@ -100,8 +100,8 @@
   when: inventory_hostname in groups['neutron_l3'] and neutron_vpnaas_type
 
 - name: install neutron server packages
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - neutron-server
     - neutron-plugin-ml2
     - python-neutronclient
@@ -117,8 +117,8 @@
   when: inventory_hostname in groups['neutron_l2']
 
 - name: install neutron L3 packages
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - keepalived
     - neutron-l3-agent
     - neutron-dhcp-agent
