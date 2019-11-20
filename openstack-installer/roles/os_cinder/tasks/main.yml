@@ -49,7 +49,7 @@
 
 - name: install cinder
   apt: 
-  name:
+    name:
     - cinder-api
     - cinder-scheduler
     - python-cinderclient
