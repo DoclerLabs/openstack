@@ -4,7 +4,6 @@
     - nova_compute
     - neutron_compute
     - ceilometer_compute
-    - cinder_volume
   become: True
   max_fail_percentage: 0
   roles:
@@ -22,7 +21,6 @@
     - nova_compute
     - neutron_compute
     - ceilometer_compute
-    - cinder_volume
   become: True
   max_fail_percentage: 0
   serial: 5
@@ -41,5 +39,4 @@
         - { playbook: "os_neutron.yml", group: "{{ groups['neutron_compute'] }}" }
         - { playbook: "os_nova.yml", group: "{{ groups['nova_compute'] }}" }
         - { playbook: "os_ceilometer.yml", group: "{{ groups['ceilometer_compute'] }}" }
-        - { playbook: "os_cinder.yml", group: "{{ groups['cinder_volume'] }}" }
       become: False
