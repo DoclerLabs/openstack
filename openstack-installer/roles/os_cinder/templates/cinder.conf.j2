@@ -76,6 +76,7 @@ volume_group = {{ backend.volume_group | default(cinder_volume_group) }}
 iscsi_protocol = iscsi
 iscsi_helper = {{ cinder_iscsi_helper }}
 volume_name_template = volume-%s
+lvm_type = {{ backend.lvm_type | default(cinder_lvm_type) }}
 
 {% elif backend.backend == 'ceph' %}
 

@@ -21,6 +21,7 @@ cinder_cluster_name:
 
 cinder_backend: lvm
 cinder_volume_group: cinder-volumes
+cinder_lvm_type: default
 cinder_ceph_pool: volumes
 cinder_ceph_user: cinder
 cinder_volume_secret_uuid:
