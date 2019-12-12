@@ -37,6 +37,7 @@
 
 - name: install glance
   apt:
+    name:
     - python3-rbd
     - python3-rados
     - python3-glance
