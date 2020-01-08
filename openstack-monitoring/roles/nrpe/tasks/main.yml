@@ -41,6 +41,10 @@
   template: src=openstack_nrpe.cfg.j2 dest=/etc/nagios/nrpe.d/openstack_nrpe.cfg owner=root group=nagios mode=0640
   notify: restart nrpe
 
+- name: install nrpe daemon config
+  template: src=nagios-nrpe-server.j2 dest=/etc/default/nagios-nrpe-server owner=root group=root mode=0644
+  notify: restart nrpe
+
 - meta: flush_handlers
 
 - name: make sure nrpe is enabled and started

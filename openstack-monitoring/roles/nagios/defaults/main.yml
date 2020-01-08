@@ -17,6 +17,8 @@ nagios_cert_days: 5
 ceilometer_backends:
   - database
 
+nagios_nrpe_use_ssl: True
+
 os_ssl: False
 keystone_ssl: False
 radosgw_ssl: False

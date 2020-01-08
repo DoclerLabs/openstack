@@ -8,4 +8,6 @@ nagios_ipmi: False
 nagios_bond: False
 nagios_mdraid: False
 
+nagios_nrpe_use_ssl: True
+
 ceph_cluster_name: ceph
