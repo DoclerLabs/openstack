@@ -1,8 +1,8 @@
 ---
 
 - name: ensure apache2 is installed
-  apt: name={{ item }}
-  with_items:
+  apt:
+    name:
     - apache2
     - libapache2-mod-wsgi
 
