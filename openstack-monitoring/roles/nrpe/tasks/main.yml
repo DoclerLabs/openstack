@@ -4,7 +4,7 @@
   apt: name=nagios-nrpe-server
 
 - name: install monitoring-plugins-standard
-  apt: name={{ (ansible_distribution_version | version_compare('16.04', '>=')) | ternary('monitoring','nagios') }}-plugins-standard
+  apt: name={{ (ansible_distribution_version is version('16.04', '>=')) | ternary('monitoring','nagios') }}-plugins-standard
   when: inventory_hostname in groups['galera']
 
 - name: enable sudo for nrpe
