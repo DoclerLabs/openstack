@@ -46,7 +46,11 @@ define command{
 
 define command{
         command_name    {{ nagios_cloud_prefix }}check_nrpe
+{% if nagios_nrpe_use_ssl %}
         command_line    /usr/lib/nagios/plugins/check_nrpe -u -t {{ nagios_nrpe_timeout }} -H $HOSTADDRESS$ -c $ARG1$
+{% else %}
+        command_line    /usr/lib/nagios/plugins/check_nrpe -u -t {{ nagios_nrpe_timeout }} -n -H $HOSTADDRESS$ -c $ARG1$
+{% endif %}
         }
 
 {% macro hostgroup(name, alias, notes, members=[]) -%}

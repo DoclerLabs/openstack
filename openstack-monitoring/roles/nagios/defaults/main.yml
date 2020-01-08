@@ -14,6 +14,8 @@ nagios_nrpe_timeout: 15
 nagios_monitor_vip_public: True
 nagios_cert_days: 5
 
+nagios_nrpe_use_ssl: True
+
 os_ssl: False
 keystone_ssl: False
 radosgw_ssl: False
