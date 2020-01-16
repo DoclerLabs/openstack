@@ -47,7 +47,7 @@
       apache_service_name: panko
       apache_service_ssl: "{{ os_ssl | default(False) }}"
       apache_services:
-        - { port: 8977, wsgi_process: "panko-api", wsgi_user: "panko", wsgi_script: "/var/www/cgi-bin/panko/panko-api" }
+        - { port: 8977, wsgi_process: "panko-api", wsgi_user: "panko", wsgi_group: "panko", wsgi_script: "/var/www/cgi-bin/panko/panko-api" }
 
 - hosts: haproxy
   become: True
