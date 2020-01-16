@@ -1,0 +1,5 @@
+---
+
+- name: signal apache to reload
+  file: dest=/run/apache2.reload state=touch
+  when: inventory_hostname in groups['nova_controller']

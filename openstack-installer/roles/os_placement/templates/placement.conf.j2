@@ -1,0 +1,136 @@
+[DEFAULT]
+
+# Logs
+debug = {{ placement_debug }}
+verbose = True
+use_stderr = False
+use_syslog = {{ placement_syslog_use }}
+log_dir = /var/log/placement
+
+#
+# From placement.conf
+#
+
+# Explicitly specify the temporary working directory. (string value)
+#tempdir = <None>
+
+#
+# The directory where the Placement python modules are installed.
+#
+# This is the default path for other config options which need to persist
+# Placement internal data. It is very unlikely that you need to
+# change this option from its default value.
+#
+# Possible values:
+#
+# * The full path to a directory.
+#
+# Related options:
+#
+# * ``state_path``
+#  (string value)
+#
+# This option has a sample default set, which means that
+# its actual default value may vary from the one documented
+# below.
+#pybasedir = <Path>
+
+#
+# The top-level directory for maintaining state used in Placement.
+#
+# This directory is used to store Placement's internal state. It is used by some
+# tests that have behaviors carried over from Nova.
+#
+# Possible values:
+#
+# * The full path to a directory. Defaults to value provided in ``pybasedir``.
+#  (string value)
+#state_path = $pybasedir
+
+
+[api]
+#
+# Options under this group are used to define Placement API.
+
+#
+# From placement.conf
+#
+
+#
+# This determines the strategy to use for authentication: keystone or noauth2.
+# 'noauth2' is designed for testing only, as it does no actual credential
+# checking. 'noauth2' provides administrative credentials only if 'admin' is
+# specified as the username.
+#  (string value)
+# Possible values:
+# keystone - <No description provided>
+# noauth2 - <No description provided>
+auth_strategy = keystone
+
+
+[keystone_authtoken]
+
+auth_type = password
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
+www_authenticate_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
+region_name = {{ keystone_region_name }}
+user_domain_name = {{ placement_domain_name }}
+username = {{ placement_admin_user }}
+password = {{ placement_admin_password }}
+project_domain_name = {{ placement_project_domain_name }}
+project_name = {{ placement_project_name }}
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
+service_token_roles_required = True
+
+memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgmt }}:11211{% if not loop.last %},{% endif %}{% endfor %}
+
+memcache_security_strategy = ENCRYPT
+memcache_secret_key = {{ memcache_secret_key }}
+
+
+[placement]
+
+#
+# From placement.conf
+#
+
+#
+# If True, when limiting allocation candidate results, the results will be
+# a random sampling of the full result set. If False, allocation candidates
+# are returned in a deterministic but undefined order. That is, all things
+# being equal, two requests for allocation candidates will return the same
+# results in the same order; but no guarantees are made as to how that order
+# is determined.
+#  (boolean value)
+#randomize_allocation_candidates = false
+
+# The file that defines placement policies. This can be an absolute path or
+# relative to the configuration file. (string value)
+#policy_file = policy.yaml
+
+#
+# Early API microversions (<1.8) allowed creating allocations and not specifying
+# a project or user identifier for the consumer. In cleaning up the data
+# modeling, we no longer allow missing project and user information. If an older
+# client makes an allocation, we'll use this in place of the information it
+# doesn't provide.
+#  (string value)
+#incomplete_consumer_project_id = 00000000-0000-0000-0000-000000000000
+
+#
+# Early API microversions (<1.8) allowed creating allocations and not specifying
+# a project or user identifier for the consumer. In cleaning up the data
+# modeling, we no longer allow missing project and user information. If an older
+# client makes an allocation, we'll use this in place of the information it
+# doesn't provide.
+#  (string value)
+#incomplete_consumer_user_id = 00000000-0000-0000-0000-000000000000
+
+
+[placement_database]
+
+connection = mysql+pymysql://{{ placement_db_user }}:{{ placement_db_password }}@{{ placement_mysql_server }}/{{ placement_db }}?charset=utf8
+max_retries = -1

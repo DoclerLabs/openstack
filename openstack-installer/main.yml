@@ -19,6 +19,7 @@
 - include: os_horizon.yml
 - include: os_cinder.yml
 - include: os_neutron.yml
+- include: os_placement.yml
 - include: os_nova.yml
 - include: os_octavia.yml
 - include: os_heat.yml

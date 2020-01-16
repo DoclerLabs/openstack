@@ -1,0 +1,19 @@
+---
+
+placement_db_user: placement
+placement_mysql_server: "{{ vip_mgmt }}"
+placement_db: placement
+placement_admin_user: placement
+placement_domain_name: "{{ keystone_domain_name }}"
+placement_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+placement_project_name: "{{ keystone_service_project_name | default('service') }}"
+
+placement_syslog_use: "{{ syslog_use | default(False) }}"
+
+placement_debug: False
+
+keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
+os_proto: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
+ssl_insecure: False
+SSLCACertificateFileSource:
+SSLCACertificateFile: "{{ (SSLCACertificateFileSource is not none and SSLCACertificateFileSource | trim != '') | ternary('/etc/ssl/certs/openstack.ca.crt','') }}"

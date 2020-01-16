@@ -31,6 +31,7 @@ swift_proxy:
 swift_storage:
 glance:
 horizon:
+placement:
 nova_controller:
 nova_compute:
 neutron_controller:

@@ -1,0 +1,52 @@
+---
+
+- hosts: placement[0]
+  max_fail_percentage: 0
+  roles:
+    - role: os_keystone_service
+      keystone_service_name: placement
+      keystone_service_type: placement
+      keystone_service_description: "OpenStack Placement Service"
+      keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8780"
+      keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8780"
+      keystone_admin_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_admin_address }}:8780"
+      keystone_region: "{{ keystone_region_name }}"
+      keystone_users:
+        - keystone_user: "{{ placement_admin_user | default('placement') }}"
+          keystone_domain_name: "{{ placement_domain_name | default(keystone_domain_name) }}"
+          keystone_password: "{{ placement_admin_password }}"
+          keystone_project_name: "{{ keystone_service_project_name | default('service') }}"
+          keystone_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
+          keystone_role:
+            - admin
+            - service
+
+- hosts: placement
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - role: apt
+
+    - role: os_placement
+
+    - role: apache_frontend
+      apache_service_name: placement
+      apache_service_ssl: "{{ os_ssl | default(False) }}"
+      apache_services:
+        - { port: 8780, wsgi_process: "placement", wsgi_user: "placement", wsgi_group: "placement", wsgi_script: "/var/www/cgi-bin/placement/placement-api" }
+
+- hosts: haproxy
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - role: haproxy_service
+      haproxy_services:
+
+        - haproxy_service_name: placement_api
+          haproxy_backend_nodes: "{{ groups['placement'] }}"
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+            - "{{ vip_public }}"
+          haproxy_port: 8780
+          haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
+          haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk GET /'], ['forwardfor', 'httpchk GET /', 'httplog']) }}"

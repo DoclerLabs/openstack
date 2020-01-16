@@ -55,7 +55,6 @@
   apt:
     name:
     - nova-api
-    - nova-placement-api
     - nova-conductor
     - nova-consoleauth
     - nova-novncproxy
@@ -209,11 +208,6 @@
 #    - nova-metadata
 #  when: inventory_hostname in groups['nova_controller']
 #  notify: signal apache to reload
-
-- name: link nova-placement-api
-  file: src=/usr/bin/nova-placement-api dest=/var/www/cgi-bin/nova/placement-api state=link
-  when: inventory_hostname in groups['nova_controller']
-  notify: signal apache to reload
 
 - name: unmask autostarting of nova controller services
   service_mask: name={{ item }} state=unmasked

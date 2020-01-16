@@ -112,6 +112,9 @@ glance:
 horizon:
   inherit: controller
 
+placement:
+  inherit: controller
+
 nova_controller:
   inherit: controller
 
