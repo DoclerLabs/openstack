@@ -42,18 +42,18 @@ scheduler_default_weighers = {{ cinder_scheduler_default_weighers }}
 
 {% if cinder_backup_backend == 'posix' %}
 
-backup_driver = cinder.backup.drivers.posix
+backup_driver = cinder.backup.drivers.posix.PosixBackupDriver
 
 {% elif cinder_backup_backend == 'ceph' %}
 
-backup_driver = cinder.backup.drivers.ceph
+backup_driver = cinder.backup.drivers.ceph.CephBackupDriver
 backup_ceph_conf = /etc/ceph/{{ cinder_backup_ceph_cluster_name }}.conf
 backup_ceph_pool = {{ cinder_backup_ceph_pool }}
 backup_ceph_user = {{ cinder_backup_ceph_user }}
 
 {% elif cinder_backup_backend == 'swift' %}
 
-backup_driver = cinder.backup.drivers.swift
+backup_driver = cinder.backup.drivers.swift.SwiftBackupDriver
 backup_swift_auth_url = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 {% if SSLCACertificateFile != '' %}
 backup_swift_ca_cert_file = {{ SSLCACertificateFile }}
