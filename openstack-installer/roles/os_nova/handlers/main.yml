@@ -10,7 +10,6 @@
     - nova-api
     - nova-scheduler
     - nova-conductor
-    - nova-consoleauth
     - nova-novncproxy
     - nova-spiceproxy
   when: inventory_hostname in groups['nova_controller']
