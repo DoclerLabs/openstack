@@ -17,7 +17,7 @@
     - percona-xtradb-cluster-galera-3
     - socat
     - xinetd
-    - python-mysqldb
+    - python3-mysqldb
 
 - name: list pacemaker resources
   command: crm_resource --list
