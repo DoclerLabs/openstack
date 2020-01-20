@@ -73,7 +73,7 @@ class SystemdMask:
                 try:
                     os.symlink('/dev/null',
                                SYSTEMD_MASK_DIR + service + '.service')
-                except Exception, e:
+                except Exception as e:
                     module.fail_json(msg='%s' % str(e))
                 module.exit_json(changed=True)
 
@@ -87,7 +87,7 @@ class SystemdMask:
             try:
                 os.unlink(SYSTEMD_MASK_DIR + service + '.service')
                 self._daemon_reload(module)
-            except Exception, e:
+            except Exception as e:
                 module.fail_json(msg='%s' % str(e))
             module.exit_json(changed=True)
         else:
@@ -107,13 +107,13 @@ class UpstartMask:
                         module.exit_json(changed=False)
             except IOError:
                     pass
-            except Exception, e:
+            except Exception as e:
                 module.fail_json(msg='%s' % str(e))
 
             try:
                 with open(UPSTART_DIR + service + '.override', 'w') as f:
                     f.write('manual')
-            except Exception, e:
+            except Exception as e:
                 module.fail_json(msg='%s' % str(e))
 
         module.exit_json(changed=True)
@@ -134,7 +134,7 @@ class UpstartMask:
         try:
             with open(UPSTART_DIR + service + '.override', 'w') as f:
                 pass
-        except Exception, e:
+        except Exception as e:
             module.fail_json(msg='%s' % str(e))
 
         module.exit_json(changed=True)
