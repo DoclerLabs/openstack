@@ -48,12 +48,12 @@
     - ironic-api
     - ironic-common
     - ironic-conductor
-    - python-ironic
-    - python-ironicclient
-    - python-scciclient
-    - python-shade
-    - python-mysqldb
-    - python-memcache
+    - python3-ironic
+    - python3-ironicclient
+    - python3-scciclient
+    - python3-shade
+    - python3-mysqldb
+    - python3-memcache
 
 - name: create ironic database
   mysql_db: name={{ ironic_db }}

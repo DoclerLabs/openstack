@@ -11,12 +11,12 @@
     name:
     - git
     - libssl-dev
-    - python-dev
-    - python-subunit
-    - python-shade
-    - python-glanceclient
-    - python-novaclient
-    - python-neutronclient
+    - python3-dev
+    - python3-subunit
+    - python3-shade
+    - python3-glanceclient
+    - python3-novaclient
+    - python3-neutronclient
   when: ansible_os_family == 'Debian'
 
 - name: make sure the images directory exists

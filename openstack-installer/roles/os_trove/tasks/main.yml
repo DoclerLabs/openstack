@@ -39,10 +39,10 @@
 - name: install trove packages
   apt:
     name:
-    - python-troveclient
-    - python-keystoneclient
-    - python-glanceclient
-    - python-shade
+    - python3-troveclient
+    - python3-keystoneclient
+    - python3-glanceclient
+    - python3-shade
     - python3-trove
     - trove-api
     - trove-taskmanager

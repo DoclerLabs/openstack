@@ -3,8 +3,8 @@
 - name: make sure clients are exist
   apt:
     name:
-    - python-keystoneclient
-    - python-shade
+    - python3-keystoneclient
+    - python3-shade
   become: True
 
 - name: install CA certificate
