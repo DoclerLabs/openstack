@@ -4,7 +4,7 @@
   apt:
     name:
     - mongodb
-    - python-pymongo
+    - python3-pymongo
 
 - name: deploy mongodb configuration
   template: src=mongodb.conf.j2 dest=/etc/mongodb.conf owner=mongodb group=root mode=0460
