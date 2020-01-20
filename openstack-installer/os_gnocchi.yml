@@ -43,7 +43,7 @@
       apache_service_name: gnocchi
       apache_service_ssl: "{{ os_ssl | default(False) }}"
       apache_services:
-        - { port: 8041, wsgi_process: "gnocchi-api", wsgi_user: "gnocchi", wsgi_script: "/var/www/cgi-bin/gnocchi/gnocchi-api" }
+          - { port: 8041, wsgi_process: "gnocchi-api", wsgi_user: "gnocchi", wsgi_group: "gnocchi", wsgi_script: "/var/www/cgi-bin/gnocchi/gnocchi-api" }
 
 - hosts: haproxy
   become: True

@@ -32,7 +32,7 @@
     - role: apache_frontend
       apache_service_name: sahara
       apache_services:
-        - { port: 8386, wsgi_process: "sahara-api", wsgi_user: "sahara", wsgi_script: "/var/www/cgi-bin/sahara/sahara-api" }
+          - { port: 8386, wsgi_process: "sahara-api", wsgi_user: "sahara", wsgi_group: "sahara", wsgi_script: "/var/www/cgi-bin/sahara/sahara-api" }
 
 - hosts: haproxy
   become: True
