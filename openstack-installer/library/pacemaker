@@ -125,7 +125,7 @@ def unquote(str):
 
 def _stringify_dict(src):
     ret = {}
-    for (key, value) in src.iteritems():
+    for (key, value) in src.items():
        if isinstance(value, dict):
            ret[key] = _stringify_dict(value)
        elif isinstance(value, int):
@@ -155,7 +155,7 @@ class BaseParser(object):
     def is_same(self, obj):
         if len(obj) + 2 != len(self.cib) and not self.partial_compare:
             return False
-        for key, value in obj.iteritems():
+        for key, value in obj.items():
             if key not in self.cib.keys():
                 return False
             if value != self.cib.get(key):
@@ -215,7 +215,7 @@ class PrimitiveParser(BaseParser):
     def is_same(self, obj):
         if len(obj) + 2 != len(self.cib) and not self.partial_compare:
             return False
-        for key, value in obj.iteritems():
+        for key, value in obj.items():
             if key not in self.cib.keys():
                 return False
             if key == 'type':
@@ -528,7 +528,7 @@ class BaseBuilder(object):
         return self._build_command([], params)
 
     def _build_command(self, command, params):
-        for key,value in params.iteritems():
+        for key,value in params.items():
             if key in ('type', 'rsc'):
                 command.insert(0, value)
             elif isinstance(value, dict):
@@ -544,7 +544,7 @@ class PrimitiveBuilder(BaseBuilder):
         return self._build_command([], params)
 
     def _build_command(self, command, params, op=False):
-        for key,value in params.iteritems():
+        for key,value in params.items():
             if op:
                 command.append('op')
                 while key[-1].isdigit():
@@ -565,7 +565,7 @@ class ColocationBuilder(BaseBuilder):
         return self._build_command([], params)
 
     def _build_command(self, command, params):
-        for key,value in params.iteritems():
+        for key,value in params.items():
             if key=='score':
                 command.insert(0, str(value) + ':')
             elif key=='rsc':
