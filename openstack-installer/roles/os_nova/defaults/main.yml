@@ -52,7 +52,7 @@ nova_libvirt_cpu_model:
 
 nova_default_schedule_zone:
 #deprecated, use nova_filter_scheduler available_filters and nova_filter_scheduler_enabled_filters
-nova_scheduler_default_filters: "RetryFilter,AvailabilityZoneFilter,RamFilter,DiskFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter"
+nova_scheduler_default_filters: "RetryFilter,AvailabilityZoneFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter"
 nova_filter_scheduler_available_filters: nova.scheduler.filters.all_filters
 nova_filter_scheduler_enabled_filters: "{{ nova_scheduler_default_filters }}"
 nova_default_floating_pool: ext-net
