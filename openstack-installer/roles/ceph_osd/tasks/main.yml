@@ -112,19 +112,19 @@
 
 ### Add disk-based OSDs
 - name: prepare disks
-  command: ceph-disk prepare
+  command: ceph-volume lvm prepare
      --cluster {{ ceph_cluster_name }}
     {{ (item.id | default(None)) | ternary('--osd-id ' + item.id | default(None) | string, '') }}
     {{ (item.bluestore | default(ceph_osd_bluestore)) | ternary('--bluestore','--filestore') }}
-    "{{ item.disk }}"
+    --data "{{ item.disk }}"
     {{ item.journal | default('') }}
   register: ceph_disk_status
-  failed_when: ceph_disk_status.rc != 0 and ('Could not create partition 2' not in ceph_disk_status.stderr) and ('Device is mounted' not in ceph_disk_status.stderr)
+  failed_when: ceph_disk_status.rc != 0 and ('Could not create partition 2' not in ceph_disk_status.stderr) and ('Mounted filesystem' not in ceph_disk_status.stdout)
   changed_when: ceph_disk_status.rc == 0
   with_items: "{{ osd }}"
   when: item.disk is defined
 
 - name: activate disks
-  shell: ceph-disk activate $(ceph-disk list "{{ item.disk }}" | awk '/ceph data/{ print $1 }')
+  shell: ceph-volume lvm activate $(ceph-volume lvm list /dev/vdb | awk '/osd id/{ print $3 }')
   with_items: "{{ osd }}"
   when: item.disk is defined
