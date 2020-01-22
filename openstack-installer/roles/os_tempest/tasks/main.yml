@@ -184,13 +184,17 @@
 - name: install tempest to virtualenv
   pip: name={{ tempest_dest }}/tempest virtualenv={{ tempest_dest }}/virtualenv
 
+#- name: install tempest plugins to virtualenv
+#  pip: name={{ tempest_dest }}/{{ item }} virtualenv={{ tempest_dest }}/virtualenv
+#  when: groups[item] | length > 0
+#  with_items:
+#    - keystone
+#    - barbican
+#    - designate
+
 - name: install tempest plugins to virtualenv
-  pip: name={{ tempest_dest }}/{{ item }} virtualenv={{ tempest_dest }}/virtualenv
-  when: groups[item] | length > 0
-  with_items:
-    - keystone
-    - barbican
-    - designate
+  pip: name={{ tempest_dest }}/keystone virtualenv={{ tempest_dest }}/virtualenv
+  when: groups['keystone'] | length > 0
 
 - name: install tempest config
   template: src=tempest.conf.j2 dest={{ tempest_dest }}/tempest/etc/tempest.conf
