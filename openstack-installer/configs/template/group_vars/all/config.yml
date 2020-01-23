@@ -45,7 +45,6 @@ neutron_vlan_ranges: vlan:901:915,vlan:917:975
 neutron_ha_network_type: vlan
 neutron_ha_network_physical_name: vlan
 neutron_ha_routers: False
-neutron_lbaas_agent: lbaasv2
 
 trove_net_name: trove-net
 trove_net_segmentation_id: 901

@@ -41,10 +41,6 @@ neutron_segment_mtu: 1500
 neutron_global_physnet_mtu: "{{ neutron_segment_mtu }}"
 neutron_physical_network_mtus:
 
-#lbaas or lbaasv2
-neutron_lbaas_agent: lbaasv2
-#haproxy or octavia
-neutron_lbaasv2_provider: haproxy
 neutron_ha_routers: True
 #openswan/strongswan, empty: no vpnaas
 neutron_vpnaas_type:

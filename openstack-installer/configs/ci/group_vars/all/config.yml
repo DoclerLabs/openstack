@@ -47,7 +47,6 @@ neutron_ha_network_type:
 neutron_ha_network_physical_name:
 neutron_ha_routers: False
 neutron_mtu: 1400
-neutron_lbaas_agent: lbaasv2
 neutron_l2_population: False
 
 panko_backend: mongodb

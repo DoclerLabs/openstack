@@ -46,7 +46,6 @@
     - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
-    - neutron-{{ neutron_lbaas_agent }}-agent
   when: inventory_hostname in groups['neutron_l3']
 
 - name: turn off rp filtering
@@ -123,7 +122,6 @@
     - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
-    - neutron-{{ neutron_lbaas_agent }}-agent
     - python3-neutron-vpnaas
     - python3-neutronclient
   when: inventory_hostname in groups['neutron_l3']
@@ -164,7 +162,6 @@
     - restart neutron-l3-agent
     - restart neutron-dhcp-agent
     - restart neutron-metadata-agent
-    - restart neutron-lbaas-agent
     - restart neutron-l2-agent
 
 - name: install ml2_conf.ini
@@ -198,12 +195,6 @@
   notify:
     - restart neutron-dhcp-agent
 
-- name: install lbaas_agent.ini
-  template: src=lbaas_agent.ini.j2 dest=/etc/neutron/lbaas_agent.ini owner=neutron group=root mode=0460
-  when: inventory_hostname in groups['neutron_l3']
-  notify:
-    - restart neutron-lbaas-agent
-
 - name: install L2 agent config
   template: src="{{ item }}_agent.ini.j2" dest="/etc/neutron/plugins/ml2/{{ item }}_agent.ini" owner=neutron group=root mode=0460
   when: inventory_hostname in groups['neutron_l2']
@@ -234,7 +225,6 @@
     - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
-    - neutron-{{ neutron_lbaas_agent }}-agent
   when: inventory_hostname in groups['neutron_l3']
 
 - meta: flush_handlers
@@ -256,5 +246,4 @@
     - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
-    - neutron-{{ neutron_lbaas_agent }}-agent
   when: inventory_hostname in groups['neutron_l3']
