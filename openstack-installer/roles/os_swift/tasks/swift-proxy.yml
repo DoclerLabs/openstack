@@ -36,8 +36,8 @@
     name:
     - swift
     - swift-proxy
-    - python-swiftclient
-    - python-ceilometermiddleware
+    - python3-swiftclient
+    - python3-ceilometermiddleware
   when: inventory_hostname in groups['swift_proxy']
 
 - name: install swift proxy config
