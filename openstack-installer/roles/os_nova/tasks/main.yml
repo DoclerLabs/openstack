@@ -131,7 +131,7 @@
 - name: stop default libvirt network
   command: virsh net-destroy default
   register: virsh_result
-  failed_when: virsh_result is failed and 'Network not found' not in virsh_result.stderr
+  failed_when: virsh_result is failed and 'Network not found' not in virsh_result.stderr and 'not active' not in virsh_result.stderr
   changed_when: virsh_result is success
   when: inventory_hostname in groups['nova_compute'] and nova_compute_package in ('qemu','kvm')
 
