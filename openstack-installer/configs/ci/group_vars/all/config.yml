@@ -92,6 +92,8 @@ tempest_lock_path: "{{ ansible_env.WORKSPACE | default(ansible_env.HOME) }}/temp
 tempest_images_dest: "{{ ansible_env.WORKSPACE | default(ansible_env.HOME) }}/tempest_images"
 
 ceph_osd_journal_size: 1000
+ceph_osd_pool_default_pg_num: 32
+ceph_osd_pool_default_pgp_num: 32
 
 radosgw_keystone: False
 radosgw_port: 8083
