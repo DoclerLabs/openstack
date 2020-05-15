@@ -75,6 +75,7 @@
     - python-rbd
     - python-rados
     - sysfsutils
+    - ovmf
     - nova-compute-{{ nova_compute_package }}
     - nova-compute
   when: inventory_hostname in groups['nova_compute']
