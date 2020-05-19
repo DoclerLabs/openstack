@@ -27,9 +27,6 @@ cpu_allocation_ratio = {{ nova_cpu_allocation_ratio }}
 ram_allocation_ratio = {{ nova_ram_allocation_ratio }}
 disk_allocation_ratio = {{ nova_disk_allocation_ratio }}
 
-cpu_weight_multiplier = {{ nova_cpu_weight_multiplier }}
-ram_weight_multiplier = {{ nova_ram_weight_multiplier }}
-disk_weight_multiplier = {{ nova_disk_weight_multiplier }}
 
 default_schedule_zone = {{ nova_default_schedule_zone }}
 
@@ -213,7 +210,10 @@ discover_hosts_in_cells_interval = {{ nova_discover_hosts_in_cells_interval }}
 
 available_filters = {{ nova_filter_scheduler_available_filters }}
 enabled_filters = {{ nova_filter_scheduler_enabled_filters }}
-
+cpu_weight_multiplier = {{ nova_cpu_weight_multiplier }}
+ram_weight_multiplier = {{ nova_ram_weight_multiplier }}
+disk_weight_multiplier = {{ nova_disk_weight_multiplier }}
+host_subset_size = {{ nova_host_subset_size }}
 
 [api_database]
 
