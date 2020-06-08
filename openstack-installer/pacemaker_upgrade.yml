@@ -17,11 +17,12 @@
   serial: 1
   tasks:
     - name: upgrade pacemaker
-      apt: name={{ item }} state=latest
-      with_items:
-        - corosync
-        - pacemaker-common
-        - pacemaker
+      apt:
+        name:
+          - corosync
+          - pacemaker-common
+          - pacemaker
+        state: latest
       notify: restart pacemaker
 
     - meta: flush_handlers

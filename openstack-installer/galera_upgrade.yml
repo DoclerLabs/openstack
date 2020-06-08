@@ -31,11 +31,12 @@
         command: mysqladmin shutdown -u root -p{{ mysql_root_password }}
 
       - name: upgrade packages
-        apt: name={{ item }} state=latest
-        with_items:
-          - percona-xtrabackup-24
-          - percona-xtradb-cluster-server-5.7
-          - percona-xtradb-cluster-galera-3
+        apt:
+          name:
+            - percona-xtrabackup-24
+            - percona-xtradb-cluster-server-5.7
+            - percona-xtradb-cluster-galera-3
+          state: latest
 
       always:
 

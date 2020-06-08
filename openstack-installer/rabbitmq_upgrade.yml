@@ -17,6 +17,4 @@
   serial: 1
   tasks:
     - name: upgrade rabbitmq-server
-      apt: name={{ item }} state=latest
-      with_items:
-        - rabbitmq-server
+      apt: name=rabbitmq-server state=latest

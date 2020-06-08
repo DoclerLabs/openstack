@@ -88,13 +88,14 @@
       copy: content='' dest=/etc/apache2/sites-available/keystone.conf owner=root group=root mode=0644
 
     - name: upgrade keystone
-      apt: name={{ item }} state=latest
-      with_items:
-        - keystone
-        - python-keystoneclient
-        - python-oslo.log
-        - python-oslo.policy
-        - python-webob
+      apt:
+        name:
+          - keystone
+          - python-keystoneclient
+          - python-oslo.log
+          - python-oslo.policy
+          - python-webob
+        state: latest
 
 - hosts: memcached
   become: True
