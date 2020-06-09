@@ -56,6 +56,13 @@
     - name: mask aodh-api apache config
       copy: content='' dest=/etc/apache2/sites-available/aodh-api.conf owner=root group=root mode=0644
 
+- hosts: panko
+  become: True
+  max_fail_percentage: 0
+  tasks:
+    - name: mask panko-api apache config
+      copy: content='' dest=/etc/apache2/sites-available/panko-api.conf owner=root group=root mode=0644
+
 - hosts: ceilometer_controller
   become: True
   max_fail_percentage: 0
@@ -104,10 +111,8 @@
       apt:
         name:
           - keystone
-          - python-keystoneclient
-          - python-oslo.log
-          - python-oslo.policy
-          - python-webob
+          - python3-keystone
+          - python3-keystoneclient
         state: latest
 
 - hosts: memcached
