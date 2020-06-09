@@ -39,6 +39,12 @@
     - name: make sure aptitude is installed
       apt: name=aptitude
 
+    - name: remove problematic packages
+      apt:
+        name:
+          - python-shade
+          - panko-api
+        state: absent
 
 # Mask apache configs from the packages
 
