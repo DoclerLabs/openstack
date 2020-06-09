@@ -166,16 +166,22 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #    ('http://cluster2.example.com:5000/v2.0', 'cluster2'),
 #]
 
-{% if horizon_regions is defined %}
 AVAILABLE_REGIONS = [
+{% if horizon_regions is defined %}
 {% for region in horizon_regions %}
     ('{{ region.url }}', '{{ region.name }}'),
 {% endfor %}
-]
+{% else %}
+    ('{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3', '{{ keystone_region_name }}')
 {% endif %}
+]
 OPENSTACK_HOST = "{{ keystone_admin_address }}"
 OPENSTACK_KEYSTONE_URL = "{{ keystone_proto }}://%s:5000/v3" % OPENSTACK_HOST
 OPENSTACK_KEYSTONE_DEFAULT_ROLE = "_member_"
+
+DEFAULT_SERVICE_REGIONS = {
+ '*' : '{{ keystone_region_name }}'
+}
 
 # Enables keystone web single-sign-on if set to True.
 #WEBSSO_ENABLED = False
