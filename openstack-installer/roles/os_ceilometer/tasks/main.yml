@@ -129,4 +129,5 @@
 
 - name: ensure Gnocchi resource types are up-to-date
   command: su ceilometer -s /bin/sh -c "/usr/bin/ceilometer-upgrade"
+  failed_when: False
   when: inventory_hostname == groups['ceilometer_controller'][0] and (groups['gnocchi'] | count > 0)
