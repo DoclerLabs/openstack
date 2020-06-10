@@ -4,7 +4,7 @@
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''
 
-- name: mask placement-placement-api apache config
+- name: mask placement-api apache config
   copy: content='' dest=/etc/apache2/sites-available/placement-api.conf owner=root group=root mode=0644
   when: inventory_hostname in groups['placement']
 
@@ -53,7 +53,7 @@
   file: path=/var/www/cgi-bin/placement state=directory owner=root group=root mode=0755
   notify: signal apache to reload
 
-- name: link placement-placement-api
+- name: link placement-api
   file: src=/usr/bin/placement-api dest=/var/www/cgi-bin/placement/placement-api state=link
   when: inventory_hostname in groups['placement']
   notify: signal apache to reload
