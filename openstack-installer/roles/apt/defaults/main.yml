@@ -1,7 +1,7 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-train", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu bionic-updates/train main" }
+  - { name: "cloudarchive-ussuri", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu bionic-updates/ussuri main" }
 
 apt_extra_repos: []
 
