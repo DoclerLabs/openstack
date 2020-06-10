@@ -44,6 +44,7 @@
         name:
           - python-shade
           - panko-api
+          - python-cinderclient
         state: absent
 
 # Mask apache configs from the packages
