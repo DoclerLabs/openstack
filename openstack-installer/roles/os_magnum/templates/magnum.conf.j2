@@ -8,7 +8,7 @@
 
 # Directory where the magnum python module is installed. (string
 # value)
-pybasedir = /usr/lib/python2.7/dist-packages/magnum
+pybasedir = /usr/lib/python3/dist-packages/magnum
 
 # Directory where magnum binaries are installed. (string value)
 bindir = /usr/bin
@@ -623,7 +623,7 @@ insecure = {{ ssl_insecure }}
 
 auth_type = password
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3
-www_authenticate_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
+www_authenticate_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3
 region_name = {{ keystone_region_name }}
 user_domain_name = {{ magnum_domain_name }}
 username = {{ magnum_admin_user }}
@@ -879,27 +879,10 @@ rabbit_ha_queues = true
 
 [trust]
 
-#
-# From magnum
-#
-
-# Id of the domain to create trustee for bays (string value)
-#trustee_domain_id = <None>
-trustee_domain_id = {{ magnum_domain_result.stdout }}
-
-# Id of the admin with roles sufficient to manage users in the
-# trustee_domain (string value)
-#trustee_domain_admin_id = <None>
-trustee_domain_admin_id = {{ magnum_domain_admin_result.stdout }}
-
-# Password of trustee_domain_admin (string value)
-#trustee_domain_admin_password = <None>
+trustee_domain_name = {{ magnum_domain }}
+trustee_domain_admin_name = {{ magnum_domain_admin }}
 trustee_domain_admin_password = {{ magnum_domain_admin_password }}
-
-# The roles which are delegated to the trustee by the trustor (list
-# value)
-#roles =
-
+#trustee_keystone_interface = KEYSTONE_INTERFACE
 
 [x509]
 
