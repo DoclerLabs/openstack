@@ -9,6 +9,12 @@
 - name: ensure /etc/openstack-dashboard exists
   file: dest=/etc/openstack-dashboard owner=horizon group=horizon mode=0750 state=directory
 
+- name: ensure /var/lib/openstack-dashboard exists
+  file: dest=/var/lib/openstack-dashboard owner=horizon group=horizon mode=0750 state=directory
+
+- name: ensure /var/lib/openstack-dashboard/secret_key exists
+  copy: dest=/var/lib/openstack-dashboard/secret_key owner=horizon group=horizon mode=0750 force=no content=''
+
 - name: install local_settings.py
   template: src=local_settings.py.j2 dest=/etc/openstack-dashboard/local_settings.py owner=root group=horizon mode=0640
   notify: restart apache
