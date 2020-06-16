@@ -22,6 +22,8 @@ magnum_debug: False
 magnum_domain: magnum
 magnum_domain_admin: magnum_trustee
 
+magnum_cluster_user_trust : False
+
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False
 SSLCACertificateFileSource:
