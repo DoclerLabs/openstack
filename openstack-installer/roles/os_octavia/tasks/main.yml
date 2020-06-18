@@ -38,12 +38,12 @@
     - octavia-housekeeping
 
 - name: install octavia
-  apt: name={{ item }}
-  with_items:
-    - octavia-api
-    - octavia-worker
-    - octavia-health-manager
-    - octavia-housekeeping
+  apt:
+    name:
+      - octavia-api
+      - octavia-worker
+      - octavia-health-manager
+      - octavia-housekeeping
 
 - name: create octavia database
   mysql_db: name={{ octavia_db }}

@@ -1,4 +1,4 @@
-{% set host_index = groups['heat'].index(inventory_hostname) % groups['rabbitmq'] | count %}
+{% set host_index = groups['octavia'].index(inventory_hostname) % groups['rabbitmq'] | count %}
 {% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
 [DEFAULT]
 

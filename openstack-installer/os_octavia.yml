@@ -20,6 +20,12 @@
           keystone_role:
             - admin
             - service
+      keystone_roles:
+        - load-balancer_observer
+        - load-balancer_global_observer
+        - load-balancer_member
+        - load-balancer_quota_admin
+        - load-balancer_admin
 
 - hosts: octavia
   become: True
