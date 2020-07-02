@@ -74,6 +74,9 @@ cert={{ SSLCertificateFile }}
 {% for entry in nova_pci_passthrough_whitelist %}
 passthrough_whitelist = {{ entry }}
 {% endfor %}
+{% for entry in nova_pci_aliases %}
+alias = {{ entry }}
+{% endfor %}
 
 [crypto]
 
