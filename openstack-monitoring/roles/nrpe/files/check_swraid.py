@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 # check_swraid - plugin for nagios to check the status of linux swraid devices
 #
@@ -43,11 +43,11 @@ for line in mdFile:
 overallStatus = 0
 errorMsg = ''
 for tup in mdData:
-    device, colon, status, type, drives = string.split(tup[0], None, 4)
-    drives = string.split(drives)
-    values = string.split(tup[1])[-2]
+    device, colon, status, type, drives = tup[0].split(None, 4)
+    drives = drives.split()
+    values = tup[1].split()[-2]
     values = values[1:-1]
-    normal, current = string.split(values, '/')
+    normal, current = values.split('/')
     normal = int(normal)
     current = int(current)
 
@@ -58,12 +58,13 @@ for tup in mdData:
     degraded = 0
     msg = ''
 
-    failed = []
+    failed_list = []
     for drive in drives:
         if drive[-3:] == '(F)':
-            failed.append(drive[:string.index(drive, '[')])
+            failed_list.append(drive[:string.index(drive, '[')])
             status = 1
-    failed = ' (' + string.join(failed, ', ') + ').'
+    failed = ", "
+    failed = ' (' + failed.join(failed_list) + ').'
 
 
     if status == 'inactive':
@@ -88,8 +89,8 @@ for tup in mdData:
         overallStatus = max(overallStatus, status)
 
 if overallStatus == 0:
-    print 'All md devices Ok.'
+    print ('All md devices Ok.')
     sys.exit(0)
 else:
-    print errorMsg
+    print (errorMsg)
     sys.exit(overallStatus)
