@@ -147,3 +147,8 @@
       state={{ (cinder_iscsi_helper == 'tgtadm') | ternary('started','stopped') }}
       enabled={{ cinder_iscsi_helper == 'tgtadm' }}
   when: inventory_hostname in groups['cinder_volume']
+
+- name: enable iscsid
+  service: name=iscsid state=started enabled=yes
+  with_items: "{{ cinder_backends | default([]) }}"
+  when: cinder_backends is defined and item.backend == 'lvm'
