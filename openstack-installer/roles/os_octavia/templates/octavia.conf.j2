@@ -241,7 +241,7 @@ auth_strategy = keystone
 #cert_manager = barbican_cert_manager
 
 # Name of the cert generator to use (string value)
-#cert_generator = local_cert_generator
+cert_generator = local_cert_generator
 
 # Name of the Barbican authentication method to use (string value)
 #barbican_auth = barbican_acl_auth
@@ -254,6 +254,7 @@ auth_strategy = keystone
 
 # Region in Identity service catalog to use for communication with the barbican service. (string value)
 #region_name = <None>
+region_name = {{ keystone_region_name }}
 
 # The endpoint_type to be used for barbican service. (string value)
 #endpoint_type = publicURL
@@ -264,6 +265,11 @@ auth_strategy = keystone
 # Disable certificate validation on SSL connections  (boolean value)
 #insecure = false
 
+ca_certificate = {{ octavia_server_ca_certificate }}
+
+ca_private_key = {{ octavia_server_ca_key }}
+
+ca_private_key_passphrase = {{ octavia_ca_private_key_passphrase }}
 
 [controller_worker]
 
@@ -284,10 +290,12 @@ workers = {{ octavia_controller_workers }}
 
 # Nova instance flavor id for the Amphora (string value)
 #amp_flavor_id =
+amp_flavor_id = {{ octavia_amp_flavor_id }}
 
 # Glance image tag for the Amphora image to boot. Use this option to be able to update the image without reconfiguring Octavia. Ignored if
 # amp_image_id is defined. (string value)
 #amp_image_tag =
+amp_image_tag = {{ octavia_amp_image_tag }}
 
 # DEPRECATED: Glance image id for the Amphora image to boot (string value)
 # This option is deprecated for removal.
@@ -300,6 +308,9 @@ workers = {{ octavia_controller_workers }}
 
 # SSH key name used to boot the Amphora (string value)
 #amp_ssh_key_name =
+{% if octavia_amp_ssh_key_name != '' %}
+amp_ssh_key_name = {{ octavia_amp_ssh_key_name }}
+{% endif %}
 
 # DEPRECATED: Determines whether or not to allow access to the Amphorae (boolean value)
 # This option is deprecated for removal.
@@ -310,21 +321,29 @@ workers = {{ octavia_controller_workers }}
 
 # List of networks to attach to the Amphorae. All networks defined in the list will be attached to each amphora. (list value)
 #amp_boot_network_list =
+amp_boot_network_list = {{ octavia_amp_network_list }}
 
 # List of security groups to attach to the Amphora. (list value)
 #amp_secgroup_list =
+{%if octavia_amp_secgroup_list != ''%}
+amp_secgroup_list = {{ octavia_amp_secgroup_list }}
+{% endif %}
 
 # Client CA for the amphora agent to use (string value)
 #client_ca = /etc/octavia/certs/ca_01.pem
+client_ca = {{ octavia_client_ca_certificate }}
 
 # Name of the amphora driver to use (string value)
 #amphora_driver = amphora_noop_driver
+amphora_driver = amphora_haproxy_rest_driver
 
 # Name of the compute driver to use (string value)
 #compute_driver = compute_noop_driver
+compute_driver = compute_nova_driver
 
 # Name of the network driver to use (string value)
 #network_driver = network_noop_driver
+network_driver = allowed_address_pairs_driver
 
 # Name of the distributor driver to use (string value)
 #distributor_driver = distributor_noop_driver
@@ -538,9 +557,11 @@ max_retries = -1
 
 # The client certificate to talk to the agent (string value)
 #client_cert = /etc/octavia/certs/client.pem
+client_cert = {{ octavia_client_cert_and_key }}
 
 # The ca which signed the server certificates (string value)
 #server_ca = /etc/octavia/certs/server_ca.pem
+server_ca = {{ octavia_server_ca_certificate }}
 
 # DEPRECATED: If False, use sysvinit. (boolean value)
 # This option is deprecated for removal.
@@ -841,89 +862,18 @@ rabbit_ha_queues = true
 # From octavia
 #
 
-# Authentication URL (string value)
-#auth_url = <None>
-
-# Authentication type to load (string value)
-# Deprecated group/name - [service_auth]/auth_plugin
-#auth_type = <None>
-
-# PEM encoded Certificate Authority to use when verifying HTTPs connections. (string value)
-#cafile = <None>
-
-# PEM encoded client certificate cert file (string value)
-#certfile = <None>
-
-# Collect per-API call timing information. (boolean value)
-#collect_timing = false
-
-# Optional domain ID to use with v3 and v2 parameters. It will be used for both the user and project domain in v3 and ignored in v2
-# authentication. (string value)
-#default_domain_id = <None>
-
-# Optional domain name to use with v3 API and v2 parameters. It will be used for both the user and project domain in v3 and ignored in v2
-# authentication. (string value)
-#default_domain_name = <None>
-
-# Domain ID to scope to (string value)
-#domain_id = <None>
-
-# Domain name to scope to (string value)
-#domain_name = <None>
-
-# Verify HTTPS connections. (boolean value)
-#insecure = false
-
-# PEM encoded client certificate key file (string value)
-#keyfile = <None>
-
-# User's password (string value)
-#password = <None>
-
-# Domain ID containing project (string value)
-#project_domain_id = <None>
-
-# Domain name containing project (string value)
-#project_domain_name = <None>
-
-# Project ID to scope to (string value)
-# Deprecated group/name - [service_auth]/tenant_id
-#project_id = <None>
-
-# Project name to scope to (string value)
-# Deprecated group/name - [service_auth]/tenant_name
-#project_name = <None>
-
-# Log requests to multiple loggers. (boolean value)
-#split_loggers = false
-
-# Scope for system operations (string value)
-#system_scope = <None>
-
-# Tenant ID (string value)
-#tenant_id = <None>
-
-# Tenant Name (string value)
-#tenant_name = <None>
-
-# Timeout value for http requests (integer value)
-#timeout = <None>
-
-# Trust ID (string value)
-#trust_id = <None>
-
-# User's domain id (string value)
-#user_domain_id = <None>
-
-# User's domain name (string value)
-#user_domain_name = <None>
-
-# User id (string value)
-#user_id = <None>
-
-# Username (string value)
-# Deprecated group/name - [service_auth]/user_name
-#username = <None>
+auth_type = password
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000/
+username = {{ octavia_admin_user }}
+user_domain_name = {{ octavia_domain_name }}
+password = {{ octavia_admin_password }}
+project_name = {{ octavia_project_name }}
+project_domain_name = {{ octavia_project_domain_name }}
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
+region_name = {{ keystone_region_name }}
 
 
 [task_flow]

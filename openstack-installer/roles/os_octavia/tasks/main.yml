@@ -60,6 +60,9 @@
     - localhost
     - '%'
 
+- name: ensure certficate dir exists
+  file: name={{ octavia_cert_dir }} owner=octavia group=octavia mode=0700 state=directory
+
 - name: install octavia configs
   template: src=octavia.conf.j2 dest=/etc/octavia/octavia.conf owner=octavia group=root mode=0460
   notify: restart octavia
@@ -91,3 +94,24 @@
     - octavia-worker
     - octavia-health-manager
     - octavia-housekeeping
+
+- name: ensure amphora flavor is exist
+  os_nova_flavor:
+    auth:
+      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
+      username: admin
+      password: "{{ keystone_admin_password }}"
+      domain-name: "{{ keystone_domain_name }}"
+      project_name: admin
+      project_domain_name: "{{ keystone_domain_name }}"
+    cacert: "{{ SSLCACertificateFile }}"
+    validate_certs: "{{ ssl_insecure | ternary(False, True) }}"
+    region_name: "{{ keystone_region_name }}"
+    endpoint_type: internal
+    name: "{{ octavia_amp_flavor_name }}"
+    flavorid: "{{ octavia_amp_flavor_id }}"
+    disk: "{{ octavia_amp_disk }}"
+    ram: "{{ octavia_amp_ram }}"
+    ephemeral: "{{ octavia_amp_ephemeral }}"
+    vcpus: "{{ octavia_amp_vcpus }}"
+    state: present

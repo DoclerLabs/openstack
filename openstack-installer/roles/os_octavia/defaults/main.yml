@@ -19,7 +19,25 @@ octavia_notifications: "{{ notifications_enable | default(False) }}"
 
 octavia_syslog_use: "{{ syslog_use | default(False) }}"
 
+octavia_cert_dir: /etc/octavia/certs
+octavia_server_ca_certificate: "{{ octavia_cert_dir }}/server_ca.cert.pem"
+octavia_server_ca_key: "{{ octavia_cert_dir }}/server_ca.key.pem"
+octavia_client_ca_certificate: "{{ octavia_cert_dir }}/client_ca.cert.pem"
+octavia_client_cert_and_key:  "{{ octavia_cert_dir }}/client.cert-and-key.pem"
+octavia_ca_private_key_passphrase: ''
+
 octavia_debug: False
+octavia_amp_flavor_id: amphora
+octavia_amp_image_tag: amphora
+octavia_amp_network_list: lb-mgmt-net
+octavia_amp_ssh_key_name: ''
+octavia_amp_secgroup_list: ''
+
+octavia_amp_flavor_name: amphora
+octavia_amp_disk: 10
+octavia_amp_ram: 1024
+octavia_amp_ephemeral: 0
+octavia_amp_vcpus: 2
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 os_proto: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
