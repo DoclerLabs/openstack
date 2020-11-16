@@ -43,7 +43,7 @@
     - mistral-api
     - mistral-engine
     - mistral-executor
-    - python-mistralclient
+    - python3-mistralclient
 
 - name: ensure python-mistral is not installed
   apt: name=python-mistral state=absent
