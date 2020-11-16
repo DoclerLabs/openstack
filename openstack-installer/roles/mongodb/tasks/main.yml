@@ -49,6 +49,9 @@
   retries: 10
   delay: 5
 
+- name: pause to wait for the master node
+  pause: seconds=10 echo=no
+
 - name: determine the master node
   command: mongo --quiet --eval 'rs.isMaster().ismaster' admin
   changed_when: False
