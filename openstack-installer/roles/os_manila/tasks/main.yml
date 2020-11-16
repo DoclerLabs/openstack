@@ -41,7 +41,7 @@
     - python3-manila
     - manila-api
     - manila-scheduler
-    - python-manilaclient
+    - python3-manilaclient
 
 - name: ensure python-manula is not installed
   apt: name=python-manila state=absent
