@@ -8,6 +8,8 @@ vip_public_nic: ens3
 
 mysql_innodb_buffer_pool_size: 2G
 
+rabbitmq_hipe_compile: False
+
 #Openstack services log to syslog
 syslog_use: True
 
