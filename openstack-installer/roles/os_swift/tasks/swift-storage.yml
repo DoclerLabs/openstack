@@ -25,7 +25,7 @@
   mount: fstype=xfs
          src="{{ item.device }}"
          name="/srv/node/{{ item.device | regex_replace('^.*/','') | regex_replace(':','') }}"
-         opts="noatime,nodiratime,nobarrier"
+         opts="noatime,nodiratime"
          state=mounted
   with_items: "{{ swift | default([]) }}"
   when: inventory_hostname in groups['swift_storage']
