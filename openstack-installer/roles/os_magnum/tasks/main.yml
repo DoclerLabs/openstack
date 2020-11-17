@@ -41,7 +41,7 @@
     - python3-magnum
     - magnum-api
     - magnum-conductor
-    - python-magnumclient
+    - python3-magnumclient
 
 - name: ensure python-magnum is not installed
   apt: name=python-magnum state=absent
