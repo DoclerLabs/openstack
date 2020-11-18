@@ -11,7 +11,11 @@ totem {
                 mcastport: 5405
                 ttl: 1
         }
+{% if ansible_facts['distribution_major_version'] is version('18', '>') %}
         transport: knet
+{% else %}
+        transport: udpu
+{%endif %}
 }
 
 logging {
