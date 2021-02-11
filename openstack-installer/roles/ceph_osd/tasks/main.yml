@@ -125,6 +125,6 @@
   when: item.disk is defined
 
 - name: activate disks
-  shell: ceph-volume lvm activate $(ceph-volume lvm list /dev/vdb | awk '/osd id/{ print $3 }')
+  shell: "ID=$(ceph-volume lvm list /dev/vdb | awk '/osd id/{ print $3 }'); ceph-volume lvm activate $ID $(cat /var/lib/ceph/osd/ceph-$ID/fsid)"
   with_items: "{{ osd }}"
   when: item.disk is defined
