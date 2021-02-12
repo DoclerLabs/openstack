@@ -1,7 +1,7 @@
 ---
 
 - name: create mgr key
-  command: "ceph --cluster {{ ceph_cluster_name }} auth get-or-create mgr.{{ inventory_hostname }} mon 'allow *'"
+  command: "ceph --cluster {{ ceph_cluster_name }} auth get-or-create mgr.{{ inventory_hostname }} mon 'allow profile mgr' osd 'allow rwx'"
   register: ceph_auth
 
 - name: make sure ceph mgr keyring directory exists
