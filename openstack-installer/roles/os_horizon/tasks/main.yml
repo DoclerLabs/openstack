@@ -10,7 +10,7 @@
   file: dest=/etc/openstack-dashboard owner=horizon group=horizon mode=0750 state=directory
 
 - name: ensure /var/lib/openstack-dashboard exists
-  file: dest=/var/lib/openstack-dashboard owner=horizon group=horizon mode=0750 state=directory
+  file: dest=/var/lib/openstack-dashboard owner=horizon group=horizon mode=0755 state=directory
 
 - name: ensure /var/lib/openstack-dashboard/secret_key exists
   copy: dest=/var/lib/openstack-dashboard/secret_key owner=horizon group=horizon mode=0750 force=no content=''
