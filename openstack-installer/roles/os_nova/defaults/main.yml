@@ -70,6 +70,8 @@ nova_disk_weight_multiplier: 1.0
 
 nova_host_subset_size: 1
 
+nova_reclaim_instance_interval: 0
+
 nova_live_migration_completion_timeout: 800
 nova_live_migration_downtime: 500
 nova_live_migration_downtime_delay: 75
