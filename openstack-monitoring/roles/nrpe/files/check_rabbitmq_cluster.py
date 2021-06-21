@@ -3,6 +3,8 @@
 import subprocess
 import re
 import yaml
+import json
+import lsb_release
 
 NAGIOS_OK = 0
 NAGIOS_WARN = 1
@@ -49,12 +51,36 @@ def get_rabbitmq_nodes():
             partitions = section['partitions']
     return disc_nodes, ram_nodes, running_nodes, partitions
 
+def get_rabbitmq_nodes_new():
+
+    proc = subprocess.Popen(["/usr/sbin/rabbitmqctl", "cluster_status", "--formatter=json"],
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            shell=False)
+    (out, err) = proc.communicate()
+    if proc.returncode != 0:
+        raise RabbitError(err)
+
+    doc=json.loads(out)
+    disc_nodes = ram_nodes = running_nodes = partitions = []
+    for section in doc:
+        if section == 'ram_nodes':
+            ram_nodes = doc[section]
+        elif section == 'disk_nodes':
+            disc_nodes = doc[section]
+        elif section == 'running_nodes':
+            running_nodes = doc[section]
+        elif section == 'partitions':
+            partitions = doc[section]
+    return disc_nodes, ram_nodes, running_nodes, partitions
+
 
 def main():
 
     try:
+        dinfo=lsb_release.get_distro_information()
         (disc_nodes, ram_nodes, running_nodes, partitions) = \
-            get_rabbitmq_nodes()
+            get_rabbitmq_nodes_new() if dinfo['RELEASE']>20 else get_rabbitmq_nodes()
         if not running_nodes:
             ret = NAGIOS_CRIT
             msg = "No running nodes!"
