@@ -80,7 +80,7 @@ def main():
     try:
         dinfo=lsb_release.get_distro_information()
         (disc_nodes, ram_nodes, running_nodes, partitions) = \
-            get_rabbitmq_nodes_new() if dinfo['RELEASE']>20 else get_rabbitmq_nodes()
+            get_rabbitmq_nodes_new() if dinfo['RELEASE']>'20' else get_rabbitmq_nodes()
         if not running_nodes:
             ret = NAGIOS_CRIT
             msg = "No running nodes!"
