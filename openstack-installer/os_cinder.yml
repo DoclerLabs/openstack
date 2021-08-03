@@ -44,6 +44,7 @@
 - hosts:
     - cinder
     - cinder_volume
+    - cinder_backup
   become: True
   max_fail_percentage: 0
   roles:
@@ -95,6 +96,10 @@
     - role: ceph_client
       ceph_users: "{{ users }}"
 
+- hosts: cinder_backup
+  become: True
+  max_fail_percentage: 0
+  roles:
     - role: ceph_client
       ceph_users:
          - cluster_name: "{{ (cinder_backup_ceph_cluster_name | default(ceph_cluster_name)) | default('ceph') }}"

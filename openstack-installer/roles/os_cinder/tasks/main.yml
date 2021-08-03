@@ -36,12 +36,17 @@
     - cinder-scheduler
   when: inventory_hostname in groups['cinder']
 
-- name: mask autostarting of cinder volume
+- name: mask autostarting of cinder-volume
   service_mask: name={{ item }} state=masked
   with_items:
     - cinder-volume
-    - cinder-backup
   when: inventory_hostname in groups['cinder_volume']
+
+- name: mask autostarting of cinder-backup
+  service_mask: name={{ item }} state=masked
+  with_items:
+    - cinder-backup
+  when: inventory_hostname in groups['cinder_backup']
 
 - name: mask cinder-wsgi apache config
   copy: content='' dest=/etc/apache2/conf-available/cinder-wsgi.conf owner=root group=root mode=0644
@@ -68,10 +73,19 @@
     - python3-rtslib-fb
     - ceph-common
     - cinder-volume
-    - cinder-backup
     - python3-cinder
     - python3-cinderclient
   when: inventory_hostname in groups['cinder_volume']
+
+- name: install cinder-backup
+  apt:
+    name:
+    - python3-rbd
+    - python3-rados
+    - python3-rtslib-fb
+    - ceph-common
+    - cinder-backup
+  when: inventory_hostname in groups['cinder_backup']
 
 - name: ensure python-cinder is not installed
   apt: name=python-cinder state=absent
@@ -103,6 +117,7 @@
     - signal apache to reload
     - restart cinder-scheduler
     - restart cinder-volume
+    - restart cinder-backup
 
 - name: sync cinder db
   command: su cinder -s /bin/sh -c "/usr/bin/cinder-manage db sync"
@@ -126,12 +141,17 @@
     - cinder-scheduler
   when: inventory_hostname in groups['cinder']
 
-- name: unmask autostarting of cinder volume
+- name: unmask autostarting of cinder-volume
   service_mask: name={{ item }} state=unmasked
   with_items:
     - cinder-volume
-    - cinder-backup
   when: inventory_hostname in groups['cinder_volume']
+
+- name: unmask autostarting of cinder-backup
+  service_mask: name={{ item }} state=unmasked
+  with_items:
+    - cinder-backup
+  when: inventory_hostname in groups['cinder_backup']
 
 - meta: flush_handlers
 
@@ -143,8 +163,20 @@
   service: name={{ item }} state=started enabled=yes
   with_items:
     - cinder-volume
-    - cinder-backup
   when: inventory_hostname in groups['cinder_volume']
+
+- name: disable cinder-backup when it is not needed
+  service: name={{ item }} state=stopped enabled=no
+  with_items:
+    - cinder-backup
+  when: inventory_hostname not in groups['cinder_backup']
+
+- name: ensure cinder-backup is started
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - cinder-backup
+  when: inventory_hostname in groups['cinder_backup']
+
 
 - name: start/stop tgtd
   service: name=tgt

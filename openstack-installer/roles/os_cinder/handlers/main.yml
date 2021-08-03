@@ -11,5 +11,10 @@
   service: name={{ item }} state=restarted
   with_items:
     - cinder-volume
-    - cinder-backup
   when: inventory_hostname in groups['cinder_volume']
+
+- name: restart cinder-backup
+  service: name={{ item }} state=restarted
+  with_items:
+    - cinder-backup
+  when: inventory_hostname in groups['cinder_backup']

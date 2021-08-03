@@ -118,6 +118,9 @@ cinder:
 cinder_volume:
   inherit: controller
 
+cinder_backup:
+  inherit: controller
+
 murano:
   inherit: controller
 
