@@ -169,6 +169,7 @@
   service: name={{ item }} state=stopped enabled=no
   with_items:
     - cinder-backup
+  failed_when: False
   when: inventory_hostname not in groups['cinder_backup']
 
 - name: ensure cinder-backup is started
