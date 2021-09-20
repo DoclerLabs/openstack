@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import subprocess
 import re
@@ -94,14 +94,14 @@ def main():
         else:
             ret = NAGIOS_OK
             msg = "Disc nodes: %s, RAM nodes: %s" % (disc_nodes, ram_nodes)
-    except RabbitError, e:
+    except RabbitError as e:
         ret = NAGIOS_CRIT
         msg = str(e)
-    except Exception, e:
+    except Exception as e:
         ret = NAGIOS_UNKNOWN
         msg = str(e)
 
-    print "%s: %s" % (NAGIOS_STATUS[ret],  msg)
+    print("%s: %s" % (NAGIOS_STATUS[ret],  msg))
     exit(ret)
 
 main()
