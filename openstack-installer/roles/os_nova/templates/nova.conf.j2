@@ -313,7 +313,8 @@ send_service_user_token = True
 [libvirt]
 
 cpu_mode = {{ nova_libvirt_cpu_mode }}
-cpu_model = {{ nova_libvirt_cpu_model }}
+cpu_models = {{ nova_libvirt_cpu_model }}
+cpu_model_extra_flags = {{ nova_libvirt_cpu_model_extra_flags }}
 
 disk_cachemodes="network=writeback"
 use_virtio_for_bridges = True

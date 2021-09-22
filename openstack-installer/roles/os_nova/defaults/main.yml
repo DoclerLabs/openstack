@@ -49,6 +49,7 @@ nova_virt_type: kvm
 nova_libvirt_virt_type: "{{ nova_virt_type }}"
 nova_libvirt_cpu_mode: none
 nova_libvirt_cpu_model:
+nova_libvirt_cpu_model_extra_flags:
 
 nova_default_schedule_zone:
 #deprecated, use nova_filter_scheduler available_filters and nova_filter_scheduler_enabled_filters
