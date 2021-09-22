@@ -1,7 +1,7 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-ussuri", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu bionic-updates/ussuri main" }
+  - { name: "cloudarchive-victoria", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/victoria main" }
 
 apt_extra_repos: []
 
