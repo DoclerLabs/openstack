@@ -40,7 +40,7 @@ os_public_address: "{{ vip_public }}"
 
 notifications_enable: True
 
-nova_filter_scheduler_enabled_filters: "RetryFilter,AvailabilityZoneFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter,SameHostFilter,DifferentHostFilter"
+nova_filter_scheduler_enabled_filters: "AvailabilityZoneFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter,SameHostFilter,DifferentHostFilter"
 
 neutron_flat_networks:
 neutron_physical_interface_mappings: flat:ens3
