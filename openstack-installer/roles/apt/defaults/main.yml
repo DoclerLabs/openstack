@@ -1,7 +1,7 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-victoria", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/victoria main" }
+  - { name: "cloudarchive-wallaby", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/wallaby main" }
 
 apt_extra_repos: []
 
