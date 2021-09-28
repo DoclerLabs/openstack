@@ -71,6 +71,7 @@
     - python3-rbd
     - python3-rados
     - python3-rtslib-fb
+    - tgt
     - ceph-common
     - cinder-volume
     - python3-cinder
@@ -177,7 +178,6 @@
   with_items:
     - cinder-backup
   when: inventory_hostname in groups['cinder_backup']
-
 
 - name: start/stop tgtd
   service: name=tgt
