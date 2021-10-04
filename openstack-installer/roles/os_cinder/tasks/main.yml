@@ -71,6 +71,7 @@
     - python3-rbd
     - python3-rados
     - python3-rtslib-fb
+    - python3-kazoo
     - tgt
     - ceph-common
     - cinder-volume
