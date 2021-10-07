@@ -34,6 +34,9 @@
     - '%'
 
 #Note: ceilometer-collector has to read panko.conf
+- name: set /etc/panko permissions
+  file: path=/etc/panko state=directory owner=panko group=panko mode=0755
+
 - name: install panko config
   template: src=panko.conf.j2 dest=/etc/panko/panko.conf owner=panko group=root mode=0464
   notify:
