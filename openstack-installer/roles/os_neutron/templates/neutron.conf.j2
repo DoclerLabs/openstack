@@ -591,7 +591,7 @@ memcached_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mg
 
 memcache_security_strategy = ENCRYPT
 memcache_secret_key = {{ memcache_secret_key }}
-
+memcache_use_advanced_pool = True
 
 [database]
 # This line MUST be changed to actually run the plugin.
