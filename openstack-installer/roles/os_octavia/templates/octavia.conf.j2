@@ -605,6 +605,7 @@ bind_ip = {{ ip.octavia_health_manager | default(ip.mgmt) }}
 
 # List of controller ip and port pairs for the heartbeat receivers. Example 127.0.0.1:5555, 192.168.0.1:5555 (list value)
 #controller_ip_port_list =
+controller_ip_port_list = {{ ip.octavia_health_manager | default(ip.mgmt) }}:5555
 
 # Sleep time between sending heartbeats. (integer value)
 #heartbeat_interval = 10
