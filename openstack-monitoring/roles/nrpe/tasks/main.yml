@@ -19,10 +19,10 @@
     - { 'script': check_ipmi_sensors, 'enabled': "{{ nagios_ipmi }}" }
 
 - name: install ipmitool
-  apt: name={{ item }}
-  with_items:
-    - ipmitool
-    - openipmi
+  apt:
+    name:
+      - ipmitool
+      - openipmi
   when: nagios_ipmi
 
 - name: enable openipmi
