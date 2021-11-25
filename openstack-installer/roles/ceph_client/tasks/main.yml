@@ -9,8 +9,8 @@
 - name: generate ceph config file
   ini_file: dest=/etc/ceph/{{ item[0].cluster_name | default('ceph') }}.conf
     section=global
-    option="{{ item[1].keys()[0] }}"
-    value="{{ item[1].values()[0] }}"
+    option="{{ item[1].keys() | first }}"
+    value="{{ item[1].values() | first }}"
   with_nested:
     - "{{ ceph_users }}"
     - [ { "auth cluster required": "cephx" },
