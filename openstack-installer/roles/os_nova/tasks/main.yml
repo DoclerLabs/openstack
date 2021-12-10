@@ -41,6 +41,7 @@
     - nova-conductor
     - nova-spiceproxy
     - nova-novncproxy
+    - nova-serialproxy
     - nova-cert
   when: inventory_hostname in groups['nova_controller']
 
@@ -57,6 +58,7 @@
     - nova-conductor
     - nova-novncproxy
     - nova-spiceproxy
+    - nova-serialproxy
     - nova-scheduler
     - python3-nova
     - python3-novaclient
@@ -215,6 +217,7 @@
     - nova-conductor
     - nova-spiceproxy
     - nova-novncproxy
+    - nova-serialproxy
   when: inventory_hostname in groups['nova_controller']
 
 - name: unmask autostarting of nova compute services
@@ -233,6 +236,7 @@
     - nova-conductor
     - nova-novncproxy
     - nova-spiceproxy
+    - nova-serialproxy
   when: inventory_hostname in groups['nova_controller']
 
 - name: ensure nova compute is started
