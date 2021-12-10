@@ -89,6 +89,7 @@ OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = '{{ horizon_keystone_default_domain }}'
 # valid options are "AUTO"(default), "VNC", "SPICE", "RDP", "SERIAL", "MKS"
 # or None. Set to None explicitly if you want to deactivate the console.
 #CONSOLE_TYPE = "AUTO"
+CONSOLE_TYPE = "{{ horizon_console_type }}"
 
 # Toggle showing the openrc file for Keystone V2.
 # If set to false the link will be removed from the user dropdown menu
