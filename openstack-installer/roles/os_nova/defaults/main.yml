@@ -92,9 +92,9 @@ nova_pci_aliases: []
 nova_live_migration_tunelled: False
 
 #console access
-nova_enable_vnc_console: True
-nova_enable_spice_console: False
-nova_enable_serial_console: False
+nova_vnc_console_enable: True
+nova_spice_console_enable: False
+nova_serial_console_enable: False
 nova_console_ssl: "{{ nova_novncproxy_ssl | default(False) }}"
 nova_novncproxy_base_url: "{{ nova_console_ssl | ternary('https','http') }}://{{ os_public_address }}:6080/vnc_auto.html"
 nova_spiceproxy_base_url: "{{ nova_console_ssl | ternary('https','http') }}://{{ os_public_address }}:6082/spice_auto.html"
