@@ -92,33 +92,35 @@ memcache_servers = {% for host in groups['memcached'] %}{{ hostvars[host].ip.mgm
 
 [vnc]
 
-{% if nova_console_type == 'vnc' %}
-enabled = True
-{% else %}
-enabled = False
-{% endif %}
+enabled = {{ nova_enable_vnc_console }}
 novncproxy_host = {{ ip.mgmt }}
 keymap = {{ nova_console_keymap }}
 novncproxy_base_url = {{ nova_novncproxy_base_url }}
 server_listen = {{ ip.mgmt }}
 server_proxyclient_address = {{ ip.mgmt }}
 
-
 [spice]
 
-{% if nova_console_type == 'spice' %}
-agent_enabled = True
-enabled = True
-{% else %}
-agent_enabled = False
-enabled = False
-{% endif %}
+agent_enabled = {{ nova_enable_spice_console }}
+enabled = {{ nova_enable_spice_console }}
 keymap = {{ nova_console_keymap }}
 html5proxy_base_url = {{ nova_spiceproxy_base_url }}
 html5proxy_host = {{ ip.mgmt }}
 server_listen = {{ ip.mgmt }}
 server_proxyclient_address = {{ ip.mgmt }}
 
+[serial_console]
+
+{% if inventory_hostname in groups['nova_controller'] %}
+serialproxy_host = {{ ip.mgmt }}
+serialproxy_port = 6083
+{% endif %}
+{% if inventory_hostname in groups['nova_compute'] %}
+enabled = {{ nova_enable_serial_console }}
+base_url = {{ nova_serialconsole_base_url }}
+proxyclient_address = {{ ip.mgmt }}
+port_range = {{ nova_serialconsole_port_range }}
+{% endif %}
 
 [cinder]
 
