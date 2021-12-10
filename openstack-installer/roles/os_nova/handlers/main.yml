@@ -12,6 +12,7 @@
     - nova-conductor
     - nova-novncproxy
     - nova-spiceproxy
+    - nova-serialproxy
   when: inventory_hostname in groups['nova_controller']
 
 - name: restart nova compute services
