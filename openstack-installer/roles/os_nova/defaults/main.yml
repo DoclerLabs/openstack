@@ -89,15 +89,18 @@ nova_resume_guests_state_on_host_boot: False
 nova_pci_passthrough_whitelist: []
 nova_pci_aliases: []
 
-#spice or vnc
-nova_console_type: vnc
-nova_console_keymap: en-us
-
 nova_live_migration_tunelled: False
 
+#console access
+nova_enable_vnc_console: True
+nova_enable_spice_console: False
+nova_enable_serial_console: False
 nova_console_ssl: "{{ nova_novncproxy_ssl | default(False) }}"
 nova_novncproxy_base_url: "{{ nova_console_ssl | ternary('https','http') }}://{{ os_public_address }}:6080/vnc_auto.html"
 nova_spiceproxy_base_url: "{{ nova_console_ssl | ternary('https','http') }}://{{ os_public_address }}:6082/spice_auto.html"
+nova_serialconsole_base_url: "{{ nova_console_ssl | ternary('wss','ws') }}://{{ os_public_address }}:6083"
+nova_serialconsole_port_range: "10000:20000"
+nova_console_keymap: en-us
 
 neutron_physical_interface_driver: linuxbridge
 neutron_physical_interface_drivers:

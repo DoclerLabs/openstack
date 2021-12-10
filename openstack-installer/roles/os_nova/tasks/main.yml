@@ -42,6 +42,7 @@
     - nova-consoleauth
     - nova-spiceproxy
     - nova-novncproxy
+    - nova-serialproxy
     - nova-cert
   when: inventory_hostname in groups['nova_controller']
 
@@ -60,6 +61,7 @@
     - nova-consoleauth
     - nova-novncproxy
     - nova-spiceproxy
+    - nova-serialproxy
     - nova-scheduler
     - python-novaclient
   when: inventory_hostname in groups['nova_controller']
@@ -222,6 +224,7 @@
     - nova-consoleauth
     - nova-spiceproxy
     - nova-novncproxy
+    - nova-serialproxy
   when: inventory_hostname in groups['nova_controller']
 
 - name: unmask autostarting of nova compute services
@@ -241,6 +244,7 @@
     - nova-consoleauth
     - nova-novncproxy
     - nova-spiceproxy
+    - nova-serialproxy
   when: inventory_hostname in groups['nova_controller']
 
 - name: ensure nova compute is started
