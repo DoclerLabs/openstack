@@ -30,6 +30,9 @@ horizon_dashboards:
 
 horizon_extra_packages: "{% for item in horizon_dashboards %}{% if item.install and horizon_install_dashboards %}{{ item.package }}{% if not loop.last %},{% endif %}{% endif %}{% endfor %}"
 
+#"AUTO"(default), "VNC", "SPICE", "RDP", "SERIAL", "MKS"
+horizon_console_type: "AUTO"
+
 murano_repo_url: "http://storage.apps.openstack.org"
 
 SSLCertificateKeyFile: /etc/ssl/private/openstack.key
