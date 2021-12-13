@@ -26,7 +26,7 @@ Current OpenStack versions supported:
 - Newton/Ubuntu Xenial         - xenial/newton branch
 - Ocata/Ubuntu Xenial          - xenial/ocata branch
 - Pike/Ubuntu Xenial           - xenial/pike branch
-- Queens/Ubuntu Xenial/Bionic  - master branch
+- Queens/Ubuntu Xenial/Bionic  - queens branch
 
 Integrated Infra components:
 - Pacemaker
