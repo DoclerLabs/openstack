@@ -225,7 +225,7 @@ driver = sql
 
 # Allowed authentication methods. (list value)
 #methods = external,password,token,oauth1
-methods = password,token{% if keystone_federation_oidc | bool %},openid,mapped{% endif %}
+methods = password,token{% if keystone_federation_oidc | bool %},openid,mapped{% endif %}{% if keystone_application_credential | bool %},application_credential{% endif %}
 
 # Entrypoint for the password auth plugin module in the keystone.auth.password
 # namespace. (string value)

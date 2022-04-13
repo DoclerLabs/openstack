@@ -22,6 +22,8 @@ keystone_cors_allowed_origin:
 #OpenID connect federation
 keystone_federation_oidc: False
 
+keystone_application_credential: False
+
 keystone_OIDCProviderMetadataURL:
 #If no metadata url given or it is incomplete:
 keystone_OIDCProviderIssuer:
