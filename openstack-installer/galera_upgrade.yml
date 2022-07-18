@@ -35,7 +35,6 @@
           name:
             - percona-xtrabackup-24
             - percona-xtradb-cluster-server-5.7
-            - percona-xtradb-cluster-galera-3
           state: latest
 
       always:
