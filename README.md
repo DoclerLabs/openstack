@@ -31,6 +31,7 @@ Current OpenStack versions supported:
 - Stein/Ubuntu Bionic          - bionic/stein branch
 - Train/Ubuntu Bionic          - bionic/train branch
 - Ussuri/Ubuntu Bionic/Focal   - ussuri branch
+- Victoria/Ubuntu Focal        - focal/victoria branch
 
 Integrated Infra components:
 - Pacemaker
