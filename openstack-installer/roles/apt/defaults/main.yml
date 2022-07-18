@@ -1,7 +1,7 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-xena", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/xena main" }
+  - { name: "cloudarchive-yoga", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/yoga main" }
 
 apt_extra_repos: []
 
