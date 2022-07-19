@@ -104,7 +104,7 @@ auth_section = keystone_authtoken
 
 # Metrology configuration file. (string value)
 #metrics_conf = etc/cloudkitty/metrics.yml
-
+metrics_conf = /etc/cloudkitty/metrics.yml
 
 [collector_monasca]
 
@@ -197,7 +197,7 @@ memcache_security_strategy = ENCRYPT
 memcache_secret_key = "{{ memcache_secret_key }}"
 
 
-[keystone_fetcher]
+[fetcher_keystone]
 
 #
 # From cloudkitty.common.config
