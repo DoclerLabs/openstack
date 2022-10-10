@@ -28,6 +28,7 @@ def get_rabbitmq_nodes():
                             stderr=subprocess.PIPE,
                             shell=False)
     (out, err) = proc.communicate()
+    out = out.decode()
     if proc.returncode != 0:
         raise RabbitError(err)
 
