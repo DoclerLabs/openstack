@@ -59,14 +59,15 @@
     - python3-ceilometer
     - python3-oslo.cache
     - python3-memcache
-    - python3-ceilometerclient
     - python3-gnocchiclient
+    - python3-kazoo
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: install ceilometer compute services
   apt: 
     name:
     - python3-ceilometer
+    - python3-kazoo
     - ceilometer-agent-compute
   when: inventory_hostname in groups['ceilometer_compute']
 
