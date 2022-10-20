@@ -24,6 +24,7 @@
     - role: os_keystone_service
       keystone_service_name: cinderv2
       keystone_service_type: volumev2
+      keystone_service_present: False
       keystone_service_description: "OpenStack Block Storage Service V2"
       keystone_public_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_public_address }}:8776/v2/%(tenant_id)s"
       keystone_internal_url: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}://{{ os_internal_address }}:8776/v2/%(tenant_id)s"

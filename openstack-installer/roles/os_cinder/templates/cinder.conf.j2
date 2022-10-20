@@ -23,9 +23,6 @@ state_path = /var/lib/cinder
 volumes_dir = /var/lib/cinder/volumes
 allow_availability_zone_fallback = True
 
-enable_v2_api = True
-enable_v3_api = True
-
 auth_strategy = keystone
 transport_url = rabbit://{% for host in rabbit_hosts %}{{ cinder_rabbit_user }}:{{ cinder_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ cinder_rabbit_vhost }}
 
