@@ -14,6 +14,11 @@ Listen {{ ip.mgmt }}:{{ service.port }}
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/{{ apache_service_name }}-access.log combined
 
+{% if apache_proxyprotocol | bool %}
+    RemoteIPProxyProtocol On
+    RemoteIPProxyProtocolExceptions 127.0.0.1
+{% endif %}
+
 {% if apache_service_ssl | bool %}
     SSLEngine on
     SSLCertificateFile      {{ SSLCertificateFile }}

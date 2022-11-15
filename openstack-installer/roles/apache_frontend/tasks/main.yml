@@ -29,6 +29,7 @@
     - proxy
     - proxy_fcgi
     - proxy_http
+    - remoteip
   notify: restart apache
 
 - name: enable apache auth_openidc module

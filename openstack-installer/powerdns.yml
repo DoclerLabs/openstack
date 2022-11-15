@@ -13,6 +13,7 @@
       apache_service_name: powerdns
       apache_service_ssl: "{{ powerdns_ssl | default(False) }}"
       apache_proxy_preserve_http_auth: True
+      apache_proxyprotocol: "{{ proxyprotocol | default(False)) }}"
       apache_services:
         - { port: "{{ powerdns_api_port | default(8081) }}" }
 
@@ -32,3 +33,4 @@
           haproxy_backend_options: "{{ (powerdns_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
           haproxy_backend_extras:
             - http-check expect rstatus 401
+          haproxy_proxyprotocol: "{{ proxyprotocol | default(False)) }}"

@@ -12,6 +12,7 @@
       apache_service_name: keystone
       apache_service_ssl: "{{ keystone_ssl | default(False) }}"
       apache_oidc: "{{ keystone_federation_oidc | default(False) }}"
+      apache_proxyprotocol: "{{ proxyprotocol | default(False) }}"
       apache_services:
         - { port: 5000, wsgi_process: "keystone", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/keystone", include: "/etc/keystone-federation.conf" }
 
@@ -30,6 +31,7 @@
           haproxy_balance_type: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
           haproxy_balance_alg: leastconn
           haproxy_backend_options: "{{ (keystone_ssl | default(False)) | ternary(['httpchk /healthcheck'], ['forwardfor', 'httpchk /healthcheck', 'httplog']) }}"
+          haproxy_proxyprotocol: "{{ proxyprotocol | default(False) }}"
 
         - haproxy_service_name: keystone_service
           haproxy_backend_nodes: "{{ groups['keystone'] }}"
@@ -40,6 +42,7 @@
           haproxy_balance_type: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
           haproxy_balance_alg: leastconn
           haproxy_backend_options: "{{ (keystone_ssl | default(False)) | ternary(['httpchk /healthcheck'], ['forwardfor', 'httpchk /healthcheck', 'httplog']) }}"
+          haproxy_proxyprotocol: "{{ proxyprotocol | default(False) }}"
 
 #The play below must run without an installed keystone (e.g. second region),
 #so the controller[0] host is there

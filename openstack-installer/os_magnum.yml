@@ -40,6 +40,7 @@
     - role: apache_frontend
       apache_service_name: magnum
       apache_service_ssl: "{{ os_ssl | default(False) }}"
+      apache_proxyprotocol: "{{ proxyprotocol | default(False) }}"
       apache_services:
         - { port: 9511 }
 
@@ -57,3 +58,4 @@
           haproxy_port: 9511
           haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
           haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk /healthcheck'], ['forwardfor', 'httpchk /healthcheck', 'httplog']) }}"
+          haproxy_proxyprotocol: "{{ proxyprotocol | default(False) }}"

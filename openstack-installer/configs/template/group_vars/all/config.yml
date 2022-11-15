@@ -6,6 +6,11 @@ vip_public: 10.97.36.127
 vip_public_cidr: 24
 vip_public_nic: br-vlan
 
+# Use HAPROXY's PROXY V1 protocol for loadbalanced services,
+# to log the original IP, not the IP of the loadbalancer.
+# For Nagios checks, it needs a patched check_http plugin.
+proxyprotocol: False
+
 #Openstack services log to syslog
 syslog_use: False
 #Send log to a remote syslog, if an IP is given

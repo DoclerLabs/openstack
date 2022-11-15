@@ -7,6 +7,7 @@ nagios_bond: False
 nagios_mdraid: False
 nagios_check_ping_warning: "100.0,20%"
 nagios_check_ping_critical: "500.0,60%"
+nagios_check_http_proxyprotocol: "{{ proxyprotocol | default(False) }}"
 
 nagios_host_template: generic-host
 nagios_service_template: generic-service

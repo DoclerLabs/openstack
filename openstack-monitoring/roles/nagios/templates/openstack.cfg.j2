@@ -36,12 +36,12 @@
 
 define command{
         command_name    {{ nagios_cloud_prefix }}check_http_url
-        command_line    /usr/lib/nagios/plugins/check_http -H '$HOSTADDRESS$' -I '$HOSTADDRESS$' $ARG1$ $ARG2$
+        command_line    /usr/lib/nagios/plugins/check_http -H '$HOSTADDRESS$' -I '$HOSTADDRESS$' $ARG1$ $ARG2$ $ARG3$
         }
 
 define command{
         command_name    {{ nagios_cloud_prefix }}check_https_url
-        command_line    /usr/lib/nagios/plugins/check_http --ssl -H '$HOSTADDRESS$' -I '$HOSTADDRESS$' $ARG1$ $ARG2$
+        command_line    /usr/lib/nagios/plugins/check_http --ssl -H '$HOSTADDRESS$' -I '$HOSTADDRESS$' $ARG1$ $ARG2$ $ARG3$
         }
 
 define command{
@@ -370,9 +370,21 @@ define service{
 {% if groups['swift_proxy'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}swift-proxy,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}swift-proxy
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description swift-proxy
+{% if nagios_check_http_proxyprotocol %}
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p {{ 8080 }}!-u /healthcheck!--proxy
+{% else %}
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p {{ 8080 }}!-u /healthcheck
+{% endif %}
+}
+
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ vips_monitored }}
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description swift-proxy-vip
     check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p {{ 8080 }}!-u /healthcheck
 }
 {% endif %}
@@ -380,9 +392,21 @@ define service{
 {% if groups['keystone'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}keystone,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}keystone
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description keystone
+{% if nagios_check_http_proxyprotocol %}
+    check_command {{ nagios_cloud_prefix }}{{ keystone_ssl | ternary('check_https_url','check_http_url') }}!-p 5000!--proxy
+{% else %}
+    check_command {{ keystone_ssl | ternary('check_https','check_http') }}!-p 5000
+{% endif %}
+}
+
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ vips_monitored }}
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description keystone-vip
     check_command {{ keystone_ssl | ternary('check_https','check_http') }}!-p 5000
 }
 
@@ -401,9 +425,21 @@ define service{
 {% if groups['nova_controller'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}nova,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}nova
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description nova-api
+{% if nagios_check_http_proxyprotocol %}
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 8774!--proxy
+{% else %}
+    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8774
+{% endif %}
+}
+
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ vips_monitored }}
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description nova-api-vip
     check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8774
 }
 {% endif %}
@@ -411,9 +447,21 @@ define service{
 {% if groups['neutron_controller'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}neutron,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}neutron
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description neutron-api
+{% if nagios_check_http_proxyprotocol %}
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 9696!--proxy
+{% else %}
+    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 9696
+{% endif %}
+}
+
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ vips_monitored }}
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description neutron-api-vip
     check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 9696
 }
 {% endif %}
@@ -421,7 +469,19 @@ define service{
 {% if groups['cinder'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}cinder,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}cinder
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description cinder-api
+{% if nagios_check_http_proxyprotocol %}
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 8776!--proxy
+{% else %}
+    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8776
+{% endif %}
+}
+
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description cinder-api
     check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8776
@@ -431,7 +491,19 @@ define service{
 {% if groups['glance'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}glance,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}glance
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description glance-api
+{% if nagios_check_http_proxyprotocol %}
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 9292!-u /healthcheck!--proxy
+{% else %}
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 9292!-u /healthcheck
+{% endif %}
+}
+
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description glance-api
     check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 9292!-u /healthcheck
@@ -451,7 +523,19 @@ define service{
 {% if groups['aodh'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}aodh,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}aodh
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description aodh-api
+{% if nagios_check_http_proxyprotocol %}
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 8042!-u /healthcheck!--proxy
+{% else %}
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 8042!-u /healthcheck
+{% endif %}
+}
+
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description aodh-api
     check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 8042!-u /healthcheck
@@ -461,7 +545,19 @@ define service{
 {% if groups['heat'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}heat,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}heat
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description heat-api
+{% if nagios_check_http_proxyprotocol %}
+    check_command {{ nagios_cloud_prefix }}check_http_url!-p 8004!--proxy
+{% else %}
+    check_command check_http!-p 8004
+{% endif %}
+}
+
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description heat-api
     check_command check_http!-p 8004
@@ -471,7 +567,19 @@ define service{
 {% if groups['ironic'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}ironic,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}ironic
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description ironic-api
+{% if nagios_check_http_proxyprotocol %}
+    check_command {{ nagios_cloud_prefix }}check_http!-p 6385!--proxy
+{% else %}
+    check_command check_http!-p 6385
+{% endif %}
+}
+
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description ironic-api
     check_command check_http!-p 6385
@@ -481,7 +589,19 @@ define service{
 {% if groups['barbican'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}barbican,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}barbican
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description barbican-api
+{% if nagios_check_http_proxyprotocol %}
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 9311!--proxy
+{% else %}
+    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 9311
+{% endif %}
+}
+
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description barbican-api
     check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 9311
@@ -491,7 +611,19 @@ define service{
 {% if groups['trove'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}trove,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}trove
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description trove-api
+{% if nagios_check_http_proxyprotocol %}
+    check_command {{ nagios_cloud_prefix }}check_http_url!-p 8779!--proxy
+{% else %}
+    check_command check_http!-p 8779
+{% endif %}
+}
+
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description trove-api
     check_command check_http!-p 8779
@@ -501,7 +633,19 @@ define service{
 {% if groups['magnum'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}magnum,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}magnum
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description magnum-api
+{% if nagios_check_http_proxyprotocol %}
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 9511!--proxy
+{% else %}
+    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 9511
+{% endif %}
+}
+
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description magnum-api
     check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 9511
@@ -511,7 +655,19 @@ define service{
 {% if groups['murano'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}murano,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}murano
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description murano-api
+{% if nagios_check_http_proxyprotocol %}
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 8082!--proxy
+{% else %}
+    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8082
+{% endif %}
+}
+
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description murano-api
     check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8082
@@ -521,7 +677,19 @@ define service{
 {% if groups['sahara'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}sahara,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}sahara
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description sahara-api
+{% if nagios_check_http_proxyprotocol %}
+    check_command {{ nagios_cloud_prefix }}check_http_url!-p 8386!-e 300!--proxy
+{% else %}
+    check_command {{ nagios_cloud_prefix }}check_http_url!-p 8386!-e 300
+{% endif %}
+}
+
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description sahara-api
     check_command {{ nagios_cloud_prefix }}check_http_url!-p 8386!-e 300
@@ -531,7 +699,19 @@ define service{
 {% if groups['mistral'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}mistral,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}mistral
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description mistral-api
+{% if nagios_check_http_proxyprotocol %}
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 8989!--proxy
+{% else %}
+    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8989
+{% endif %}
+}
+
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description mistral-api
     check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8989
@@ -541,7 +721,19 @@ define service{
 {% if groups['gnocchi'] | count > 0 %}
 define service{
     use {{ nagios_service_template }}
-    hostgroup_name {{ nagios_cloud_prefix }}gnocchi,{{ vips_monitored }}
+    hostgroup_name {{ nagios_cloud_prefix }}gnocchi
+    servicegroups {{ nagios_cloud_prefix }}OpenStack
+    service_description gnocchi-api
+{% if nagios_check_http_proxyprotocol %}
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https','check_http') }}!-p 8041!--proxy
+{% else %}
+    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8041
+{% endif %}
+}
+
+define service{
+    use {{ nagios_service_template }}
+    hostgroup_name {{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description gnocchi-api
     check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8041

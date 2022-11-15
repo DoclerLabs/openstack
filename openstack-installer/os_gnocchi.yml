@@ -42,6 +42,7 @@
     - role: apache_frontend
       apache_service_name: gnocchi
       apache_service_ssl: "{{ os_ssl | default(False) }}"
+      apache_proxyprotocol: "{{ proxyprotocol | default(False) }}"
       apache_services:
           - { port: 8041, wsgi_process: "gnocchi-api", wsgi_user: "gnocchi", wsgi_group: "gnocchi", wsgi_script: "/var/www/cgi-bin/gnocchi/gnocchi-api" }
 
@@ -59,3 +60,4 @@
           haproxy_port: 8041
           haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
           haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk /healthcheck'], ['forwardfor', 'httpchk /healthcheck', 'httplog']) }}"
+          haproxy_proxyprotocol: "{{ proxyprotocol | default(False) }}"

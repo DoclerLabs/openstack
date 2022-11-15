@@ -32,6 +32,7 @@
     - role: apache_frontend
       apache_service_name: placement
       apache_service_ssl: "{{ os_ssl | default(False) }}"
+      apache_proxyprotocol: "{{ proxyprotocol | default(False) }}"
       apache_services:
         - { port: 8780, wsgi_process: "placement", wsgi_user: "placement", wsgi_group: "placement", wsgi_script: "/var/www/cgi-bin/placement/placement-api" }
 
@@ -50,3 +51,4 @@
           haproxy_port: 8780
           haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
           haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk GET /'], ['forwardfor', 'httpchk GET /', 'httplog']) }}"
+          haproxy_proxyprotocol: "{{ proxyprotocol | default(False) }}"

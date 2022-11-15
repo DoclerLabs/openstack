@@ -31,6 +31,7 @@
 
     - role: apache_frontend
       apache_service_name: sahara
+      apache_proxyprotocol: "{{ proxyprotocol | default(False) }}"
       apache_services:
           - { port: 8386, wsgi_process: "sahara-api", wsgi_user: "sahara", wsgi_group: "sahara", wsgi_script: "/var/www/cgi-bin/sahara/sahara-api" }
 
@@ -53,3 +54,4 @@
             - httplog
           haproxy_backend_extras:
             - http-check expect status 300
+          haproxy_proxyprotocol: "{{ proxyprotocol | default(False) }}"

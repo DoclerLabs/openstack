@@ -38,6 +38,7 @@
     - role: apache_frontend
       apache_service_name: octavia
       apache_service_ssl: "{{ os_ssl | default(False) }}"
+      apache_proxyprotocol: "{{ proxyprotocol | default(False) }}"
       apache_services:
         - { port: 9876 }
 
@@ -55,3 +56,4 @@
           haproxy_port: 9876
           haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
           haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
+          haproxy_proxyprotocol: "{{ proxyprotocol | default(False) }}"

@@ -52,6 +52,7 @@
     - role: apache_frontend
       apache_service_name: heat
       apache_proxy_preserve_host: True
+      apache_proxyprotocol: "{{ proxyprotocol | default(False) }}"
       apache_services:
         - { port: 8004 }
         - { port: 8000 }
@@ -73,6 +74,7 @@
             - forwardfor
             - httpchk OPTIONS / HTTP/1.1\r\nHost:localhost
             - httplog
+          haproxy_proxyprotocol: "{{ proxyprotocol | default(False) }}"
 
         - haproxy_service_name: heat_api_cfn
           haproxy_backend_nodes: "{{ groups['heat'] }}"
@@ -85,6 +87,7 @@
             - forwardfor
             - httpchk OPTIONS / HTTP/1.1\r\nHost:localhost
             - httplog
+          haproxy_proxyprotocol: "{{ proxyprotocol | default(False) }}"
 
         - haproxy_service_name: heat_api_cloudwatch
           haproxy_backend_nodes: []

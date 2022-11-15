@@ -56,6 +56,7 @@
     - role: apache_frontend
       apache_service_name: swift
       apache_service_ssl: "{{ os_ssl | default(False) }}"
+      apache_proxyprotocol: "{{ proxyprotocol | default(False) }}"
       apache_services:
         - { port: 8080 }
 
@@ -73,3 +74,4 @@
           haproxy_port: 8080
           haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
           haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk GET /healthcheck'], ['forwardfor', 'httpchk GET /healthcheck', 'httplog']) }}"
+          haproxy_proxyprotocol: "{{ proxyprotocol | default(False) }}"

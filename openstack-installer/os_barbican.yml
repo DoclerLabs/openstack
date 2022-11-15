@@ -37,6 +37,7 @@
     - role: apache_frontend
       apache_service_name: barbican
       apache_service_ssl: "{{ os_ssl | default(False) }}"
+      apache_proxyprotocol: "{{ proxyprotocol | default(False) }}"
       apache_services:
         - { port: 9311, wsgi_process: "barbican-api", wsgi_user: "barbican", wsgi_group: "barbican", wsgi_script: "/var/www/cgi-bin/barbican/barbican-api" }
 
@@ -54,3 +55,4 @@
           haproxy_port: 9311
           haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
           haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
+          haproxy_proxyprotocol: "{{ proxyprotocol | default(False) }}"
