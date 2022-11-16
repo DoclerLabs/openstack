@@ -8,8 +8,8 @@
       apt_extra_repos:
         - { name: "percona", repo: "http://repo.percona.com/apt {{ ansible_distribution_release }} main" }
       apt_extra_keys:
-        - { keyserver: "keyserver.ubuntu.com", keyid: "1C4CBDCDCD2EFD2A" }
-        - { keyserver: "keyserver.ubuntu.com", keyid: "9334A25F8507EFA5" }
+        - { keyserver: "hkps://keyserver.ubuntu.com", keyid: "1C4CBDCDCD2EFD2A" }
+        - { keyserver: "hkps://keyserver.ubuntu.com", keyid: "9334A25F8507EFA5" }
 
     - galera
 
