@@ -93,6 +93,10 @@
 # initiator of the event. (string value)
 # Allowed values: basic, cadf
 #notification_format = basic
+notification_format = {{ keystone_notification_format }}
+{% for opt_out in keystone_notification_opt_out %}
+notification_opt_out = {{ opt_out }}
+{% endfor %}
 
 #
 # From oslo.log
@@ -1327,7 +1331,7 @@ lock_path = /var/lock/keystone
 [oslo_messaging_notifications]
 
 {% if keystone_notifications %}
-driver = messagingv2
+driver = {{ keystone_notifications_driver }}
 transport_url = rabbit://{% for host in rabbit_hosts %}{{ keystone_rabbit_user }}:{{ keystone_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ keystone_rabbit_vhost }}
 {% else %}
 driver =

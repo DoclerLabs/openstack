@@ -37,6 +37,13 @@ keystone_OIDCClientSecret:
 keystone_OIDCSSLValidateServer: True
 
 keystone_notifications: "{{ notifications_enable | default(False) }}"
+keystone_notifications_driver: messagingv2
+
+keystone_notification_format: cadf
+keystone_notification_opt_out:
+ - "identity.authenticate.success"
+ - "identity.authenticate.pending"
+ - "identity.authenticate.failed"
 
 keystone_debug: False
 keystone_ssl: False
