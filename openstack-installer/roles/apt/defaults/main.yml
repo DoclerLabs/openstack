@@ -1,7 +1,7 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-wallaby", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/wallaby main" }
+  - { name: "cloudarchive-xena", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/xena main" }
 
 apt_extra_repos: []
 
