@@ -2,4 +2,3 @@
 
 rabbitmq_fd_limit: 16384
 rabbitmq_cluster_partition_handling: "{{ (rabbitmq_hosts | count < 3) | ternary('ignore','pause_minority') }}"
-rabbitmq_hipe_compile: True

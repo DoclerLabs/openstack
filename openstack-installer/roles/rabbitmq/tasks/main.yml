@@ -5,7 +5,6 @@
   apt:
     name:
     - rabbitmq-server
-    - erlang-base-hipe
 
 - name: determine the erlang cookie
   command: cat /var/lib/rabbitmq/.erlang.cookie
