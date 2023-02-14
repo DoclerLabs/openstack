@@ -45,6 +45,14 @@
           - python-shade
           - panko-api
           - python-cinderclient
+          - python-keystoneclient
+          - python-novaclient
+          - python-glanceclient
+          - python-swiftclient
+          - python-neutronclient
+          - python-ceilometerclient
+          - python-gnocchiclient
+          - python-heatclient
         state: absent
 
 # Mask apache configs from the packages
