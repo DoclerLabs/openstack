@@ -81,6 +81,8 @@
     - heat-api
     - heat-api-cfn
     - heat-engine
+    - python3-vitrageclient
+    - python3-zunclient
 
 - meta: flush_handlers
 
