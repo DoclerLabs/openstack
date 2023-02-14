@@ -29,6 +29,14 @@
       file: path=/var/lib/nova/nova.sqlite state=absent
       when: inventory_hostname in groups['nova_compute']
 
+    - name: remove problematic Python2 packages
+      apt:
+        name:
+           - python-is-python2
+           - python-pygments
+           - python-six
+        state: absent
+
     - name: upgrade packages
       apt: upgrade=yes
 

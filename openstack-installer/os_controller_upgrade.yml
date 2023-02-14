@@ -44,6 +44,9 @@
         name:
           - python-shade
           - panko-api
+          - python-is-python2
+          - python-pygments
+          - python-six
           - python-cinderclient
           - python-keystoneclient
           - python-novaclient
