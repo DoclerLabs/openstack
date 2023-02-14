@@ -725,7 +725,7 @@ define service{
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description gnocchi-api
 {% if nagios_check_http_proxyprotocol %}
-    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https','check_http') }}!-p 8041!--proxy
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 8041!--proxy
 {% else %}
     check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 8041
 {% endif %}
