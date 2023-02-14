@@ -34,7 +34,7 @@ Current OpenStack versions supported:
 - Victoria/Ubuntu Focal        - focal/victoria branch
 - Wallaby/Ubuntu Focal         - focal/wallaby branch
 - Xena/Ubuntu Focal            - focal/xena branch
-- Yoga/Ubuntu Focal/Jammy      - xena branch
+- Yoga/Ubuntu Focal/Jammy      - yoga branch
 
 Integrated Infra components:
 - Pacemaker
