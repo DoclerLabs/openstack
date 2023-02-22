@@ -149,6 +149,7 @@
     - glance[0]
     - horizon[0]
     - nova_controller[0]
+    - placement[0]
     - neutron_controller[0]
     - neutron_l3[0]
     - gnocchi[0]
@@ -202,6 +203,7 @@
         with_items:
           - { playbook: "os_glance.yml", group: "{{ groups['glance'] }}" }
           - { playbook: "os_neutron.yml", group: "{{ groups['neutron_l3'] | union(groups['neutron_controller']) }}" }
+          - { playbook: "os_placement.yml", group: "{{ groups['placement'] }}" }
           - { playbook: "os_nova.yml", group: "{{ groups['nova_controller'] }}" }
           - { playbook: "os_gnocchi.yml", group: "{{ groups['gnocchi'] }}" }
           - { playbook: "os_panko.yml", group: "{{ groups['panko'] }}" }
@@ -237,6 +239,7 @@
     - glance[1:]
     - horizon[1:]
     - nova_controller[1:]
+    - placement[1:]
     - neutron_controller[1:]
     - neutron_l3[1:]
     - gnocchi[1:]
@@ -289,6 +292,7 @@
         with_items:
           - { playbook: "os_glance.yml", group: "{{ groups['glance'] }}" }
           - { playbook: "os_neutron.yml", group: "{{ groups['neutron_l3'] | union(groups['neutron_controller']) }}" }
+          - { playbook: "os_placement.yml", group: "{{ groups['placement'] }}" }
           - { playbook: "os_nova.yml", group: "{{ groups['nova_controller'] }}" }
           - { playbook: "os_gnocchi.yml", group: "{{ groups['gnocchi'] }}" }
           - { playbook: "os_panko.yml", group: "{{ groups['panko'] }}" }
