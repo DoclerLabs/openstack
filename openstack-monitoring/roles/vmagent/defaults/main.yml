@@ -1,0 +1,5 @@
+---
+
+vmagent_remotewrite_url: "http://localhost"
+vmagent_scrape_interval: "15s"
+vmagent_job_name: "node"

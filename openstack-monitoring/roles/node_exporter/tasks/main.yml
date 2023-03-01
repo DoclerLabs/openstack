@@ -1,0 +1,9 @@
+---
+
+- name: install node exporter
+  apt: name=prometheus-node-exporter
+
+- meta: flush_handlers
+
+- name: make sure node exporter is enabled and started
+  service: name=prometheus-node-exporter state=started enabled=yes

@@ -1,0 +1,19 @@
+[Unit]
+Description=vmagent service for victoria-metrics
+Documentation=https://victoriametrics.github.io/
+After=network.target
+
+[Service]
+Type=simple
+User=_victoria-metrics
+LimitNOFILE=65536
+LimitNPROC=32000
+StartLimitBurst=5
+StartLimitInterval=0
+Restart=on-failure
+RestartSec=1
+EnvironmentFile=/etc/default/vmagent
+ExecStart=/usr/bin/vmagent $ARGS
+
+[Install]
+WantedBy=multi-user.target

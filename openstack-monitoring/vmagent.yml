@@ -1,0 +1,15 @@
+---
+
+- hosts:
+    - nova_compute
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - node_exporter
+
+- hosts:
+   - nova_controller
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - vmagent

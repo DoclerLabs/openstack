@@ -1,0 +1,1 @@
+ARGS="-remoteWrite.tmpDataPath /var/lib/victoria-metrics/vmagent-remotewrite-data -promscrape.cluster.membersCount={{ groups['nova_controller'] | count }} -promscrape.cluster.memberNum={{ groups['nova_controller'].index(inventory_hostname) }} -remoteWrite.url={{ vmagent_remotewrite_url }} -promscrape.config /etc/prometheus.yaml"

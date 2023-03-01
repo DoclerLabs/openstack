@@ -1,0 +1,23 @@
+---
+
+- name: install vmagent
+  apt: name=victoria-metrics
+
+- name: install vmagent.service
+  copy: src=vmagent.service dest=/etc/systemd/system/vmagent.service owner=root group=root mode=0644
+
+- name: install vmagent environment
+  template: src=vmagent.j2 dest=/etc/default/vmagent owner=root group=root mode=0644
+  notify: restart vmagent
+
+- name: install prometheus.yaml
+  template: src=prometheus.yaml.j2 dest=/etc/prometheus.yaml owner=root group=root mode=0644
+  notify: restart vmagent
+
+- meta: flush_handlers
+
+- name: make sure node vmagent is enabled and started
+  service: name=vmagent state=started enabled=yes
+
+- name: make sure node victoria-metrics is stopped
+  service: name=victoria-metrics state=stopped enabled=no
