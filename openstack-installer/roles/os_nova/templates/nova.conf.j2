@@ -313,7 +313,9 @@ send_service_user_token = True
 [libvirt]
 
 cpu_mode = {{ nova_libvirt_cpu_mode }}
+{% if nova_libvirt_cpu_mode == 'custom' %}
 cpu_model = {{ nova_libvirt_cpu_model }}
+{% endif %}
 
 disk_cachemodes="network=writeback"
 use_virtio_for_bridges = True
