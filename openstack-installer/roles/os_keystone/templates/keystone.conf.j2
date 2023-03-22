@@ -1371,12 +1371,31 @@ rabbit_ha_queues = true
 # From oslo.policy
 #
 
-# The JSON file that defines policies. (string value)
-# Deprecated group/name - [DEFAULT]/policy_file
-#policy_file = policy.json
+# This option controls whether or not to enforce scope when evaluating
+# policies. If ``True``, the scope of the token used in the request is compared
+# to the ``scope_types`` of the policy being enforced. If the scopes do not
+# match, an ``InvalidScope`` exception will be raised. If ``False``, a message
+# will be logged informing operators that policies are being invoked with
+# mismatching scope. (boolean value)
+enforce_scope = {{ keystone_enforce_scope }}
+
+# This option controls whether or not to use old deprecated defaults when
+# evaluating policies. If ``True``, the old deprecated defaults are not going
+# to be evaluated. This means if any existing token is allowed for old defaults
+# but is disallowed for new defaults, it will be disallowed. It is encouraged
+# to enable this flag along with the ``enforce_scope`` flag so that you can get
+# the benefits of new defaults and ``scope_type`` together. If ``False``, the
+# deprecated policy check string is logically OR'd with the new policy check
+# string, allowing for a graceful upgrade experience between releases with new
+# policies, which is the default behavior. (boolean value)
+enforce_new_defaults = {{ keystone_enforce_new_defaults }}
+
+# The relative or absolute path of a file that maps roles to permissions for a
+# given service. Relative paths must be specified in relation to the
+# configuration file setting this option. (string value)
+#policy_file = policy.yaml
 
 # Default rule. Enforced when a requested rule is not found. (string value)
-# Deprecated group/name - [DEFAULT]/policy_default_rule
 #policy_default_rule = default
 
 # Directories where policy configuration files are stored. They can be relative
@@ -1384,10 +1403,43 @@ rabbit_ha_queues = true
 # absolute paths. The file defined by policy_file must exist for these
 # directories to be searched.  Missing or empty directories are ignored. (multi
 # valued)
-# Deprecated group/name - [DEFAULT]/policy_dirs
-# This option is deprecated for removal.
-# Its value may be silently ignored in the future.
 #policy_dirs = policy.d
+
+# Content Type to send and receive data for REST based policy check (string
+# value)
+# Possible values:
+# application/x-www-form-urlencoded - <No description provided>
+# application/json - <No description provided>
+#remote_content_type = application/x-www-form-urlencoded
+
+# server identity verification for REST based policy check (boolean value)
+#remote_ssl_verify_server_crt = false
+
+# Absolute path to ca cert file for REST based policy check (string value)
+#remote_ssl_ca_crt_file = <None>
+
+# Absolute path to client cert for REST based policy check (string value)
+#remote_ssl_client_crt_file = <None>
+
+# Absolute path client key file REST based policy check (string value)
+#remote_ssl_client_key_file = <None>
+
+
+[policy]
+
+#
+# From keystone
+#
+
+# Entry point for the policy backend driver in the `keystone.policy` namespace.
+# Supplied drivers are `rules` (which does not support any CRUD operations for
+# the v3 policy API) and `sql`. Typically, there is no reason to set this
+# option unless you are providing a custom entry point. (string value)
+#driver = sql
+
+# Maximum number of entities that will be returned in a policy collection.
+# (integer value)
+#list_limit = <None>
 
 
 [paste_deploy]

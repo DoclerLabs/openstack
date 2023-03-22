@@ -1,0 +1,8 @@
+# /etc/default/ceph
+#
+# Environment file for ceph daemon systemd unit files.
+#
+
+# Increase tcmalloc cache size
+TCMALLOC_MAX_TOTAL_THREAD_CACHE_BYTES=134217728
+CLUSTER={{ ceph_cluster_name }}

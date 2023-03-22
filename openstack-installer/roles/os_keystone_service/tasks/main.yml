@@ -17,17 +17,21 @@
     hour: "{{ lookup('pipe','date +%H') }}"
 
 - name: get an admin token
-  os_auth:
-    auth:
-      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
-      username: admin
-      password: "{{ keystone_admin_password }}"
-      domain-name: "{{ keystone_domain_name }}"
-      project_name: admin
-      project_domain_name: "{{ keystone_domain_name }}"
-    cacert: "{{ SSLCACertificateFile }}"
-    validate_certs: "{{ ssl_insecure | ternary(False, True) }}"
-    region_name: "{{ keystone_region_name }}"
+  command: "openstack token issue -f value -c id
+      --os-auth-url={{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3
+      --os-username=admin
+      --os-password={{ keystone_admin_password }}
+      --os-user-domain-name={{ keystone_domain_name }}
+      --os-system-scope=all
+      --os-region-name={{ keystone_region_name }}
+      --os-cacert={{ SSLCACertificateFile }}
+      {{ ssl_insecure | ternary('--insecure', '--verify') }}"
+  register: auth_token_full
+  when: timestamp | default(99) != hour
+
+- name: set auth_token
+  set_fact:
+    auth_token: "{{ auth_token_full.stdout }}"
   when: timestamp | default(99) != hour
 
 - name: store token timestamp

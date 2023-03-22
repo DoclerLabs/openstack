@@ -23,6 +23,10 @@ glance_notifications: "{{ notifications_enable | default(False) }}"
 
 glance_syslog_use: "{{ syslog_use | default(False) }}"
 
+glance_enforce_scope: "{{ enforce_scope | default(False) }}"
+glance_enforce_new_defaults: "{{ enforce_scope | default(False) }}"
+glance_enforce_secure_rbac: "{{ enforce_scope | default(False) }}"
+
 glance_debug: False
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"

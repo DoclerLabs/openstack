@@ -284,6 +284,8 @@ workers = {{ glance_api_workers }}
 # (string value)
 #admin_role = admin
 
+enforce_secure_rbac = {{ glance_enforce_secure_rbac }}
+
 #
 # From oslo.log
 #
@@ -950,28 +952,8 @@ rabbit_ha_queues = true
 
 [oslo_policy]
 
-#
-# From oslo.policy
-#
-
-# The JSON file that defines policies. (string value)
-# Deprecated group/name - [DEFAULT]/policy_file
-#policy_file = policy.json
-
-# Default rule. Enforced when a requested rule is not found. (string
-# value)
-# Deprecated group/name - [DEFAULT]/policy_default_rule
-#policy_default_rule = default
-
-# Directories where policy configuration files are stored. They can be
-# relative to any directory in the search path defined by the
-# config_dir option, or absolute paths. The file defined by
-# policy_file must exist for these directories to be searched.
-# Missing or empty directories are ignored. (multi valued)
-# Deprecated group/name - [DEFAULT]/policy_dirs
-# This option is deprecated for removal.
-# Its value may be silently ignored in the future.
-#policy_dirs = policy.d
+enforce_scope = {{ glance_enforce_scope }}
+enforce_new_defaults = {{ glance_enforce_new_defaults }}
 
 
 [paste_deploy]

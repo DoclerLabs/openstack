@@ -45,6 +45,9 @@ keystone_notification_opt_out:
  - "identity.authenticate.pending"
  - "identity.authenticate.failed"
 
+keystone_enforce_scope: "{{ enforce_scope | default(False) }}"
+keystone_enforce_new_defaults: "{{ enforce_scope | default(False) }}"
+
 keystone_debug: False
 keystone_ssl: False
 keystone_proto: "{{ keystone_ssl | ternary('https', 'http') }}"

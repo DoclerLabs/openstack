@@ -10,6 +10,9 @@ placement_project_name: "{{ keystone_service_project_name | default('service') }
 
 placement_syslog_use: "{{ syslog_use | default(False) }}"
 
+placement_enforce_scope: "{{ enforce_scope | default(False) }}"
+placement_enforce_new_defaults: "{{ enforce_scope | default(False) }}"
+
 placement_debug: False
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"

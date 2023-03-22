@@ -134,3 +134,9 @@ memcache_secret_key = {{ memcache_secret_key }}
 
 connection = mysql+pymysql://{{ placement_db_user }}:{{ placement_db_password }}@{{ placement_mysql_server }}/{{ placement_db }}?charset=utf8
 max_retries = -1
+
+
+[oslo_policy]
+
+enforce_scope = {{ placement_enforce_scope }}
+enforce_new_defaults = {{ placement_enforce_new_defaults }}

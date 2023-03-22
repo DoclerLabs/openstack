@@ -164,6 +164,12 @@ memcache_security_strategy = ENCRYPT
 memcache_secret_key = {{ memcache_secret_key }}
 
 
+[oslo_policy]
+
+enforce_scope = {{ cinder_enforce_scope }}
+enforce_new_defaults = {{ cinder_enforce_new_defaults }}
+
+
 [oslo_concurrency]
 
 lock_path = /var/lock/cinder

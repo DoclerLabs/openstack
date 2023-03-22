@@ -246,6 +246,12 @@ backend = castellan.key_manager.barbican_key_manager.BarbicanKeyManager
 auth_endpoint = {{ keystone_proto }}://{{ keystone_public_address }}:5000/v3
 verify_ssl = {{ not ssl_insecure }}
 
+
+[oslo_policy]
+
+enforce_scope = {{ nova_enforce_scope }}
+enforce_new_defaults = {{ nova_enforce_new_defaults }}
+
 {% endif %}
 
 

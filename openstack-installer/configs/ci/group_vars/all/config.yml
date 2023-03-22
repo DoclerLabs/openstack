@@ -13,6 +13,8 @@ rabbitmq_hipe_compile: False
 #Openstack services log to syslog
 syslog_use: True
 
+enforce_scope: True
+
 #Keystone addresses should be domain names in case of SSL (when keystone_ssl: True)
 keystone_internal_address: "{{ vip_mgmt }}"
 keystone_admin_address: "{{ vip_mgmt }}"
