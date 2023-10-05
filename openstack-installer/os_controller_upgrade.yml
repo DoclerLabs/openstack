@@ -283,6 +283,9 @@
         apt: name=neutron-l3-agent state=present
         when: inventory_hostname in groups['neutron_l3']
 
+      - name: make sure /var/lib/openstack-dashboard/secret_key exists
+        copy: content='' dest=/var/lib/openstack-dashboard/secret_key owner=root group=root mode=0644 force=no
+
       - name: upgrade packages
         apt: upgrade=yes
 
