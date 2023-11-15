@@ -18,7 +18,7 @@ def expand_group(yml, group, nesting_level):
         sys.exit(1)
     hosts = []
     if yml[group]:
-        for host, key in yml[group].iteritems():
+        for host, key in yml[group].items():
             if host == 'inherit':
                 if isinstance(key, list):
                     for inherited_group in key:
@@ -48,14 +48,14 @@ def inventory(hostname):
             if data and hostname in data:
                 hostvars = data[hostname]
                 hostvars['ansible_ssh_host'] = hostvars['ip']['mgmt']
-                print json.dumps(hostvars, indent=4)
+                print (json.dumps(hostvars, indent=4))
                 break
         else:
             sys.stderr.write("ERROR: No host '{0}' found\n".format(hostname))
             sys.exit(1)
     else:
         inventory = {"_meta": {"hostvars": {}}}
-        for group, data in inv_source.iteritems():
+        for group, data in inv_source.items():
             host_group = sorted(expand_group(inv_source, group, 0))
             if data and 'roles' in data:
                 for role in data['roles']:
@@ -64,14 +64,14 @@ def inventory(hostname):
                 inventory[group] = host_group
             if data is None:
                 continue
-            for host, hostvars in data.iteritems():
+            for host, hostvars in data.items():
                 if host in ('inherit', 'roles'):
                     continue
                 inventory['_meta']['hostvars'][host] = hostvars
                 inventory['_meta']['hostvars'][host]['ansible_ssh_host'] = \
                     hostvars['ip']['mgmt']
 
-        print json.dumps(inventory, indent=4)
+        print (json.dumps(inventory, indent=4))
 
 
 def main():
