@@ -61,7 +61,7 @@ for tup in mdData:
     failed_list = []
     for drive in drives:
         if drive[-3:] == '(F)':
-            failed_list.append(drive[:string.index(drive, '[')])
+            failed_list.append(drive[:drive.index('[')])
             status = 1
     failed = ", "
     failed = ' (' + failed.join(failed_list) + ').'
