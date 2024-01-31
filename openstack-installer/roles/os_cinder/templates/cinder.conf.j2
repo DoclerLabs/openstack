@@ -32,6 +32,8 @@ glance_api_insecure = {{ ssl_insecure }}
 glance_ca_certificates_file = {{ SSLCACertificateFile }}
 {% endif %}
 
+default_volume_type = {{ cinder_default_volume_type }}
+
 scheduler_default_filters = {{ cinder_scheduler_default_filters }}
 scheduler_default_weighers = {{ cinder_scheduler_default_weighers }}
 

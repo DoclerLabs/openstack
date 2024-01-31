@@ -18,6 +18,7 @@ nova_project_name: "{{ keystone_service_project_name | default('service') }}"
 ceph_cluster_name: ceph
 
 cinder_cluster_name:
+cinder_default_volume_type: "__DEFAULT__"
 
 cinder_backend: lvm
 cinder_volume_group: cinder-volumes
