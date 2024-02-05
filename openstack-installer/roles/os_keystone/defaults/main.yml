@@ -34,6 +34,8 @@ keystone_OIDCProviderJwksUri:
 keystone_OIDCClientID:
 keystone_OIDCClientSecret:
 
+keystone_OIDCCacheShmEntrySizeMax:
+
 keystone_OIDCSSLValidateServer: True
 
 keystone_notifications: "{{ notifications_enable | default(False) }}"
