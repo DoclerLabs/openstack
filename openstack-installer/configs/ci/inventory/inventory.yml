@@ -4,25 +4,25 @@ controller:
       mgmt: 192.168.168.11
       vxlan: 192.168.168.11
     osd:
-      - { disk: "/dev/vdc" }
+      - { disk: "/dev/vdb" }
     swift:
-      - { device: "/dev/vdd" }
+      - { device: "/dev/vdc" }
   controller2:
     ip:
       mgmt: 192.168.168.12
       vxlan: 192.168.168.12
     osd:
-      - { disk: "/dev/vdc" }
+      - { disk: "/dev/vdb" }
     swift:
-      - { device: "/dev/vdd" }
+      - { device: "/dev/vdc" }
   controller3:
     ip:
       mgmt: 192.168.168.13
       vxlan: 192.168.168.13
     osd:
-      - { disk: "/dev/vdc" }
+      - { disk: "/dev/vdb" }
     swift:
-      - { device: "/dev/vdd" }
+      - { device: "/dev/vdc" }
 
 # -------- infrastructure --------
 pacemaker:
