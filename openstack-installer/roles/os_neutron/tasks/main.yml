@@ -127,8 +127,12 @@
   when: inventory_hostname in groups['neutron_l3']
 
 - name: stop and disable strongswan
-  service: name=strongswan state=stopped enabled=no
+  service: name={{ item }} state=stopped enabled=no
   when: inventory_hostname in groups['neutron_l3'] and neutron_vpnaas_type == 'strongswan'
+  with_items:
+    - strongswan
+    - ipsec
+  failed_when: False
 
 - name: disable apparmor strongswan profiles
   file: path=/etc/apparmor.d/disable/{{ item }} src=/etc/apparmor.d/{{ item }} state=link
