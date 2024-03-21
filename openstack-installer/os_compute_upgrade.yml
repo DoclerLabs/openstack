@@ -6,6 +6,7 @@
     - ceilometer_compute
   become: True
   max_fail_percentage: 0
+  gather_facts: False
   roles:
     - apt
   pre_tasks:
@@ -23,6 +24,7 @@
     - ceilometer_compute
   become: True
   max_fail_percentage: 0
+  gather_facts: False
   serial: 5
   tasks:
     - name: get rid of nova.sqlite
