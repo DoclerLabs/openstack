@@ -12,44 +12,24 @@
   when: SSLCACertificateFile != ''
   become: True
 
-- name: get current hour
-  set_fact:
-    hour: "{{ lookup('pipe','date +%H') }}"
-
-- name: get an admin token
-  os_auth:
-    auth:
-      auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
-      username: admin
-      password: "{{ keystone_admin_password }}"
-      domain-name: "{{ keystone_domain_name }}"
-      project_name: admin
-      project_domain_name: "{{ keystone_domain_name }}"
-    cacert: "{{ SSLCACertificateFile }}"
-    validate_certs: "{{ ssl_insecure | ternary(False, True) }}"
-    region_name: "{{ keystone_region_name }}"
-  when: timestamp | default(99) != hour
-
-- name: store token timestamp
-  set_fact:
-    timestamp: "{{ hour }}"
-  when: timestamp | default(99) != hour
-
 - name: create the service in keystone
-  keystone_service: >
-    token="{{ auth_token }}"
-    auth_url="{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
-    name="{{ keystone_service_name }}"
-    type="{{ keystone_service_type }}"
-    description="{{ keystone_service_description }}"
-    publicurl="{{ keystone_public_url }}"
-    internalurl="{{ keystone_internal_url }}"
-    adminurl="{{ keystone_admin_url }}"
-    region="{{ keystone_region }}"
-    ignore_other_regions=true
-    cacert="{{ SSLCACertificateFile }}"
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    state={{ keystone_service_present | ternary("present", "absent") }}
+  keystone_service:
+    login_user: admin
+    login_password: "{{ keystone_admin_password }}"
+    login_domain_name: "{{ keystone_domain_name }}"
+    login_project_name: admin
+    login_project_domain: "{{ keystone_domain_name }}"
+    auth_url: "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
+    name: "{{ keystone_service_name }}"
+    type: "{{ keystone_service_type }}"
+    publicurl: "{{ keystone_public_url }}"
+    internalurl: "{{ keystone_internal_url }}"
+    adminurl: "{{ keystone_admin_url }}"
+    region: "{{ keystone_region }}"
+    ignore_other_regions: true
+    cacert: "{{ SSLCACertificateFile }}"
+    insecure: "{{ ssl_insecure | ternary('true', 'false') }}"
+    state: "{{ keystone_service_present | ternary('present', 'absent') }}"
   register: keystone_service_result
   until: keystone_service_result is success
   delay: 5
@@ -57,14 +37,18 @@
   when: keystone_service_name is defined
 
 - name: create the project in keystone
-  keystone_user: >
-    token="{{ auth_token }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
-    project_domain="{{ item.keystone_project_domain_name | default('Default') }}"
-    project="{{ item.keystone_project_name }}"
-    project_description="{{ item.keystone_project_description }}"
-    cacert="{{ SSLCACertificateFile }}"
-    insecure={{ ssl_insecure | ternary("true", "false") }}
+  keystone_user:
+    login_user: admin
+    login_password: "{{ keystone_admin_password }}"
+    login_domain_name: "{{ keystone_domain_name }}"
+    login_project_name: admin
+    login_project_domain: "{{ keystone_domain_name }}"
+    endpoint: "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
+    project_domain: "{{ item.keystone_project_domain_name | default('Default') }}"
+    project: "{{ item.keystone_project_name }}"
+    project_description: "{{ item.keystone_project_description }}"
+    cacert: "{{ SSLCACertificateFile }}"
+    insecure: "{{ ssl_insecure | ternary('true', 'false') }}"
   with_items: "{{ keystone_projects | default([]) }}"
   register: keystone_project_result
   until: keystone_project_result is success
@@ -72,12 +56,16 @@
   retries: 5
 
 - name: create roles in keystone
-  keystone_user: >
-    token="{{ auth_token }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
-    cacert="{{ SSLCACertificateFile }}"
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    role="{{ item }}"
+  keystone_user:
+    login_user: admin
+    login_password: "{{ keystone_admin_password }}"
+    login_domain_name: "{{ keystone_domain_name }}"
+    login_project_name: admin
+    login_project_domain: "{{ keystone_domain_name }}"
+    endpoint: "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
+    cacert: "{{ SSLCACertificateFile }}"
+    insecure: "{{ ssl_insecure | ternary('true', 'false') }}"
+    role: "{{ item }}"
   with_items: "{{ keystone_roles | default([]) }}"
   register: keystone_roles_result
   until: keystone_roles_result is success
@@ -85,14 +73,18 @@
   retries: 5
 
 - name: create the user in keystone
-  keystone_user: >
-    token="{{ auth_token }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
-    user="{{ item.keystone_user }}"
-    user_domain="{{ item.keystone_domain_name | default('Default') }}"
-    password="{{ item.keystone_password }}"
-    cacert="{{ SSLCACertificateFile }}"
-    insecure={{ ssl_insecure | ternary("true", "false") }}
+  keystone_user:
+    login_user: admin
+    login_password: "{{ keystone_admin_password }}"
+    login_domain_name: "{{ keystone_domain_name }}"
+    login_project_name: admin
+    login_project_domain: "{{ keystone_domain_name }}"
+    endpoint: "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
+    user: "{{ item.keystone_user }}"
+    user_domain: "{{ item.keystone_domain_name | default('Default') }}"
+    password: "{{ item.keystone_password }}"
+    cacert: "{{ SSLCACertificateFile }}"
+    insecure: "{{ ssl_insecure | ternary('true', 'false') }}"
   with_items: "{{ keystone_users | default([]) }}"
   register: keystone_user_result
   until: keystone_user_result is success
@@ -100,16 +92,20 @@
   retries: 5
 
 - name: assign roles to the user in keystone
-  keystone_user: >
-    token="{{ auth_token }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
-    cacert="{{ SSLCACertificateFile }}"
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    project="{{ item.0.keystone_project_name }}"
-    project_domain="{{ item.0.keystone_project_domain_name | default('Default') }}"
-    user="{{ item.0.keystone_user }}"
-    user_domain="{{ item.0.keystone_domain_name | default('Default') }}"
-    role="{{ item.1 }}"
+  keystone_user:
+    login_user: admin
+    login_password: "{{ keystone_admin_password }}"
+    login_domain_name: "{{ keystone_domain_name }}"
+    login_project_name: admin
+    login_project_domain: "{{ keystone_domain_name }}"
+    endpoint: "{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
+    cacert: "{{ SSLCACertificateFile }}"
+    insecure: "{{ ssl_insecure | ternary('true', 'false') }}"
+    project: "{{ item.0.keystone_project_name }}"
+    project_domain: "{{ item.0.keystone_project_domain_name | default('Default') }}"
+    user: "{{ item.0.keystone_user }}"
+    user_domain: "{{ item.0.keystone_domain_name | default('Default') }}"
+    role: "{{ item.1 }}"
   with_subelements:
      - "{{ keystone_users | default([]) }}"
      - keystone_role

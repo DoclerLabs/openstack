@@ -14,10 +14,6 @@ options:
     description:
         - type of service (e.g., identity)
     required: yes
-  description:
-    description:
-        - description of service (e.g., Identity Service)
-    required: yes
   public_url:
     description:
         - public url of service.
@@ -74,7 +70,6 @@ examples:
 keystone_service: >
     name=keystone
     type=identity
-    description="Keystone Identity Service"
     publicurl=http://192.168.206.130:5000/v2.0
     internalurl=http://192.168.206.130:5000/v2.0
     adminurl=http://192.168.206.130:35357/v2.0
@@ -82,7 +77,6 @@ keystone_service: >
 keystone_service: >
     name=glance
     type=image
-    description="Glance Identity Service"
     url=http://192.168.206.130:9292
 
 '''
@@ -155,7 +149,7 @@ def get_endpoints(keystone, name, region, ignore_other_regions):
     return endpoints
 
 
-def ensure_present(keystone, name, service_type, description, public_url,
+def ensure_present(keystone, name, service_type, public_url,
                    internal_url, admin_url, region, ignore_other_regions,
                    check_mode):
     """ Ensure the service and its endpoint are present and have the right values.
@@ -192,8 +186,7 @@ def ensure_present(keystone, name, service_type, description, public_url,
     # Delete service and its endpoint if the service exists and doesn't match.
     if service is not None:
         identical = service.name == name and \
-                    service.type == service_type and \
-                    service.description == description
+                    service.type == service_type
         if not identical:
             changed = True
             ensure_endpoint_absent(keystone, name, check_mode, region,
@@ -207,8 +200,7 @@ def ensure_present(keystone, name, service_type, description, public_url,
         if not check_mode:
             service = keystone.services.create(
                 name=name,
-                service_type=service_type,
-                description=description
+                service_type=service_type
             )
         changed = True
 
@@ -272,7 +264,7 @@ def ensure_endpoint_absent(keystone, name, check_mode, region,
         return False
 
 
-def dispatch(keystone, name, service_type, description, public_url,
+def dispatch(keystone, name, service_type, public_url,
              internal_url, admin_url, region, ignore_other_regions, state,
              check_mode):
 
@@ -281,7 +273,6 @@ def dispatch(keystone, name, service_type, description, public_url,
             keystone,
             name,
             service_type,
-            description,
             public_url,
             internal_url,
             admin_url,
@@ -306,7 +297,6 @@ def main():
         argument_spec=dict(
             name=dict(required=True),
             type=dict(required=True),
-            description=dict(required=False),
             public_url=dict(required=True, aliases=['url', 'publicurl']),
             internal_url=dict(required=False, aliases=['internalurl']),
             admin_url=dict(required=False, aliases=['adminurl']),
@@ -343,7 +333,6 @@ def main():
     insecure = module.boolean(module.params['insecure'])
     name = module.params['name']
     service_type = module.params['type']
-    description = module.params['description']
     public_url = module.params['public_url']
     internal_url = module.params['internal_url']
     if internal_url is None:
@@ -360,7 +349,7 @@ def main():
     check_mode = module.check_mode
 
     try:
-        d = dispatch(keystone, name, service_type, description,
+        d = dispatch(keystone, name, service_type,
                      public_url, internal_url, admin_url, region,
                      ignore_other_regions, state, check_mode)
     except Exception:
