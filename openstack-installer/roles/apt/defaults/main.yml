@@ -1,7 +1,7 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-zed", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu jammy-updates/zed main" }
+  - { name: "cloudarchive-antelope", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu jammy-updates/antelope main" }
 
 apt_extra_repos: []
 
