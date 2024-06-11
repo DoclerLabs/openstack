@@ -1,4 +1,4 @@
-- include: ceph.yml
+- import_playbook: ceph.yml
 
 - hosts: ceph_monitor[0]
   become: True
@@ -12,7 +12,7 @@
         - vms
         - gnocchi
 
-- include: main.yml
+- import_playbook: main.yml
 
 - hosts: gnocchi[0]
   become: True

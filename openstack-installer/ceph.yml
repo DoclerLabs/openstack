@@ -1,4 +1,4 @@
 ---
 
-- include: ceph_monitor.yml
-- include: ceph_osd.yml
+- import_playbook: ceph_monitor.yml
+- import_playbook: ceph_osd.yml

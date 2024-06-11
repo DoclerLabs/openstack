@@ -1,5 +1,5 @@
 ---
 
-- include: checksecrets.yml
-- include: os_controller_upgrade.yml
-- include: os_compute_upgrade.yml
+- import_playbook: checksecrets.yml
+- import_playbook: os_controller_upgrade.yml
+- import_playbook: os_compute_upgrade.yml
