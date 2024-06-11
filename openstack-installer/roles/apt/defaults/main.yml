@@ -1,7 +1,7 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-bobcat", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu jammy-updates/bobcat main" }
+  - { name: "cloudarchive-caracal", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu jammy-updates/caracal main" }
 
 apt_extra_repos: []
 
