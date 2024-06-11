@@ -19,7 +19,7 @@ neutron_lbaasv2_provider: haproxy
 
 horizon_install_dashboards: True
 horizon_dashboards:
-    - { install: "{{ groups['trove'] | count > 0 }}", package: 'python3-trove-dashboard' }
+#    - { install: "{{ groups['trove'] | count > 0 }}", package: 'python3-trove-dashboard' }
     - { install: "{{ groups['sahara'] | count > 0 }}", package: 'python3-sahara-dashboard' }
 #    - { install: "{{ groups['murano'] | count > 0 }}", package: 'python3-murano-dashboard' }
     - { install: "{{ groups['manila'] | count > 0 }}", package: 'python3-manila-ui' }
