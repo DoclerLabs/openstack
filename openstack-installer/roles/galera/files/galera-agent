@@ -61,6 +61,23 @@
 #
 ##
 
+ocf_promotion_score() {
+        ocf_version_cmp "$OCF_RESKEY_crm_feature_set" "3.10.0"
+        res=$?
+        if [ $res -eq 2 ] || [ $res -eq 1 ] || ! have_binary "crm_master"; then
+                ${HA_SBIN_DIR}/crm_attribute -p ${OCF_RESOURCE_INSTANCE} $@
+        else
+                ${HA_SBIN_DIR}/crm_master -l reboot $@
+        fi
+}
+
+crm_mon_no_validation()
+{
+        # The subshell prevents parsing error with incompatible shells
+        "$SHELL" -c "CIB_file=<(${HA_SBIN_DIR}/cibadmin -Q | sed 's/validate-with=\"[^\"]*\"/validate-with=\"none\"/') \
+        ${HA_SBIN_DIR}/crm_mon \$*" -- $*
+}
+
 #######################################################################
 # Initialization:
 
