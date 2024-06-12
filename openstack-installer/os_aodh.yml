@@ -34,7 +34,7 @@
       apache_service_ssl: "{{ os_ssl | default(False) }}"
       apache_proxyprotocol: "{{ proxyprotocol | default(False) }}"
       apache_services:
-        - { port: 8042, wsgi_process: "aodh-api", wsgi_user: "aodh", wsgi_group: "aodh", wsgi_script: "/var/www/cgi-bin/aodh/aodh-api" }
+        - { port: 8042, wsgi_process: "aodh-api", wsgi_user: "aodh", wsgi_group: "aodh", wsgi_script: "/usr/share/aodh/app.wsgi" }
 
 - hosts: haproxy
   become: True

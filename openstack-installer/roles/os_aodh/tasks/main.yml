@@ -80,14 +80,6 @@
   command: su aodh -s /bin/sh -c '/usr/bin/aodh-dbsync'
   run_once: True
 
-- name: create /var/www/cgi-bin/aodh
-  file: path=/var/www/cgi-bin/aodh state=directory owner=root group=root mode=0755
-  notify: signal apache to reload
-
-- name: link aodh wsgi servers
-  file: src=/usr/lib/python3/dist-packages/aodh/api/app.wsgi dest=/var/www/cgi-bin/aodh/aodh-api state=link
-  notify: signal apache to reload
-
 - name: unmask autostarting of aodh services
   service_mask: name={{ item }} state=unmasked
   with_items:
