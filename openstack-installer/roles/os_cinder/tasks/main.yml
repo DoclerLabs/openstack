@@ -59,6 +59,7 @@
     - cinder-scheduler
     - python3-cinder
     - python3-cinderclient
+    - python3-kazoo
   when: inventory_hostname in groups['cinder']
 
 - name: install fixed rtslib-fb-targetctl.service
