@@ -55,5 +55,4 @@
           haproxy_backend_options:
             - forwardfor
             - httpchk
-            - httplog
           haproxy_proxyprotocol: "{{ proxyprotocol | default(False) }}"

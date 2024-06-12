@@ -24,7 +24,6 @@
           haproxy_backend_options:
             - forwardfor
             - httpchk
-            - httplog
 
         - haproxy_service_name: horizon-ssl
           haproxy_balance_alg: source

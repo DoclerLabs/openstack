@@ -58,5 +58,5 @@
             - "{{ vip_public }}"
           haproxy_port: 8786
           haproxy_balance_type: "{{ (os_ssl | default(False)) | ternary('https', 'http') }}"
-          haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk', 'httplog']) }}"
+          haproxy_backend_options: "{{ (os_ssl | default(False)) | ternary(['httpchk'], ['forwardfor', 'httpchk']) }}"
           haproxy_proxyprotocol: "{{ proxyprotocol | default(False) }}"

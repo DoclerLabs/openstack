@@ -51,7 +51,6 @@
           haproxy_backend_options:
             - forwardfor
             - httpchk GET /
-            - httplog
           haproxy_backend_extras:
             - http-check expect status 300
           haproxy_proxyprotocol: "{{ proxyprotocol | default(False) }}"

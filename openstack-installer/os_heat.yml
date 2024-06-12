@@ -72,8 +72,9 @@
           haproxy_balance_type: http
           haproxy_backend_options:
             - forwardfor
-            - httpchk OPTIONS / HTTP/1.1\r\nHost:localhost
-            - httplog
+            - httpchk
+          haproxy_backend_extras:
+            - http-check send meth OPTIONS uri / ver HTTP/1.1 hdr Host localhost
           haproxy_proxyprotocol: "{{ proxyprotocol | default(False) }}"
 
         - haproxy_service_name: heat_api_cfn
@@ -85,8 +86,9 @@
           haproxy_balance_type: http
           haproxy_backend_options:
             - forwardfor
-            - httpchk OPTIONS / HTTP/1.1\r\nHost:localhost
-            - httplog
+            - httpchk
+          haproxy_backend_extras:
+            - http-check send meth OPTIONS uri / ver HTTP/1.1 hdr Host localhost
           haproxy_proxyprotocol: "{{ proxyprotocol | default(False) }}"
 
         - haproxy_service_name: heat_api_cloudwatch
@@ -98,5 +100,6 @@
           haproxy_balance_type: http
           haproxy_backend_options:
             - forwardfor
-            - httpchk OPTIONS / HTTP/1.1\r\nHost:localhost
-            - httplog
+            - httpchk
+          haproxy_backend_extras:
+            - http-check send meth OPTIONS uri / ver HTTP/1.1 hdr Host localhost
