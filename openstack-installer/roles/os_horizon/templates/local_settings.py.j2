@@ -1,8 +1,20 @@
 # -*- coding: utf-8 -*-
 
+# ----------------------------------------------------------------------
+# NOTE: The default values of the settings are defined in
+# openstack_dashboard/defaults.py. Previously most available settings
+# were listed in this example file, but it is no longer true.
+# For available settings, see openstack_dashboard/defaults.py and
+# the horizon setting reference found at
+# https://docs.openstack.org/horizon/latest/configuration/settings.html.
+#
+# Django related settings and HORIZON_CONFIG still exist here.
+# Keep in my mind that they will be revisit in upcoming releases.
+# ----------------------------------------------------------------------
+
 import os
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from horizon.utils import secret_key
 
@@ -21,23 +33,12 @@ COMPRESS_ENABLED = {{ horizon_compress }}
 # for more information
 COMPRESS_OFFLINE = {{ horizon_compress_offline }}
 
-# WEBROOT is the location relative to Webserver root
-# should end with a slash.
-WEBROOT = '/'
-#LOGIN_URL = WEBROOT + 'auth/login/'
-#LOGOUT_URL = WEBROOT + 'auth/logout/'
-#
-# LOGIN_REDIRECT_URL can be used as an alternative for
-# HORIZON_CONFIG.user_home, if user_home is not set.
-# Do not set it to '/home/', as this will cause circular redirect loop
-#LOGIN_REDIRECT_URL = WEBROOT
-
 # If horizon is running in production (DEBUG is False), set this
 # with the list of host/domain names that the application can serve.
 # For more information see:
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 #ALLOWED_HOSTS = ['horizon.example.com', ]
-ALLOWED_HOSTS = '*'
+ALLOWED_HOSTS = ['*']
 
 # Set SSL proxy settings:
 # Pass this header from the proxy after terminating the SSL,
@@ -51,28 +52,9 @@ ALLOWED_HOSTS = '*'
 #CSRF_COOKIE_SECURE = True
 #SESSION_COOKIE_SECURE = True
 
-# The absolute path to the directory where message files are collected.
-# The message file must have a .json file extension. When the user logins to
-# horizon, the message files collected are processed and displayed to the user.
-#MESSAGES_PATH=None
-
-# Overrides for OpenStack API versions. Use this setting to force the
-# OpenStack dashboard to use a specific API version for a given service API.
-# Versions specified here should be integers or floats, not strings.
-# NOTE: The version should be formatted as it appears in the URL for the
-# service API. For example, The identity service APIs have inconsistent
-# use of the decimal point, so valid options would be 2.0 or 3.
-# Minimum compute version to get the instance locked status is 2.9.
 OPENSTACK_API_VERSIONS = {
      "identity": 3
 }
-#OPENSTACK_API_VERSIONS = {
-#    "data-processing": 1.1,
-#    "identity": 3,
-#    "image": 2,
-#    "volume": 2,
-#    "compute": 2,
-#}
 
 # Set this to True if running on a multi-domain model. When this is enabled, it
 # will require the user to enter the Domain name in addition to the username
@@ -107,10 +89,6 @@ SHOW_KEYSTONE_V2_RC = False
 #    "help_text": _("Your password does not meet the requirements."),
 #}
 
-# Disable simplified floating IP address management for deployments with
-# multiple floating IP pools or complex network requirements.
-#HORIZON_CONFIG["simple_ip_management"] = False
-
 # Turn off browser autocompletion for forms including the login form and
 # the database creation workflow if so desired.
 #HORIZON_CONFIG["password_autocomplete"] = "off"
@@ -138,17 +116,11 @@ SECRET_KEY = '{{ horizon_secret_key }}'
 # memcached set CACHES to something like
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
         'LOCATION': [{% for host in groups['memcached'] %}'{{ hostvars[host].ip.mgmt }}:11211'{% if not loop.last %},{% endif %}{% endfor %}],
     }
 }
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-
-#CACHES = {
-#    'default': {
-#        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-#    }
-#}
 
 # Send email to the console by default
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -220,21 +192,6 @@ OPENSTACK_SSL_NO_VERIFY = {{ ssl_insecure }}
 {% if SSLCACertificateFile != '' %}
 OPENSTACK_SSL_CACERT = '{{ SSLCACertificateFile }}'
 {% endif %}
-
-# The OPENSTACK_KEYSTONE_BACKEND settings can be used to identify the
-# capabilities of the auth backend for Keystone.
-# If Keystone has been configured to use LDAP as the auth backend then set
-# can_edit_user to False and name to 'ldap'.
-#
-# TODO(tres): Remove these once Keystone has an API to identify auth backend.
-OPENSTACK_KEYSTONE_BACKEND = {
-    'name': 'native',
-    'can_edit_user': True,
-    'can_edit_group': True,
-    'can_edit_project': True,
-    'can_edit_domain': True,
-    'can_edit_role': True,
-}
 
 # Setting this to True, will add a new "Retrieve Password" action on instance,
 # allowing Admin session password retrieval/decryption.
@@ -354,59 +311,6 @@ OPENSTACK_NEUTRON_NETWORK = {
 OPENSTACK_HEAT_STACK = {
     'enable_user_pass': {{ horizon_heat_enable_user_pass }},
 }
-
-# The OPENSTACK_IMAGE_BACKEND settings can be used to customize features
-# in the OpenStack Dashboard related to the Image service, such as the list
-# of supported image formats.
-#OPENSTACK_IMAGE_BACKEND = {
-#    'image_formats': [
-#        ('', _('Select format')),
-#        ('aki', _('AKI - Amazon Kernel Image')),
-#        ('ami', _('AMI - Amazon Machine Image')),
-#        ('ari', _('ARI - Amazon Ramdisk Image')),
-#        ('docker', _('Docker')),
-#        ('iso', _('ISO - Optical Disk Image')),
-#        ('ova', _('OVA - Open Virtual Appliance')),
-#        ('qcow2', _('QCOW2 - QEMU Emulator')),
-#        ('raw', _('Raw')),
-#        ('vdi', _('VDI - Virtual Disk Image')),
-#        ('vhd', _('VHD - Virtual Hard Disk')),
-#        ('vhdx', _('VHDX - Large Virtual Hard Disk')),
-#        ('vmdk', _('VMDK - Virtual Machine Disk')),
-#    ],
-#}
-
-# The IMAGE_CUSTOM_PROPERTY_TITLES settings is used to customize the titles for
-# image custom property attributes that appear on image detail pages.
-IMAGE_CUSTOM_PROPERTY_TITLES = {
-    "architecture": _("Architecture"),
-    "kernel_id": _("Kernel ID"),
-    "ramdisk_id": _("Ramdisk ID"),
-    "image_state": _("Euca2ools state"),
-    "project_id": _("Project ID"),
-    "image_type": _("Image Type"),
-}
-
-# The IMAGE_RESERVED_CUSTOM_PROPERTIES setting is used to specify which image
-# custom properties should not be displayed in the Image Custom Properties
-# table.
-IMAGE_RESERVED_CUSTOM_PROPERTIES = []
-
-# Set to 'legacy' or 'direct' to allow users to upload images to glance via
-# Horizon server. When enabled, a file form field will appear on the create
-# image form. If set to 'off', there will be no file form field on the create
-# image form. See documentation for deployment considerations.
-HORIZON_IMAGES_UPLOAD_MODE = 'legacy'
-
-# Allow a location to be set when creating or updating Glance images.
-# If using Glance V2, this value should be False unless the Glance
-# configuration and policies allow setting locations.
-#IMAGES_ALLOW_LOCATION = False
-
-# A dictionary of default settings for create image modal.
-#CREATE_IMAGE_DEFAULTS = {
-#    'image_visibility': "public",
-#}
 
 # OPENSTACK_ENDPOINT_TYPE specifies the endpoint type to use for the endpoints
 # in the Keystone service catalog. Use this setting when Horizon is running
@@ -821,86 +725,4 @@ REST_API_REQUIRED_SETTINGS = ['OPENSTACK_HYPERVISOR_FEATURES',
 # The default theme if no cookie is present
 DEFAULT_THEME = 'ubuntu'
 
-# Default Ubuntu apache configuration uses /horizon as the application root.
-WEBROOT='/horizon/'
-
-# By default, validation of the HTTP Host header is disabled.  Production
-# installations should have this set accordingly.  For more information
-# see https://docs.djangoproject.com/en/dev/ref/settings/.
-ALLOWED_HOSTS = '*'
-
-# DISALLOW_IFRAME_EMBED can be used to prevent Horizon from being embedded
-# within an iframe. Legacy browsers are still vulnerable to a Cross-Frame
-# Scripting (XFS) vulnerability, so this option allows extra security hardening
-# where iframes are not used in deployment. Default setting is True.
-# For more information see:
-# http://tinyurl.com/anticlickjack
-#DISALLOW_IFRAME_EMBED = True
-
-# Help URL can be made available for the client. To provide a help URL, edit the
-# following attribute to the URL of your choice.
-#HORIZON_CONFIG["help_url"] = "http://openstack.mycompany.org"
-
-# Settings for OperationLogMiddleware
-# OPERATION_LOG_ENABLED is flag to use the function to log an operation on
-# Horizon.
-# mask_targets is arrangement for appointing a target to mask.
-# method_targets is arrangement of HTTP method to output log.
-# format is the log contents.
-#OPERATION_LOG_ENABLED = False
-#OPERATION_LOG_OPTIONS = {
-#    'mask_fields': ['password'],
-#    'target_methods': ['POST'],
-#    'ignored_urls': ['/js/', '/static/', '^/api/'],
-#    'format': ("[%(client_ip)s] [%(domain_name)s]"
-#        " [%(domain_id)s] [%(project_name)s]"
-#        " [%(project_id)s] [%(user_name)s] [%(user_id)s] [%(request_scheme)s]"
-#        " [%(referer_url)s] [%(request_url)s] [%(message)s] [%(method)s]"
-#        " [%(http_status)s] [%(param)s]"),
-#}
-
-# The default date range in the Overview panel meters - either <today> minus N
-# days (if the value is integer N), or from the beginning of the current month
-# until today (if set to None). This setting should be used to limit the amount
-# of data fetched by default when rendering the Overview panel.
-#OVERVIEW_DAYS_RANGE = 1
-
-# To allow operators to require users provide a search criteria first
-# before loading any data into the views, set the following dict
-# attributes to True in each one of the panels you want to enable this feature.
-# Follow the convention <dashboard>.<view>
-#FILTER_DATA_FIRST = {
-#    'admin.instances': False,
-#    'admin.images': False,
-#    'admin.networks': False,
-#    'admin.routers': False,
-#    'admin.volumes': False,
-#    'identity.users': False,
-#    'identity.projects': False,
-#    'identity.groups': False,
-#    'identity.roles': False
-#}
-
-# Dict used to restrict user private subnet cidr range.
-# An empty list means that user input will not be restricted
-# for a corresponding IP version. By default, there is
-# no restriction for IPv4 or IPv6. To restrict
-# user private subnet cidr range set ALLOWED_PRIVATE_SUBNET_CIDR
-# to something like
-#ALLOWED_PRIVATE_SUBNET_CIDR = {
-#    'ipv4': ['10.0.0.0/8', '192.168.0.0/16'],
-#    'ipv6': ['fc00::/7']
-#}
-ALLOWED_PRIVATE_SUBNET_CIDR = {'ipv4': [], 'ipv6': []}
-
-# Projects and users can have extra attributes as defined by keystone v3.
-# Horizon has the ability to display these extra attributes via this setting.
-# If you'd like to display extra data in the project or user tables, set the
-# corresponding dict key to the attribute name, followed by the display name.
-# For more information, see horizon's customization (http://docs.openstack.org/developer/horizon/topics/customizing.html#horizon-customization-module-overrides)
-#PROJECT_TABLE_EXTRA_INFO = {
-#   'phone_num': _('Phone Number'),
-#}
-#USER_TABLE_EXTRA_INFO = {
-#   'phone_num': _('Phone Number'),
-#}
+WEBROOT = '/horizon'
