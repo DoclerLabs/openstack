@@ -1,7 +1,11 @@
 ---
 
 - name: install ceph packages
-  apt: name=ceph state=present
+  apt:
+    name:
+      - ceph
+      - python3-packaging
+    state: present
 
 - name: fetch or generate the uuid of the cluster
   shell: "monmaptool --print /etc/ceph/monmap | grep fsid | cut -d' ' -f2"
