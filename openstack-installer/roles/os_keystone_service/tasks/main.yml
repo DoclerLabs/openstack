@@ -4,7 +4,7 @@
   apt:
     name:
     - python3-keystoneclient
-    - python3-shade
+    - python3-openstacksdk
   become: True
 
 - name: install CA certificate
