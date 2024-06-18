@@ -44,6 +44,10 @@
   copy: src=check_rabbitmq_cluster.py dest=/usr/local/bin/check_rabbitmq_cluster.py owner=root group=root mode=0755
   when: inventory_hostname in groups['rabbitmq']
 
+- name: make sure acl package is available
+  apt: name=acl
+  when: inventory_hostname in groups['galera']
+
 - name: add permission to read /etc/my.cnf
   acl: path=/etc/my.cnf etype=user entity=nagios permissions=r state=present
   when: inventory_hostname in groups['galera']
