@@ -149,9 +149,6 @@ designate:
 magnum:
 #  inherit: controller
 
-senlin:
-#  inherit: controller
-
 # -------- Tempest ------
 tempest:
   inherit: local
