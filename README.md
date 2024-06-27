@@ -10,7 +10,7 @@ The motivation for creating this deployment tool is that existing solutions are 
 
 The design behind this installer is to remain simple, use Ansible's features, but not over-use them.
 Don't use bash scripts, which are usually going to an unmaintainable state after some iterations.
-Use the packages of the underlying OS (from the Newton release, only Ubuntu 16.04 is supported, Queens supports Ubuntu 16.04 and 18.04, Ussuri both 18.04 and 20.04 and Yoga both 20.04 and 22.04),
+Use the packages of the underlying OS (from the Newton release, only Ubuntu 16.04 is supported, Queens supports Ubuntu 16.04 and 18.04, Ussuri both 18.04 and 20.04, Yoga both 20.04 and 22.04 and Caracal both 22.04 and 24.04),
 and don't mess the system with software installed from various sources.
 The installer also can be used after the deployment to change parameters of an existing cloud,
 so it supports the full life-cycle of the deployed OpenStack.
@@ -38,6 +38,7 @@ Current OpenStack versions supported:
 - Zed/Ubuntu Jammy             - jammy/zed branch
 - Antelope/Ubuntu Jammy        - jammy/antelope branch
 - Bobcat/Ubuntu Jammy          - jammy/bobcat branch
+- Caracal/Ubuntu Jammy/Noble   - caracal branch
 
 Integrated Infra components:
 - Pacemaker
