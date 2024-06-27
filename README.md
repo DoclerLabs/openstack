@@ -36,6 +36,7 @@ Current OpenStack versions supported:
 - Xena/Ubuntu Focal            - focal/xena branch
 - Yoga/Ubuntu Focal/Jammy      - yoga branch
 - Zed/Ubuntu Jammy             - jammy/zed branch
+- Antelope/Ubuntu Jammy        - jammy/antelope branch
 
 Integrated Infra components:
 - Pacemaker
