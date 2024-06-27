@@ -37,6 +37,7 @@ Current OpenStack versions supported:
 - Yoga/Ubuntu Focal/Jammy      - yoga branch
 - Zed/Ubuntu Jammy             - jammy/zed branch
 - Antelope/Ubuntu Jammy        - jammy/antelope branch
+- Bobcat/Ubuntu Jammy          - jammy/bobcat branch
 
 Integrated Infra components:
 - Pacemaker
