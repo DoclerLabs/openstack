@@ -196,11 +196,6 @@ messaging_urls = rabbit://{{ sahara_rabbit_user }}:{{ sahara_rabbit_password }}@
 
 [database]
 
-{% if panko_backend == 'mongodb' %}
-event_connection = mongodb://panko:{{ panko_db_password }}@{% for host in groups['mongodb'] %}{{ hostvars[host].ip.mgmt }}:27017{% if not loop.last %},{% endif %}{% endfor %}/panko?replicaSet={{ mongodb_replica_set }}
-{% else %}
-event_connection = mysql+pymysql://{{ panko_db_user }}:{{ panko_db_password }}@{{ panko_mysql_server }}/{{ panko_db }}?charset=utf8
-{% endif %}
 
 max_retries = -1
 

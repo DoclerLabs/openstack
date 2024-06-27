@@ -100,9 +100,6 @@ gnocchi:
 aodh:
   inherit: controller
 
-panko:
-  inherit: controller
-
 ceilometer_controller:
   inherit: controller
 

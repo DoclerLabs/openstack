@@ -34,7 +34,7 @@ sahara_rabbit_user: sahara
 
 ceilometer_polling_interval: 300
 ceilometer_meter_publishers: "{{ (groups['gnocchi'] | count > 0) | ternary(['gnocchi://'],[]) }}"
-ceilometer_event_publishers: "{{ (groups['panko'] | count > 0) | ternary(['panko://'],['gnocchi://']) }}"
+ceilometer_event_publishers: "{{ ['gnocchi://'] }}"
 
 ceilometer_notification_workers: 1
 ceilometer_batch_size: 100
@@ -50,13 +50,6 @@ ceilometer_polling_src: "polling.yaml"
 #metering backend
 #gnocchi only
 ceilometer_gnocchi_archive_policy: low
-
-#event backend
-#panko only
-panko_db_user: panko
-panko_mysql_server: "{{ vip_mgmt }}"
-panko_db: panko
-panko_backend: mysql
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False

@@ -45,7 +45,6 @@ neutron_l2:
 octavia:
 gnocchi:
 aodh:
-panko:
 ceilometer_controller:
 ceilometer_compute:
 heat:
@@ -61,7 +60,6 @@ mistral:
 manila:
 designate:
 magnum:
-senlin:
 cloudkitty:
 
 tempest:

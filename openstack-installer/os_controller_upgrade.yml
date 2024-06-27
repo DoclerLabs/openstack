@@ -10,7 +10,6 @@
     - neutron_controller
     - neutron_l3
     - gnocchi
-    - panko
     - ceilometer_controller
     - aodh
     - heat
@@ -24,7 +23,6 @@
     - magnum
     - manila
     - mistral
-    - senlin
     - ceph_radosgw
   become: True
   max_fail_percentage: 0
@@ -43,7 +41,6 @@
       apt:
         name:
           - python-shade
-          - panko-api
           - python-is-python2
           - python-pygments
           - python-six
@@ -74,13 +71,6 @@
     - name: mask aodh-api apache config
       copy: content='' dest=/etc/apache2/sites-available/aodh-api.conf owner=root group=root mode=0644
 
-- hosts: panko
-  become: True
-  max_fail_percentage: 0
-  tasks:
-    - name: mask panko-api apache config
-      copy: content='' dest=/etc/apache2/sites-available/panko-api.conf owner=root group=root mode=0644
-
 - hosts: ceilometer_controller
   become: True
   max_fail_percentage: 0
@@ -108,13 +98,6 @@
   tasks:
     - name: mask sahara-api apache config
       copy: content='' dest=/etc/apache2/sites-available/sahara-api.conf owner=root group=root mode=0644
-
-- hosts: panko
-  become: True
-  max_fail_percentage: 0
-  tasks:
-    - name: mask panko-api apache config
-      copy: content='' dest=/etc/apache2/sites-available/panko-api.conf owner=root group=root mode=0644
 
 # Upgrade keystone all at once, since it is not supporting rolling upgrades yet
 
@@ -164,7 +147,6 @@
     - neutron_controller[0]
     - neutron_l3[0]
     - gnocchi[0]
-    - panko[0]
     - ceilometer_controller[0]
     - aodh[0]
     - heat[0]
@@ -178,7 +160,6 @@
     - magnum[0]
     - manila[0]
     - mistral[0]
-    - senlin[0]
     - ceph_radosgw[0]
   become: True
   max_fail_percentage: 0
@@ -217,7 +198,6 @@
           - { playbook: "os_placement.yml", group: "{{ groups['placement'] }}" }
           - { playbook: "os_nova.yml", group: "{{ groups['nova_controller'] }}" }
           - { playbook: "os_gnocchi.yml", group: "{{ groups['gnocchi'] }}" }
-          - { playbook: "os_panko.yml", group: "{{ groups['panko'] }}" }
           - { playbook: "os_ceilometer.yml", group: "{{ groups['ceilometer_controller'] }}" }
           - { playbook: "os_aodh.yml", group: "{{ groups['aodh'] }}" }
           - { playbook: "os_heat.yml", group: "{{ groups['heat'] }}" }
@@ -231,7 +211,6 @@
           - { playbook: "os_magnum.yml", group: "{{ groups['magnum'] }}" }
           - { playbook: "os_manila.yml", group: "{{ groups['manila'] }}" }
           - { playbook: "os_mistral.yml", group: "{{ groups['mistral'] }}" }
-          - { playbook: "os_senlin.yml", group: "{{ groups['senlin'] }}" }
           - { playbook: "ceph_radosgw.yml", group: "{{ groups['ceph_radosgw'] }}" }
         become: False
 
@@ -254,7 +233,6 @@
     - neutron_controller[1:]
     - neutron_l3[1:]
     - gnocchi[1:]
-    - panko[1:]
     - ceilometer_controller[1:]
     - aodh[1:]
     - heat[1:]
@@ -268,7 +246,6 @@
     - magnum[1:]
     - manila[1:]
     - mistral[1:]
-    - senlin[1:]
     - ceph_radosgw[1:]
   become: True
   max_fail_percentage: 0
@@ -306,7 +283,6 @@
           - { playbook: "os_placement.yml", group: "{{ groups['placement'] }}" }
           - { playbook: "os_nova.yml", group: "{{ groups['nova_controller'] }}" }
           - { playbook: "os_gnocchi.yml", group: "{{ groups['gnocchi'] }}" }
-          - { playbook: "os_panko.yml", group: "{{ groups['panko'] }}" }
           - { playbook: "os_ceilometer.yml", group: "{{ groups['ceilometer_controller'] }}" }
           - { playbook: "os_aodh.yml", group: "{{ groups['aodh'] }}" }
           - { playbook: "os_heat.yml", group: "{{ groups['heat'] }}" }
@@ -320,7 +296,6 @@
           - { playbook: "os_magnum.yml", group: "{{ groups['magnum'] }}" }
           - { playbook: "os_manila.yml", group: "{{ groups['manila'] }}" }
           - { playbook: "os_mistral.yml", group: "{{ groups['mistral'] }}" }
-          - { playbook: "os_senlin.yml", group: "{{ groups['senlin'] }}" }
           - { playbook: "ceph_radosgw.yml", group: "{{ groups['ceph_radosgw'] }}" }
         become: False
 

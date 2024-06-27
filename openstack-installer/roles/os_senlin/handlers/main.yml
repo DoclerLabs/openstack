@@ -1,7 +1,0 @@
----
-
-- name: restart senlin
-  service: name={{ item }} state=restarted
-  with_items:
-    - senlin-api
-    - senlin-engine

@@ -31,9 +31,7 @@
 - import_playbook: os_mistral.yml
 - import_playbook: os_manila.yml
 - import_playbook: os_magnum.yml
-- import_playbook: os_senlin.yml
 - import_playbook: os_gnocchi.yml
 - import_playbook: os_aodh.yml
-- import_playbook: os_panko.yml
 - import_playbook: os_ceilometer.yml
 - import_playbook: os_cloudkitty.yml
