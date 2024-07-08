@@ -4,7 +4,6 @@ import subprocess
 import re
 import yaml
 import json
-import lsb_release
 
 NAGIOS_OK = 0
 NAGIOS_WARN = 1
@@ -22,37 +21,6 @@ class RabbitError(Exception):
 
 
 def get_rabbitmq_nodes():
-
-    proc = subprocess.Popen(["/usr/sbin/rabbitmqctl", "cluster_status"],
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            shell=False)
-    (out, err) = proc.communicate()
-    out = out.decode()
-    if proc.returncode != 0:
-        raise RabbitError(err)
-
-    # remove first line
-    status = out[out.find('\n')+1:]
-    # erl to yaml
-    yml_s = re.sub('{([a-z\'].*?),', r'{"\1":', status)
-    yml = yaml.safe_load(yml_s)
-
-    disc_nodes = ram_nodes = running_nodes = partitions = []
-    for section in yml:
-        if 'nodes' in section:
-            for kind in section['nodes']:
-                if 'disc' in kind:
-                    disc_nodes = kind['disc']
-                elif 'ram' in kind:
-                    ram_nodes = kind['ram']
-        elif 'running_nodes' in section:
-            running_nodes = section['running_nodes']
-        elif 'partitions' in section:
-            partitions = section['partitions']
-    return disc_nodes, ram_nodes, running_nodes, partitions
-
-def get_rabbitmq_nodes_new():
 
     proc = subprocess.Popen(["/usr/sbin/rabbitmqctl", "cluster_status", "--formatter=json"],
                             stdout=subprocess.PIPE,
@@ -79,9 +47,7 @@ def get_rabbitmq_nodes_new():
 def main():
 
     try:
-        dinfo=lsb_release.get_distro_information()
-        (disc_nodes, ram_nodes, running_nodes, partitions) = \
-            get_rabbitmq_nodes_new() if dinfo['RELEASE']>'20' else get_rabbitmq_nodes()
+        (disc_nodes, ram_nodes, running_nodes, partitions) = get_rabbitmq_nodes()
         if not running_nodes:
             ret = NAGIOS_CRIT
             msg = "No running nodes!"
