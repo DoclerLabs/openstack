@@ -56,6 +56,8 @@ nova_default_schedule_zone:
 nova_scheduler_default_filters: "ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter"
 nova_filter_scheduler_available_filters: nova.scheduler.filters.all_filters
 nova_filter_scheduler_enabled_filters: "{{ nova_scheduler_default_filters }}"
+nova_filter_scheduler_pci_in_placement: False
+
 nova_default_floating_pool: ext-net
 
 #Must be greater than MySQL failover time
@@ -90,7 +92,9 @@ nova_discover_hosts_in_cells_interval: 300
 nova_resume_guests_state_on_host_boot: False
 
 nova_pci_passthrough_whitelist: []
+nova_pci_device_specs: []
 nova_pci_aliases: []
+nova_pci_report_in_placement: False
 
 nova_live_migration_tunelled: False
 

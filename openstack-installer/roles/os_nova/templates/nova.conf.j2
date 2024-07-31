@@ -76,9 +76,14 @@ cert={{ SSLCertificateFile }}
 {% for entry in nova_pci_passthrough_whitelist %}
 passthrough_whitelist = {{ entry }}
 {% endfor %}
+{% for entry in nova_pci_device_specs %}
+device_spec = {{ entry }}
+{% endfor %}
 {% for entry in nova_pci_aliases %}
 alias = {{ entry }}
 {% endfor %}
+
+report_in_placement = {{ nova_pci_report_in_placement }}
 
 [crypto]
 
@@ -221,6 +226,7 @@ cpu_weight_multiplier = {{ nova_cpu_weight_multiplier }}
 ram_weight_multiplier = {{ nova_ram_weight_multiplier }}
 disk_weight_multiplier = {{ nova_disk_weight_multiplier }}
 host_subset_size = {{ nova_host_subset_size }}
+pci_in_placement = {{ nova_filter_scheduler_pci_in_placement }}
 
 [api_database]
 
