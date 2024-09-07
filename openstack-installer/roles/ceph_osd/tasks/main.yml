@@ -71,49 +71,6 @@
         dest=/var/lib/ceph/bootstrap-osd/{{ ceph_cluster_name }}.keyring
         owner=root group=root mode=0600
 
-### Add path-based OSDs
-- name: make sure OSD directories are exists
-  file: path={{ item.path }} state=directory owner=ceph group=root mode=0700
-  with_items: "{{ osd }}"
-  when: item.path is defined
-
-- name: prepare disks
-  command: ceph-disk prepare
-    --cluster {{ ceph_cluster_name }}
-    {{ (item.id | default(None)) | ternary('--osd-id ' + item.id | default(None) | string, '') }}
-    {{ (item.bluestore | default(ceph_osd_bluestore)) | ternary('--bluestore','--filestore') }}
-    "{{ item.path }}"
-  with_items: "{{ osd }}"
-  when: item.path is defined
-
-- name: activate disks
-  command: ceph-disk activate "{{ item.path }}"
-  with_items: "{{ osd }}"
-  when: item.path is defined
-
-- name: query local OSD IDs
-  command: cat "{{ item.path }}/whoami"
-  with_items: "{{ osd }}"
-  changed_when: False
-  register: osd_ids
-  when: item.path is defined
-
-- name: ensure /etc/systemd/system/ceph-osd@.service.d exists
-  file: dest=/etc/systemd/system/ceph-osd@.service.d state=directory owner=root group=root mode=0755
-
-- name: install 10-name.conf override
-  copy: content='[Service]\nEnvironment=CLUSTER={{ ceph_cluster_name }}\n'
-        dest=/etc/systemd/system/ceph-osd@.service.d/10-name.conf
-        owner=root group=root mode=0644
-  notify: reload systemd
-
-- meta: flush_handlers
-
-- name: ensure ceph OSD is started (systemd)
-  service: name=ceph-osd@{{ item.stdout }} state=started enabled=yes
-  with_items: "{{ osd_ids.results }}"
-  when: item.skipped is not defined or item.skipped != True
-
 ### Add disk-based OSDs
 - name: prepare disks
   command: ceph-volume lvm prepare
