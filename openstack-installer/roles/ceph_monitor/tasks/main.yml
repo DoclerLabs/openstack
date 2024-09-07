@@ -3,5 +3,5 @@
 - name: install ceph packages
   apt: name=ceph state=present
 
-- include: mon.yml
-- include: mgr.yml
+- include_tasks: mon.yml
+- include_tasks: mgr.yml
