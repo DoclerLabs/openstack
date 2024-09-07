@@ -3,15 +3,17 @@
 
 $script = <<SCRIPT
 apt-get update
-apt-get -y install python-minimal openvswitch-switch
+apt-get -y install openvswitch-switch
 ovs-vsctl br-exists ovs-ext || ovs-vsctl add-br ovs-ext
 ovs-vsctl br-exists ovs-vlan || ovs-vsctl add-br ovs-vlan
 ovs-vsctl list-ports ovs-ext | grep enp0s10 || ovs-vsctl add-port ovs-ext enp0s10
 SCRIPT
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "ubuntu/bionic64"
+  config.vm.box = "ubuntu/jammy64"
   config.vm.hostname = "openstack-aio"
+
+  config.vm.disk :disk, name: "ceph", size: "10GB"
 
   # Networking
   config.vm.network :private_network, ip: "10.10.0.11"  # management

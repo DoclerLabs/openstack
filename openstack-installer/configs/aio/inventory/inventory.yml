@@ -5,7 +5,7 @@ controller:
       mgmt: 10.10.0.11
       vxlan: 10.10.0.11
     osd:
-      - { path: "/var/lib/osd1" }
+      - { disk: "/dev/sdc" }
     nova_virt_type: qemu
 
 # -------- Compute --------
