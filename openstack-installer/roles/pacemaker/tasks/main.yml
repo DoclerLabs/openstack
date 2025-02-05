@@ -106,7 +106,7 @@
         nic: "{{ vip_public_nic }}"
     state: present
   run_once: True
-  when: vip_mgmt != vip_public
+  when: vip_mgmt != vip_public and pacemaker_create_public_vip
 
 - name: colocate public and management VIP
   pacemaker:

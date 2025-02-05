@@ -1,3 +1,4 @@
 ---
 
 pacemaker_colocate_vips: False
+pacemaker_create_public_vip: True
