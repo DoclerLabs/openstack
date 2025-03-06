@@ -122,12 +122,12 @@
 
 - name: install virsh secret.xml
   template: src=secret.xml.j2 dest=/root/{{ item.volume_secret_uuid }}.xml owner=root group=root mode=0664
-  with_items: "{{ cinder_backends }} + {{ nova_ceph_backend | default([]) }}"
+  with_items: "{{ cinder_backends + nova_ceph_backend | default([]) }}"
   when: inventory_hostname in groups['nova_compute'] and item.backend=='ceph' and nova_compute_package in ('qemu','kvm')
 
 - name: configure virsh secret.xml
   command: virsh secret-define --file /root/{{ item.volume_secret_uuid }}.xml
-  with_items: "{{ cinder_backends }} + {{ nova_ceph_backend | default([]) }}"
+  with_items: "{{ cinder_backends + nova_ceph_backend | default([]) }}"
   when: inventory_hostname in groups['nova_compute'] and item.backend=='ceph' and nova_compute_package in ('qemu','kvm')
 
 - name: stop default libvirt network
