@@ -1,13 +1,8 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-caracal", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu jammy-updates/caracal main" }
+  - { name: "cloudarchive-caracal", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu jammy-updates/caracal main", keyserver: "https://keyserver.ubuntu.com", keyid: "5EDB1B62EC4926EA"}
 
 apt_extra_repos: []
-
-apt_keys:
-  - { keyserver: "hkps://keyserver.ubuntu.com", keyid: "5EDB1B62EC4926EA" }
-
-apt_extra_keys: []
 
 apt_cache_valid_time: 1800

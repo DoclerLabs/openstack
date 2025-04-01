@@ -1,24 +1,18 @@
 - name: setup apt repo(s)
-  copy: content='deb {{ item.repo }}\n' dest=/etc/apt/sources.list.d/{{ item.name }}.list
+  copy: content='deb [signed-by=/etc/apt/keyrings/{{ item.keyid }}.asc] {{ item.repo }}\n' dest=/etc/apt/sources.list.d/{{ item.name }}.list
   with_items:
     - "{{ apt_repos }}"
     - "{{ apt_extra_repos }}"
   notify: update apt cache
 
 - name: add apt key(s)
-  apt_key: keyserver='{{ item.keyserver }}' id='{{ item.keyid | default('') }}'
+  get_url:
+    url: "{{ item.keyserver }}/pks/lookup?op=get&search=0x{{ item.keyid }}"
+    dest: "/etc/apt/keyrings/{{ item.keyid }}.asc"
   with_items:
-    - "{{ apt_keys }}"
-    - "{{ apt_extra_keys }}"
+    - "{{ apt_repos }}"
+    - "{{ apt_extra_repos }}"
   when: item.keyserver is defined
-  notify: update apt cache
-
-- name: add apt key(s)
-  apt_key: id='{{ item.keyid | default('') }}' url='{{ item.keyurl }}'
-  with_items:
-    - "{{ apt_keys }}"
-    - "{{ apt_extra_keys }}"
-  when: item.keyurl is defined
   notify: update apt cache
 
 - meta: flush_handlers
