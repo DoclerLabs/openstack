@@ -42,7 +42,6 @@
     - nova-spiceproxy
     - nova-novncproxy
     - nova-serialproxy
-    - nova-cert
   when: inventory_hostname in groups['nova_controller']
 
 - name: mask autostarting of nova compute services
@@ -62,10 +61,6 @@
     - nova-scheduler
     - python3-nova
     - python3-novaclient
-  when: inventory_hostname in groups['nova_controller']
-
-- name: ensure nova-cert is not installed
-  apt: name=nova-cert state=absent
   when: inventory_hostname in groups['nova_controller']
 
 - name: install nova compute packages
@@ -200,14 +195,6 @@
   file: path=/var/www/cgi-bin/nova state=directory owner=root group=root mode=0755
   when: inventory_hostname in groups['nova_controller']
   notify: signal apache to reload
-
-#- name: link nova wsgi servers
-#  file: src=/usr/lib/python2.7/dist-packages/nova/wsgi/{{ item }}.py dest=/var/www/cgi-bin/nova/{{ item }} state=link
-#  with_items:
-#    - nova-api
-#    - nova-metadata
-#  when: inventory_hostname in groups['nova_controller']
-#  notify: signal apache to reload
 
 - name: unmask autostarting of nova controller services
   service_mask: name={{ item }} state=unmasked
