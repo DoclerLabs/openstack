@@ -314,6 +314,11 @@ cafile = {{ SSLCACertificateFile }}
 insecure = {{ ssl_insecure }}
 send_service_user_token = True
 
+[workarounds]
+
+skip_cpu_compare_at_startup = {{ nova_workarounds_skip_cpu_compare_at_startup }}
+skip_cpu_compare_on_dest = {{ nova_workarounds_skip_cpu_compare_on_dest }}
+
 
 {% if inventory_hostname in groups['nova_compute'] %}
 

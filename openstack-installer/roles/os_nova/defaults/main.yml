@@ -81,6 +81,9 @@ nova_live_migration_downtime_delay: 75
 nova_live_migration_downtime_steps: 10
 nova_live_migration_permit_post_copy: False
 
+nova_workarounds_skip_cpu_compare_at_startup: False
+nova_workarounds_skip_cpu_compare_on_dest: False
+
 nova_notifications: "{{ notifications_enable | default(False) }}"
 nova_instance_usage_audit: "{{ nova_notifications }}"
 nova_instance_usage_audit_period: hour
