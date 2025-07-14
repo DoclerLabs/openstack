@@ -593,6 +593,7 @@ bind_ip = {{ ip.octavia_health_manager | default(ip.mgmt) }}
 
 # key used to validate amphora sendingthe message (string value)
 #heartbeat_key = <None>
+heartbeat_key = {{ octavia_health_manager_heartbeat_key }}
 
 # Interval, in seconds, to wait before failing over an amphora. (integer value)
 #heartbeat_timeout = 60
