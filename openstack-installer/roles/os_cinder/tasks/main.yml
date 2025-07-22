@@ -181,6 +181,10 @@
     - cinder-backup
   when: inventory_hostname in groups['cinder_backup']
 
+- name: configure tgtd
+  lineinfile: line='include /var/lib/cinder/volumes/*' mode=0644 path=/etc/tgt/targets.conf
+  when: inventory_hostname in groups['cinder_volume']
+
 - name: start/stop tgtd
   service: name=tgt
       state={{ (cinder_iscsi_helper == 'tgtadm') | ternary('started','stopped') }}
