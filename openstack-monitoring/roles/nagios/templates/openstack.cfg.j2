@@ -571,9 +571,9 @@ define service{
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description ironic-api
 {% if nagios_check_http_proxyprotocol %}
-    check_command {{ nagios_cloud_prefix }}check_http!-p 6385!--proxy
-{% else %}
-    check_command check_http!-p 6385
+    check_command {{ nagios_cloud_prefix }}{{ os_ssl | ternary('check_https_url','check_http_url') }}!-p 6385!--proxy
+{% else %}a
+    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 6385
 {% endif %}
 }
 
@@ -582,7 +582,7 @@ define service{
     hostgroup_name {{ vips_monitored }}
     servicegroups {{ nagios_cloud_prefix }}OpenStack
     service_description ironic-api
-    check_command check_http!-p 6385
+    check_command {{ os_ssl | ternary('check_https','check_http') }}!-p 6385
 }
 {% endif %}
 

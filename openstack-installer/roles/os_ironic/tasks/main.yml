@@ -43,6 +43,8 @@
     - syslinux-common
     - syslinux
     - pxelinux
+    - grub-efi-amd64-signed
+    - shim-signed
     - qemu-utils
     - open-iscsi
     - ironic-api
@@ -51,7 +53,6 @@
     - python3-ironic
     - python3-ironicclient
     - python3-scciclient
-    - python3-shade
     - python3-mysqldb
     - python3-memcache
 
@@ -102,20 +103,22 @@
     - ironic-conductor
 
 - name: copy pxelinux to tftpd dir
-  copy: src={{ item }} dest=/var/lib/tftpboot/{{ item | basename }} remote_src=True
+  copy: src={{ item.src }} dest={{ ironic_tftp_dir }}{{ item.dst }} remote_src=True
   with_items:
-    - /usr/lib/PXELINUX/pxelinux.0
-    - /usr/lib/syslinux/modules/bios/chain.c32
-    - /usr/lib/syslinux/modules/bios/ldlinux.c32
+    - {"src": "/usr/lib/PXELINUX/pxelinux.0", "dst": "pxeliux.0"}
+    - {"src": "/usr/lib/syslinux/modules/bios/chain.c32", "dst": "chain.c32"}
+    - {"src": "/usr/lib/syslinux/modules/bios/ldlinux.c32", "dst": "ldlinux.c32"}
+    - {"src": "/usr/lib/shim/shimx64.efi.dualsigned", "dst": "bootx64.efi"}
+    - {"src": "/usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed", "dst": "grubx64.efi"}
 
 - name: install map file for tftp
-  copy: src=map-file dest=/var/lib/tftpboot/map-file
+  template: src=map-file.j2 dest={{ ironic_tftp_dir }}/map-file
   notify: restart tftp
 
 - name: set tftpd options (use map file)
   lineinfile: dest=/etc/default/tftpd-hpa
     regexp='^TFTP_OPTIONS'
-    line='TFTP_OPTIONS="--secure  --map-file /var/lib/tftpboot/map-file"'
+    line='TFTP_OPTIONS="--secure  --map-file {{ ironic_tftp_dir }}/map-file"'
     owner=root group=root mode=0644
   notify: restart tftp
 
@@ -124,8 +127,11 @@
 - name: ensure tftpd is started
   service: name=tftpd-hpa state=started enabled=yes
 
+- name: make sure httpboot exists
+  file: path={{ ironic_httpboot_dir }} owner=ironic group=ironic state=directory
+
 - name: set permissions of tftpboot
-  file: path=/var/lib/tftpboot recurse=yes owner=ironic
+  file: path={{ ironic_tftp_dir }} recurse=yes owner=ironic
 
 - name: copy the deploy images
   copy: src={{ item }} dest=/root/{{ item | basename }} owner=root group=root mode=0644

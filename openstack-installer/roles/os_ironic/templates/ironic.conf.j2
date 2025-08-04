@@ -519,6 +519,7 @@ transport_url =
 
 # ironic-conductor node's HTTP root path. (string value)
 #http_root=/httpboot
+http_root={{ ironic_httpboot_dir }}
 
 # Priority to run in-band erase devices via the Ironic Python
 # Agent ramdisk. If unset, will use the priority set in the
@@ -818,12 +819,12 @@ transport_url =
 tftp_server={{ ip.tftp | default(ip.mgmt) }}
 
 # ironic-conductor node's TFTP root path. (string value)
-tftp_root=/var/lib/tftpboot
+tftp_root={{ ironic_tftp_dir }}
 
 # Directory where master tftp images are stored on disk.
 # (string value)
 #tftp_master_path=/tftpboot/master_images
-tftp_master_path=/var/lib/tftpboot/master_images
+tftp_master_path={{ ironic_tftp_dir }}/master_images
 
 # Bootfile DHCP parameter. (string value)
 #pxe_bootfile_name=pxelinux.0
