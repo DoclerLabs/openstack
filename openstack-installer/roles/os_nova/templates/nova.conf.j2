@@ -329,6 +329,8 @@ cpu_mode = {{ nova_libvirt_cpu_mode }}
 cpu_models = {{ nova_libvirt_cpu_model }}
 cpu_model_extra_flags = {{ nova_libvirt_cpu_model_extra_flags }}
 
+hw_machine_type = {{ nova_libvirt_hw_machine_type }}
+
 disk_cachemodes="network=writeback"
 use_virtio_for_bridges = True
 virt_type = {{ nova_libvirt_virt_type }}
