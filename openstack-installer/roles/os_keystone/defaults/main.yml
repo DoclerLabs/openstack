@@ -19,6 +19,8 @@ keystone_max_active_keys: 3
 
 keystone_cors_allowed_origin:
 
+keystone_change_password_upon_first_use: False
+
 #OpenID connect federation
 keystone_federation_oidc: False
 
