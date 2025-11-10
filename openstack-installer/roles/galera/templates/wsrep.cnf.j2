@@ -1,6 +1,6 @@
 [mysqld]
 # Path to Galera library
-wsrep_provider=/usr/lib/galera3/libgalera_smm.so
+wsrep_provider=/usr/lib/galera4/libgalera_smm.so
 
 # In order for Galera to work correctly binlog format should be ROW
 binlog_format=ROW
@@ -28,5 +28,6 @@ pxc_strict_mode=ENFORCING
 # SST method
 wsrep_sst_method=xtrabackup-v2
 
-#Authentication for SST method
-wsrep_sst_auth="wsrep:{{ galera_wsrep_password }}"
+wsrep_provider_options="socket.ssl=NO"
+
+pxc_encrypt_cluster_traffic=OFF

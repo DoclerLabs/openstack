@@ -8,11 +8,12 @@ socket          = {{ mysql_sock_file }}
 port            = 3306
 basedir         = /usr
 datadir         = {{ mysql_datadir }}
-ignore-db-dir   = lost+found
+#ignore-db-dir   = lost+found
 tmpdir          = /tmp
 lc-messages-dir = /usr/share/mysql
 skip-external-locking
 skip-name-resolve
+mysql-native-password=ON
 #
 # Instead of skip-networking the default is now to listen only on
 # localhost which is more compatible and is not less secure.
@@ -34,8 +35,8 @@ max_connections         = {{ mysql_max_connections }}
 #
 # * Query Cache Configuration
 #
-query_cache_limit       = 1M
-query_cache_size        = 16M
+#query_cache_limit       = 1M
+#query_cache_size        = 16M
 #
 # * Logging and Replication
 #
@@ -59,7 +60,7 @@ log_error                = {{ mysql_log_error }}
 #       other settings you may need to change.
 #server-id              = 1
 #log_bin                = /var/log/mysql/mysql-bin.log
-expire_logs_days        = 10
+#expire_logs_days        = 10
 max_binlog_size         = 100M
 #binlog_do_db           = include_database_name
 #binlog_ignore_db       = include_database_name

@@ -9,11 +9,22 @@
 - name: ensure MySQL datadir exists
   file: dest={{ mysql_datadir }} owner=mysql group=mysql mode=0750 state=directory
 
+- name: download percona-release
+  get_url: dest=/root/percona-release_latest.generic_all.deb url=https://repo.percona.com/apt/percona-release_latest.generic_all.deb
+
+- name: install percona-release
+  apt: deb=/root/percona-release_latest.generic_all.deb
+
+- name: enable percona repos
+  command: percona-release enable "{{ item }}" release
+  with_items:
+    - pxc-84-lts
+
 - name: install galera packages
   apt:
     name:
-    - percona-xtrabackup-24
-    - percona-xtradb-cluster-server-5.7
+    - percona-xtrabackup
+    - percona-xtradb-cluster
     - socat
     - xinetd
     - python3-mysqldb
@@ -24,7 +35,7 @@
   changed_when: False
 
 - name: check if galera is already configured
-  command: grep -q wsrep_cluster_address /etc/mysql/percona-xtradb-cluster.conf.d/wsrep.cnf
+  command: grep -q wsrep_cluster_address /etc/mysql/mysql.conf.d/wsrep.cnf
   register: galera_stat
   failed_when: False
   changed_when: False
@@ -34,13 +45,7 @@
   when: galera_stat.rc != 1
 
 - name: install mysqld.cnf
-  template: src=mysqld.cnf.j2 dest=/etc/mysql/percona-xtradb-cluster.conf.d/mysqld.cnf owner=mysql group=root mode=0460
-
-- name: ensure link to /etc/alternatives/my.cnf
-  file: src=/etc/alternatives/my.cnf path=/etc/mysql/my.cnf state=link force=yes
-
-- name: ensure the alternatives system uses percona-xtradb-cluster.cnf
-  alternatives: name=my.cnf path=/etc/mysql/percona-xtradb-cluster.cnf
+  template: src=mysqld.cnf.j2 dest=/etc/mysql/mysql.conf.d/mysqld.cnf owner=mysql group=root mode=0460
 
 - name: ensure mysql is running if not configured yet
   service: name=mysql state=started
@@ -70,7 +75,7 @@
   when: galera_stat.rc != 1
 
 - name: install wsrep.cnf
-  template: src=wsrep.cnf.j2 dest=/etc/mysql/percona-xtradb-cluster.conf.d/wsrep.cnf owner=mysql group=root mode=0460
+  template: src=wsrep.cnf.j2 dest=/etc/mysql/mysql.conf.d/wsrep.cnf owner=mysql group=root mode=0460
   notify: cleanup galera resource
 
 - name: install /etc/my.cnf
