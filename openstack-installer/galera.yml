@@ -4,10 +4,6 @@
   become: True
   max_fail_percentage: 0
   roles:
-    - role: apt
-      apt_extra_repos:
-        - { name: "percona", repo: "http://repo.percona.com/apt {{ ansible_distribution_release }} main", keyserver: "https://keyserver.ubuntu.com", keyid: "9334A25F8507EFA5" }
-
     - galera
 
 - hosts: haproxy

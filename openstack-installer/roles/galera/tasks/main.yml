@@ -60,11 +60,6 @@
     - '%'
   when: galera_stat.rc != 1
 
-- name: create wsrep user
-  mysql_user: name=wsrep password={{ galera_wsrep_password }} priv=*.*:ALL
-    login_user=root login_password={{ mysql_root_password }}
-  when: galera_stat.rc != 1
-
 - name: create clustercheck user
   mysql_user: name=clustercheck password={{ galera_clustercheck_password }} priv=*.*:USAGE
     login_user=root login_password={{ mysql_root_password }}
@@ -73,6 +68,24 @@
 - name: stop mysql if it is not configured yet
   service: name=mysql state=stopped
   when: galera_stat.rc != 1
+
+- name: fetch certificates
+  fetch: src=/var/lib/mysql/{{ item }} dest=workdir/mysql-{{ item }} flat=True
+  when: inventory_hostname == groups['galera'][0]
+  with_items:
+    - ca-key.pem
+    - ca.pem
+    - server-key.pem
+    - server-cert.pem
+
+- name: distribute the certificates
+  copy: src=workdir/mysql-{{ item }} dest=/var/lib/mysql/{{ item }} owner=mysql group=mysql mode=0400
+  when: inventory_hostname != groups['galera'][0]
+  with_items:
+    - ca-key.pem
+    - ca.pem
+    - server-key.pem
+    - server-cert.pem
 
 - name: install wsrep.cnf
   template: src=wsrep.cnf.j2 dest=/etc/mysql/mysql.conf.d/wsrep.cnf owner=mysql group=root mode=0460
