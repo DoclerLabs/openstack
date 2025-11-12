@@ -1,7 +1,7 @@
 ---
 
 apt_repos:
-  - { name: "cloudarchive-caracal", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu jammy-updates/caracal main", keyserver: "https://keyserver.ubuntu.com", keyid: "5EDB1B62EC4926EA"}
+  - { name: "cloudarchive-epoxy", repo: "http://ubuntu-cloud.archive.canonical.com/ubuntu noble-updates/epoxy main", keyserver: "https://keyserver.ubuntu.com", keyid: "5EDB1B62EC4926EA"}
 
 apt_extra_repos: []
 
