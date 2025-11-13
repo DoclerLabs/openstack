@@ -1,10 +1,10 @@
 vip_mgmt: 192.168.168.100
 vip_mgmt_cidr: 24
-vip_mgmt_nic: ens3
+vip_mgmt_nic: ovs-vlan
 
 vip_public: 192.168.168.100
 vip_public_cidr: 24
-vip_public_nic: ens3
+vip_public_nic: ovs-vlan
 
 mysql_innodb_buffer_pool_size: 2G
 
@@ -43,13 +43,14 @@ notifications_enable: True
 nova_filter_scheduler_enabled_filters: "ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter,SameHostFilter,DifferentHostFilter"
 
 neutron_flat_networks:
-neutron_physical_interface_mappings: flat:ens3
+neutron_physical_interface_mappings: flat:ovs-vlan
 neutron_vlan_ranges:
 neutron_ha_network_type:
 neutron_ha_network_physical_name:
 neutron_ha_routers: False
 neutron_mtu: 1400
 neutron_l2_population: False
+neutron_physical_interface_driver: openvswitch
 
 trove_net_name: trove-net
 trove_net_segmentation_id: 901
