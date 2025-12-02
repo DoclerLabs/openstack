@@ -706,8 +706,8 @@ detect_last_commit()
                         --pid-file=$OCF_RESKEY_pid \
                         --socket=$OCF_RESKEY_socket \
                         --datadir=$OCF_RESKEY_datadir"
-    local recovery_file_regex='s/.*WSREP\:.*position\s*recovery.*--log_error='\''\([^'\'']*\)'\''.*/\1/p'
-    local recovered_position_regex='s/.*WSREP\:\s*[R|r]ecovered\s*position.*\:\(.*\)\s*$/\1/p'
+    local recovery_file_regex='s/.*\[WSREP\].*position\s*recovery.*--log_error='\''\([^'\'']*\)'\''.*/\1/p'
+    local recovered_position_regex='s/.*\[WSREP\]\s*[R|r]ecovered\s*position.*\:\(.*\)\s*$/\1/p'
 
     # codership/galera#354
     # Some ungraceful shutdowns can leave an empty gvwstate.dat on
