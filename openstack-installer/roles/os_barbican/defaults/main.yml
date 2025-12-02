@@ -14,5 +14,7 @@ barbican_syslog_use: "{{ syslog_use | default(False) }}"
 
 barbican_debug: False
 
+barbican_rabbit_qos_prefetch_count: 1
+
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"
 ssl_insecure: False

@@ -49,6 +49,8 @@ cinder_scheduler_default_weighers: "CapacityWeigher"
 
 cinder_notifications: "{{ notifications_enable | default(False) }}"
 
+cinder_rabbit_qos_prefetch_count: 1
+
 cinder_syslog_use: "{{ syslog_use | default(False) }}"
 
 cinder_debug: False

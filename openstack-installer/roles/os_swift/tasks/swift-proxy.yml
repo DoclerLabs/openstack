@@ -15,18 +15,6 @@
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 
-- name: ensure the swift vhost contains the HA policy
-  rabbitmq_policy:
-    node: "rabbit@{{ inventory_hostname }}"
-    vhost: "{{ swift_rabbit_vhost }}"
-    name: HA
-    pattern: '.*'
-    tags:
-      "ha-mode": "all"
-      "ha-sync-mode": "automatic"
-  delegate_to: "{{ groups['rabbitmq'][0] }}"
-  run_once: True
-
 - name: mask autostarting of swift-proxy
   service_mask: name=swift-proxy state=masked
   when: inventory_hostname in groups['swift_proxy']
@@ -41,9 +29,12 @@
   when: inventory_hostname in groups['swift_proxy']
 
 - name: install swift proxy config
-  template: src=proxy-server.conf.j2 dest=/etc/swift/proxy-server.conf owner=root group=swift mode=0640
+  template: src={{ item }}.j2 dest=/etc/swift/{{ item }} owner=root group=swift mode=0640
   notify: restart swift-proxy
   when: inventory_hostname in groups['swift_proxy']
+  with_items:
+    - proxy-server.conf
+    - swift-rabbitmq.conf
 
 - name: install swift.conf
   template: src=swift.conf.j2 dest=/etc/swift/swift.conf owner=root group=swift mode=0640

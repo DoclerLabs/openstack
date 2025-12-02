@@ -13,18 +13,6 @@
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 
-- name: ensure the keystone vhost contains the HA policy
-  rabbitmq_policy:
-    node: "rabbit@{{ groups['rabbitmq'][0] }}"
-    vhost: "{{ keystone_rabbit_vhost }}"
-    name: HA
-    pattern: '.*'
-    tags:
-      "ha-mode": "all"
-      "ha-sync-mode": "automatic"
-  delegate_to: "{{ groups['rabbitmq'][0] }}"
-  run_once: True
-
 - name: mask autostarting of keystone
   service_mask: name=keystone state=masked
 

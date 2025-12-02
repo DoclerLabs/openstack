@@ -41,6 +41,7 @@ ceilometer_batch_size: 100
 ceilometer_batch_timeout: 5
 ceilometer_cache_expiration_time: 600
 ceilometer_instance_discovery_method: libvirt_metadata
+ceilometer_rabbit_qos_prefetch_count: 1
 
 #give custom files here for replacing the defaults
 ceilometer_event_pipeline_src: "event_pipeline.yaml"

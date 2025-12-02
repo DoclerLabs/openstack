@@ -13,18 +13,6 @@
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   run_once: True
 
-- name: ensure the glance vhost contains the HA policy
-  rabbitmq_policy:
-    node: "rabbit@{{ groups['rabbitmq'][0] }}"
-    vhost: "{{ glance_rabbit_vhost }}"
-    name: HA
-    pattern: '.*'
-    tags:
-      "ha-mode": "all"
-      "ha-sync-mode": "automatic"
-  delegate_to: "{{ groups['rabbitmq'][0] }}"
-  run_once: True
-
 - name: install CA certificate
   copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
   when: SSLCACertificateFile != ''

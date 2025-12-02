@@ -184,4 +184,8 @@ transport_url =
 
 [oslo_messaging_rabbit]
 
-rabbit_ha_queues = true
+rabbit_quorum_queue = True
+rabbit_transient_quorum_queue = True
+rabbit_stream_fanout = True
+use_queue_manager = True
+rabbit_qos_prefetch_count = {{ cinder_rabbit_qos_prefetch_count }}

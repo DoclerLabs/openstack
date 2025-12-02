@@ -12,6 +12,8 @@ designate_project_name: "{{ keystone_service_project_name | default('service') }
 
 designate_syslog_use: "{{ syslog_use | default(False) }}"
 
+designate_rabbit_qos_prefetch_count: 1
+
 designate_debug: False
 
 keystone_proto: "{{ (keystone_ssl | default(False)) | ternary('https', 'http') }}"

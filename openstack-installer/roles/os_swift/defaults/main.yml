@@ -12,6 +12,8 @@ swift_log_level: WARNING
 
 swift_notifications: "{{ notifications_enable | default(False) }}"
 
+swift_rabbit_qos_prefetch_count: 1
+
 swift_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 swift_proxy_server_workers: "{{ swift_workers }}"
 swift_account_server_workers: "{{ swift_workers }}"

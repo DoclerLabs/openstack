@@ -17,6 +17,8 @@ octavia_loadbalancer_topology: ACTIVE_STANDBY
 
 octavia_notifications: "{{ notifications_enable | default(False) }}"
 
+octavia_rabbit_qos_prefetch_count: 1
+
 octavia_syslog_use: "{{ syslog_use | default(False) }}"
 
 octavia_cert_dir: /etc/octavia/certs

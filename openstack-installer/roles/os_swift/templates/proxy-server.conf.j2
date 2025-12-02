@@ -92,6 +92,7 @@ driver = messagingv2
 topic = notifications
 log_level = WARN
 {% endif %}
+extra_config_files = /etc/swift/swift-rabbitmq.conf
 
 [app:proxy-server]
 use = egg:swift#proxy
