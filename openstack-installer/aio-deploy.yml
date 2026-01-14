@@ -14,6 +14,19 @@
 
 - import_playbook: main.yml
 
+- hosts: cinder_volume
+  become: True
+  tasks:
+    - name: restart cinder-volume
+      service: name=cinder-volume state=restarted
+
+- hosts: cinder_backup
+  become: True
+  tasks:
+    - name: restart cinder-backup
+      service: name=cinder-backup state=restarted
+
+
 - hosts: gnocchi[0]
   become: True
   tasks:
