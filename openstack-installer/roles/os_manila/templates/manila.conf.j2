@@ -353,8 +353,12 @@ transport_url = rabbit://{% for host in rabbit_hosts %}{{ manila_rabbit_user }}:
 
 [oslo_messaging_rabbit]
 
+{% if rabbitmq_quorum_queues %}
 rabbit_quorum_queue = True
 rabbit_transient_quorum_queue = True
 rabbit_stream_fanout = True
 use_queue_manager = True
 rabbit_qos_prefetch_count = {{ manila_rabbit_qos_prefetch_count }}
+{% else %}
+rabbit_ha_queues = True
+{% endif %}

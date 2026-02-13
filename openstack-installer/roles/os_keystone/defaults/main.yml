@@ -43,6 +43,7 @@ keystone_OIDCSSLValidateServer: True
 keystone_notifications: "{{ notifications_enable | default(False) }}"
 keystone_notifications_driver: messagingv2
 keystone_rabbit_qos_prefetch_count: 1
+rabbitmq_quorum_queues: False
 
 keystone_notification_format: cadf
 keystone_notification_opt_out:

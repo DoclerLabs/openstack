@@ -28,6 +28,7 @@ trove_backup_aes_cbc_key: "default_aes_cbc_key"
 trove_notifications: "{{ notifications_enable | default(False) }}"
 
 trove_rabbit_qos_prefetch_count: 1
+rabbitmq_quorum_queues: False
 
 trove_syslog_use: "{{ syslog_use | default(False) }}"
 

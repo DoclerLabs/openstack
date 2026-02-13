@@ -15,6 +15,7 @@ mistral_api_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 mistral_notifications: "{{ notifications_enable | default(False) }}"
 
 mistral_rabbit_qos_prefetch_count: 1
+rabbitmq_quorum_queues: False
 
 mistral_syslog_use: "{{ syslog_use | default(False) }}"
 

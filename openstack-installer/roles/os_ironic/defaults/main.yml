@@ -26,6 +26,7 @@ ironic_api_url:
 ironic_notifications: "{{ notifications_enable | default(False) }}"
 
 ironic_rabbit_qos_prefetch_count: 1
+rabbitmq_quorum_queues: False
 
 ironic_syslog_use: "{{ syslog_use | default(False) }}"
 

@@ -16,6 +16,7 @@ murano_engine_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 murano_notifications: "{{ notifications_enable | default(False) }}"
 
 murano_rabbit_qos_prefetch_count: 1
+rabbitmq_quorum_queues: False
 
 murano_syslog_use: "{{ syslog_use | default(False) }}"
 

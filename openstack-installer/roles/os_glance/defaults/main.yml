@@ -22,6 +22,7 @@ glance_ceph_user: glance
 glance_notifications: "{{ notifications_enable | default(False) }}"
 
 glance_rabbit_qos_prefetch_count: 1
+rabbitmq_quorum_queues: False
 
 glance_syslog_use: "{{ syslog_use | default(False) }}"
 

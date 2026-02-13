@@ -22,6 +22,7 @@ heat_deferred_auth_method: trusts
 heat_notifications: "{{ notifications_enable | default(False) }}"
 
 heat_rabbit_qos_prefetch_count: 1
+rabbitmq_quorum_queues: False
 
 heat_syslog_use: "{{ syslog_use | default(False) }}"
 

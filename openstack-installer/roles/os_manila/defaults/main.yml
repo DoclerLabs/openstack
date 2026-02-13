@@ -13,6 +13,7 @@ manila_project_name: "{{ keystone_service_project_name | default('service') }}"
 manila_syslog_use: "{{ syslog_use | default(False) }}"
 
 manila_rabbit_qos_prefetch_count: 1
+rabbitmq_quorum_queues: False
 
 manila_debug: False
 

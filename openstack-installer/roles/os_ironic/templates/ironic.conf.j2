@@ -459,11 +459,15 @@ lock_path=/var/lock/ironic
 
 [oslo_messaging_rabbit]
 
+{% if rabbitmq_quorum_queues %}
 rabbit_quorum_queue = True
 rabbit_transient_quorum_queue = True
 rabbit_stream_fanout = True
 use_queue_manager = True
 rabbit_qos_prefetch_count = {{ ironic_rabbit_qos_prefetch_count }}
+{% else %}
+rabbit_ha_queues = True
+{% endif %}
 
 
 [oslo_messaging_notifications]

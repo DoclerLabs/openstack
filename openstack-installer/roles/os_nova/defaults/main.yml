@@ -18,6 +18,7 @@ nova_api_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 nova_metadata_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 nova_conductor_workers: "{{ (ansible_processor_vcpus + 1) // 2 }}"
 nova_rabbit_qos_prefetch_count: 1
+rabbitmq_quorum_queues: False
 
 placement_admin_user: placement
 placement_domain_name: "{{ keystone_domain_name }}"

@@ -67,6 +67,7 @@ neutron_quota_listener: -1
 neutron_notifications: "{{ notifications_enable | default(False) }}"
 
 neutron_rabbit_qos_prefetch_count: 1
+rabbitmq_quorum_queues: False
 
 sysctl_conntrack_max: 524288
 

@@ -13,6 +13,7 @@ aodh_project_name: "{{ keystone_service_project_name | default('service') }}"
 aodh_syslog_use: "{{ syslog_use | default(False) }}"
 
 aodh_rabbit_qos_prefetch_count: 1
+rabbitmq_quorum_queues: False
 
 aodh_debug: False
 
