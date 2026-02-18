@@ -28,6 +28,10 @@
   with_items: "{{ neutron_physical_interface_drivers }}"
   when: inventory_hostname in groups['neutron_l2']
 
+- name: restart neutron-bgp-dragent
+  service: name=neutron-bgp-dragent state=restarted
+  when: inventory_hostname in groups['neutron_bgpagent']
+
 - name: reload sysctl
   command: /sbin/sysctl --system
 

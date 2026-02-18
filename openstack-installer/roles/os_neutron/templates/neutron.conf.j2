@@ -96,7 +96,7 @@ core_plugin = ml2
 # service_plugins =
 # Example: service_plugins = router,firewall,lbaas,vpnaas,metering,qos
 #service_plugins = router,firewall,neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2
-service_plugins = router{% if neutron_vpnaas_type %},vpnaas{% endif %}
+service_plugins = router{% if neutron_vpnaas_type %},vpnaas{% endif %}{% if groups['neutron_bgpagent'] | count > 0 %},neutron_dynamic_routing.services.bgp.bgp_plugin.BgpPlugin{% endif %}
 
 # Paste configuration file
 # api_paste_config = api-paste.ini

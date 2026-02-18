@@ -105,6 +105,7 @@
     - neutron-server
     - neutron-plugin-ml2
     - python3-neutronclient
+    - python3-neutron-dynamic-routing
   when: inventory_hostname in groups['neutron_controller']
 
 - name: install conntrack
@@ -126,6 +127,12 @@
     - python3-neutron-vpnaas
     - python3-neutronclient
   when: inventory_hostname in groups['neutron_l3']
+
+- name: install neutron BGP agent packages
+  apt:
+    name:
+    - neutron-bgp-dragent
+  when: inventory_hostname in groups['neutron_bgpagent']
 
 - name: stop and disable strongswan
   service: name={{ item }} state=stopped enabled=no
@@ -206,6 +213,12 @@
   with_items: "{{ neutron_physical_interface_drivers }}"
   notify:
     - restart neutron-l2-agent
+
+- name: install BGP agent configs
+  template: src=bgp_dragent.ini.j2 dest=/etc/neutron/bgp_dragent.ini owner=neutron group=root mode=0460
+  when: inventory_hostname in groups['neutron_bgpagent']
+  notify:
+    - restart neutron-bgp-dragent
 
 - name: sync neutron db
   command: su neutron -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head"

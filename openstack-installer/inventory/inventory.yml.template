@@ -42,6 +42,7 @@ neutron_l2:
   inherit:
     - neutron_l3
     - neutron_compute
+neutron_bgpagent:
 octavia:
 gnocchi:
 aodh:

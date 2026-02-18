@@ -25,6 +25,7 @@
     - neutron_controller
     - neutron_l3
     - neutron_l2
+    - neutron_bgpagent
   become: True
   max_fail_percentage: 0
   roles:

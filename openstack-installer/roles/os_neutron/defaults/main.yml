@@ -56,6 +56,7 @@ neutron_external_dns_driver: "{{ (groups['designate'] | count > 0) | ternary('de
 neutron_designate_allow_reverse_dns_lookup: True
 neutron_designate_ipv4_ptr_zone_prefix_size: 24
 neutron_designate_ipv6_ptr_zone_prefix_size: 116
+neutron_bgp_router_id: 10.0.0.1
 
 neutron_quota_loadbalancer: 10
 neutron_quota_vip: 10
