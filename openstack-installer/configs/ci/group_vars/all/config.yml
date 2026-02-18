@@ -8,7 +8,7 @@ vip_public_nic: ovs-vlan
 
 mysql_innodb_buffer_pool_size: 2G
 
-rabbitmq_hipe_compile: False
+rabbitmq_quorum_queues: True
 
 #Openstack services log to syslog
 syslog_use: True
