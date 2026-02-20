@@ -1,5 +1,3 @@
-{% set host_index = groups[(inventory_hostname in groups['nova_controller']) | ternary('nova_controller', 'nova_compute')].index(inventory_hostname) % groups['rabbitmq'] | count %}
-{% set rabbit_hosts = groups['rabbitmq'][host_index:] + groups['rabbitmq'][:host_index] %}
 [DEFAULT]
 # Logs / State
 debug = {{ nova_debug }}
@@ -31,7 +29,7 @@ disk_allocation_ratio = {{ nova_disk_allocation_ratio }}
 default_schedule_zone = {{ nova_default_schedule_zone }}
 
 # Rpc all
-transport_url = rabbit://{% for host in rabbit_hosts %}{{ nova_rabbit_user }}:{{ nova_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ nova_rabbit_vhost }}
+transport_url = rabbit://{{ nova_rabbit_user }}:{{ nova_rabbit_password }}@{{ vip_mgmt }}:5672/{{ nova_rabbit_vhost }}
 
 # Metadata
 metadata_host = {{ vip_mgmt }}
