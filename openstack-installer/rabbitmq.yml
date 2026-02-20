@@ -15,3 +15,19 @@
         - "{{ ip.mgmt }}"
       rabbitmq_cookie: "{{ rabbitmq_erlang_cookie }}"
       rabbitmq_password: "{{ rabbitmq_admin_password }}"
+
+- hosts: haproxy
+  become: True
+  max_fail_percentage: 0
+  roles:
+    - role: haproxy_service
+      haproxy_services:
+        - haproxy_service_name: rabbitmq
+          haproxy_bind_hosts:
+            - "{{ vip_mgmt }}"
+          haproxy_backend_nodes: "{{ groups['rabbitmq'] }}"
+          haproxy_port: 5672
+          haproxy_balance_type: tcp
+          haproxy_balance_alg: source
+          haproxy_timeout_client: 600s
+          haproxy_timeout_server: 600s
