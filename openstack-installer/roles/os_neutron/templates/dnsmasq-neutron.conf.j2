@@ -1,3 +1,4 @@
 {% if neutron_mtu > 0 %}
 dhcp-option-force=26,{{ neutron_mtu }}
 {% endif %}
+dns-forward-max={{ neutron_dnsmasq_forward_max }}
