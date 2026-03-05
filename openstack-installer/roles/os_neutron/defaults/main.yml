@@ -50,6 +50,7 @@ neutron_l2_population: True
 neutron_gre_vni_ranges: "1:1000"
 neutron_dnsmasq_dns_servers:
 neutron_dnsmasq_local_resolv: False
+neutron_dnsmasq_forward_max: 150
 neutron_dns_domain: openstacklocal
 neutron_external_dns_driver: "{{ (groups['designate'] | count > 0) | ternary('designate','') }}"
 neutron_designate_allow_reverse_dns_lookup: True
