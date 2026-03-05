@@ -262,7 +262,7 @@ notification_format = {{ nova_notification_format }}
 
 {% if nova_notifications %}
 driver = messagingv2
-transport_url = rabbit://{% for host in rabbit_hosts %}{{ nova_rabbit_user }}:{{ nova_rabbit_password }}@{{ hostvars[host].ip.mgmt }}:5672{% if not loop.last %},{% endif %}{% endfor %}/{{ nova_rabbit_vhost }}
+transport_url = rabbit://{{ nova_rabbit_user }}:{{ nova_rabbit_password }}@{{ vip_mgmt }}:5672/{{ nova_rabbit_vhost }}
 {% else %}
 driver =
 transport_url =
