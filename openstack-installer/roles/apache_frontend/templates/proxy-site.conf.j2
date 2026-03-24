@@ -1,11 +1,19 @@
 #jinja2: lstrip_blocks: True
 
+{% if not apache_other_vhost | bool %}
 {% for service in apache_services %}
 Listen {{ ip.mgmt }}:{{ service.port }}
 {% endfor %}
 
+SSLStrictSNIVhostCheck off
+{% endif %}
+
 {% for service in apache_services %}
 <VirtualHost *:{{ service.port }}>
+
+{% if service.servername is defined %}
+   ServerName {{ service.servername }}
+{% endif %}
 
 {% if service.include is defined %}
     Include {{ service.include }}
