@@ -4,8 +4,9 @@
 {% for service in apache_services %}
 Listen {{ ip.mgmt }}:{{ service.port }}
 {% endfor %}
-
+{% if apache_service_ssl | bool %}
 SSLStrictSNIVhostCheck off
+{% endif %}
 {% endif %}
 
 {% for service in apache_services %}
