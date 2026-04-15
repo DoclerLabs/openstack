@@ -1,7 +1,9 @@
 ---
 
 - name: check for Ansible version >= 2.1
-  local_action: assert that="{{ ansible_version.string is version_compare('2.1', '>=') }}"
+  local_action:
+    module: assert
+    that: "{{ ansible_version.string is version_compare('2.1', '>=') }}"
   run_once: True
   become: False
 
@@ -20,17 +22,23 @@
   when: ansible_os_family == 'Debian'
 
 - name: make sure the images directory exists
-  file: path="{{ tempest_images_dest }}" state=directory
+  file:
+    path: '{{ tempest_images_dest }}'
+    state: directory
 
 - name: get image files
-  get_url: url="{{ tempest_images_url }}/{{ item }}" dest="{{ tempest_images_dest }}/{{ item }}"
+  get_url:
+    url: '{{ tempest_images_url }}/{{ item }}'
+    dest: '{{ tempest_images_dest }}/{{ item }}'
   with_items:
     - "{{ tempest_image_file }}"
     - "{{ tempest_image_ari_img_file }}"
     - "{{ tempest_image_aki_img_file }}"
 
 - name: install tempest CA file
-  copy: src='{{ SSLCACertificateFileSource }}' dest='{{ tempest_CAFile }}'
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ tempest_CAFile }}'
   when: SSLCACertificateFileSource is not none and SSLCACertificateFileSource | trim != ''
 
 - name: ensure cirros image exists in Glance
@@ -82,49 +90,49 @@
     - {'name': 'm1.tiny', 'id': 1, 'disk': 1, 'ram': 512, 'ephemeral': 0, 'vcpus': 1 }
 
 - name: ensure the heat stack owner project exists in keystone
-  keystone_user: >
-    login_project_name=admin
-    login_user=admin
-    login_domain_name="Default"
-    login_password="{{ keystone_admin_password }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
-    cacert={{ tempest_CAFile }}
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    project_domain="Default"
-    project="{{ heat_stack_owner_project }}"
-    project_description="Heat stack owner demo project"
+  keystone_user:
+    login_project_name: admin
+    login_user: admin
+    login_domain_name: Default
+    login_password: '{{ keystone_admin_password }}'
+    endpoint: '{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3'
+    cacert: '{{ tempest_CAFile }}'
+    insecure: '{{ ssl_insecure | ternary("true", "false") }}'
+    project_domain: Default
+    project: '{{ heat_stack_owner_project }}'
+    project_description: Heat stack owner demo project
   run_once: True
 
 - name: ensure the heat stack owner user exists in keystone
-  keystone_user: >
-    login_project_name=admin
-    login_user=admin
-    login_domain_name="Default"
-    login_password="{{ keystone_admin_password }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
-    cacert={{ tempest_CAFile }}
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    project="{{ heat_stack_owner_project }}"
-    project_domain="Default"
-    user="{{ heat_stack_owner_user }}"
-    user_domain="Default"
-    password="{{ heat_stack_owner_password }}"
+  keystone_user:
+    login_project_name: admin
+    login_user: admin
+    login_domain_name: Default
+    login_password: '{{ keystone_admin_password }}'
+    endpoint: '{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3'
+    cacert: '{{ tempest_CAFile }}'
+    insecure: '{{ ssl_insecure | ternary("true", "false") }}'
+    project: '{{ heat_stack_owner_project }}'
+    project_domain: Default
+    user: '{{ heat_stack_owner_user }}'
+    user_domain: Default
+    password: '{{ heat_stack_owner_password }}'
   run_once: True
 
 - name: ensure the heat stack owner user has the correct role
-  keystone_user: >
-    login_project_name=admin
-    login_user=admin
-    login_domain_name="Default"
-    login_password="{{ keystone_admin_password }}"
-    endpoint="{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3"
-    cacert={{ tempest_CAFile }}
-    insecure={{ ssl_insecure | ternary("true", "false") }}
-    project_domain="Default"
-    project="{{ heat_stack_owner_project }}"
-    user="{{ heat_stack_owner_user }}"
-    user_domain="Default"
-    role="heat_stack_owner"
+  keystone_user:
+    login_project_name: admin
+    login_user: admin
+    login_domain_name: Default
+    login_password: '{{ keystone_admin_password }}'
+    endpoint: '{{ keystone_proto }}://{{ keystone_admin_address }}:5000/v3'
+    cacert: '{{ tempest_CAFile }}'
+    insecure: '{{ ssl_insecure | ternary("true", "false") }}'
+    project_domain: Default
+    project: '{{ heat_stack_owner_project }}'
+    user: '{{ heat_stack_owner_user }}'
+    user_domain: Default
+    role: heat_stack_owner
   run_once: True
 
 - name: ensure external network exists in neutron
@@ -201,4 +209,6 @@
   when: groups['keystone'] | length > 0
 
 - name: install tempest config
-  template: src=tempest.conf.j2 dest={{ tempest_dest }}/tempest/etc/tempest.conf
+  template:
+    src: tempest.conf.j2
+    dest: '{{ tempest_dest }}/tempest/etc/tempest.conf'

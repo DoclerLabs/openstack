@@ -27,11 +27,18 @@
   run_once: True
 
 - name: install CA certificate
-  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ SSLCACertificateFile }}'
+    owner: root
+    group: root
+    mode: 0644
   when: SSLCACertificateFile != ''
 
 - name: mask autostarting of cloudkitty
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - cloudkitty-api
     - cloudkitty-processor
@@ -49,21 +56,36 @@
   run_once: True
 
 - name: create cloudkitty database user
-  mysql_user: name={{ cloudkitty_db_user }} password={{ cloudkitty_db_password }} host={{ item }} priv={{ cloudkitty_db }}.*:ALL
-    login_host={{ cloudkitty_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
+  mysql_user:
+    name: '{{ cloudkitty_db_user }}'
+    password: '{{ cloudkitty_db_password }}'
+    host: '{{ item }}'
+    priv: '{{ cloudkitty_db }}.*:ALL'
+    login_host: '{{ cloudkitty_mysql_server }}'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    state: present
   run_once: True
   with_items:
     - localhost
     - '%'
 
 - name: install cloudkitty configs
-  template: src=cloudkitty.conf.j2 dest=/etc/cloudkitty/cloudkitty.conf owner=cloudkitty group=root mode=0460
+  template:
+    src: cloudkitty.conf.j2
+    dest: /etc/cloudkitty/cloudkitty.conf
+    owner: cloudkitty
+    group: root
+    mode: 0460
   notify: restart cloudkitty
 
 - name: install /etc/default/cloudkitty-api
-  copy: content='DAEMON_ARGS="--master --paste-logger --processes {{ cloudkitty_api_workers }} --die-on-term --logto /var/log/cloudkitty/cloudkitty-api.log --http-socket 127.0.0.1:8889 --wsgi-file /usr/bin/cloudkitty-api"\n'
-        dest=/etc/default/cloudkitty-api owner=root group=root mode=0644
+  copy:
+    content: 'DAEMON_ARGS="--master --paste-logger --processes {{ cloudkitty_api_workers }} --die-on-term --logto /var/log/cloudkitty/cloudkitty-api.log --http-socket 127.0.0.1:8889 --wsgi-file /usr/bin/cloudkitty-api"\n'
+    dest: /etc/default/cloudkitty-api
+    owner: root
+    group: root
+    mode: 0644
 
 - name: sync cloudkitty db
   command: su cloudkitty -s /bin/sh -c "/usr/bin/cloudkitty-dbsync upgrade"
@@ -72,7 +94,9 @@
   run_once: True
 
 - name: unmask autostarting of cloudkitty
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - cloudkitty-api
     - cloudkitty-processor
@@ -80,7 +104,10 @@
 - meta: flush_handlers
 
 - name: ensure cloudkitty is started
-  service: name={{ item }} state=started enabled=yes
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
   with_items:
     - cloudkitty-api
     - cloudkitty-processor

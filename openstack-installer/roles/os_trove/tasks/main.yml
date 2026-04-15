@@ -27,11 +27,18 @@
   run_once: True
 
 - name: install CA certificate
-  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ SSLCACertificateFile }}'
+    owner: root
+    group: root
+    mode: 0644
   when: SSLCACertificateFile != ''
 
 - name: mask autostarting of trove services
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - trove-api
     - trove-conductor
@@ -51,7 +58,9 @@
     - trove-taskmanager
 
 - name: ensure python-trove is not installed
-  apt: name=python-trove state=absent
+  apt:
+    name: python-trove
+    state: absent
 
 - name: set up trove network in neutron
   os_network:
@@ -110,14 +119,23 @@
   run_once: True
 
 - name: install trove configs
-  template: src={{ item }}.j2 dest=/etc/trove/{{ item }} mode=0460 owner=trove group=root
+  template:
+    src: '{{ item }}.j2'
+    dest: /etc/trove/{{ item }}
+    mode: 0460
+    owner: trove
+    group: root
   with_items:
     - trove.conf
     - trove-guestagent.conf
   notify: restart trove
 
 - name: link trove configs
-  file: src=trove.conf dest=/etc/trove/{{ item }} state=link force=yes
+  file:
+    src: trove.conf
+    dest: /etc/trove/{{ item }}
+    state: link
+    force: yes
   with_items:
     - trove-conductor.conf
     - trove-taskmanager.conf
@@ -130,9 +148,15 @@
   run_once: True
 
 - name: create trove database user
-  mysql_user: name={{ trove_db_user }} password={{ trove_db_password }} host={{ item }} priv={{ trove_db }}.*:ALL
-    login_host={{ trove_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
+  mysql_user:
+    name: '{{ trove_db_user }}'
+    password: '{{ trove_db_password }}'
+    host: '{{ item }}'
+    priv: '{{ trove_db }}.*:ALL'
+    login_host: '{{ trove_mysql_server }}'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    state: present
   run_once: True
   with_items:
     - localhost
@@ -145,7 +169,9 @@
   run_once: True
 
 - name: unmask autostarting of trove services
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - trove-api
     - trove-conductor
@@ -154,7 +180,10 @@
 - meta: flush_handlers
 
 - name: ensure trove services are started
-  service: name={{ item }} state=started enabled=yes
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
   with_items:
     - trove-api
     - trove-taskmanager

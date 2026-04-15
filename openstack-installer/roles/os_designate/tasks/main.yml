@@ -27,11 +27,18 @@
   run_once: True
 
 - name: install CA certificate
-  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ SSLCACertificateFile }}'
+    owner: root
+    group: root
+    mode: 0644
   when: SSLCACertificateFile != ''
 
 - name: mask autostarting of designate
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - designate-api
     - designate-agent
@@ -67,20 +74,36 @@
   run_once: True
 
 - name: create designate database user
-  mysql_user: name={{ designate_db_user }} password={{ designate_db_password }} host={{ item }} priv={{ designate_db }}.*:ALL
-    login_host={{ designate_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
+  mysql_user:
+    name: '{{ designate_db_user }}'
+    password: '{{ designate_db_password }}'
+    host: '{{ item }}'
+    priv: '{{ designate_db }}.*:ALL'
+    login_host: '{{ designate_mysql_server }}'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    state: present
   run_once: True
   with_items:
     - localhost
     - '%'
 
 - name: ensure /var/lib/designate/cache is writeable
-  file: path=/var/lib/designate/cache state=directory owner=designate group=designate mode=0700
+  file:
+    path: /var/lib/designate/cache
+    state: directory
+    owner: designate
+    group: designate
+    mode: 0700
   notify: restart designate
 
 - name: install designate configs
-  template: src={{ item }}.conf.j2 dest=/etc/designate/{{ item }}.conf owner=designate group=root mode=0460
+  template:
+    src: '{{ item }}.conf.j2'
+    dest: /etc/designate/{{ item }}.conf
+    owner: designate
+    group: root
+    mode: 0460
   with_items:
     - designate
   notify: restart designate
@@ -92,7 +115,9 @@
   run_once: True
 
 - name: unmask autostarting of designate
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - designate-api
     - designate-agent
@@ -104,7 +129,10 @@
 - meta: flush_handlers
 
 - name: ensure designate is started
-  service: name={{ item }} state=started enabled=yes
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
   with_items:
     - designate-api
     - designate-agent

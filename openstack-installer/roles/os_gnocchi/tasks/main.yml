@@ -1,14 +1,26 @@
 ---
 
 - name: install CA certificate
-  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ SSLCACertificateFile }}'
+    owner: root
+    group: root
+    mode: 0644
   when: SSLCACertificateFile != ''
 
 - name: mask autostarting of gnocchi
-  service_mask: name=gnocchi-metricd state=masked
+  service_mask:
+    name: gnocchi-metricd
+    state: masked
 
 - name: mask gnocchi-api apache config
-  copy: content='' dest=/etc/apache2/sites-available/gnocchi-api.conf owner=root group=root mode=0644
+  copy:
+    content: ''
+    dest: /etc/apache2/sites-available/gnocchi-api.conf
+    owner: root
+    group: root
+    mode: 0644
 
 - name: install gnocchi
   apt:
@@ -17,7 +29,9 @@
     - gnocchi-metricd
 
 - name: ensure python-gnocchi is not installed
-  apt: name=python-gnocchi state=absent
+  apt:
+    name: python-gnocchi
+    state: absent
 
 - name: create gnocchi database
   mysql_db: name={{ gnocchi_db }}
@@ -26,19 +40,35 @@
   run_once: True
 
 - name: create gnocchi database user
-  mysql_user: name={{ gnocchi_db_user }} password={{ gnocchi_db_password }} host={{ item }} priv={{ gnocchi_db }}.*:ALL
-    login_host={{ gnocchi_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
+  mysql_user:
+    name: '{{ gnocchi_db_user }}'
+    password: '{{ gnocchi_db_password }}'
+    host: '{{ item }}'
+    priv: '{{ gnocchi_db }}.*:ALL'
+    login_host: '{{ gnocchi_mysql_server }}'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    state: present
   run_once: True
   with_items:
     - localhost
     - '%'
 
 - name: ensure /var/lib/gnocchi/cache is writeable
-  file: path=/var/lib/gnocchi/cache state=directory owner=gnocchi group=gnocchi mode=0700
+  file:
+    path: /var/lib/gnocchi/cache
+    state: directory
+    owner: gnocchi
+    group: gnocchi
+    mode: 0700
 
 - name: install gnocchi configs
-  template: src={{ item }}.conf.j2 dest=/etc/gnocchi/{{ item }}.conf owner=gnocchi group=root mode=0460
+  template:
+    src: '{{ item }}.conf.j2'
+    dest: /etc/gnocchi/{{ item }}.conf
+    owner: gnocchi
+    group: root
+    mode: 0460
   with_items:
     - gnocchi
   notify:
@@ -46,7 +76,12 @@
     - restart gnocchi
 
 - name: install api-paste.ini and policy.json
-  copy: src={{ item }} dest=/etc/gnocchi/{{ item }} owner=gnocchi group=root mode=0460
+  copy:
+    src: '{{ item }}'
+    dest: /etc/gnocchi/{{ item }}
+    owner: gnocchi
+    group: root
+    mode: 0460
   with_items:
     - api-paste.ini
     - policy.json
@@ -58,17 +93,30 @@
   run_once: True
 
 - name: create /var/www/cgi-bin/gnocchi
-  file: path=/var/www/cgi-bin/gnocchi state=directory owner=root group=root mode=0755
+  file:
+    path: /var/www/cgi-bin/gnocchi
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
   notify: signal apache to reload
 
 - name: link gnocchi wsgi server
-  file: src=/usr/bin/gnocchi-api dest=/var/www/cgi-bin/gnocchi/gnocchi-api state=link
+  file:
+    src: /usr/bin/gnocchi-api
+    dest: /var/www/cgi-bin/gnocchi/gnocchi-api
+    state: link
   notify: signal apache to reload
 
 - name: unmask autostarting of gnocchi
-  service_mask: name=gnocchi-metricd state=unmasked
+  service_mask:
+    name: gnocchi-metricd
+    state: unmasked
 
 - meta: flush_handlers
 
 - name: ensure gnocchi is started
-  service: name=gnocchi-metricd state=started enabled=yes
+  service:
+    name: gnocchi-metricd
+    state: started
+    enabled: yes

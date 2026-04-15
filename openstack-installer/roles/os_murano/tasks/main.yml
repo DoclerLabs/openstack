@@ -55,11 +55,18 @@
   when: murano_service_rabbit_servers | count > 0
 
 - name: install CA certificate
-  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ SSLCACertificateFile }}'
+    owner: root
+    group: root
+    mode: 0644
   when: SSLCACertificateFile != ''
 
 - name: mask autostarting of murano
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - murano-api
     - murano-cfapi
@@ -77,7 +84,9 @@
     - python3-muranoclient
 
 - name: ensure python-murano is not installed
-  apt: name=python-murano state=absent
+  apt:
+    name: python-murano
+    state: absent
 
 - name: create murano database
   mysql_db: name={{ murano_db }}
@@ -86,22 +95,38 @@
   run_once: True
 
 - name: create murano database user
-  mysql_user: name={{ murano_db_user }} password={{ murano_db_password }} host={{ item }} priv={{ murano_db }}.*:ALL
-    login_host={{ murano_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
+  mysql_user:
+    name: '{{ murano_db_user }}'
+    password: '{{ murano_db_password }}'
+    host: '{{ item }}'
+    priv: '{{ murano_db }}.*:ALL'
+    login_host: '{{ murano_mysql_server }}'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    state: present
   run_once: True
   with_items:
     - localhost
     - '%'
 
 - name: install murano configs
-  template: src={{ item }}.conf.j2 dest=/etc/murano/{{ item }}.conf owner=murano group=root mode=0460
+  template:
+    src: '{{ item }}.conf.j2'
+    dest: /etc/murano/{{ item }}.conf
+    owner: murano
+    group: root
+    mode: 0460
   with_items:
     - murano
   notify: restart murano
 
 - name: ensure /var/lib/murano/cache is writeable
-  file: path=/var/lib/murano/cache state=directory owner=murano group=murano mode=0700
+  file:
+    path: /var/lib/murano/cache
+    state: directory
+    owner: murano
+    group: murano
+    mode: 0700
   notify: restart murano
 
 - name: sync murano db
@@ -109,7 +134,9 @@
   run_once: True
 
 - name: unmask autostarting of murano
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - murano-api
     - murano-cfapi
@@ -118,10 +145,16 @@
 - meta: flush_handlers
 
 - name: ensure murano is started
-  service: name={{ item }} state=started enabled=yes
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
   with_items:
     - murano-api
     - murano-engine
 
 - name: ensure murano-cfapi is stopped
-  service: name=murano-cfapi enabled=no state=stopped
+  service:
+    name: murano-cfapi
+    enabled: no
+    state: stopped

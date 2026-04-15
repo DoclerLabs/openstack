@@ -1,7 +1,9 @@
 ---
 
 - name: restart xinetd
-  service: name=xinetd state=restarted
+  service:
+    name: xinetd
+    state: restarted
 
 - name: cleanup galera resource
   command: crm_resource --cleanup --resource p_galera
@@ -13,4 +15,6 @@
   run_once: True
 
 - name: restart rsyslog
-  service: name=rsyslog state=restarted
+  service:
+    name: rsyslog
+    state: restarted

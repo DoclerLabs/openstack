@@ -1,19 +1,36 @@
 ---
 
 - name: ensure mysql group exists
-  group: name=mysql system=yes
+  group:
+    name: mysql
+    system: yes
 
 - name: ensure mysql user exists
-  user: name=mysql comment="MySQL Server" group=mysql home={{ mysql_datadir }} createhome=no shell=/bin/false system=yes
+  user:
+    name: mysql
+    comment: MySQL Server
+    group: mysql
+    home: '{{ mysql_datadir }}'
+    createhome: no
+    shell: /bin/false
+    system: yes
 
 - name: ensure MySQL datadir exists
-  file: dest={{ mysql_datadir }} owner=mysql group=mysql mode=0750 state=directory
+  file:
+    dest: '{{ mysql_datadir }}'
+    owner: mysql
+    group: mysql
+    mode: 0750
+    state: directory
 
 - name: download percona-release
-  get_url: dest=/root/percona-release_latest.generic_all.deb url=https://repo.percona.com/apt/percona-release_latest.generic_all.deb
+  get_url:
+    dest: /root/percona-release_latest.generic_all.deb
+    url: https://repo.percona.com/apt/percona-release_latest.generic_all.deb
 
 - name: install percona-release
-  apt: deb=/root/percona-release_latest.generic_all.deb
+  apt:
+    deb: /root/percona-release_latest.generic_all.deb
 
 - name: enable percona repos
   command: percona-release enable "{{ item }}" release
@@ -41,19 +58,34 @@
   changed_when: False
 
 - name: stop mysql if it is not configured yet
-  service: name=mysql state=stopped
+  service:
+    name: mysql
+    state: stopped
   when: galera_stat.rc != 1
 
 - name: install mysqld.cnf
-  template: src=mysqld.cnf.j2 dest=/etc/mysql/mysql.conf.d/mysqld.cnf owner=mysql group=root mode=0460
+  template:
+    src: mysqld.cnf.j2
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+    owner: mysql
+    group: root
+    mode: 0460
 
 - name: ensure mysql is running if not configured yet
-  service: name=mysql state=started
+  service:
+    name: mysql
+    state: started
   when: galera_stat.rc != 1
 
 - name: set up mysql root password
-  mysql_user: name=root host="{{ item }}" password="{{ mysql_root_password }}" priv=*.*:ALL,GRANT
-    login_user=root login_password="{{ mysql_root_password }}" check_implicit_admin=yes
+  mysql_user:
+    name: root
+    host: '{{ item }}'
+    password: '{{ mysql_root_password }}'
+    priv: '*.*:ALL,GRANT'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    check_implicit_admin: yes
   with_items:
     - localhost
     - 127.0.0.1
@@ -61,16 +93,25 @@
   when: galera_stat.rc != 1
 
 - name: create clustercheck user
-  mysql_user: name=clustercheck password={{ galera_clustercheck_password }} priv=*.*:USAGE
-    login_user=root login_password={{ mysql_root_password }}
+  mysql_user:
+    name: clustercheck
+    password: '{{ galera_clustercheck_password }}'
+    priv: '*.*:USAGE'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
   when: galera_stat.rc != 1
 
 - name: stop mysql if it is not configured yet
-  service: name=mysql state=stopped
+  service:
+    name: mysql
+    state: stopped
   when: galera_stat.rc != 1
 
 - name: fetch certificates
-  fetch: src=/var/lib/mysql/{{ item }} dest=workdir/mysql-{{ item }} flat=True
+  fetch:
+    src: /var/lib/mysql/{{ item }}
+    dest: workdir/mysql-{{ item }}
+    flat: True
   when: inventory_hostname == groups['galera'][0]
   with_items:
     - ca-key.pem
@@ -79,7 +120,12 @@
     - server-cert.pem
 
 - name: distribute the certificates
-  copy: src=workdir/mysql-{{ item }} dest=/var/lib/mysql/{{ item }} owner=mysql group=mysql mode=0400
+  copy:
+    src: workdir/mysql-{{ item }}
+    dest: /var/lib/mysql/{{ item }}
+    owner: mysql
+    group: mysql
+    mode: 0400
   when: inventory_hostname != groups['galera'][0]
   with_items:
     - ca-key.pem
@@ -88,14 +134,29 @@
     - server-cert.pem
 
 - name: install wsrep.cnf
-  template: src=wsrep.cnf.j2 dest=/etc/mysql/mysql.conf.d/wsrep.cnf owner=mysql group=root mode=0460
+  template:
+    src: wsrep.cnf.j2
+    dest: /etc/mysql/mysql.conf.d/wsrep.cnf
+    owner: mysql
+    group: root
+    mode: 0460
   notify: cleanup galera resource
 
 - name: install /etc/my.cnf
-  template: src=root.my.cnf.j2 dest=/etc/my.cnf owner=root group=root mode=0640
+  template:
+    src: root.my.cnf.j2
+    dest: /etc/my.cnf
+    owner: root
+    group: root
+    mode: 0640
 
 - name: install galera OCF script
-  copy: src=galera-agent dest=/usr/lib/ocf/resource.d/heartbeat/galera-agent owner=root group=root mode=0755
+  copy:
+    src: galera-agent
+    dest: /usr/lib/ocf/resource.d/heartbeat/galera-agent
+    owner: root
+    group: root
+    mode: 0755
   notify: cleanup galera resource
 
 - name: create shadow CIB database
@@ -165,10 +226,14 @@
   run_once: True
 
 - name: make sure /etc/default/clustercheck is not present
-  file: path=/etc/default/clustercheck state=absent
+  file:
+    path: /etc/default/clustercheck
+    state: absent
 
 - name: wait for the mysql servers to start
-  wait_for: host={{ ip.mgmt }} port=3306
+  wait_for:
+    host: '{{ ip.mgmt }}'
+    port: 3306
 
 - name: wait until the replication is finished
   command: mysql -nNs --user=clustercheck -e 'show status like "wsrep_cluster_status"'
@@ -179,23 +244,39 @@
   until: "'Primary' in mysql_result.stdout"
 
 - name: make sure mysql is disabled at boot
-  service: name=mysql enabled=no
+  service:
+    name: mysql
+    enabled: no
 
 - name: add mysqlchk to /etc/services
-  lineinfile: dest=/etc/services 
-    regexp='^mysqlchk'
-    line='mysqlchk 9200/tcp'
+  lineinfile:
+    dest: /etc/services
+    regexp: ^mysqlchk
+    line: mysqlchk 9200/tcp
   notify: restart xinetd
 
 - name: configure xinetd to serve clustercheck
-  template: src=mysqlchk.j2 dest=/etc/xinetd.d/mysqlchk owner=root group=root mode=640
+  template:
+    src: mysqlchk.j2
+    dest: /etc/xinetd.d/mysqlchk
+    owner: root
+    group: root
+    mode: 640
   notify: restart xinetd
 
 - name: ensure xinetd is running
-  service: name=xinetd state=started enabled=yes
+  service:
+    name: xinetd
+    state: started
+    enabled: yes
 
 - name: install rsyslog galera.conf
-  template: src=40-galera.conf.j2 dest=/etc/rsyslog.d/40-galera.conf owner=root group=root mode=0644
+  template:
+    src: 40-galera.conf.j2
+    dest: /etc/rsyslog.d/40-galera.conf
+    owner: root
+    group: root
+    mode: 0644
   when: inventory_hostname in groups['rsyslog']
   notify:
     - restart rsyslog

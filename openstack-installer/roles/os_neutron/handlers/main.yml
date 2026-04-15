@@ -1,7 +1,9 @@
 ---
 
 - name: restart neutron-server
-  service: name=neutron-server state=restarted
+  service:
+    name: neutron-server
+    state: restarted
   when: inventory_hostname in groups['neutron_controller']
 
 - name: restart neutron-l3-agent
@@ -12,28 +14,40 @@
   when: inventory_hostname in groups['neutron_l3']
 
 - name: restart neutron-dhcp-agent
-  service: name=neutron-dhcp-agent state=restarted
+  service:
+    name: neutron-dhcp-agent
+    state: restarted
   when: inventory_hostname in groups['neutron_l3']
 
 - name: restart neutron-metadata-agent
-  service: name=neutron-metadata-agent state=restarted
+  service:
+    name: neutron-metadata-agent
+    state: restarted
   when: inventory_hostname in groups['neutron_l3']
 
 - name: restart neutron-lbaas-agent
-  service: name=neutron-{{ neutron_lbaas_agent }}-agent state=restarted
+  service:
+    name: neutron-{{ neutron_lbaas_agent }}-agent
+    state: restarted
   when: inventory_hostname in groups['neutron_l3']
 
 - name: restart neutron-l2-agent
-  service: name="neutron-{{ item }}-agent" state=restarted
+  service:
+    name: neutron-{{ item }}-agent
+    state: restarted
   with_items: "{{ neutron_physical_interface_drivers }}"
   when: inventory_hostname in groups['neutron_l2']
 
 - name: restart neutron-bgp-dragent
-  service: name=neutron-bgp-dragent state=restarted
+  service:
+    name: neutron-bgp-dragent
+    state: restarted
   when: inventory_hostname in groups['neutron_bgpagent']
 
 - name: reload sysctl
   command: /sbin/sysctl --system
 
 - name: reload apparmor
-  service: name=apparmor state=reloaded
+  service:
+    name: apparmor
+    state: reloaded

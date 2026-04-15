@@ -1,14 +1,21 @@
 ---
 
 - name: install rsyslog
-  apt: name=rsyslog
+  apt:
+    name: rsyslog
 
 - name: install rsyslog-elasticsearch
-  apt: name=rsyslog-elasticsearch
+  apt:
+    name: rsyslog-elasticsearch
   when: syslog_elasticsearch is not none
 
 - name: install configs
-  template: src={{ item }}.conf.j2 dest=/etc/rsyslog.d/{{ item }}.conf owner=root group=root mode=0640
+  template:
+    src: '{{ item }}.conf.j2'
+    dest: /etc/rsyslog.d/{{ item }}.conf
+    owner: root
+    group: root
+    mode: 0640
   with_items:
     - 01-syslog-remote
   notify:
@@ -17,7 +24,10 @@
 - meta: flush_handlers
 
 - name: set permissions of log files
-  file: path=/var/log/{{ item }} owner=syslog group=adm
+  file:
+    path: /var/log/{{ item }}
+    owner: syslog
+    group: adm
   register: log_results
   failed_when: log_results is failed and 'absent' not in log_results.msg
   with_items:
@@ -31,4 +41,7 @@
     - user.log
 
 - name: ensure rsyslog is started
-  service: name=rsyslog state=started enabled=yes
+  service:
+    name: rsyslog
+    state: started
+    enabled: yes

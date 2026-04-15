@@ -27,11 +27,18 @@
   run_once: True
 
 - name: install CA certificate
-  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ SSLCACertificateFile }}'
+    owner: root
+    group: root
+    mode: 0644
   when: SSLCACertificateFile != ''
 
 - name: mask autostarting of mistral
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - mistral-api
     - mistral-engine
@@ -47,7 +54,9 @@
     - python3-mistralclient
 
 - name: ensure python-mistral is not installed
-  apt: name=python-mistral state=absent
+  apt:
+    name: python-mistral
+    state: absent
 
 - name: create mistral database
   mysql_db: name={{ mistral_db }}
@@ -56,20 +65,36 @@
   run_once: True
 
 - name: create mistral database user
-  mysql_user: name={{ mistral_db_user }} password={{ mistral_db_password }} host={{ item }} priv={{ mistral_db }}.*:ALL
-    login_host={{ mistral_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
+  mysql_user:
+    name: '{{ mistral_db_user }}'
+    password: '{{ mistral_db_password }}'
+    host: '{{ item }}'
+    priv: '{{ mistral_db }}.*:ALL'
+    login_host: '{{ mistral_mysql_server }}'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    state: present
   run_once: True
   with_items:
     - localhost
     - '%'
 
 - name: ensure /var/lib/mistral/cache is writeable
-  file: path=/var/lib/mistral/cache state=directory owner=mistral group=mistral mode=0700
+  file:
+    path: /var/lib/mistral/cache
+    state: directory
+    owner: mistral
+    group: mistral
+    mode: 0700
   notify: restart mistral
 
 - name: install mistral configs
-  template: src={{ item }}.conf.j2 dest=/etc/mistral/{{ item }}.conf owner=mistral group=root mode=0460
+  template:
+    src: '{{ item }}.conf.j2'
+    dest: /etc/mistral/{{ item }}.conf
+    owner: mistral
+    group: root
+    mode: 0460
   with_items:
     - mistral
   notify: restart mistral
@@ -79,7 +104,9 @@
   run_once: True
 
 - name: unmask autostarting of mistral
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - mistral-api
     - mistral-engine
@@ -88,7 +115,10 @@
 - meta: flush_handlers
 
 - name: ensure mistral is started
-  service: name={{ item }} state=started enabled=yes
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
   with_items:
     - mistral-api
     - mistral-engine

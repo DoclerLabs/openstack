@@ -1,7 +1,11 @@
 ---
 
 - name: signal apache to reload
-  file: dest=/run/apache2.reload state=touch
+  file:
+    dest: /run/apache2.reload
+    state: touch
 
 - name: restart gnocchi
-  service: name=gnocchi-metricd state=restarted
+  service:
+    name: gnocchi-metricd
+    state: restarted

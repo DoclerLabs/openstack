@@ -1,14 +1,18 @@
 ---
 
 - name: restart ceilometer controller services
-  service: name={{ item }} state=restarted
+  service:
+    name: '{{ item }}'
+    state: restarted
   with_items:
     - ceilometer-agent-central
     - ceilometer-agent-notification
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: restart ceilometer compute services
-  service: name={{ item }} state=restarted
+  service:
+    name: '{{ item }}'
+    state: restarted
   with_items:
     - ceilometer-agent-compute
   when: inventory_hostname in groups['ceilometer_compute']

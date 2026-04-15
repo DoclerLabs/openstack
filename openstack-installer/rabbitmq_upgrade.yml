@@ -7,7 +7,9 @@
     - apt
   pre_tasks:
     - name: check for Ansible version > 2.0.1
-      local_action: assert that="{{ ansible_version.string is version_compare('2.0.1', '>=') }}"
+      local_action:
+        module: assert
+        that: "{{ ansible_version.string is version_compare('2.0.1', '>=') }}"
       run_once: True
       become: False
 
@@ -17,4 +19,6 @@
   serial: 1
   tasks:
     - name: upgrade rabbitmq-server
-      apt: name=rabbitmq-server state=latest
+      apt:
+        name: rabbitmq-server
+        state: latest

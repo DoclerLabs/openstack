@@ -1,4 +1,9 @@
 ---
 
 - name: install openstack.cfg
-  template: src=openstack.cfg.j2 dest={{ nagios_config_file }} owner=root group=root mode=0644
+  template:
+    src: openstack.cfg.j2
+    dest: '{{ nagios_config_file }}'
+    owner: root
+    group: root
+    mode: 0644

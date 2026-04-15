@@ -27,16 +27,28 @@
   run_once: True
 
 - name: install CA certificate
-  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ SSLCACertificateFile }}'
+    owner: root
+    group: root
+    mode: 0644
   when: SSLCACertificateFile != ''
 
 - name: mask autostarting of sahara
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - sahara-engine
 
 - name: mask sahara-api apache config
-  copy: content='' dest=/etc/apache2/sites-available/sahara-api.conf owner=root group=root mode=0644
+  copy:
+    content: ''
+    dest: /etc/apache2/sites-available/sahara-api.conf
+    owner: root
+    group: root
+    mode: 0644
 
 - name: install sahara
   apt:
@@ -47,7 +59,9 @@
     - python3-saharaclient
 
 - name: ensure python-sahara is not installed
-  apt: name=python-sahara state=absent
+  apt:
+    name: python-sahara
+    state: absent
 
 - name: create sahara database
   mysql_db: name={{ sahara_db }}
@@ -56,20 +70,36 @@
   run_once: True
 
 - name: create sahara database user
-  mysql_user: name={{ sahara_db_user }} password={{ sahara_db_password }} host={{ item }} priv={{ sahara_db }}.*:ALL
-    login_host={{ sahara_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
+  mysql_user:
+    name: '{{ sahara_db_user }}'
+    password: '{{ sahara_db_password }}'
+    host: '{{ item }}'
+    priv: '{{ sahara_db }}.*:ALL'
+    login_host: '{{ sahara_mysql_server }}'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    state: present
   run_once: True
   with_items:
     - localhost
     - '%'
 
 - name: ensure /var/lib/sahara/cache is writeable
-  file: path=/var/lib/sahara/cache state=directory owner=sahara group=sahara mode=0700
+  file:
+    path: /var/lib/sahara/cache
+    state: directory
+    owner: sahara
+    group: sahara
+    mode: 0700
   notify: restart sahara
 
 - name: install sahara configs
-  template: src={{ item }}.conf.j2 dest=/etc/sahara/{{ item }}.conf owner=sahara group=root mode=0460
+  template:
+    src: '{{ item }}.conf.j2'
+    dest: /etc/sahara/{{ item }}.conf
+    owner: sahara
+    group: root
+    mode: 0460
   with_items:
     - sahara
   notify: 
@@ -81,21 +111,34 @@
   run_once: True
 
 - name: unmask autostarting of sahara
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - sahara-engine
 
 - name: create /var/www/cgi-bin/sahara
-  file: path=/var/www/cgi-bin/sahara state=directory owner=root group=root mode=0755
+  file:
+    path: /var/www/cgi-bin/sahara
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
   notify: signal apache to reload
 
 - name: link sahara wsgi server
-  file: src=/usr/bin/sahara-wsgi-api dest=/var/www/cgi-bin/sahara/sahara-api state=link
+  file:
+    src: /usr/bin/sahara-wsgi-api
+    dest: /var/www/cgi-bin/sahara/sahara-api
+    state: link
   notify: signal apache to reload
 
 - meta: flush_handlers
 
 - name: ensure sahara is started
-  service: name={{ item }} state=started enabled=yes
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
   with_items:
     - sahara-engine

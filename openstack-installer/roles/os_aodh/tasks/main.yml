@@ -27,18 +27,30 @@
   run_once: True
 
 - name: install CA certificate
-  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ SSLCACertificateFile }}'
+    owner: root
+    group: root
+    mode: 0644
   when: SSLCACertificateFile != ''
 
 - name: mask autostarting of aodh services
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - aodh-evaluator
     - aodh-notifier
     - aodh-listener
 
 - name: mask aodh-api apache config
-  copy: content='' dest=/etc/apache2/sites-available/aodh-api.conf owner=root group=root mode=0644
+  copy:
+    content: ''
+    dest: /etc/apache2/sites-available/aodh-api.conf
+    owner: root
+    group: root
+    mode: 0644
 
 - name: install aodh
   apt:
@@ -50,7 +62,9 @@
     - aodh-listener
 
 - name: ensure python-aodh is not installed
-  apt: name=python-aodh state=absent
+  apt:
+    name: python-aodh
+    state: absent
 
 - name: create aodh database
   mysql_db: name={{ aodh_db }}
@@ -59,22 +73,38 @@
   run_once: True
 
 - name: create aodh database user
-  mysql_user: name={{ aodh_db_user }} password={{ aodh_db_password }} host={{ item }} priv={{ aodh_db }}.*:ALL
-    login_host={{ aodh_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
+  mysql_user:
+    name: '{{ aodh_db_user }}'
+    password: '{{ aodh_db_password }}'
+    host: '{{ item }}'
+    priv: '{{ aodh_db }}.*:ALL'
+    login_host: '{{ aodh_mysql_server }}'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    state: present
   run_once: True
   with_items:
     - localhost
     - '%'
 
 - name: install aodh config
-  template: src=aodh.conf.j2 dest=/etc/aodh/aodh.conf owner=aodh group=root mode=0460
+  template:
+    src: aodh.conf.j2
+    dest: /etc/aodh/aodh.conf
+    owner: aodh
+    group: root
+    mode: 0460
   notify:
     - signal apache to reload
     - restart aodh
 
 - name: install api-paste.ini
-  copy: src=api-paste.ini dest=/etc/aodh/api-paste.ini owner=aodh group=root mode=0464
+  copy:
+    src: api-paste.ini
+    dest: /etc/aodh/api-paste.ini
+    owner: aodh
+    group: root
+    mode: 0464
   notify: signal apache to reload
 
 - name: sync aodh db
@@ -82,7 +112,9 @@
   run_once: True
 
 - name: unmask autostarting of aodh services
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - aodh-evaluator
     - aodh-notifier
@@ -91,7 +123,10 @@
 - meta: flush_handlers
 
 - name: ensure aodh is started
-  service: name={{ item }} state=started enabled=yes
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
   with_items:
     - aodh-evaluator
     - aodh-notifier

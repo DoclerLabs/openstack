@@ -7,16 +7,24 @@
   run_once: True
 
 - name: create powerdns database user
-  mysql_user: name={{ powerdns_db_user }} password={{ powerdns_db_password }} host={{ item }} priv={{ powerdns_db }}.*:ALL
-    login_host={{ powerdns_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
+  mysql_user:
+    name: '{{ powerdns_db_user }}'
+    password: '{{ powerdns_db_password }}'
+    host: '{{ item }}'
+    priv: '{{ powerdns_db }}.*:ALL'
+    login_host: '{{ powerdns_mysql_server }}'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    state: present
   run_once: True
   with_items:
     - localhost
     - '%'
 
 - name: copy powerdns initial database
-  copy: src=pdns.sql dest=/root/pdns.sql
+  copy:
+    src: pdns.sql
+    dest: /root/pdns.sql
   run_once: True
 
 - name: load powerdns database
@@ -28,7 +36,9 @@
   run_once: True
 
 - name: mask autostarting of PowerDNS
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - pdns
 
@@ -39,22 +49,37 @@
     - pdns-backend-mysql
 
 - name: deploy PowerDNS configuration
-  template: src=pdns.conf.j2 dest=/etc/powerdns/pdns.conf owner=pdns group=root mode=0460
+  template:
+    src: pdns.conf.j2
+    dest: /etc/powerdns/pdns.conf
+    owner: pdns
+    group: root
+    mode: 0460
   notify: restart powerdns
 
 - name: deploy PowerDNS MySQL configuration
-  template: src={{ item }}.j2 dest=/etc/powerdns/pdns.d/{{ item }} owner=pdns group=root mode=0460
+  template:
+    src: '{{ item }}.j2'
+    dest: /etc/powerdns/pdns.d/{{ item }}
+    owner: pdns
+    group: root
+    mode: 0460
   with_items:
     - pdns.local.gmysql.conf
     - pdns.simplebind.conf
   notify: restart powerdns
 
 - name: unmask autostarting of PowerDNS
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - pdns
 
 - meta: flush_handlers
 
 - name: ensure PowerDNS is started
-  service: name=pdns state=started enabled=yes
+  service:
+    name: pdns
+    state: started
+    enabled: yes

@@ -30,12 +30,15 @@
     - apt
   pre_tasks:
     - name: check for Ansible version > 2.0.1
-      local_action: assert that="{{ ansible_version.string is version_compare('2.0.1', '>=') }}"
+      local_action:
+        module: assert
+        that: "{{ ansible_version.string is version_compare('2.0.1', '>=') }}"
       run_once: True
       become: False
   tasks:
     - name: make sure aptitude is installed
-      apt: name=aptitude
+      apt:
+        name: aptitude
 
     - name: remove problematic packages
       apt:
@@ -62,42 +65,72 @@
   max_fail_percentage: 0
   tasks:
     - name: mask barbican-api apache config
-      copy: content='' dest=/etc/apache2/conf-available/barbican-api.conf owner=root group=root mode=0644
+      copy:
+        content: ''
+        dest: /etc/apache2/conf-available/barbican-api.conf
+        owner: root
+        group: root
+        mode: 0644
 
 - hosts: aodh
   become: True
   max_fail_percentage: 0
   tasks:
     - name: mask aodh-api apache config
-      copy: content='' dest=/etc/apache2/sites-available/aodh-api.conf owner=root group=root mode=0644
+      copy:
+        content: ''
+        dest: /etc/apache2/sites-available/aodh-api.conf
+        owner: root
+        group: root
+        mode: 0644
 
 - hosts: ceilometer_controller
   become: True
   max_fail_percentage: 0
   tasks:
     - name: mask ceilometer-api apache config
-      copy: content='' dest=/etc/apache2/sites-available/ceilometer-api.conf owner=root group=root mode=0644
+      copy:
+        content: ''
+        dest: /etc/apache2/sites-available/ceilometer-api.conf
+        owner: root
+        group: root
+        mode: 0644
 
 - hosts: cinder
   become: True
   max_fail_percentage: 0
   tasks:
     - name: mask cinder-wsgi apache config
-      copy: content='' dest=/etc/apache2/conf-available/cinder-wsgi.conf owner=root group=root mode=0644
+      copy:
+        content: ''
+        dest: /etc/apache2/conf-available/cinder-wsgi.conf
+        owner: root
+        group: root
+        mode: 0644
 
 - hosts: gnocchi
   become: True
   max_fail_percentage: 0
   tasks:
     - name: mask gnocchi-api apache config
-      copy: content='' dest=/etc/apache2/sites-available/gnocchi-api.conf owner=root group=root mode=0644
+      copy:
+        content: ''
+        dest: /etc/apache2/sites-available/gnocchi-api.conf
+        owner: root
+        group: root
+        mode: 0644
 
 - hosts: sahara
   become: True
   max_fail_percentage: 0
   tasks:
     - name: mask sahara-api apache config
-      copy: content='' dest=/etc/apache2/sites-available/sahara-api.conf owner=root group=root mode=0644
+      copy:
+        content: ''
+        dest: /etc/apache2/sites-available/sahara-api.conf
+        owner: root
+        group: root
+        mode: 0644
 
 # Upgrade keystone all at once, since it is not supporting rolling upgrades yet
 
@@ -106,7 +139,12 @@
   max_fail_percentage: 0
   tasks:
     - name: mask keystone apache config
-      copy: content='' dest=/etc/apache2/sites-available/keystone.conf owner=root group=root mode=0644
+      copy:
+        content: ''
+        dest: /etc/apache2/sites-available/keystone.conf
+        owner: root
+        group: root
+        mode: 0644
 
     - name: upgrade keystone
       apt:
@@ -121,14 +159,18 @@
   max_fail_percentage: 0
   tasks:
     - name: restart memcached
-      service: name=memcached state=restarted
+      service:
+        name: memcached
+        state: restarted
 
 - hosts: keystone
   become: True
   max_fail_percentage: 0
   tasks:
     - name: reload apache2
-      service: name=apache2 state=reloaded
+      service:
+        name: apache2
+        state: reloaded
 
     - name: run keystone playbook
       local_action: command ansible-playbook {{ playbook_dir }}/os_keystone.yml -i "{{ inventory_file }}"
@@ -169,25 +211,35 @@
     - block:
 
       - name: remove current host from haproxy
-        haproxy: host={{ inventory_hostname }} socket=/run/haproxy/admin.sock state=disabled
+        haproxy:
+          host: '{{ inventory_hostname }}'
+          socket: /run/haproxy/admin.sock
+          state: disabled
         delegate_to: "{{ item }}"
         with_items: "{{ groups['haproxy'] }}"
 
       - name: remove gnocchi-api
-        apt: name=gnocchi-api state=absent
+        apt:
+          name: gnocchi-api
+          state: absent
         when: inventory_hostname in groups['gnocchi']
 
       - name: remove heat-api-cloudwatch
-        apt: name=heat-api-cloudwatch state=absent
+        apt:
+          name: heat-api-cloudwatch
+          state: absent
         when: inventory_hostname in groups['heat']
 
       # VPN agent is integrated into the l3 agent
       - name: make sure neutron-l3-agent is used
-        apt: name=neutron-l3-agent state=present
+        apt:
+          name: neutron-l3-agent
+          state: present
         when: inventory_hostname in groups['neutron_l3']
 
       - name: upgrade packages
-        apt: upgrade=yes
+        apt:
+          upgrade: yes
 
       - name: run playbooks on the first hosts
         local_action: command ansible-playbook {{ playbook_dir }}/{{ item.playbook }} -i "{{ inventory_file }}" -l "{{ inventory_hostname }}"
@@ -217,7 +269,10 @@
       always:
 
         - name: readd current host to haproxy
-          haproxy: host={{ inventory_hostname }} socket=/run/haproxy/admin.sock state=enabled
+          haproxy:
+            host: '{{ inventory_hostname }}'
+            socket: /run/haproxy/admin.sock
+            state: enabled
           delegate_to: "{{ item }}"
           with_items: "{{ groups['haproxy'] }}"
 
@@ -254,25 +309,35 @@
     - block:
 
       - name: remove hosts[1:] from haproxy
-        haproxy: host={{ inventory_hostname }} socket=/run/haproxy/admin.sock state=disabled
+        haproxy:
+          host: '{{ inventory_hostname }}'
+          socket: /run/haproxy/admin.sock
+          state: disabled
         delegate_to: "{{ item }}"
         with_items: "{{ groups['haproxy'] }}"
 
       - name: remove gnocchi-api
-        apt: name=gnocchi-api state=absent
+        apt:
+          name: gnocchi-api
+          state: absent
         when: inventory_hostname in groups['gnocchi']
 
       - name: remove heat-api-cloudwatch
-        apt: name=heat-api-cloudwatch state=absent
+        apt:
+          name: heat-api-cloudwatch
+          state: absent
         when: inventory_hostname in groups['heat']
 
       # VPN agent is integrated into the l3 agent
       - name: make sure neutron-l3-agent is used
-        apt: name=neutron-l3-agent state=present
+        apt:
+          name: neutron-l3-agent
+          state: present
         when: inventory_hostname in groups['neutron_l3']
 
       - name: upgrade packages
-        apt: upgrade=yes
+        apt:
+          upgrade: yes
 
       - name: run playbooks on the other hosts
         local_action: command ansible-playbook {{ playbook_dir }}/{{ item.playbook }} -i "{{ inventory_file }}" -l "{{ inventory_hostname }}"
@@ -302,6 +367,9 @@
       always:
 
         - name: readd hosts[1:] to haproxy
-          haproxy: host={{ inventory_hostname }} socket=/run/haproxy/admin.sock state=enabled
+          haproxy:
+            host: '{{ inventory_hostname }}'
+            socket: /run/haproxy/admin.sock
+            state: enabled
           delegate_to: "{{ item }}"
           with_items: "{{ groups['haproxy'] }}"

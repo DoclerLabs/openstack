@@ -27,30 +27,46 @@
   run_once: True
 
 - name: install CA certificate
-  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ SSLCACertificateFile }}'
+    owner: root
+    group: root
+    mode: 0644
   when: SSLCACertificateFile != ''
 
 - name: mask autostarting of cinder services
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - cinder-api
     - cinder-scheduler
   when: inventory_hostname in groups['cinder']
 
 - name: mask autostarting of cinder-volume
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - cinder-volume
   when: inventory_hostname in groups['cinder_volume']
 
 - name: mask autostarting of cinder-backup
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - cinder-backup
   when: inventory_hostname in groups['cinder_backup']
 
 - name: mask cinder-wsgi apache config
-  copy: content='' dest=/etc/apache2/conf-available/cinder-wsgi.conf owner=root group=root mode=0644
+  copy:
+    content: ''
+    dest: /etc/apache2/conf-available/cinder-wsgi.conf
+    owner: root
+    group: root
+    mode: 0644
   when: inventory_hostname in groups['cinder']
 
 - name: install cinder
@@ -64,7 +80,12 @@
   when: inventory_hostname in groups['cinder']
 
 - name: install fixed rtslib-fb-targetctl.service
-  copy: src=rtslib-fb-targetctl.service dest=/etc/systemd/system/rtslib-fb-targetctl.service owner=root group=root mode=0644
+  copy:
+    src: rtslib-fb-targetctl.service
+    dest: /etc/systemd/system/rtslib-fb-targetctl.service
+    owner: root
+    group: root
+    mode: 0644
   when: inventory_hostname in groups['cinder_volume']
 
 - name: install cinder-volume
@@ -92,10 +113,15 @@
   when: inventory_hostname in groups['cinder_backup']
 
 - name: ensure python-cinder is not installed
-  apt: name=python-cinder state=absent
+  apt:
+    name: python-cinder
+    state: absent
 
 - name: ensure cinder-api service is disabled at boot
-  service: name=cinder-api state=stopped enabled=no
+  service:
+    name: cinder-api
+    state: stopped
+    enabled: no
   when: inventory_hostname in groups['cinder']
 
 - name: create cinder database
@@ -105,16 +131,27 @@
   run_once: True
 
 - name: create cinder database user
-  mysql_user: name={{ cinder_db_user }} password={{ cinder_db_password }} host={{ item }} priv={{ cinder_db }}.*:ALL
-    login_host={{ cinder_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
+  mysql_user:
+    name: '{{ cinder_db_user }}'
+    password: '{{ cinder_db_password }}'
+    host: '{{ item }}'
+    priv: '{{ cinder_db }}.*:ALL'
+    login_host: '{{ cinder_mysql_server }}'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    state: present
   run_once: True
   with_items:
     - localhost
     - '%'
 
 - name: install cinder configs
-  template: src={{ item }}.conf.j2 dest=/etc/cinder/{{ item }}.conf owner=cinder group=root mode=0460
+  template:
+    src: '{{ item }}.conf.j2'
+    dest: /etc/cinder/{{ item }}.conf
+    owner: cinder
+    group: root
+    mode: 0460
   with_items:
     - cinder
   notify:
@@ -130,29 +167,44 @@
   run_once: True
 
 - name: create /var/www/cgi-bin/cinder
-  file: path=/var/www/cgi-bin/cinder state=directory owner=root group=root mode=0755
+  file:
+    path: /var/www/cgi-bin/cinder
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
   when: inventory_hostname in groups['cinder']
   notify: signal apache to reload
 
 - name: link cinder-wsgi server
-  file: src=/usr/bin/cinder-wsgi dest=/var/www/cgi-bin/cinder/cinder-api state=link force=yes
+  file:
+    src: /usr/bin/cinder-wsgi
+    dest: /var/www/cgi-bin/cinder/cinder-api
+    state: link
+    force: yes
   when: inventory_hostname in groups['cinder']
   notify: signal apache to reload
 
 - name: unmask autostarting of cinder services
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - cinder-scheduler
   when: inventory_hostname in groups['cinder']
 
 - name: unmask autostarting of cinder-volume
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - cinder-volume
   when: inventory_hostname in groups['cinder_volume']
 
 - name: unmask autostarting of cinder-backup
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - cinder-backup
   when: inventory_hostname in groups['cinder_backup']
@@ -160,39 +212,58 @@
 - meta: flush_handlers
 
 - name: ensure cinder-scheduler is started
-  service: name=cinder-scheduler state=started enabled=yes
+  service:
+    name: cinder-scheduler
+    state: started
+    enabled: yes
   when: inventory_hostname in groups['cinder']
 
 - name: ensure cinder-volume is started
-  service: name={{ item }} state=started enabled=yes
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
   with_items:
     - cinder-volume
   when: inventory_hostname in groups['cinder_volume']
 
 - name: disable cinder-backup when it is not needed
-  service: name={{ item }} state=stopped enabled=no
+  service:
+    name: '{{ item }}'
+    state: stopped
+    enabled: no
   with_items:
     - cinder-backup
   failed_when: False
   when: inventory_hostname not in groups['cinder_backup']
 
 - name: ensure cinder-backup is started
-  service: name={{ item }} state=started enabled=yes
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
   with_items:
     - cinder-backup
   when: inventory_hostname in groups['cinder_backup']
 
 - name: configure tgtd
-  lineinfile: line='include /var/lib/cinder/volumes/*' mode=0644 path=/etc/tgt/targets.conf
+  lineinfile:
+    line: include /var/lib/cinder/volumes/*
+    mode: 0644
+    path: /etc/tgt/targets.conf
   when: inventory_hostname in groups['cinder_volume']
 
 - name: start/stop tgtd
-  service: name=tgt
-      state={{ (cinder_iscsi_helper == 'tgtadm') | ternary('started','stopped') }}
-      enabled={{ cinder_iscsi_helper == 'tgtadm' }}
+  service:
+    name: tgt
+    state: "{{ (cinder_iscsi_helper == 'tgtadm') | ternary('started','stopped') }}"
+    enabled: "{{ cinder_iscsi_helper == 'tgtadm' }}"
   when: inventory_hostname in groups['cinder_volume']
 
 - name: enable iscsid
-  service: name=iscsid state=started enabled=yes
+  service:
+    name: iscsid
+    state: started
+    enabled: yes
   with_items: "{{ cinder_backends | default([]) }}"
   when: cinder_backends is defined and item.backend == 'lvm'

@@ -1,10 +1,14 @@
 - name: restart ironic
-  service: name={{ item }} state=restarted
+  service:
+    name: '{{ item }}'
+    state: restarted
   with_items:
     - ironic-api
     - ironic-conductor
 
 - name: restart tftp
-  service: name={{ item }} state=restarted
+  service:
+    name: '{{ item }}'
+    state: restarted
   with_items:
     - tftpd-hpa

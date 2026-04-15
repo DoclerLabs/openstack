@@ -1,14 +1,20 @@
 ---
 
 - name: restart swift-proxy
-  service: name=swift-proxy state=restarted
+  service:
+    name: swift-proxy
+    state: restarted
   when: inventory_hostname in groups['swift_proxy']
 
 - name: restart rsync
-  service: name=rsync state=restarted
+  service:
+    name: rsync
+    state: restarted
 
 - name: restart swift storage services
-  service: name={{ item }} state=restarted
+  service:
+    name: '{{ item }}'
+    state: restarted
   with_items:
     - swift-account-auditor
     - swift-account

@@ -27,11 +27,18 @@
   run_once: True
 
 - name: install CA certificate
-  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ SSLCACertificateFile }}'
+    owner: root
+    group: root
+    mode: 0644
   when: SSLCACertificateFile != ''
 
 - name: mask autostarting of glance
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - glance-api
     - glance-registry
@@ -65,16 +72,27 @@
   run_once: True
 
 - name: create glance database user
-  mysql_user: name={{ glance_db_user }} password={{ glance_db_password }} host={{ item }} priv={{ glance_db }}.*:ALL
-    login_host={{ glance_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
+  mysql_user:
+    name: '{{ glance_db_user }}'
+    password: '{{ glance_db_password }}'
+    host: '{{ item }}'
+    priv: '{{ glance_db }}.*:ALL'
+    login_host: '{{ glance_mysql_server }}'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    state: present
   run_once: True
   with_items:
     - localhost
     - '%'
 
 - name: install glance configs
-  template: src={{ item }}.conf.j2 dest=/etc/glance/{{ item }}.conf owner=glance group=root mode=0460
+  template:
+    src: '{{ item }}.conf.j2'
+    dest: /etc/glance/{{ item }}.conf
+    owner: glance
+    group: root
+    mode: 0460
   with_items:
     - glance-api
   notify: restart glance
@@ -86,17 +104,25 @@
   run_once: True
 
 - name: unmask autostarting of glance
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - glance-api
 
 - meta: flush_handlers
 
 - name: ensure glance-api is started
-  service: name=glance-api state=started enabled=yes
+  service:
+    name: glance-api
+    state: started
+    enabled: yes
 
 - name: ensure glance-registry is stopped
-  service: name=glance-registry state=stopped enabled=no
+  service:
+    name: glance-registry
+    state: stopped
+    enabled: no
 
 - name: load metadata definitions
   command: su glance -s /bin/sh -c "/usr/bin/glance-manage db_load_metadefs"

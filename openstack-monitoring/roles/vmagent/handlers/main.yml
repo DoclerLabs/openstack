@@ -1,4 +1,6 @@
 ---
 
 - name: restart vmagent
-  service: name=vmagent state=restarted
+  service:
+    name: vmagent
+    state: restarted

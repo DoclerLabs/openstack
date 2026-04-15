@@ -1,10 +1,17 @@
 ---
 
 - name: install ceph-common package
-  apt: name=ceph-common state=present
+  apt:
+    name: ceph-common
+    state: present
 
 - name: ensure /etc/ceph exists
-  file: path=/etc/ceph state=directory owner=root group=root mode=0755
+  file:
+    path: /etc/ceph
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
 
 - name: generate ceph config file
   ini_file: dest=/etc/ceph/{{ item[0].cluster_name | default('ceph') }}.conf
@@ -42,14 +49,21 @@
   when: not item.key
 
 - name: write out ceph keyring (created key)
-  copy: content='{{ item.stdout }}\n' dest=/etc/ceph/{{ item.item.cluster_name }}.client.{{ item.item.user}}.keyring
-        owner={{ item.item.keyring_owner | default('root') }} group={{ item.item.keyring_group | default('root') }} mode=0440
+  copy:
+    content: '{{ item.stdout }}\n'
+    dest: /etc/ceph/{{ item.item.cluster_name }}.client.{{ item.item.user}}.keyring
+    owner: "{{ item.item.keyring_owner | default('root') }}"
+    group: "{{ item.item.keyring_group | default('root') }}"
+    mode: 0440
   with_items: "{{ ceph_auth.results }}"
   when: item.item.keyring_owner is defined and not item.item.key
 
 - name: write out ceph keyring (predefined key)
-  copy: content="[client.{{ item.user }}]\n\tkey = {{ item.key }}\n"
-        dest=/etc/ceph/{{ item.cluster_name | default('ceph') }}.client.{{ item.user }}.keyring
-        owner={{ item.keyring_owner | default('root') }} group={{ item.keyring_group | default('root') }} mode=0440
+  copy:
+    content: '[client.{{ item.user }}]\n\tkey = {{ item.key }}\n'
+    dest: /etc/ceph/{{ item.cluster_name | default('ceph') }}.client.{{ item.user }}.keyring
+    owner: "{{ item.keyring_owner | default('root') }}"
+    group: "{{ item.keyring_group | default('root') }}"
+    mode: 0440
   with_items: "{{ ceph_users }}"
   when: item.keyring_owner is defined and item.key

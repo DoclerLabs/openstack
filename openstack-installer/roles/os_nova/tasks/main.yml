@@ -27,15 +27,27 @@
   run_once: True
 
 - name: install CA certificate
-  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ SSLCACertificateFile }}'
+    owner: root
+    group: root
+    mode: 0644
   when: SSLCACertificateFile != ''
 
 - name: mask nova-placement-api apache config
-  copy: content='' dest=/etc/apache2/sites-available/nova-placement-api.conf owner=root group=root mode=0644
+  copy:
+    content: ''
+    dest: /etc/apache2/sites-available/nova-placement-api.conf
+    owner: root
+    group: root
+    mode: 0644
   when: inventory_hostname in groups['nova_controller']
 
 - name: mask autostarting of nova controller services
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - nova-api
     - nova-scheduler
@@ -46,7 +58,9 @@
   when: inventory_hostname in groups['nova_controller']
 
 - name: mask autostarting of nova compute services
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - nova-compute
   when: inventory_hostname in groups['nova_compute']
@@ -88,9 +102,15 @@
   when: inventory_hostname == groups['nova_controller'][0]
 
 - name: create nova database users
-  mysql_user: name={{ item.0.user }} password={{ item.0.password }} host='{{ item.1 }}' priv={{ item.0.db }}.*:ALL
-    login_host={{ nova_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
+  mysql_user:
+    name: '{{ item.0.user }}'
+    password: '{{ item.0.password }}'
+    host: '{{ item.1 }}'
+    priv: '{{ item.0.db }}.*:ALL'
+    login_host: '{{ nova_mysql_server }}'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    state: present
   when: inventory_hostname == groups['nova_controller'][0]
   with_nested:
     -
@@ -102,7 +122,12 @@
       - 'localhost'
 
 - name: install certificates
-  copy: src={{ item.src }} dest={{ item.dest }} owner=nova group=root mode={{ item.mode }}
+  copy:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: nova
+    group: root
+    mode: '{{ item.mode }}'
   with_items:
     - { src: '{{ SSLCertificateKeyFileSource | default("") }}', dest: '{{ SSLCertificateKeyFile }}', mode: '0460' }
     - { src: '{{ SSLCertificateFileSource | default("") }}', dest: '{{ SSLCertificateFile }}', mode: '0464' }
@@ -117,7 +142,12 @@
   when: nova_ephemeral_backend == 'ceph'
 
 - name: install virsh secret.xml
-  template: src=secret.xml.j2 dest=/root/{{ item.volume_secret_uuid }}.xml owner=root group=root mode=0664
+  template:
+    src: secret.xml.j2
+    dest: /root/{{ item.volume_secret_uuid }}.xml
+    owner: root
+    group: root
+    mode: 0664
   with_items: "{{ cinder_backends + nova_ceph_backend | default([]) }}"
   when: inventory_hostname in groups['nova_compute'] and item.backend=='ceph' and nova_compute_package in ('qemu','kvm')
 
@@ -141,14 +171,24 @@
   when: inventory_hostname in groups['nova_compute'] and nova_compute_package in ('qemu','kvm')
 
 - name: install nova configs
-  template: src=nova.conf.j2 dest=/etc/nova/nova.conf owner=nova group=root mode=0460
+  template:
+    src: nova.conf.j2
+    dest: /etc/nova/nova.conf
+    owner: nova
+    group: root
+    mode: 0460
   notify:
     - signal apache to reload
     - restart nova controller services
     - restart nova compute services
 
 - name: clear nova-compute.conf
-  copy: content='' dest=/etc/nova/nova-compute.conf owner=nova group=root mode=0460
+  copy:
+    content: ''
+    dest: /etc/nova/nova-compute.conf
+    owner: nova
+    group: root
+    mode: 0460
   when: inventory_hostname in groups['nova_compute']
   notify:
     - restart nova compute services
@@ -193,12 +233,19 @@
   when: inventory_hostname == groups['nova_controller'][0]
 
 - name: create /var/www/cgi-bin/nova
-  file: path=/var/www/cgi-bin/nova state=directory owner=root group=root mode=0755
+  file:
+    path: /var/www/cgi-bin/nova
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
   when: inventory_hostname in groups['nova_controller']
   notify: signal apache to reload
 
 - name: unmask autostarting of nova controller services
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - nova-api
     - nova-scheduler
@@ -209,7 +256,9 @@
   when: inventory_hostname in groups['nova_controller']
 
 - name: unmask autostarting of nova compute services
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - nova-compute
   when: inventory_hostname in groups['nova_compute']
@@ -217,7 +266,10 @@
 - meta: flush_handlers
 
 - name: ensure nova controller servies are started
-  service: name={{ item }} state=started enabled=yes
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
   with_items:
     - nova-api
     - nova-scheduler
@@ -228,7 +280,10 @@
   when: inventory_hostname in groups['nova_controller']
 
 - name: ensure nova compute is started
-  service: name={{ item }} state=started enabled=yes
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
   with_items:
     - nova-compute
   when: inventory_hostname in groups['nova_compute']
@@ -244,21 +299,43 @@
   become: False
 
 - name: make sure .ssh directory exists
-  file: path=/var/lib/nova/.ssh state=directory owner=nova group=nova mode=0750
+  file:
+    path: /var/lib/nova/.ssh
+    state: directory
+    owner: nova
+    group: nova
+    mode: 0750
   when: inventory_hostname in groups['nova_compute']
 
 - name: install the public key for nova-compute
-  copy: src=files/nova_id_rsa.pub dest=/var/lib/nova/.ssh/authorized_keys owner=nova group=root mode=0640
+  copy:
+    src: files/nova_id_rsa.pub
+    dest: /var/lib/nova/.ssh/authorized_keys
+    owner: nova
+    group: root
+    mode: 0640
   when: inventory_hostname in groups['nova_compute']
 
 - name: install the private key for nova-compute
-  copy: src=files/nova_id_rsa dest=/var/lib/nova/.ssh/id_rsa owner=nova group=nova mode=0600
+  copy:
+    src: files/nova_id_rsa
+    dest: /var/lib/nova/.ssh/id_rsa
+    owner: nova
+    group: nova
+    mode: 0600
   when: inventory_hostname in groups['nova_compute']
 
 - name: install the ssh config for nova-compute
-  copy: content='Host *\nStrictHostKeyChecking no\nUserKnownHostsFile=/dev/null\n' dest=/var/lib/nova/.ssh/config owner=nova group=nova mode=0640
+  copy:
+    content: 'Host *\nStrictHostKeyChecking no\nUserKnownHostsFile=/dev/null\n'
+    dest: /var/lib/nova/.ssh/config
+    owner: nova
+    group: nova
+    mode: 0640
   when: inventory_hostname in groups['nova_compute']
 
 - name: set the login shell to /bin/sh on compute hosts for nova
-  user: name=nova shell=/bin/sh
+  user:
+    name: nova
+    shell: /bin/sh
   when: inventory_hostname in groups['nova_compute']

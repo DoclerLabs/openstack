@@ -1,15 +1,27 @@
 ---
 
 - name: install CA certificate
-  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ SSLCACertificateFile }}'
+    owner: root
+    group: root
+    mode: 0644
   when: SSLCACertificateFile != ''
 
 - name: mask placement-api apache config
-  copy: content='' dest=/etc/apache2/sites-available/placement-api.conf owner=root group=root mode=0644
+  copy:
+    content: ''
+    dest: /etc/apache2/sites-available/placement-api.conf
+    owner: root
+    group: root
+    mode: 0644
   when: inventory_hostname in groups['placement']
 
 - name: mask autostarting of placement controller services
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - placement-api
 
@@ -27,9 +39,15 @@
   when: inventory_hostname == groups['placement'][0]
 
 - name: create placement database users
-  mysql_user: name={{ item.0.user }} password={{ item.0.password }} host='{{ item.1 }}' priv={{ item.0.db }}.*:ALL
-    login_host={{ placement_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
+  mysql_user:
+    name: '{{ item.0.user }}'
+    password: '{{ item.0.password }}'
+    host: '{{ item.1 }}'
+    priv: '{{ item.0.db }}.*:ALL'
+    login_host: '{{ placement_mysql_server }}'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    state: present
   when: inventory_hostname == groups['placement'][0]
   with_nested:
     -
@@ -39,7 +57,12 @@
       - 'localhost'
 
 - name: install placement configs
-  template: src=placement.conf.j2 dest=/etc/placement/placement.conf owner=placement group=root mode=0460
+  template:
+    src: placement.conf.j2
+    dest: /etc/placement/placement.conf
+    owner: placement
+    group: root
+    mode: 0460
   notify:
     - signal apache to reload
 
@@ -50,11 +73,19 @@
   when: inventory_hostname == groups['placement'][0]
 
 - name: create /var/www/cgi-bin/placement
-  file: path=/var/www/cgi-bin/placement state=directory owner=root group=root mode=0755
+  file:
+    path: /var/www/cgi-bin/placement
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
   notify: signal apache to reload
 
 - name: link placement-api
-  file: src=/usr/bin/placement-api dest=/var/www/cgi-bin/placement/placement-api state=link
+  file:
+    src: /usr/bin/placement-api
+    dest: /var/www/cgi-bin/placement/placement-api
+    state: link
   when: inventory_hostname in groups['placement']
   notify: signal apache to reload
 

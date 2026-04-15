@@ -1,20 +1,34 @@
 ---
 
 - name: install radosgw
-  apt: name=radosgw
+  apt:
+    name: radosgw
 
 - name: ensure /etc/systemd/system/ceph-radosgw@.service.d exists
-  file: dest=/etc/systemd/system/ceph-radosgw@.service.d state=directory owner=root group=root mode=0755
+  file:
+    dest: /etc/systemd/system/ceph-radosgw@.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
 
 - name: install 10-name.conf override
-  copy: content='[Service]\nEnvironment=CLUSTER={{ ceph_cluster_name }}\n'
-        dest=/etc/systemd/system/ceph-radosgw@.service.d/10-name.conf
-        owner=root group=root mode=0644
+  copy:
+    content: '[Service]\nEnvironment=CLUSTER={{ ceph_cluster_name }}\n'
+    dest: /etc/systemd/system/ceph-radosgw@.service.d/10-name.conf
+    owner: root
+    group: root
+    mode: 0644
   notify: reload systemd
 
 # Since no existing directory allows access to both ceph and apache, create one
 - name: make sure /var/lib/radosgw exists
-  file: path=/var/lib/radosgw owner=ceph group=ceph mode=0755 state=directory
+  file:
+    path: /var/lib/radosgw
+    owner: ceph
+    group: ceph
+    mode: 0755
+    state: directory
 
 - name: set up ceph.conf for radosgw
   ini_file: dest=/etc/ceph/{{ ceph_cluster_name }}.conf
@@ -62,4 +76,7 @@
 - meta: flush_handlers
 
 - name: make sure radosgw is started and enabled at boot
-  service: name=ceph-radosgw@{{ radosgw_instance }} state=started enabled=yes
+  service:
+    name: ceph-radosgw@{{ radosgw_instance }}
+    state: started
+    enabled: yes

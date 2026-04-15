@@ -31,7 +31,11 @@
   serial: 1
   tasks:
     - name: fetch swift rings
-      fetch: src=/etc/swift/{{ item }} dest=workdir/{{ item }} fail_on_missing=False flat=True
+      fetch:
+        src: /etc/swift/{{ item }}
+        dest: workdir/{{ item }}
+        fail_on_missing: False
+        flat: True
       with_items:
         - account.builder
         - account.ring.gz

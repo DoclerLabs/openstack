@@ -27,18 +27,27 @@
   run_once: True
 
 - name: install CA certificate
-  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ SSLCACertificateFile }}'
+    owner: root
+    group: root
+    mode: 0644
   when: SSLCACertificateFile != ''
 
 - name: mask autostarting of ceilometer controller services
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - ceilometer-agent-central
     - ceilometer-agent-notification
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: mask autostarting of ceilometer compute services
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - ceilometer-agent-compute
   when: inventory_hostname in groups['ceilometer_compute']
@@ -64,13 +73,23 @@
   when: inventory_hostname in groups['ceilometer_compute']
 
 - name: install ceilometer configs
-  template: src=ceilometer.conf.j2 dest=/etc/ceilometer/ceilometer.conf owner=ceilometer group=root mode=0460
+  template:
+    src: ceilometer.conf.j2
+    dest: /etc/ceilometer/ceilometer.conf
+    owner: ceilometer
+    group: root
+    mode: 0460
   notify:
     - restart ceilometer controller services
     - restart ceilometer compute services
 
 - name: install yaml files
-  copy: src={{ item }}.yaml dest=/etc/ceilometer/{{ item }}.yaml owner=root group=root mode=0644
+  copy:
+    src: '{{ item }}.yaml'
+    dest: /etc/ceilometer/{{ item }}.yaml
+    owner: root
+    group: root
+    mode: 0644
   when: inventory_hostname in groups['ceilometer_controller']
   with_items:
     - event_definitions
@@ -79,7 +98,12 @@
     - restart ceilometer controller services
 
 - name: install pipeline definitions
-  template: src={{ item.src }} dest=/etc/ceilometer/{{ item.dest }} owner=root group=root mode=0644
+  template:
+    src: '{{ item.src }}'
+    dest: /etc/ceilometer/{{ item.dest }}
+    owner: root
+    group: root
+    mode: 0644
   with_items:
     - { src: "{{ ceilometer_event_pipeline_src }}", dest: "event_pipeline.yaml" }
     - { src: "{{ ceilometer_pipeline_src }}", dest: "pipeline.yaml" }
@@ -89,7 +113,9 @@
     - restart ceilometer compute services
 
 - name: unmask autostarting of ceilometer controller services
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - ceilometer-collector
     - ceilometer-agent-central
@@ -97,7 +123,9 @@
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: unmask autostarting of ceilometer compute services
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - ceilometer-agent-compute
   when: inventory_hostname in groups['ceilometer_compute']
@@ -105,14 +133,20 @@
 - meta: flush_handlers
 
 - name: ensure ceilometer controller services are started
-  service: name={{ item }} state=started enabled=yes
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
   with_items:
     - ceilometer-agent-central
     - ceilometer-agent-notification
   when: inventory_hostname in groups['ceilometer_controller']
 
 - name: ensure ceilometer-agent-compute is started
-  service: name={{ item }} state=started enabled=yes
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
   with_items:
     - ceilometer-agent-compute
   when: inventory_hostname in groups['ceilometer_compute']

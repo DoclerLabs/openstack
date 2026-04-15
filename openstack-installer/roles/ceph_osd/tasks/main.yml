@@ -67,9 +67,12 @@
   run_once: True
 
 - name: distribute the bootstrap-osd keyring
-  copy: content="[client.bootstrap-osd]\n\tkey = {{ bootstrap_osd_key_results.stdout }}\n"
-        dest=/var/lib/ceph/bootstrap-osd/{{ ceph_cluster_name }}.keyring
-        owner=root group=root mode=0600
+  copy:
+    content: '[client.bootstrap-osd]\n\tkey = {{ bootstrap_osd_key_results.stdout }}\n'
+    dest: /var/lib/ceph/bootstrap-osd/{{ ceph_cluster_name }}.keyring
+    owner: root
+    group: root
+    mode: 0600
 
 ### Add disk-based OSDs
 - name: prepare disks

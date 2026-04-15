@@ -1,13 +1,22 @@
 ---
 
 - name: install memcached
-  apt: name=memcached
+  apt:
+    name: memcached
 
 - name: install memcached.conf
-  template: src=memcached.conf.j2 dest=/etc/memcached.conf owner=root group=root mode=0644
+  template:
+    src: memcached.conf.j2
+    dest: /etc/memcached.conf
+    owner: root
+    group: root
+    mode: 0644
   notify: restart memcached
 
 - meta: flush_handlers
 
 - name: ensure memcached is running
-  service: name=memcached state=started enabled=yes
+  service:
+    name: memcached
+    state: started
+    enabled: yes

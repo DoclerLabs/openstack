@@ -1,7 +1,9 @@
 ---
 
 - name: signal apache to reload
-  file: dest=/run/apache2.reload state=touch
+  file:
+    dest: /run/apache2.reload
+    state: touch
 
 - name: run systemd-tmpfiles.d
   command: /bin/systemd-tmpfiles --create

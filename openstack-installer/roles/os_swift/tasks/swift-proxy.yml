@@ -29,7 +29,9 @@
   run_once: True
 
 - name: mask autostarting of swift-proxy
-  service_mask: name=swift-proxy state=masked
+  service_mask:
+    name: swift-proxy
+    state: masked
   when: inventory_hostname in groups['swift_proxy']
 
 - name: install swift-proxy
@@ -42,7 +44,12 @@
   when: inventory_hostname in groups['swift_proxy']
 
 - name: install swift proxy config
-  template: src={{ item }}.j2 dest=/etc/swift/{{ item }} owner=root group=swift mode=0640
+  template:
+    src: '{{ item }}.j2'
+    dest: /etc/swift/{{ item }}
+    owner: root
+    group: swift
+    mode: 0640
   notify: restart swift-proxy
   when: inventory_hostname in groups['swift_proxy']
   with_items:
@@ -50,15 +57,26 @@
     - swift-rabbitmq.conf
 
 - name: install swift.conf
-  template: src=swift.conf.j2 dest=/etc/swift/swift.conf owner=root group=swift mode=0640
+  template:
+    src: swift.conf.j2
+    dest: /etc/swift/swift.conf
+    owner: root
+    group: swift
+    mode: 0640
   notify: restart swift-proxy
 
 - name: unmask autostarting of swift-proxy
-  service_mask: name=swift-proxy state=unmasked force=yes
+  service_mask:
+    name: swift-proxy
+    state: unmasked
+    force: yes
   when: inventory_hostname in groups['swift_proxy']
 
 - meta: flush_handlers
 
 - name: ensure swift-proxy is started
-  service: name=swift-proxy state=started enabled=yes
+  service:
+    name: swift-proxy
+    state: started
+    enabled: yes
   when: inventory_hostname in groups['swift_proxy']

@@ -1,25 +1,49 @@
 ---
 
 - name: allow nonlocal binds
-  copy: content='net.ipv4.ip_nonlocal_bind = 1\n' dest=/etc/sysctl.d/10-ip-nonlocal-bind.conf owner=root group=root mode=0644
+  copy:
+    content: 'net.ipv4.ip_nonlocal_bind = 1\n'
+    dest: /etc/sysctl.d/10-ip-nonlocal-bind.conf
+    owner: root
+    group: root
+    mode: 0644
   notify: reload sysctl
 
 - name: install haproxy
-  apt: name=haproxy
+  apt:
+    name: haproxy
 
 - name: create haproxy/conf.d
-  file: dest=/etc/haproxy/conf.d state=directory owner=root group=root mode=0644
+  file:
+    dest: /etc/haproxy/conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
 
 - name: install haproxy.cfg
-  template: src=haproxy.cfg.j2 dest=/etc/haproxy/conf.d/00-haproxy.cfg owner=root group=root mode=0644
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/conf.d/00-haproxy.cfg
+    owner: root
+    group: root
+    mode: 0644
 
 - name: assemble haproxy config file
-  assemble: src=/etc/haproxy/conf.d dest=/etc/haproxy/haproxy.cfg owner=root group=root mode=0644
-    delimiter='\n#--- START FRONTEND ---\n'
+  assemble:
+    src: /etc/haproxy/conf.d
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: 0644
+    delimiter: '\n#--- START FRONTEND ---\n'
   notify:
     - restart haproxy
 
 - meta: flush_handlers
 
 - name: ensure haproxy is started
-  service: name=haproxy state=started enabled=yes
+  service:
+    name: haproxy
+    state: started
+    enabled: yes

@@ -1,5 +1,7 @@
 - name: setup apt repo(s)
-  copy: content='deb [signed-by=/etc/apt/keyrings/{{ item.keyid }}.asc] {{ item.repo }}\n' dest=/etc/apt/sources.list.d/{{ item.name }}.list
+  copy:
+    content: 'deb [signed-by=/etc/apt/keyrings/{{ item.keyid }}.asc] {{ item.repo }}\n'
+    dest: /etc/apt/sources.list.d/{{ item.name }}.list
   with_items:
     - "{{ apt_repos }}"
     - "{{ apt_extra_repos }}"
@@ -7,7 +9,8 @@
 
 - name: add apt key(s)
   get_url:
-    url: "{{ item.keyserver }}/pks/lookup?op=get&search=0x{{ item.keyid }}"
+    url:
+      "{{ item.keyserver }}/pks/lookup?op: get&search=0x{{ item.keyid }}"
     dest: "/etc/apt/keyrings/{{ item.keyid }}.asc"
   with_items:
     - "{{ apt_repos }}"
@@ -18,4 +21,6 @@
 - meta: flush_handlers
 
 - name: update apt cache
-  apt: update_cache=yes cache_valid_time={{ apt_cache_valid_time }}
+  apt:
+    update_cache: yes
+    cache_valid_time: '{{ apt_cache_valid_time }}'

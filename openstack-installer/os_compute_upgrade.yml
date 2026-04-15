@@ -11,12 +11,15 @@
     - apt
   pre_tasks:
     - name: check for Ansible version > 2.0.1
-      local_action: assert that="{{ ansible_version.string is version_compare('2.0.1', '>=') }}"
+      local_action:
+        module: assert
+        that: "{{ ansible_version.string is version_compare('2.0.1', '>=') }}"
       run_once: True
       become: False
   tasks:
     - name: make sure aptitude is installed
-      apt: name=aptitude
+      apt:
+        name: aptitude
 
 - hosts:
     - nova_compute
@@ -28,7 +31,9 @@
   serial: 5
   tasks:
     - name: get rid of nova.sqlite
-      file: path=/var/lib/nova/nova.sqlite state=absent
+      file:
+        path: /var/lib/nova/nova.sqlite
+        state: absent
       when: inventory_hostname in groups['nova_compute']
 
     - name: remove problematic Python2 packages
@@ -40,7 +45,8 @@
         state: absent
 
     - name: upgrade packages
-      apt: upgrade=yes
+      apt:
+        upgrade: yes
 
     - name: run playbooks
       local_action: command ansible-playbook {{ playbook_dir }}/{{ item.playbook }} -i "{{ inventory_file }}" -l "{{ inventory_hostname }}"

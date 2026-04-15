@@ -27,11 +27,18 @@
   run_once: True
 
 - name: install CA certificate
-  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ SSLCACertificateFile }}'
+    owner: root
+    group: root
+    mode: 0644
   when: SSLCACertificateFile != ''
 
 - name: mask autostarting of magnum
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - magnum-api
     - magnum-conductor
@@ -45,7 +52,9 @@
     - python3-magnumclient
 
 - name: ensure python-magnum is not installed
-  apt: name=python-magnum state=absent
+  apt:
+    name: python-magnum
+    state: absent
 
 - name: create magnum database
   mysql_db: name={{ magnum_db }}
@@ -54,27 +63,48 @@
   run_once: True
 
 - name: create magnum database user
-  mysql_user: name={{ magnum_db_user }} password={{ magnum_db_password }} host={{ item }} priv={{ magnum_db }}.*:ALL
-    login_host={{ magnum_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
+  mysql_user:
+    name: '{{ magnum_db_user }}'
+    password: '{{ magnum_db_password }}'
+    host: '{{ item }}'
+    priv: '{{ magnum_db }}.*:ALL'
+    login_host: '{{ magnum_mysql_server }}'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    state: present
   run_once: True
   with_items:
     - localhost
     - '%'
 
 - name: ensure /var/lib/magnum/cache and certificates are writeable
-  file: path=/var/lib/magnum/{{ item }} state=directory owner=magnum group=magnum mode=0700
+  file:
+    path: /var/lib/magnum/{{ item }}
+    state: directory
+    owner: magnum
+    group: magnum
+    mode: 0700
   with_items:
     - cache
     - certificates
   notify: restart magnum
 
 - name: install magnum config
-  template: src=magnum.conf.j2 dest=/etc/magnum/magnum.conf owner=magnum group=root mode=0460
+  template:
+    src: magnum.conf.j2
+    dest: /etc/magnum/magnum.conf
+    owner: magnum
+    group: root
+    mode: 0460
   notify: restart magnum
 
 - name: install api-paste.ini
-  copy: src=api-paste.ini dest=/etc/magnum/api-paste.ini owner=root group=root mode=0644
+  copy:
+    src: api-paste.ini
+    dest: /etc/magnum/api-paste.ini
+    owner: root
+    group: root
+    mode: 0644
   notify: restart magnum
 
 - name: sync magnum db
@@ -82,7 +112,9 @@
   run_once: True
 
 - name: unmask autostarting of magnum
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - magnum-api
     - magnum-conductor
@@ -90,7 +122,10 @@
 - meta: flush_handlers
 
 - name: ensure magnum is started
-  service: name={{ item }} state=started enabled=yes
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
   with_items:
     - magnum-api
     - magnum-conductor

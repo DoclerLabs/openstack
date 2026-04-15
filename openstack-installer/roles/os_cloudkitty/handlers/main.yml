@@ -1,7 +1,9 @@
 ---
 
 - name: restart cloudkitty
-  service: name={{ item }} state=restarted
+  service:
+    name: '{{ item }}'
+    state: restarted
   with_items:
     - cloudkitty-api
     - cloudkitty-processor

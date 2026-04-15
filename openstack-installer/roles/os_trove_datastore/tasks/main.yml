@@ -1,7 +1,12 @@
 ---
 
 - name: copy trove image
-  copy: src="{{ item.image }}" dest="/root/{{ item.image | basename }}" owner=root group=root mode=0640
+  copy:
+    src: '{{ item.image }}'
+    dest: /root/{{ item.image | basename }}
+    owner: root
+    group: root
+    mode: 0640
   with_items: "{{ trove_datastores }}"
 
 - name: upload trove image to glance

@@ -1,16 +1,28 @@
 ---
 
 - name: install haproxy service config
-  template: src=haproxy_service.cfg.j2 dest=/etc/haproxy/conf.d/{{ item.haproxy_service_name }}.cfg owner=root group=root mode=0644
+  template:
+    src: haproxy_service.cfg.j2
+    dest: /etc/haproxy/conf.d/{{ item.haproxy_service_name }}.cfg
+    owner: root
+    group: root
+    mode: 0644
   with_items: "{{ haproxy_services }}"
   when: item.haproxy_backend_nodes | length > 0
 
 - name: clear empty haproxy service config
-  file: dest=/etc/haproxy/conf.d/{{ item.haproxy_service_name }}.cfg state=absent
+  file:
+    dest: /etc/haproxy/conf.d/{{ item.haproxy_service_name }}.cfg
+    state: absent
   with_items: "{{ haproxy_services }}"
   when: item.haproxy_backend_nodes | length == 0
 
 - name: assemble haproxy config file
-  assemble: src=/etc/haproxy/conf.d dest=/etc/haproxy/haproxy.cfg owner=root group=root mode=0644
-    delimiter='\n#--- START FRONTEND ---\n'
+  assemble:
+    src: /etc/haproxy/conf.d
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: 0644
+    delimiter: '\n#--- START FRONTEND ---\n'
   notify: reload haproxy

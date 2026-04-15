@@ -27,11 +27,18 @@
   run_once: True
 
 - name: install CA certificate
-  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ SSLCACertificateFile }}'
+    owner: root
+    group: root
+    mode: 0644
   when: SSLCACertificateFile != ''
 
 - name: mask autostarting of octavia
-  service_mask: name={{ item }} state=masked
+  service_mask:
+    name: '{{ item }}'
+    state: masked
   with_items:
     - octavia-api
     - octavia-worker
@@ -53,19 +60,35 @@
   run_once: True
 
 - name: create octavia database user
-  mysql_user: name={{ octavia_db_user }} password={{ octavia_db_password }} host={{ item }} priv={{ octavia_db }}.*:ALL
-    login_host={{ octavia_mysql_server }} login_user=root login_password={{ mysql_root_password }}
-    state=present
+  mysql_user:
+    name: '{{ octavia_db_user }}'
+    password: '{{ octavia_db_password }}'
+    host: '{{ item }}'
+    priv: '{{ octavia_db }}.*:ALL'
+    login_host: '{{ octavia_mysql_server }}'
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    state: present
   run_once: True
   with_items:
     - localhost
     - '%'
 
 - name: ensure certficate dir exists
-  file: name={{ octavia_cert_dir }} owner=octavia group=octavia mode=0700 state=directory
+  file:
+    name: '{{ octavia_cert_dir }}'
+    owner: octavia
+    group: octavia
+    mode: 0700
+    state: directory
 
 - name: install octavia configs
-  template: src=octavia.conf.j2 dest=/etc/octavia/octavia.conf owner=octavia group=root mode=0460
+  template:
+    src: octavia.conf.j2
+    dest: /etc/octavia/octavia.conf
+    owner: octavia
+    group: root
+    mode: 0460
   notify: restart octavia
 
 #- name: install /etc/default/octavia-api
@@ -79,7 +102,9 @@
   run_once: True
 
 - name: unmask autostarting of octavia
-  service_mask: name={{ item }} state=unmasked
+  service_mask:
+    name: '{{ item }}'
+    state: unmasked
   with_items:
     - octavia-api
     - octavia-worker
@@ -89,7 +114,10 @@
 - meta: flush_handlers
 
 - name: ensure octavia is started
-  service: name={{ item }} state=started enabled=yes
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
   with_items:
     - octavia-api
     - octavia-worker

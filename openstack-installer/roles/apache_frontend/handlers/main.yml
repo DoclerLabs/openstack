@@ -1,7 +1,11 @@
 ---
 
 - name: restart apache
-  service: name=apache2 state=restarted
+  service:
+    name: apache2
+    state: restarted
 
 - name: reload apache
-  service: name=apache2 state=reloaded
+  service:
+    name: apache2
+    state: reloaded

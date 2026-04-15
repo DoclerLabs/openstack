@@ -9,7 +9,9 @@
     - apt
   pre_tasks:
     - name: check for Ansible version > 2.0.1
-      local_action: assert that="{{ ansible_version.string is version_compare('2.0.1', '>=') }}"
+      local_action:
+        module: assert
+        that: "{{ ansible_version.string is version_compare('2.0.1', '>=') }}"
       run_once: True
       become: False
 
@@ -19,11 +21,15 @@
   serial: 1
   tasks:
     - name: upgrade ceph
-      apt: name=ceph state=latest
+      apt:
+        name: ceph
+        state: latest
       notify: restart ceph-monitor
   handlers:
     - name: restart ceph-monitor
-      service: name=ceph-mon state=restarted
+      service:
+        name: ceph-mon
+        state: restarted
 
 - hosts: ceph_monitor
   become: True
@@ -48,7 +54,9 @@
         register: ceph_osds
 
       - name: upgrade ceph
-        apt: name=ceph state=latest
+        apt:
+          name: ceph
+          state: latest
         notify: restart OSDs
 
       - meta: flush_handlers
@@ -64,5 +72,7 @@
 
   handlers:
     - name: restart OSDs
-      service: name=ceph-osd@{{ item }} state=restarted
+      service:
+        name: ceph-osd@{{ item }}
+        state: restarted
       with_items: "{{ ceph_osds.stdout_lines }}"

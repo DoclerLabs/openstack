@@ -116,10 +116,20 @@
 
 # Put the existing or new keys into the keyrings
 - name: generate ceph.client.admin.keyring
-  template: src=ceph.client.admin.keyring.j2 dest=/etc/ceph/{{ ceph_cluster_name }}.client.admin.keyring owner=root group=root mode=0600
+  template:
+    src: ceph.client.admin.keyring.j2
+    dest: /etc/ceph/{{ ceph_cluster_name }}.client.admin.keyring
+    owner: root
+    group: root
+    mode: 0600
 
 - name: generate ceph.mon.keyring
-  template: src=ceph.mon.keyring.j2 dest=/etc/ceph/{{ ceph_cluster_name }}.mon.keyring owner=ceph group=root mode=0460
+  template:
+    src: ceph.mon.keyring.j2
+    dest: /etc/ceph/{{ ceph_cluster_name }}.mon.keyring
+    owner: ceph
+    group: root
+    mode: 0460
 
 # Continue with the monitor setup
 - name: create the monitor map
@@ -133,7 +143,12 @@
   changed_when: "'writing' in monmap_result.stdout"
 
 - name: create the default data directories
-  file: dest=/var/lib/ceph/mon/{{ ceph_cluster_name }}-{{ inventory_hostname }} state=directory owner=ceph group=root mode=0755
+  file:
+    dest: /var/lib/ceph/mon/{{ ceph_cluster_name }}-{{ inventory_hostname }}
+    state: directory
+    owner: ceph
+    group: root
+    mode: 0755
 
 - name: populate the monitor daemon(s) with the monitor map and keyring
   command: ceph-mon --cluster {{ ceph_cluster_name }}
@@ -144,18 +159,29 @@
     --setgroup ceph
 
 - name: ensure /etc/systemd/system/ceph-mon.service.d exists
-  file: dest=/etc/systemd/system/ceph-mon.service.d state=directory owner=root group=root mode=0755
+  file:
+    dest: /etc/systemd/system/ceph-mon.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
 
 - name: install 10-name.conf override
-  copy: content='[Service]\nEnvironment=CLUSTER={{ ceph_cluster_name }}\n'
-        dest=/etc/systemd/system/ceph-mon.service.d/10-name.conf
-        owner=root group=root mode=0644
+  copy:
+    content: '[Service]\nEnvironment=CLUSTER={{ ceph_cluster_name }}\n'
+    dest: /etc/systemd/system/ceph-mon.service.d/10-name.conf
+    owner: root
+    group: root
+    mode: 0644
   notify: reload systemd
 
 - meta: flush_handlers
 
 - name: ensure ceph monitor is started
-  service: name=ceph-mon state=started enabled=yes
+  service:
+    name: ceph-mon
+    state: started
+    enabled: yes
 
 - name: create boostrap keys
   command: ceph-create-keys --cluster {{ ceph_cluster_name }} --id {{ inventory_hostname }}

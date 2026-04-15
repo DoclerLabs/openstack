@@ -7,7 +7,9 @@
     - apt
   pre_tasks:
     - name: check for Ansible version > 2.0.1
-      local_action: assert that="{{ ansible_version.string is version_compare('2.0.1', '>=') }}"
+      local_action:
+        module: assert
+        that: "{{ ansible_version.string is version_compare('2.0.1', '>=') }}"
       run_once: True
       become: False
 
@@ -20,7 +22,12 @@
     - block:
 
       - name: remove current host from haproxy
-        haproxy: host={{ inventory_hostname }} backend=galera-back socket=/run/haproxy/admin.sock state=disabled wait=yes
+        haproxy:
+          host: '{{ inventory_hostname }}'
+          backend: galera-back
+          socket: /run/haproxy/admin.sock
+          state: disabled
+          wait: yes
         delegate_to: "{{ item }}"
         with_items: "{{ groups['haproxy'] }}"
 
@@ -43,6 +50,11 @@
           command: crm resource manage p_galera
 
         - name: readd current host to haproxy
-          haproxy: host={{ inventory_hostname }} backend=galera-back socket=/run/haproxy/admin.sock state=enabled wait=yes
+          haproxy:
+            host: '{{ inventory_hostname }}'
+            backend: galera-back
+            socket: /run/haproxy/admin.sock
+            state: enabled
+            wait: yes
           delegate_to: "{{ item }}"
           with_items: "{{ groups['haproxy'] }}"

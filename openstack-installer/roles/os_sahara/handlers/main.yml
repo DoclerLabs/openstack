@@ -1,9 +1,13 @@
 ---
 
 - name: signal apache to reload
-  file: dest=/run/apache2.reload state=touch
+  file:
+    dest: /run/apache2.reload
+    state: touch
 
 - name: restart sahara
-  service: name={{ item }} state=restarted
+  service:
+    name: '{{ item }}'
+    state: restarted
   with_items:
     - sahara-engine

@@ -7,20 +7,34 @@
     - python3-pymongo
 
 - name: deploy mongodb configuration
-  template: src=mongodb.conf.j2 dest=/etc/mongodb.conf owner=mongodb group=root mode=0460
+  template:
+    src: mongodb.conf.j2
+    dest: /etc/mongodb.conf
+    owner: mongodb
+    group: root
+    mode: 0460
   notify: restart mongodb
 
 - name: deploy mongodb keyfile
-  copy: content='{{ mongodb_key }}' dest=/etc/mongodb.key owner=mongodb group=root mode=0400
+  copy:
+    content: '{{ mongodb_key }}'
+    dest: /etc/mongodb.key
+    owner: mongodb
+    group: root
+    mode: 0400
   notify: restart mongodb
 
 - meta: flush_handlers
 
 - name: ensure mongodb is started
-  service: name=mongodb state=started enabled=yes
+  service:
+    name: mongodb
+    state: started
+    enabled: yes
 
 - name: wait for mongodb up
-  wait_for: port=27017
+  wait_for:
+    port: 27017
 
 - name: query the replica set status
   command: mongo --quiet --eval 'rs.status().info;' admin
@@ -50,7 +64,9 @@
   delay: 5
 
 - name: pause to wait for the master node
-  pause: seconds=10 echo=no
+  pause:
+    seconds: 10
+    echo: no
 
 - name: determine the master node
   command: mongo --quiet --eval 'rs.isMaster().ismaster' admin
@@ -58,7 +74,12 @@
   register: mongo_master
 
 - name: ensure the admin user exists
-  mongodb_user: login_database=admin database=admin name=admin password={{ mongodb_admin_password }} roles="userAdminAnyDatabase"
+  mongodb_user:
+    login_database: admin
+    database: admin
+    name: admin
+    password: '{{ mongodb_admin_password }}'
+    roles: userAdminAnyDatabase
   when: mongo_master.stdout == 'true'
   register: mongo_admin
   failed_when: mongo_admin is failed and
@@ -66,8 +87,14 @@
       "no users authenticated" not in mongo_admin.msg
 
 - name: ensure the cluster admin user exists
-  mongodb_user: login_database=admin database=admin login_user=admin login_password={{ mongodb_admin_password }}
-    name=clusteradmin password={{ mongodb_clusteradmin_password }} roles="readAnyDatabase,clusterAdmin,clusterManager"
+  mongodb_user:
+    login_database: admin
+    database: admin
+    login_user: admin
+    login_password: '{{ mongodb_admin_password }}'
+    name: clusteradmin
+    password: '{{ mongodb_clusteradmin_password }}'
+    roles: readAnyDatabase,clusterAdmin,clusterManager
   when: mongo_master.stdout == 'true'
 
 # Cluster expansion

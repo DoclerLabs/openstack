@@ -1,22 +1,51 @@
 ---
 
 - name: ensure horizon group exists
-  group: name=horizon system=yes
+  group:
+    name: horizon
+    system: yes
 
 - name: ensure horizon user exists
-  user: name=horizon group=horizon home=/usr/share/openstack-dashboard/ createhome=no shell=/bin/false system=yes
+  user:
+    name: horizon
+    group: horizon
+    home: /usr/share/openstack-dashboard/
+    createhome: no
+    shell: /bin/false
+    system: yes
 
 - name: ensure /etc/openstack-dashboard exists
-  file: dest=/etc/openstack-dashboard owner=horizon group=horizon mode=0750 state=directory
+  file:
+    dest: /etc/openstack-dashboard
+    owner: horizon
+    group: horizon
+    mode: 0750
+    state: directory
 
 - name: ensure /var/lib/openstack-dashboard exists
-  file: dest=/var/lib/openstack-dashboard owner=horizon group=horizon mode=0755 state=directory
+  file:
+    dest: /var/lib/openstack-dashboard
+    owner: horizon
+    group: horizon
+    mode: 0755
+    state: directory
 
 - name: ensure /var/lib/openstack-dashboard/secret_key exists
-  copy: dest=/var/lib/openstack-dashboard/secret_key owner=horizon group=horizon mode=0600 force=no content=''
+  copy:
+    dest: /var/lib/openstack-dashboard/secret_key
+    owner: horizon
+    group: horizon
+    mode: 0600
+    force: no
+    content: ''
 
 - name: install local_settings.py
-  template: src=local_settings.py.j2 dest=/etc/openstack-dashboard/local_settings.py owner=root group=horizon mode=0640
+  template:
+    src: local_settings.py.j2
+    dest: /etc/openstack-dashboard/local_settings.py
+    owner: root
+    group: horizon
+    mode: 0640
   notify: restart apache
 
 - name: install horizon
@@ -26,19 +55,32 @@
       - python3-django-horizon
 
 - name: ensure python-django-horizon is not installed
-  apt: name=python-django-horizon state=absent
+  apt:
+    name: python-django-horizon
+    state: absent
 
 - name: install additional dashboards
-  apt: name={{ horizon_extra_packages }}
+  apt:
+    name: '{{ horizon_extra_packages }}'
   when: horizon_extra_packages | string
 
 - name: install CA certificate
-  copy: src="{{ SSLCACertificateFileSource }}" dest="{{ SSLCACertificateFile }}" owner=root group=root mode=0644
+  copy:
+    src: '{{ SSLCACertificateFileSource }}'
+    dest: '{{ SSLCACertificateFile }}'
+    owner: root
+    group: root
+    mode: 0644
   when: SSLCACertificateFile != ''
   notify: restart apache
 
 - name: install certificates
-  copy: src={{ item.src }} dest={{ item.dest }} owner=www-data group=root mode={{ item.mode }}
+  copy:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: www-data
+    group: root
+    mode: '{{ item.mode }}'
   with_items:
     - { src: '{{ SSLCertificateKeyFileSource | default("") }}', dest: '{{ SSLCertificateKeyFile }}', mode: '0460' }
     - { src: '{{ SSLCertificateFileSource | default("") }}', dest: '{{ SSLCertificateFile }}', mode: '0464' }
@@ -46,36 +88,68 @@
   notify: restart apache
 
 - name: enable mod_ssl
-  file: src=../mods-available/ssl.load dest=/etc/apache2/mods-enabled/ssl.load state=link
+  file:
+    src: ../mods-available/ssl.load
+    dest: /etc/apache2/mods-enabled/ssl.load
+    state: link
   when: SSLCertificateKeyFileSource is defined
   notify: restart apache
 
 - name: enable mod_rewrite
-  file: src=../mods-available/rewrite.load dest=/etc/apache2/mods-enabled/rewrite.load state=link
+  file:
+    src: ../mods-available/rewrite.load
+    dest: /etc/apache2/mods-enabled/rewrite.load
+    state: link
   notify: restart apache
 
 - name: install ports.conf
-  template: src=ports.conf.j2 dest=/etc/apache2/ports.conf owner=root group=root mode=0644
+  template:
+    src: ports.conf.j2
+    dest: /etc/apache2/ports.conf
+    owner: root
+    group: root
+    mode: 0644
   notify: restart apache
 
 - name: install default-ssl.conf
-  template: src=default-ssl.conf.j2 dest=/etc/apache2/sites-available/default-ssl.conf owner=root group=root mode=0644
+  template:
+    src: default-ssl.conf.j2
+    dest: /etc/apache2/sites-available/default-ssl.conf
+    owner: root
+    group: root
+    mode: 0644
   notify: restart apache
 
 - name: install 000-default.conf
-  template: src=000-default.conf.j2 dest=/etc/apache2/sites-available/000-default.conf owner=root group=root mode=0644
+  template:
+    src: 000-default.conf.j2
+    dest: /etc/apache2/sites-available/000-default.conf
+    owner: root
+    group: root
+    mode: 0644
   notify: restart apache
 
 - name: enable default-ssl site
-  file: src=../sites-available/default-ssl.conf dest=/etc/apache2/sites-enabled/default-ssl.conf state=link
+  file:
+    src: ../sites-available/default-ssl.conf
+    dest: /etc/apache2/sites-enabled/default-ssl.conf
+    state: link
   when: SSLCertificateKeyFileSource is defined
   notify: restart apache
 
 - name: install openstack-dashboard.conf
-  template: src=openstack-dashboard.conf.j2 dest=/etc/apache2/conf-available/openstack-dashboard.conf owner=root group=root mode=0644
+  template:
+    src: openstack-dashboard.conf.j2
+    dest: /etc/apache2/conf-available/openstack-dashboard.conf
+    owner: root
+    group: root
+    mode: 0644
   notify: restart apache
 
 - meta: flush_handlers
 
 - name: ensure apache is started
-  service: name=apache2 state=started enabled=yes
+  service:
+    name: apache2
+    state: started
+    enabled: yes
