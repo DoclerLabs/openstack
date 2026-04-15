@@ -9,8 +9,7 @@
 
 - name: add apt key(s)
   get_url:
-    url:
-      "{{ item.keyserver }}/pks/lookup?op: get&search=0x{{ item.keyid }}"
+    url: "{{ item.keyserver }}/pks/lookup?op=get&search=0x{{ item.keyid }}"
     dest: "/etc/apt/keyrings/{{ item.keyid }}.asc"
   with_items:
     - "{{ apt_repos }}"
