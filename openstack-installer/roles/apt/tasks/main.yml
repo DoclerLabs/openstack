@@ -1,6 +1,6 @@
 - name: setup apt repo(s)
   copy:
-    content: 'deb [signed-by=/etc/apt/keyrings/{{ item.keyid }}.asc] {{ item.repo }}\n'
+    content: "deb [signed-by=/etc/apt/keyrings/{{ item.keyid }}.asc] {{ item.repo }}\n"
     dest: /etc/apt/sources.list.d/{{ item.name }}.list
   with_items:
     - "{{ apt_repos }}"

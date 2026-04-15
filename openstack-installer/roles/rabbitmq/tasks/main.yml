@@ -50,7 +50,7 @@
 
 - name: setup rabbitmq fd limit
   copy:
-    content: 'ulimit -n {{ rabbitmq_fd_limit }}\n'
+    content: "ulimit -n {{ rabbitmq_fd_limit }}\n"
     dest: /etc/default/rabbitmq-server
     owner: root
     group: root

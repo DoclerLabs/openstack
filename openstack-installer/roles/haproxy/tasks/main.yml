@@ -2,7 +2,7 @@
 
 - name: allow nonlocal binds
   copy:
-    content: 'net.ipv4.ip_nonlocal_bind = 1\n'
+    content: "net.ipv4.ip_nonlocal_bind = 1\n"
     dest: /etc/sysctl.d/10-ip-nonlocal-bind.conf
     owner: root
     group: root
@@ -36,7 +36,7 @@
     owner: root
     group: root
     mode: 0644
-    delimiter: '\n#--- START FRONTEND ---\n'
+    delimiter: "\n#--- START FRONTEND ---\n"
   notify:
     - restart haproxy
 

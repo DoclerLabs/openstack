@@ -68,7 +68,7 @@
 
 - name: distribute the bootstrap-osd keyring
   copy:
-    content: '[client.bootstrap-osd]\n\tkey = {{ bootstrap_osd_key_results.stdout }}\n'
+    content: "[client.bootstrap-osd]\n\tkey = {{ bootstrap_osd_key_results.stdout }}\n"
     dest: /var/lib/ceph/bootstrap-osd/{{ ceph_cluster_name }}.keyring
     owner: root
     group: root
