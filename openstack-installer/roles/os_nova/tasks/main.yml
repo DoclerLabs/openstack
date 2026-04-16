@@ -327,7 +327,7 @@
 
 - name: install the ssh config for nova-compute
   copy:
-    content: 'Host *\nStrictHostKeyChecking no\nUserKnownHostsFile=/dev/null\n'
+    content: "Host *\nStrictHostKeyChecking no\nUserKnownHostsFile=/dev/null\n"
     dest: /var/lib/nova/.ssh/config
     owner: nova
     group: nova

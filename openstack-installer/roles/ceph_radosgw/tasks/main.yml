@@ -14,7 +14,7 @@
 
 - name: install 10-name.conf override
   copy:
-    content: '[Service]\nEnvironment=CLUSTER={{ ceph_cluster_name }}\n'
+    content: "[Service]\nEnvironment=CLUSTER={{ ceph_cluster_name }}\n"
     dest: /etc/systemd/system/ceph-radosgw@.service.d/10-name.conf
     owner: root
     group: root

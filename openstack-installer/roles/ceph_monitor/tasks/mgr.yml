@@ -11,7 +11,7 @@
 
 - name: write out mgr keyring
   copy:
-    content: '{{ ceph_auth.stdout }}\n'
+    content: "{{ ceph_auth.stdout }}\n"
     dest: /var/lib/ceph/mgr/{{ ceph_cluster_name }}-{{ inventory_hostname }}/keyring
     owner: ceph
     group: ceph
@@ -27,7 +27,7 @@
 
 - name: install 10-name.conf override
   copy:
-    content: '[Service]\nEnvironment=CLUSTER={{ ceph_cluster_name }}\n'
+    content: "[Service]\nEnvironment=CLUSTER={{ ceph_cluster_name }}\n"
     dest: /etc/systemd/system/ceph-mgr.service.d/10-name.conf
     owner: root
     group: root

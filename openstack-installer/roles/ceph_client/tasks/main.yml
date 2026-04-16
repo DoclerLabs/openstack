@@ -50,7 +50,7 @@
 
 - name: write out ceph keyring (created key)
   copy:
-    content: '{{ item.stdout }}\n'
+    content: "{{ item.stdout }}\n"
     dest: /etc/ceph/{{ item.item.cluster_name }}.client.{{ item.item.user}}.keyring
     owner: "{{ item.item.keyring_owner | default('root') }}"
     group: "{{ item.item.keyring_group | default('root') }}"
@@ -60,7 +60,7 @@
 
 - name: write out ceph keyring (predefined key)
   copy:
-    content: '[client.{{ item.user }}]\n\tkey = {{ item.key }}\n'
+    content: "[client.{{ item.user }}]\n\tkey = {{ item.key }}\n"
     dest: /etc/ceph/{{ item.cluster_name | default('ceph') }}.client.{{ item.user }}.keyring
     owner: "{{ item.keyring_owner | default('root') }}"
     group: "{{ item.keyring_group | default('root') }}"

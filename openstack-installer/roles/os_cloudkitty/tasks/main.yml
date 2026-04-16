@@ -81,7 +81,7 @@
 
 - name: install /etc/default/cloudkitty-api
   copy:
-    content: 'DAEMON_ARGS="--master --paste-logger --processes {{ cloudkitty_api_workers }} --die-on-term --logto /var/log/cloudkitty/cloudkitty-api.log --http-socket 127.0.0.1:8889 --wsgi-file /usr/bin/cloudkitty-api"\n'
+    content: DAEMON_ARGS="--master --paste-logger --processes {{ cloudkitty_api_workers }} --die-on-term --logto /var/log/cloudkitty/cloudkitty-api.log --http-socket 127.0.0.1:8889 --wsgi-file /usr/bin/cloudkitty-api"\n
     dest: /etc/default/cloudkitty-api
     owner: root
     group: root
