@@ -88,4 +88,5 @@
     tags:
       "ha-mode": "all"
       "ha-sync-mode": "automatic"
+    state: "{{ rabbitmq_quorum_queues | ternary('absent', 'present') }}"
   run_once: True
