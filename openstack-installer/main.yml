@@ -17,9 +17,9 @@
 - import_playbook: os_barbican.yml
 - import_playbook: os_glance.yml
 - import_playbook: os_horizon.yml
+- import_playbook: os_placement.yml
 - import_playbook: os_cinder.yml
 - import_playbook: os_neutron.yml
-- import_playbook: os_placement.yml
 - import_playbook: os_nova.yml
 - import_playbook: os_octavia.yml
 - import_playbook: os_heat.yml
