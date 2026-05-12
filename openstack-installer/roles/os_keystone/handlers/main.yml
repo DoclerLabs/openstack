@@ -1,9 +1,12 @@
 ---
 
-- name: signal apache to reload
-  file:
-    dest: /run/apache2.reload
-    state: touch
+- name: reload systemd
+  command: systemctl daemon-reload
+
+- name: restart keystone
+  service:
+    name: keystone-uwsgi
+    state: restarted
 
 - name: run systemd-tmpfiles.d
   command: /bin/systemd-tmpfiles --create

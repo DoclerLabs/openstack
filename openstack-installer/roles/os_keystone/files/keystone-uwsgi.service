@@ -1,0 +1,9 @@
+[Unit]
+Description=Keystone uWSGI app
+
+[Service]
+ExecStart=/usr/bin/uwsgi --ini /etc/keystone/keystone-public.ini
+User=keystone
+Group=keystone
+KillSignal=SIGQUIT
+Type=notify

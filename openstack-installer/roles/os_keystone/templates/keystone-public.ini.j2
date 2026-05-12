@@ -1,0 +1,25 @@
+[uwsgi]
+module = keystone.wsgi.api:application
+
+# Versions of mod_proxy_uwsgi>=2.0.6 should use a UNIX socket, see
+# http://uwsgi-docs.readthedocs.org/en/latest/Apache.html#mod-proxy-uwsgi
+uwsgi-socket = 127.0.0.1:5000
+
+# Override the default size for headers from the 4k default.
+buffer-size = 65535
+
+# This is running standalone
+master = true
+
+enable-threads = true
+
+# Tune this to your environment.
+processes = {{ keystone_uwsgi_processes }}
+
+# uwsgi recommends this to prevent thundering herd on accept.
+thunder-lock = true
+
+plugins = python3
+
+# This ensures that file descriptors aren't shared between keystone processes.
+lazy-apps = true

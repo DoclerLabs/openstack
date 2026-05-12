@@ -55,11 +55,8 @@
     - python3-keystone
     - python3-openstackclient
     - python3-memcache
-
-- name: ensure python-keystone is not installed
-  apt:
-    name: python-keystone
-    state: absent
+    - uwsgi-plugin-python3
+    - uwsgi-core
 
 - name: ensure keystone service is disabled at boot
   service:
@@ -88,6 +85,24 @@
     - localhost
     - '%'
 
+- name: install keystone systemd unit
+  copy:
+    src: keystone-uwsgi.service
+    dest: /etc/systemd/system/keystone-uwsgi.service
+    owner: keystone
+    group: root
+    mode: 0460
+  notify: reload systemd
+
+- name: install keystone uwsgi config
+  template:
+    src: keystone-public.ini.j2
+    dest: /etc/keystone/keystone-public.ini
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart keystone
+
 - name: install keystone.conf
   template:
     src: keystone.conf.j2
@@ -95,7 +110,7 @@
     owner: keystone
     group: root
     mode: 0460
-  notify: signal apache to reload
+  notify: restart keystone
 
 - name: install keystone-paste.ini
   copy:
@@ -104,7 +119,7 @@
     owner: keystone
     group: keystone
     mode: 0644
-  notify: signal apache to reload
+  notify: restart keystone
 
 - name: install keystone-federation.conf
   template:
@@ -113,7 +128,7 @@
     owner: root
     group: www-data
     mode: 0440
-  notify: signal apache to reload
+  notify: restart keystone
 
 - name: install sso_callback_template.html
   copy:
@@ -137,25 +152,6 @@
     group: root
     mode: 0644
   notify: run systemd-tmpfiles.d
-
-- name: create /var/www/cgi-bin/keystone
-  file:
-    path: /var/www/cgi-bin/keystone
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
-  notify: signal apache to reload
-
-- name: install keystone-wsgi server
-  file:
-    src: /usr/bin/keystone-wsgi-public
-    dest: /var/www/cgi-bin/keystone/keystone
-    state: link
-    force: yes
-  notify: signal apache to reload
-
-- meta: flush_handlers
 
 ### Fernet key handling
 
@@ -258,3 +254,12 @@
 - name: bootstrap keystone
   command: su keystone -s /bin/sh -c "/usr/bin/keystone-manage bootstrap --bootstrap-password {{ keystone_admin_password }}"
   run_once: True
+
+- meta: flush_handlers
+
+- name: ensure keystone is running
+  service:
+    name: keystone-uwsgi
+    state: started
+    enabled: yes
+

@@ -14,7 +14,7 @@
       apache_oidc: "{{ keystone_federation_oidc | default(False) }}"
       apache_proxyprotocol: "{{ proxyprotocol | default(False) }}"
       apache_services:
-        - { port: 5000, wsgi_process: "keystone", wsgi_user: "keystone", wsgi_script: "/var/www/cgi-bin/keystone/keystone", include: "/etc/keystone-federation.conf" }
+        - { port: 5000, dest_proto: "uwsgi", include: "/etc/keystone-federation.conf" }
 
 - hosts: haproxy
   become: True

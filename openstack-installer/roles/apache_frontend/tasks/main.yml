@@ -39,6 +39,7 @@
     - proxy
     - proxy_fcgi
     - proxy_http
+    - proxy_uwsgi
     - remoteip
   notify: restart apache
 
