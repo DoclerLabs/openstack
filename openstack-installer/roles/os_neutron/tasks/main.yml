@@ -40,7 +40,8 @@
     name: '{{ item }}'
     state: masked
   with_items:
-    - neutron-server
+    - neutron-periodic-workers
+    - neutron-rpc-server
   when: inventory_hostname in groups['neutron_controller']
 
 - name: mask autostarting of neutron L2 agent
@@ -167,6 +168,34 @@
     - neutron-bgp-dragent
   when: inventory_hostname in groups['neutron_bgpagent']
 
+- name: mask neutron apache config
+  copy:
+    content: ''
+    dest: /etc/apache2/sites-available/neutron-api.conf
+    owner: root
+    group: root
+    mode: 0644
+  when: inventory_hostname in groups['neutron_controller']
+
+- name: create /var/www/cgi-bin/neutron
+  file:
+    path: /var/www/cgi-bin/neutron
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: inventory_hostname in groups['neutron_controller']
+  notify: signal apache to reload
+
+- name: link neutron-api server
+  file:
+    src: /usr/bin/neutron-api
+    dest: /var/www/cgi-bin/neutron/neutron-api
+    state: link
+    force: yes
+  when: inventory_hostname in groups['neutron_controller']
+  notify: signal apache to reload
+
 - name: stop and disable strongswan
   service:
     name: '{{ item }}'
@@ -225,6 +254,7 @@
     - restart neutron-dhcp-agent
     - restart neutron-metadata-agent
     - restart neutron-l2-agent
+    - signal apache to reload
 
 - name: install ml2_conf.ini
   template:
@@ -236,6 +266,7 @@
   when: inventory_hostname in groups['neutron_controller']
   notify:
     - restart neutron-server
+    - signal apache to reload
 
 - name: install L3 agent configs
   template:
@@ -311,7 +342,8 @@
     name: '{{ item }}'
     state: unmasked
   with_items:
-    - neutron-server
+    - neutron-periodic-workers
+    - neutron-rpc-server
   when: inventory_hostname in groups['neutron_controller']
 
 - name: unmask autostarting of neutron L2 agent
@@ -339,7 +371,8 @@
     state: started
     enabled: yes
   with_items:
-    - neutron-server
+    - neutron-periodic-workers
+    - neutron-rpc-server
   when: inventory_hostname in groups['neutron_controller']
 
 - name: ensure neutron L2 agent is started

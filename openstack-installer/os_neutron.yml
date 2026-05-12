@@ -41,7 +41,7 @@
       apache_service_ssl: "{{ os_ssl | default(False) }}"
       apache_proxyprotocol: "{{ proxyprotocol | default(False) }}"
       apache_services:
-        - { port: 9696 }
+        - { port: 9696, wsgi_process: "neutron-api", wsgi_user: "neutron", wsgi_group: "neutron", wsgi_script: "/var/www/cgi-bin/neutron/neutron-api" }
 
 - hosts: haproxy
   become: True

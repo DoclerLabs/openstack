@@ -2,8 +2,17 @@
 
 - name: restart neutron-server
   service:
-    name: neutron-server
+    name: "{{ item }}"
     state: restarted
+  with_items:
+    - neutron-periodic-workers
+    - neutron-rpc-server
+  when: inventory_hostname in groups['neutron_controller']
+
+- name: signal apache to reload
+  file:
+    dest: /run/apache2.reload
+    state: touch
   when: inventory_hostname in groups['neutron_controller']
 
 - name: restart neutron-l3-agent

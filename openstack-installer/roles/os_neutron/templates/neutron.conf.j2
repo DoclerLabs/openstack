@@ -462,6 +462,24 @@ ipv4_ptr_zone_prefix_size = {{ neutron_designate_ipv4_ptr_zone_prefix_size }}
 ipv6_ptr_zone_prefix_size = {{ neutron_designate_ipv6_ptr_zone_prefix_size }}
 {% endif %}
 
+
+[placement]
+
+auth_type = password
+auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
+os_region_name = {{ keystone_region_name }}
+valid_interfaces = internal
+user_domain_name = {{ placement_domain_name }}
+username = {{ placement_admin_user }}
+password = {{ placement_admin_password }}
+project_domain_name = {{ placement_project_domain_name }}
+project_name = {{ placement_project_name }}
+{% if SSLCACertificateFile != '' %}
+cafile = {{ SSLCACertificateFile }}
+{% endif %}
+insecure = {{ ssl_insecure }}
+
+
 [matchmaker_redis]
 
 #
