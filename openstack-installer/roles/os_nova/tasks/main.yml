@@ -35,21 +35,11 @@
     mode: 0644
   when: SSLCACertificateFile != ''
 
-- name: mask nova-placement-api apache config
-  copy:
-    content: ''
-    dest: /etc/apache2/sites-available/nova-placement-api.conf
-    owner: root
-    group: root
-    mode: 0644
-  when: inventory_hostname in groups['nova_controller']
-
 - name: mask autostarting of nova controller services
   service_mask:
     name: '{{ item }}'
     state: masked
   with_items:
-    - nova-api
     - nova-scheduler
     - nova-conductor
     - nova-spiceproxy
@@ -170,6 +160,34 @@
   changed_when: virsh_result is success
   when: inventory_hostname in groups['nova_compute'] and nova_compute_package in ('qemu','kvm')
 
+- name: mask nova apache config
+  copy:
+    content: ''
+    dest: /etc/apache2/sites-available/nova-api.conf
+    owner: root
+    group: root
+    mode: 0644
+  when: inventory_hostname in groups['nova_controller']
+
+- name: create /var/www/cgi-bin/nova
+  file:
+    path: /var/www/cgi-bin/nova
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: inventory_hostname in groups['nova_controller']
+  notify: signal apache to reload
+
+- name: link nova-api server
+  file:
+    src: /usr/bin/nova-api-wsgi
+    dest: /var/www/cgi-bin/nova/nova-api
+    state: link
+    force: yes
+  when: inventory_hostname in groups['nova_controller']
+  notify: signal apache to reload
+
 - name: install nova configs
   template:
     src: nova.conf.j2
@@ -247,7 +265,6 @@
     name: '{{ item }}'
     state: unmasked
   with_items:
-    - nova-api
     - nova-scheduler
     - nova-conductor
     - nova-spiceproxy
@@ -271,7 +288,6 @@
     state: started
     enabled: yes
   with_items:
-    - nova-api
     - nova-scheduler
     - nova-conductor
     - nova-novncproxy

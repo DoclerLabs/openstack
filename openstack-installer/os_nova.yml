@@ -46,7 +46,7 @@
       apache_service_ssl: "{{ os_ssl | default(False) }}"
       apache_proxyprotocol: "{{ proxyprotocol | default(False) }}"
       apache_services:
-        - { port: 8774 }
+        - { port: 8774, wsgi_process: "nova-api", wsgi_user: "nova", wsgi_group: "nova", wsgi_script: "/var/www/cgi-bin/nova/nova-api" }
 
     - role: apache_frontend
       apache_service_name: nova-metadata
