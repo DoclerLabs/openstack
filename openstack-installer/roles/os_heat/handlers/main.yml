@@ -1,10 +1,11 @@
 ---
 
+- name: signal apache to reload
+  file:
+    dest: /run/apache2.reload
+    state: touch
+
 - name: restart heat
   service:
-    name: '{{ item }}'
+    name: heat-engine
     state: restarted
-  with_items:
-    - heat-api
-    - heat-api-cfn
-    - heat-engine

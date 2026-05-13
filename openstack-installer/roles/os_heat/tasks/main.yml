@@ -37,12 +37,19 @@
 
 - name: mask autostarting of heat
   service_mask:
-    name: '{{ item }}'
+    name: heat-engine
     state: masked
+
+- name: mask heat apache configs
+  copy:
+    content: ''
+    dest: /etc/apache2/sites-available/{{ item }}.conf
+    owner: root
+    group: root
+    mode: 0644
   with_items:
     - heat-api
     - heat-api-cfn
-    - heat-engine
 
 - name: install heat
   apt:
@@ -52,11 +59,6 @@
     - heat-engine
     - python3-heat
     - python3-heatclient
-
-- name: ensure python-heat is not installed
-  apt:
-    name: python-heat
-    state: absent
 
 - name: create heat database
   mysql_db: name={{ heat_db }}
@@ -81,14 +83,14 @@
 
 - name: install heat configs
   template:
-    src: '{{ item }}.conf.j2'
-    dest: /etc/heat/{{ item }}.conf
+    src: heat.conf.j2
+    dest: /etc/heat/heat.conf
     owner: heat
     group: root
     mode: 0460
-  with_items:
-    - heat
-  notify: restart heat
+  notify:
+    - restart heat
+    - signal apache to reload
 
 - name: sync heat db
   command: su heat -s /bin/sh -c "/usr/bin/heat-manage db_sync"
@@ -98,23 +100,33 @@
 
 - name: unmask autostarting of heat
   service_mask:
-    name: '{{ item }}'
+    name: heat-engine
     state: unmasked
+
+- name: create /var/www/cgi-bin/heat
+  file:
+    path: /var/www/cgi-bin/heat
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  notify: signal apache to reload
+
+- name: link heat-api servers
+  file:
+    src: /usr/bin/{{ item }}
+    dest: /var/www/cgi-bin/heat/{{ item }}
+    state: link
+    force: yes
   with_items:
-    - heat-api
-    - heat-api-cfn
-    - heat-engine
-    - python3-vitrageclient
-    - python3-zunclient
+    - heat-wsgi-api
+    - heat-wsgi-api-cfn
+  notify: signal apache to reload
 
 - meta: flush_handlers
 
 - name: ensure heat is started
   service:
-    name: '{{ item }}'
+    name: heat-engine
     state: started
     enabled: yes
-  with_items:
-    - heat-api
-    - heat-api-cfn
-    - heat-engine

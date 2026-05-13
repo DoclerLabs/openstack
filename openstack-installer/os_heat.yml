@@ -54,8 +54,8 @@
       apache_proxy_preserve_host: True
       apache_proxyprotocol: "{{ proxyprotocol | default(False) }}"
       apache_services:
-        - { port: 8004 }
-        - { port: 8000 }
+        - { port: 8004, wsgi_process: "heat-api", wsgi_user: "heat", wsgi_group: "heat", wsgi_script: "/var/www/cgi-bin/heat/heat-wsgi-api" }
+        - { port: 8000, wsgi_process: "heat-api-cfn", wsgi_user: "heat", wsgi_group: "heat", wsgi_script: "/var/www/cgi-bin/heat/heat-wsgi-api-cfn" }
 
 - hosts: haproxy
   become: True
