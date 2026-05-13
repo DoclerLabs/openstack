@@ -44,6 +44,15 @@
     - neutron-rpc-server
   when: inventory_hostname in groups['neutron_controller']
 
+- name: mask neutron apache config
+  copy:
+    content: ''
+    dest: /etc/apache2/sites-available/neutron-api.conf
+    owner: root
+    group: root
+    mode: 0644
+  when: inventory_hostname in groups['neutron_controller']
+
 - name: mask autostarting of neutron L2 agent
   service_mask:
     name: neutron-{{ item }}-agent
@@ -168,14 +177,6 @@
     - neutron-bgp-dragent
   when: inventory_hostname in groups['neutron_bgpagent']
 
-- name: mask neutron apache config
-  copy:
-    content: ''
-    dest: /etc/apache2/sites-available/neutron-api.conf
-    owner: root
-    group: root
-    mode: 0644
-  when: inventory_hostname in groups['neutron_controller']
 
 - name: create /var/www/cgi-bin/neutron
   file:
