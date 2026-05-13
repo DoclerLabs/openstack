@@ -68,6 +68,15 @@
     - python3-novaclient
   when: inventory_hostname in groups['nova_controller']
 
+- name: mask nova apache config
+  copy:
+    content: ''
+    dest: /etc/apache2/sites-available/nova-api.conf
+    owner: root
+    group: root
+    mode: 0644
+  when: inventory_hostname in groups['nova_controller']
+
 - name: install nova compute packages
   apt:
     name:
@@ -160,14 +169,6 @@
   changed_when: virsh_result is success
   when: inventory_hostname in groups['nova_compute'] and nova_compute_package in ('qemu','kvm')
 
-- name: mask nova apache config
-  copy:
-    content: ''
-    dest: /etc/apache2/sites-available/nova-api.conf
-    owner: root
-    group: root
-    mode: 0644
-  when: inventory_hostname in groups['nova_controller']
 
 - name: create /var/www/cgi-bin/nova
   file:
