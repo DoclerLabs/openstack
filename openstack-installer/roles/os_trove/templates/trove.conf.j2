@@ -208,7 +208,6 @@ idle_timeout=180
 [keystone_authtoken]
 
 auth_type = password
-region_name = {{ keystone_region_name }}
 auth_url = {{ keystone_proto }}://{{ keystone_admin_address }}:5000
 www_authenticate_uri = {{ keystone_proto }}://{{ keystone_public_address }}:5000
 region_name = {{ keystone_region_name }}
