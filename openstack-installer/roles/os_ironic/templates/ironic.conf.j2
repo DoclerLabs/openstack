@@ -463,7 +463,7 @@ lock_path=/var/lock/ironic
 rabbit_quorum_queue = True
 rabbit_transient_quorum_queue = True
 rabbit_stream_fanout = True
-use_queue_manager = True
+use_queue_manager = False
 rabbit_qos_prefetch_count = {{ ironic_rabbit_qos_prefetch_count }}
 {% else %}
 rabbit_ha_queues = True
