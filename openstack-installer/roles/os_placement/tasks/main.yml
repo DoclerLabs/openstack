@@ -18,13 +18,6 @@
     mode: 0644
   when: inventory_hostname in groups['placement']
 
-- name: mask autostarting of placement controller services
-  service_mask:
-    name: '{{ item }}'
-    state: masked
-  with_items:
-    - placement-api
-
 - name: install placement controller packages
   apt:
     name:
@@ -89,16 +82,4 @@
   when: inventory_hostname in groups['placement']
   notify: signal apache to reload
 
-#- name: unmask autostarting of placement controller services
-#  service_mask: name={{ item }} state=unmasked
-#  with_items:
-#    - placement-api
-#  when: inventory_hostname in groups['placement']
-
 - meta: flush_handlers
-
-#- name: ensure placement controller servies are started
-#  service: name={{ item }} state=started enabled=yes
-#  with_items:
-#    - placement-api
-#  when: inventory_hostname in groups['placement']
