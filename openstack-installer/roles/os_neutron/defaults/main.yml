@@ -22,6 +22,20 @@ neutron_physical_interface_drivers:
   - "{{ neutron_physical_interface_driver }}"
 neutron_sriov_enable: False
 
+#Explicit list of ml2 mechanism drivers. When empty, the list is derived from
+#neutron_physical_interface_drivers, as before. Set it to bind ports with more
+#than one L2 technology at the same time, e.g. [ linuxbridge, openvswitch ]
+#while migrating a cluster from one to the other.
+neutron_ml2_mechanism_drivers: []
+
+#Stop and disable the agents listed in neutron_l2_agents_managed which are not
+#in neutron_physical_interface_drivers any more. Off by default, so a host
+#running an agent the inventory does not describe is left alone.
+neutron_stop_unused_l2_agents: False
+neutron_l2_agents_managed:
+  - linuxbridge
+  - openvswitch
+
 nova_admin_user: nova
 nova_domain_name: "{{ keystone_domain_name }}"
 nova_project_domain_name: "{{ keystone_service_project_domain_name | default(keystone_domain_name) }}"
