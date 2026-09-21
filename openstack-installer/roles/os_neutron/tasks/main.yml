@@ -95,7 +95,10 @@
   lineinfile: dest=/etc/modules line='br_netfilter' owner=root group=root mode=0644
 
 - name: install vpn service provider
-  apt: name={{ neutron_vpnaas_type }}
+  apt:
+    name:
+    - "{{ neutron_vpnaas_type }}"
+    - python3-neutron-vpnaas
   when: inventory_hostname in groups['neutron_l3'] and neutron_vpnaas_type
 
 - name: install neutron server packages
@@ -122,9 +125,17 @@
     - neutron-l3-agent
     - neutron-dhcp-agent
     - neutron-metadata-agent
-    - python3-neutron-vpnaas
     - python3-neutronclient
   when: inventory_hostname in groups['neutron_l3']
+
+- name: ensure neutron VPNaaS is not installed when unused
+  apt:
+    name:
+    - python3-neutron-vpnaas
+    - neutron-vpnaas-common
+    state: absent
+    purge: yes
+  when: inventory_hostname in groups['neutron_l3'] and not neutron_vpnaas_type
 
 - name: stop and disable strongswan
   service: name={{ item }} state=stopped enabled=no
@@ -243,6 +254,16 @@
   service: name=neutron-{{ item }}-agent state=started enabled=yes
   with_items: "{{ neutron_physical_interface_drivers }}"
   when: inventory_hostname in groups['neutron_l2']
+
+- name: collect service facts before stopping unused L2 agents
+  service_facts:
+  when: inventory_hostname in groups['neutron_l2'] and neutron_stop_unused_l2_agents
+
+- name: stop and disable L2 agents which are not configured any more
+  service: name=neutron-{{ item }}-agent state=stopped enabled=no
+  with_items: "{{ neutron_l2_agents_managed | difference(neutron_physical_interface_drivers) }}"
+  when: inventory_hostname in groups['neutron_l2'] and neutron_stop_unused_l2_agents
+        and 'neutron-' ~ item ~ '-agent.service' in ansible_facts.services
 
 - name: ensure neutron L3 services are started
   service: name={{ item }} state=started enabled=yes
